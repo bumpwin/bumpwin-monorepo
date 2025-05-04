@@ -62,24 +62,24 @@ export function SuiWalletConnectButton() {
 			{!account ? (
 				<ConnectButton
 					connectText={
-						<div className="flex items-center justify-center w-full text-lg font-semibold">
-							Connect Wallet
+						<div className="flex items-center justify-center w-full text-sm font-semibold">
+							Login
 						</div>
 					}
-					className="!w-full !h-12 !px-6 !rounded-full !bg-blue-500 !text-white !shadow-lg hover:!bg-blue-600 !transition-all !duration-200 !border-none [&>div]:!text-white"
+					className="!w-40 !h-12 !px-6 !rounded-xl !bg-[#5D20D3] !text-white !shadow-lg hover:!bg-[#4D1BB0] !transition-all !duration-200 !border-none [&>div]:!text-white"
 				/>
 			) : (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<div className="flex items-center justify-between gap-3 px-5 py-3 border rounded-full bg-gradient-to-r from-blue-500 to-blue-400 text-white hover:from-blue-600 hover:to-blue-500 cursor-pointer transition-all duration-200 shadow-lg">
-							<div className="flex items-center gap-2">
-								<span className="font-semibold text-lg">{balance} SUI</span>
-								<span className="text-blue-50 text-sm border-l border-blue-300 pl-2">
+						<div className="flex items-center justify-between gap-2 px-4 py-2 border rounded-xl h-12 bg-[#5D20D3] text-white hover:bg-[#4D1BB0] cursor-pointer transition-all duration-200 shadow-lg min-w-[160px] w-auto">
+							<div className="flex items-center gap-2 truncate">
+								<span className="font-semibold text-sm">{balance} SUI</span>
+								<span className="text-white text-xs border-l border-white/30 pl-2 truncate">
 									{formatAddress(account.address)}
 								</span>
 							</div>
 							<svg
-								className="w-4 h-4 text-blue-100"
+								className="w-4 h-4 text-white flex-shrink-0"
 								viewBox="0 0 24 24"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"
@@ -99,7 +99,7 @@ export function SuiWalletConnectButton() {
 					<DropdownMenuContent align="end" className="w-[200px] mt-2">
 						<DropdownMenuItem
 							onClick={copyAddressToClipboard}
-							className="focus:bg-blue-900/10 hover:bg-blue-900/10 cursor-pointer"
+							className="focus:bg-[#5D20D3]/10 hover:bg-[#5D20D3]/10 cursor-pointer"
 						>
 							<div className="flex items-center gap-2">
 								<svg

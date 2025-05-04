@@ -8,6 +8,7 @@ interface BattleClockProps {
 	totalSeconds: number;
 	challengeSeconds: number;
 	onChallengeStatusChange?: (isChallenge: boolean) => void;
+	onRemainingTimeChange?: (timeRemaining: number) => void;
 }
 
 // Helper function to format seconds to HH:MM:SS
@@ -122,6 +123,7 @@ export default function BattleClock({
 	totalSeconds,
 	challengeSeconds,
 	onChallengeStatusChange,
+	onRemainingTimeChange,
 }: BattleClockProps) {
 	// State to track remaining seconds
 	const [remaining, setRemaining] = useState(totalSeconds);
@@ -139,6 +141,11 @@ export default function BattleClock({
 	useEffect(() => {
 		onChallengeStatusChange?.(isChallenge);
 	}, [isChallenge, onChallengeStatusChange]);
+
+	// 親コンポーネントに残り時間を通知
+	useEffect(() => {
+		onRemainingTimeChange?.(remaining);
+	}, [remaining, onRemainingTimeChange]);
 
 	// タイマーの終了とリセット処理
 	useEffect(() => {
@@ -224,11 +231,6 @@ export default function BattleClock({
 				animate={
 					isComplete
 						? {
-								backgroundColor: [
-									"rgba(0,0,0,0)",
-									"rgba(255,255,255,0.3)",
-									"rgba(0,0,0,0)",
-								],
 								opacity: [1, 1, 1],
 							}
 						: isChallenge

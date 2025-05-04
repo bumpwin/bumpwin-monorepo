@@ -1,17 +1,11 @@
 "use client";
 
 import { Button } from "@workspace/shadcn/components/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@workspace/shadcn/components/dropdown-menu";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import BattleClock from "./BattleClock";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
@@ -19,6 +13,16 @@ export default function Header() {
 	const pathname = usePathname();
 	const router = useRouter();
 	const roundsClickRef = useRef(false);
+	const totalTime = 15; // カウントダウンの合計時間（秒）
+	const challengeTime = 5; // チャレンジ期間の時間（秒）
+	const challengePoint = ((totalTime - challengeTime) / totalTime) * 100; // チャレンジポイントの位置（%） - 残り時間がchallengeTimeになる地点
+
+	// BattleClockからのステータス
+	const [isChallengePeriod, setIsChallengePeriod] = useState(false);
+	const [remainingTime, setRemainingTime] = useState(totalTime);
+
+	// プログレスバーの進行度を計算
+	const progress = ((totalTime - remainingTime) / totalTime) * 100;
 
 	const isActive = (path: string) => {
 		if (path === "/" && pathname === "/") {
@@ -68,26 +72,30 @@ export default function Header() {
 	};
 
 	return (
-		<header className="w-full border-b bg-black pt-6">
+		<header className="w-full bg-black pt-6 relative">
 			<div className="w-full px-12 h-16 flex items-center">
 				{/* 左側グループ - 幅を明示的に指定 */}
 				<div className="flex items-center w-1/3">
 					{/* 1. ロゴ */}
 					<Link href="/" className="flex items-center gap-3 mr-10">
-						<Image src="/icon.png" alt="Ooze.fun Logo" width={40} height={40} />
-						<span className="text-xl font-bold text-pink-500">ooze.fun</span>
+						<Image
+							src="/logo.png"
+							alt="Ooze.fun Logo"
+							width={160}
+							height={50}
+						/>
 					</Link>
 
 					{/* 2. ナビゲーション */}
-					<nav className="flex items-center gap-8">
+					<nav className="flex items-center gap-10">
 						<a
 							href="/rounds"
 							onClick={handleRoundsClick}
 							className={cn(
-								"text-base transition-colors cursor-pointer",
+								"text-lg font-medium transition-colors cursor-pointer",
 								isActive("/rounds")
-									? "text-pink-400 font-medium"
-									: "text-white hover:text-pink-400",
+									? "text-[#ff5e00] font-medium"
+									: "text-white hover:text-[#ff5e00]",
 							)}
 						>
 							Rounds
@@ -95,100 +103,121 @@ export default function Header() {
 						<Link
 							href="/champions"
 							className={cn(
-								"text-base transition-colors",
+								"text-lg font-medium transition-colors",
 								isActive("/champions")
-									? "text-pink-400 font-medium"
-									: "text-white hover:text-pink-400",
+									? "text-[#ff5e00] font-medium"
+									: "text-white hover:text-[#ff5e00]",
 							)}
 						>
 							Champions
 						</Link>
-						<DropdownMenu>
-							<DropdownMenuTrigger className="flex items-center gap-1 text-white text-base hover:text-pink-400 transition-colors">
-								More
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="20"
-									height="20"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="h-5 w-5"
-									aria-hidden="true"
-								>
-									<path d="M6 9L12 15L18 9" />
-								</svg>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="text-base">
-								<DropdownMenuItem>
-									<Link
-										href="/faq"
-										className={cn(
-											"w-full py-1",
-											isActive("/faq") && "text-pink-400 font-medium",
-										)}
-									>
-										FAQ
-									</Link>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<Link
-										href="/docs"
-										className={cn(
-											"w-full py-1",
-											isActive("/docs") && "text-pink-400 font-medium",
-										)}
-									>
-										Docs
-									</Link>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<a
-										href="https://discord.gg/example"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="w-full py-1"
-									>
-										Discord
-									</a>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<Link
+							href="/losers"
+							className={cn(
+								"text-lg font-medium transition-colors",
+								isActive("/losers")
+									? "text-[#ff5e00] font-medium"
+									: "text-white hover:text-[#ff5e00]",
+							)}
+						>
+							Losers
+						</Link>
 					</nav>
 				</div>
 
 				{/* 3. カウントダウン（中央配置） - 幅を明示的に指定 */}
-				<div className="flex items-center justify-center w-1/3">
-					<BattleClock totalSeconds={10} challengeSeconds={5} />
+				<div className="flex items-center justify-center w-1/3 relative">
+					{/* Round 42 表示 - チャレンジ期間中は赤く点滅 */}
+					<div className="absolute left-0">
+						<span
+							className={cn(
+								"font-bold text-2xl tracking-wide transition-colors",
+								isChallengePeriod
+									? "text-red-500 animate-pulse"
+									: "text-orange-500",
+							)}
+						>
+							Round 42
+						</span>
+					</div>
+
+					{/* カウントダウン - 中央配置を維持 */}
+					<div className="flex justify-center items-center">
+						<BattleClock
+							totalSeconds={totalTime}
+							challengeSeconds={challengeTime}
+							onChallengeStatusChange={setIsChallengePeriod}
+							onRemainingTimeChange={setRemainingTime}
+						/>
+					</div>
 				</div>
 
 				{/* 右側グループ - 幅を明示的に指定 */}
 				<div className="flex items-center justify-end w-1/3">
+					{/* 検索バー */}
+					<div className="mr-5 relative">
+						<div className="flex items-center bg-[#161a23] rounded-md px-2 h-9 w-64">
+							<svg
+								className="w-4 h-4 text-gray-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<title>Search Icon</title>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								/>
+							</svg>
+							<input
+								type="text"
+								placeholder="Search token or address"
+								className="bg-transparent border-0 text-sm text-white placeholder-gray-500 focus:outline-none pl-2 w-full"
+							/>
+						</div>
+					</div>
+
 					{/* Inbox ナビゲーション */}
 					<a
 						href="/inbox"
 						className={cn(
-							"mr-5 text-base transition-colors",
+							"mr-5 transition-colors relative",
 							isActive("/inbox")
-								? "text-pink-400 font-medium"
-								: "text-white hover:text-pink-400",
+								? "text-[#ff5e00]"
+								: "text-white hover:text-[#ff5e00]",
 						)}
 					>
-						Inbox
+						<svg
+							className="w-6 h-6"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<title>Notification Bell</title>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+							/>
+						</svg>
+						{/* 未読通知インジケーター */}
+						<span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full" />
 					</a>
 
 					{/* 5. プライマリボタン */}
 					<Link href="/create" className="mr-5">
 						<Button
 							className={cn(
-								"bg-gradient-to-r from-[#8a66ff] to-[#b37aff] hover:from-[#7a56ef] hover:to-[#a36aef] rounded-xl border-0 text-sm px-5 h-10",
+								"bg-[#5D20D3] hover:bg-[#4D1BB0] text-white rounded-xl border-0 text-sm px-5 h-12 w-36",
 								isActive("/create") && "ring-2 ring-pink-400 ring-opacity-50",
 							)}
 						>
-							Create a new coin
+							Create Coin
 						</Button>
 					</Link>
 
@@ -197,6 +226,24 @@ export default function Header() {
 						<SuiWalletConnectButton />
 					</div>
 				</div>
+			</div>
+
+			{/* プログレスバー - カウントダウンに連動 */}
+			<div className="w-full h-1 bg-gray-800 mt-2 relative">
+				{/* チャレンジポイントのマーカー */}
+				<div
+					className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"
+					style={{ left: `${challengePoint}%` }}
+				/>
+
+				{/* プログレスバー - 左から右へ進行、色はカウントダウンに連動 */}
+				<div
+					className={cn(
+						"h-full transition-all duration-100 ease-linear",
+						isChallengePeriod ? "bg-red-500" : "bg-orange-500",
+					)}
+					style={{ width: `${progress}%` }}
+				/>
 			</div>
 		</header>
 	);
