@@ -1,6 +1,6 @@
 import { ChampionCoinList } from "@/components/ChampionCoinList";
-import ChatPanel from "@/components/ChatPanel";
 import { CoinList } from "@/components/CoinList";
+import CommunicationPanel from "@/components/CommunicationPanel";
 import Image from "next/image";
 
 export default function Home() {
@@ -30,9 +30,9 @@ export default function Home() {
 				</div>
 			</main>
 
-			{/* Chat panel */}
+			{/* Communication panel */}
 			<aside className="hidden lg:block">
-				<ChatPanel />
+				<CommunicationPanel />
 			</aside>
 		</div>
 	);
