@@ -13,8 +13,10 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
+import { logger } from "@workspace/logger";
 import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function SuiWalletConnectButton() {
 	const [balance, setBalance] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export function SuiWalletConnectButton() {
 	const suiClient = useSuiClient();
 	const { mutate: disconnect } = useDisconnectWallet();
 
-	// ウォレット接続時にSUIのバランスを取得
+	// Fetch SUI balance when wallet is connected
 	useEffect(() => {
 		const fetchBalance = async () => {
 			if (account) {
@@ -32,6 +34,27 @@ export function SuiWalletConnectButton() {
 		};
 		fetchBalance();
 	}, [account, suiClient]);
+
+	const copyAddressToClipboard = () => {
+		if (account) {
+			navigator.clipboard.writeText(account.address)
+				.then(() => {
+					toast.success("Address copied to clipboard");
+				})
+				.catch((err) => {
+					logger.error("[Wallet] Failed to copy address", { error: err });
+					toast.error("Failed to copy address");
+				});
+		}
+	};
+
+	const handleDisconnect = () => {
+		try {
+			disconnect();
+		} catch (error) {
+			logger.error("[Wallet] Failed to disconnect wallet", { error });
+		}
+	};
 
 	return (
 		<div className="w-full">
@@ -74,8 +97,27 @@ export function SuiWalletConnectButton() {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-[200px] mt-2">
 						<DropdownMenuItem
-							onClick={() => disconnect()}
-							className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+							onClick={copyAddressToClipboard}
+							className="focus:bg-blue-900/10 hover:bg-blue-900/10 cursor-pointer"
+						>
+							<div className="flex items-center gap-2">
+								<svg
+									className="w-4 h-4"
+									viewBox="0 0 24 24"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									aria-hidden="true"
+								>
+									<title>Copy Address Icon</title>
+									<rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+								</svg>
+								Copy Address
+							</div>
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={handleDisconnect}
+							className="text-red-600 focus:text-red-600 focus:bg-red-900/10 hover:bg-red-900/10 cursor-pointer"
 						>
 							<div className="flex items-center gap-2">
 								<svg

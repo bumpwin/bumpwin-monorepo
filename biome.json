@@ -16,7 +16,8 @@
 			"dist/",
 			"build/",
 			".wrangler/",
-			".vercel/"
+			".vercel/",
+			"packages/ooze-pilot/"
 		]
 	}
 }

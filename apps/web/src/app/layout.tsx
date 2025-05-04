@@ -5,6 +5,7 @@ import "@mysten/dapp-kit/dist/index.css";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { Providers } from "./providers/Providers";
+import { Toaster } from "sonner";
 
 export const runtime = "edge";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
 					<Header />
 					<main className="flex-1">{children}</main>
 					<Footer />
+					<Toaster position="bottom-right" duration={1500} />
 				</Providers>
 			</body>
 		</html>
