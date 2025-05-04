@@ -1,0 +1,3 @@
+[submodule "packages/ooze-pilot"]
+	path = packages/ooze-pilot
+	url = https://github.com/fuyutarow/ooze-pilot.git
