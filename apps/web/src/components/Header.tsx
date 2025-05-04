@@ -1,7 +1,7 @@
 "use client";
 
-import { SuiWalletConnectButton } from "../components/SuiWalletConnectButton";
 import Image from "next/image";
+import { SuiWalletConnectButton } from "../components/SuiWalletConnectButton";
 
 export default function Header() {
 	return (

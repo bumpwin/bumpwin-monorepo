@@ -1,6 +1,10 @@
 "use client";
 
-import { CandlestickSeries, type IChartApi, createChart } from "lightweight-charts";
+import {
+	CandlestickSeries,
+	type IChartApi,
+	createChart,
+} from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 export default function LWCChart() {

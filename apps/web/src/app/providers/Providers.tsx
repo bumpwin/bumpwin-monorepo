@@ -12,7 +12,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<ThemeProvider defaultTheme="dark" attribute="class" enableColorScheme={false}>
+			<ThemeProvider
+				defaultTheme="dark"
+				attribute="class"
+				enableColorScheme={false}
+			>
 				<SuiClientProvider networks={networks} defaultNetwork="testnet">
 					<WalletProvider>{children}</WalletProvider>
 				</SuiClientProvider>
