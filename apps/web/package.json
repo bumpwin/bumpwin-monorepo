@@ -23,6 +23,7 @@
 		"@workspace/logger": "workspace:*",
 		"@workspace/shadcn": "workspace:*",
 		"@workspace/sui": "workspace:*",
+		"date-fns": "^4.1.0",
 		"framer-motion": "^12.9.4",
 		"hono": "^4.7.7",
 		"lightweight-charts": "^5.0.6",

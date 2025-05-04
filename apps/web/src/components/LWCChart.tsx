@@ -7,7 +7,23 @@ import {
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
-export default function LWCChart() {
+interface OHLCData {
+	time: string;
+	open: number;
+	high: number;
+	low: number;
+	close: number;
+}
+
+interface LWCChartProps {
+	data?: OHLCData[];
+	currentPrice?: number;
+}
+
+export default function LWCChart({
+	data,
+	currentPrice = 0.000026,
+}: LWCChartProps) {
 	const container = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -42,8 +58,8 @@ export default function LWCChart() {
 			wickDownColor: "#ef5350", // Red for lower wicks
 		});
 
-		// Sample OHLC data (Open, High, Low, Close)
-		const ohlcData = [
+		// デフォルトのOHLCデータ
+		const defaultOhlcData: OHLCData[] = [
 			{
 				time: "2022-01-01",
 				open: 0.000025,
@@ -151,20 +167,12 @@ export default function LWCChart() {
 			},
 		];
 
-		candlestickSeries.setData(ohlcData);
+		// 提供されたデータまたはデフォルトデータを使用
+		candlestickSeries.setData(data || defaultOhlcData);
 
-		// Add volume data if needed
-		// const volumeSeries = chart.addHistogramSeries({
-		//   color: '#26a69a',
-		//   priceFormat: {
-		//     type: 'volume',
-		//   },
-		//   priceScaleId: '',
-		// });
-
-		// Add price line at current price
+		// 現在価格のラインを追加
 		candlestickSeries.createPriceLine({
-			price: 0.000026,
+			price: currentPrice,
 			color: "#4CAF50",
 			lineWidth: 1,
 			lineStyle: 2, // dashed
@@ -181,7 +189,7 @@ export default function LWCChart() {
 			window.removeEventListener("resize", resize);
 			chart.remove();
 		};
-	}, []);
+	}, [data, currentPrice]);
 
 	return <div ref={container} className="w-full h-[400px]" />;
 }
