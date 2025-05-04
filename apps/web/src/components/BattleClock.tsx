@@ -42,72 +42,72 @@ const SevenSegmentDisplay = ({
 		: "rgba(255, 94, 0, 0.8)"; // オレンジのシャドウ
 
 	return (
-		<div className="flex scale-[0.8] origin-center">
+		<div className="flex scale-[0.7] origin-center">
 			{value.split("").map((char, i) => (
-				<div key={`char-${i}-${char}`} className="relative mx-1">
+				<div key={`char-${i}-${char}`} className="relative mx-0.5">
 					{char === ":" ? (
 						<div className="flex flex-col justify-center items-center h-full">
 							<div
-								className="w-3 h-3 rounded-full mb-4"
+								className="w-2 h-2 rounded-full mb-3"
 								style={{
 									backgroundColor: segmentColor,
-									boxShadow: `0 0 15px ${shadowColor}`,
+									boxShadow: `0 0 12px ${shadowColor}`,
 								}}
 							/>
 							<div
-								className="w-3 h-3 rounded-full"
+								className="w-2 h-2 rounded-full"
 								style={{
 									backgroundColor: segmentColor,
-									boxShadow: `0 0 15px ${shadowColor}`,
+									boxShadow: `0 0 12px ${shadowColor}`,
 								}}
 							/>
 						</div>
 					) : (
 						<div
-							className="w-16 h-28 relative"
+							className="w-14 h-24 relative"
 							style={{
-								filter: `drop-shadow(0 0 10px ${shadowColor})`,
+								filter: `drop-shadow(0 0 8px ${shadowColor})`,
 							}}
 						>
 							{/* 上部セグメント */}
 							<div
-								className={`absolute top-0 left-2 right-2 h-3 ${char === "1" || char === "4" ? "opacity-20" : ""}`}
+								className={`absolute top-0 left-2 right-2 h-2.5 ${char === "1" || char === "4" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 右上セグメント */}
 							<div
-								className={`absolute top-1 right-0 w-3 h-12 ${char === "5" || char === "6" ? "opacity-20" : ""}`}
+								className={`absolute top-1 right-0 w-2.5 h-10 ${char === "5" || char === "6" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 右下セグメント */}
 							<div
-								className={`absolute bottom-1 right-0 w-3 h-12 ${char === "2" ? "opacity-20" : ""}`}
+								className={`absolute bottom-1 right-0 w-2.5 h-10 ${char === "2" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 下部セグメント */}
 							<div
-								className={`absolute bottom-0 left-2 right-2 h-3 ${char === "1" || char === "4" || char === "7" ? "opacity-20" : ""}`}
+								className={`absolute bottom-0 left-2 right-2 h-2.5 ${char === "1" || char === "4" || char === "7" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 左下セグメント */}
 							<div
-								className={`absolute bottom-1 left-0 w-3 h-12 ${char === "1" || char === "3" || char === "4" || char === "5" || char === "7" || char === "9" ? "opacity-20" : ""}`}
+								className={`absolute bottom-1 left-0 w-2.5 h-10 ${char === "1" || char === "3" || char === "4" || char === "5" || char === "7" || char === "9" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 左上セグメント */}
 							<div
-								className={`absolute top-1 left-0 w-3 h-12 ${char === "1" || char === "2" || char === "3" || char === "7" ? "opacity-20" : ""}`}
+								className={`absolute top-1 left-0 w-2.5 h-10 ${char === "1" || char === "2" || char === "3" || char === "7" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 
 							{/* 中央セグメント */}
 							<div
-								className={`absolute top-12 left-2 right-2 h-3 ${char === "0" || char === "1" || char === "7" ? "opacity-20" : ""}`}
+								className={`absolute top-10 left-2 right-2 h-2.5 ${char === "0" || char === "1" || char === "7" ? "opacity-20" : ""}`}
 								style={{ backgroundColor: segmentColor }}
 							/>
 						</div>
@@ -220,7 +220,7 @@ export default function BattleClock({
 	return (
 		<AnimatePresence>
 			<motion.div
-				className="relative w-full h-28 flex justify-center items-center overflow-hidden rounded-lg py-2"
+				className="relative w-full h-24 flex justify-center items-center overflow-hidden rounded-lg py-1.5"
 				animate={
 					isComplete
 						? {

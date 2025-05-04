@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { SuiWalletConnectButton } from "../components/SuiWalletConnectButton";
+import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import BattleClock from "./BattleClock";
 import { Button } from "@workspace/shadcn/components/button";
 import {
@@ -18,31 +18,31 @@ export default function Header() {
 	const account = useCurrentAccount();
 
 	return (
-		<header className="w-full border-b bg-black pt-8">
-			<div className="w-full px-12 h-20 flex items-center justify-between">
-				{/* 左側グループ */}
-				<div className="flex items-center flex-1">
+		<header className="w-full border-b bg-black pt-6">
+			<div className="w-full px-12 h-16 flex items-center">
+				{/* 左側グループ - 幅を明示的に指定 */}
+				<div className="flex items-center w-1/3">
 					{/* 1. ロゴ */}
-					<div className="flex items-center gap-4 mr-12">
+					<div className="flex items-center gap-3 mr-10">
 						<Image
 							src="/icon.png"
 							alt="Ooze.fun Logo"
-							width={48}
-							height={48}
+							width={40}
+							height={40}
 						/>
-						<span className="text-2xl font-bold text-pink-500">ooze.fun</span>
+						<span className="text-xl font-bold text-pink-500">ooze.fun</span>
 					</div>
 
 					{/* 2. ナビゲーション */}
-					<nav className="flex items-center gap-10">
-						<Link href="/rounds" className="text-white text-lg hover:text-pink-400 transition-colors">
+					<nav className="flex items-center gap-8">
+						<Link href="/rounds" className="text-white text-base hover:text-pink-400 transition-colors">
 							Rounds
 						</Link>
-						<Link href="/champions" className="text-white text-lg hover:text-pink-400 transition-colors">
+						<Link href="/champions" className="text-white text-base hover:text-pink-400 transition-colors">
 							Champions
 						</Link>
 						<DropdownMenu>
-							<DropdownMenuTrigger className="flex items-center gap-1 text-white text-lg hover:text-pink-400 transition-colors">
+							<DropdownMenuTrigger className="flex items-center gap-1 text-white text-base hover:text-pink-400 transition-colors">
 								More
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -77,19 +77,24 @@ export default function Header() {
 					</nav>
 				</div>
 
-				{/* 3. カウントダウン（中央配置） */}
-				<div className="absolute left-1/2 transform -translate-x-1/2 w-96">
+				{/* 3. カウントダウン（中央配置） - 幅を明示的に指定 */}
+				<div className="flex items-center justify-center w-1/3">
 					<BattleClock
 						totalSeconds={10}
 						challengeSeconds={5}
 					/>
 				</div>
 
-				{/* 右側グループ */}
-				<div className="flex items-center flex-1 justify-end">
+				{/* 右側グループ - 幅を明示的に指定 */}
+				<div className="flex items-center justify-end w-1/3">
+					{/* Inbox ナビゲーション */}
+					<a href="/inbox" className="mr-5 text-white text-base hover:text-pink-400 transition-colors">
+						Inbox
+					</a>
+
 					{/* 5. プライマリボタン */}
-					<Link href="/create" className="mr-6">
-						<Button className="bg-gradient-to-r from-[#8a66ff] to-[#b37aff] hover:from-[#7a56ef] hover:to-[#a36aef] rounded-xl border-0 text-base px-6 h-12">
+					<Link href="/create" className="mr-5">
+						<Button className="bg-gradient-to-r from-[#8a66ff] to-[#b37aff] hover:from-[#7a56ef] hover:to-[#a36aef] rounded-xl border-0 text-sm px-5 h-10">
 							Create a new coin
 						</Button>
 					</Link>
@@ -98,21 +103,21 @@ export default function Header() {
 					<div className="w-auto">
 						{account ? (
 							<DropdownMenu>
-								<DropdownMenuTrigger className="flex items-center px-4 py-2 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-blue-400 text-white hover:from-blue-600 hover:to-blue-500">
-									<span className="text-base">
+								<DropdownMenuTrigger className="flex items-center px-3 py-1.5 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-blue-400 text-white hover:from-blue-600 hover:to-blue-500">
+									<span className="text-sm">
 										{formatAddress(account.address)}
 									</span>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
-										width="20"
-										height="20"
+										width="18"
+										height="18"
 										viewBox="0 0 24 24"
 										fill="none"
 										stroke="currentColor"
 										strokeWidth="2"
 										strokeLinecap="round"
 										strokeLinejoin="round"
-										className="h-5 w-5 ml-2"
+										className="h-4 w-4 ml-2"
 										aria-hidden="true"
 									>
 										<path d="M6 9L12 15L18 9" />
