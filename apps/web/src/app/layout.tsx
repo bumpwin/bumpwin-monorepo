@@ -20,7 +20,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: "BUMP.WIN - Meme Coin Battle Royale",
-	description: "Stake & win before time runs out! The ultimate meme coin battle platform.",
+	description:
+		"Stake & win before time runs out! The ultimate meme coin battle platform.",
 };
 
 export default function RootLayout({

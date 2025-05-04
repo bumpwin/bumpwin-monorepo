@@ -1,6 +1,6 @@
 import { ChampionCoinList } from "@/components/ChampionCoinList";
-import { CoinList } from "@/components/CoinList";
 import ChatPanel from "@/components/ChatPanel";
+import { CoinList } from "@/components/CoinList";
 import Image from "next/image";
 
 export default function Home() {

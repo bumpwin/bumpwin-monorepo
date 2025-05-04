@@ -232,8 +232,12 @@ export default function BattleClock({
 								opacity: [1, 1, 1],
 							}
 						: isChallenge
-						  ? { backgroundColor: toggle ? "rgba(40,0,0,0.3)" : "rgba(0,0,0,0)" }
-						  : {}
+							? {
+									backgroundColor: toggle
+										? "rgba(40,0,0,0.3)"
+										: "rgba(0,0,0,0)",
+								}
+							: {}
 				}
 				transition={{ duration: isComplete ? 1 : 0.3, times: [0, 0.3, 1] }}
 			>

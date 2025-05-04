@@ -1,18 +1,18 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
-import BattleClock from "./BattleClock";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { formatAddress } from "@mysten/sui/utils";
 import { Button } from "@workspace/shadcn/components/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuTrigger
+	DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import { formatAddress } from "@mysten/sui/utils";
+import Image from "next/image";
+import Link from "next/link";
+import BattleClock from "./BattleClock";
+import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
 export default function Header() {
 	const account = useCurrentAccount();
@@ -24,21 +24,22 @@ export default function Header() {
 				<div className="flex items-center w-1/3">
 					{/* 1. ロゴ */}
 					<div className="flex items-center gap-3 mr-10">
-						<Image
-							src="/icon.png"
-							alt="Ooze.fun Logo"
-							width={40}
-							height={40}
-						/>
+						<Image src="/icon.png" alt="Ooze.fun Logo" width={40} height={40} />
 						<span className="text-xl font-bold text-pink-500">ooze.fun</span>
 					</div>
 
 					{/* 2. ナビゲーション */}
 					<nav className="flex items-center gap-8">
-						<Link href="/rounds" className="text-white text-base hover:text-pink-400 transition-colors">
+						<Link
+							href="/rounds"
+							className="text-white text-base hover:text-pink-400 transition-colors"
+						>
 							Rounds
 						</Link>
-						<Link href="/champions" className="text-white text-base hover:text-pink-400 transition-colors">
+						<Link
+							href="/champions"
+							className="text-white text-base hover:text-pink-400 transition-colors"
+						>
 							Champions
 						</Link>
 						<DropdownMenu>
@@ -62,13 +63,22 @@ export default function Header() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="text-base">
 								<DropdownMenuItem>
-									<Link href="/faq" className="w-full py-1">FAQ</Link>
+									<Link href="/faq" className="w-full py-1">
+										FAQ
+									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem>
-									<Link href="/docs" className="w-full py-1">Docs</Link>
+									<Link href="/docs" className="w-full py-1">
+										Docs
+									</Link>
 								</DropdownMenuItem>
 								<DropdownMenuItem>
-									<a href="https://discord.gg/example" target="_blank" rel="noopener noreferrer" className="w-full py-1">
+									<a
+										href="https://discord.gg/example"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="w-full py-1"
+									>
 										Discord
 									</a>
 								</DropdownMenuItem>
@@ -79,16 +89,16 @@ export default function Header() {
 
 				{/* 3. カウントダウン（中央配置） - 幅を明示的に指定 */}
 				<div className="flex items-center justify-center w-1/3">
-					<BattleClock
-						totalSeconds={10}
-						challengeSeconds={5}
-					/>
+					<BattleClock totalSeconds={10} challengeSeconds={5} />
 				</div>
 
 				{/* 右側グループ - 幅を明示的に指定 */}
 				<div className="flex items-center justify-end w-1/3">
 					{/* Inbox ナビゲーション */}
-					<a href="/inbox" className="mr-5 text-white text-base hover:text-pink-400 transition-colors">
+					<a
+						href="/inbox"
+						className="mr-5 text-white text-base hover:text-pink-400 transition-colors"
+					>
 						Inbox
 					</a>
 
