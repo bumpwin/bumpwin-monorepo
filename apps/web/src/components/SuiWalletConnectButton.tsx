@@ -7,13 +7,13 @@ import {
 	useSuiClient,
 } from "@mysten/dapp-kit";
 import { formatAddress } from "@mysten/sui/utils";
+import { logger } from "@workspace/logger";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
-import { logger } from "@workspace/logger";
 import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -37,7 +37,8 @@ export function SuiWalletConnectButton() {
 
 	const copyAddressToClipboard = () => {
 		if (account) {
-			navigator.clipboard.writeText(account.address)
+			navigator.clipboard
+				.writeText(account.address)
 				.then(() => {
 					toast.success("Address copied to clipboard");
 				})
@@ -109,8 +110,24 @@ export function SuiWalletConnectButton() {
 									aria-hidden="true"
 								>
 									<title>Copy Address Icon</title>
-									<rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-									<path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+									<rect
+										x="9"
+										y="9"
+										width="13"
+										height="13"
+										rx="2"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+									<path
+										d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
 								</svg>
 								Copy Address
 							</div>

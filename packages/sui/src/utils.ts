@@ -57,7 +57,7 @@ export interface CreateCoinParams {
  */
 export async function createCoin(
 	suiClient: SuiClient,
-	params: CreateCoinParams
+	params: CreateCoinParams,
 ): Promise<Transaction> {
 	try {
 		logger.info("[Sui] Creating new coin", { params });

@@ -7,9 +7,9 @@ export default function Home() {
 	return (
 		<div className="flex min-h-[calc(100vh-var(--header-height))]">
 			{/* Main content area */}
-			<main className="flex-1 overflow-y-auto pb-6 pt-8">
-				{/* Hero Banner Section - 6:1 aspect ratio */}
-				<div className="w-full overflow-hidden mb-6 relative aspect-[6/1]">
+			<main className="flex-1 overflow-y-auto pb-6">
+				{/* Hero Banner Section - 画像に合わせたアスペクト比に変更 */}
+				<div className="w-full overflow-hidden relative aspect-[21/9] mb-4">
 					<Image
 						src="/hero.png"
 						alt="BUMP.WIN - Meme Coin Battle Royale"
@@ -19,8 +19,15 @@ export default function Home() {
 					/>
 				</div>
 
-				<ChampionCoinList />
-				<CoinList />
+				{/* Previous Champions Section */}
+				<div className="mb-6">
+					<ChampionCoinList />
+				</div>
+
+				{/* Current Round Contestants */}
+				<div id="current-round">
+					<CoinList />
+				</div>
 			</main>
 
 			{/* Chat panel */}
