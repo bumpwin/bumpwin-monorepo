@@ -1,187 +1,101 @@
 "use client";
 
-import { Button } from "@workspace/shadcn/components/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@workspace/shadcn/components/dropdown-menu";
-import { cn } from "@workspace/shadcn/lib/utils";
-import { ChevronDown, ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { mockChampionCoins } from "../mock/mockChampionCoins";
 import type { CoinCardProps } from "../types/coincard";
 import { ChampionCoinCard } from "./ChampionCoinCard";
 
-type SortType = "marketCap" | "new";
+// 実際のコンポーネント実装
+function ChampionCoinListContent() {
+  const [coins, setCoins] = useState<CoinCardProps[]>(mockChampionCoins);
+  const [sortType] = useState<"marketCap" | "new">("marketCap");
+  const [showOnlyFavorites] = useState(false);
 
-export function ChampionCoinList() {
-	const [coins, setCoins] = useState<CoinCardProps[]>(mockChampionCoins);
-	const [sortType, setSortType] = useState<SortType>("marketCap");
-	const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-	const [isRefreshing, setIsRefreshing] = useState(false);
+  const handleToggleFavorite = (address: string) => {
+    setCoins((prevCoins) =>
+      prevCoins.map((coin) =>
+        coin.address === address
+          ? { ...coin, isFavorite: !coin.isFavorite }
+          : coin,
+      ),
+    );
+  };
 
-	const handleToggleFavorite = (address: string) => {
-		setCoins((prevCoins) =>
-			prevCoins.map((coin) =>
-				coin.address === address
-					? { ...coin, isFavorite: !coin.isFavorite }
-					: coin,
-			),
-		);
-	};
+  // Sort and filter coins based on the selected sort type and watchlist toggle
+  const filteredAndSortedCoins = () => {
+    let filtered = coins;
 
-	const handleSort = (type: SortType) => {
-		setSortType(type);
-	};
+    if (showOnlyFavorites) {
+      filtered = filtered.filter((coin) => coin.isFavorite);
+    }
 
-	const handleToggleWatchlist = () => {
-		setShowOnlyFavorites(!showOnlyFavorites);
-	};
+    switch (sortType) {
+      case "marketCap":
+        return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
+      case "new":
+        return [...filtered].sort(
+          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+        );
+      default:
+        return filtered;
+    }
+  };
 
-	const handleRefresh = () => {
-		setIsRefreshing(true);
-		// Simulate refresh
-		setTimeout(() => {
-			setIsRefreshing(false);
-		}, 1000);
-	};
+  return (
+    <div className="container mx-auto px-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          <h2 className="text-xl font-bold text-white mr-2">
+            🏆 PREVIOUS CHAMPIONS 🏆
+          </h2>
+        </div>
 
-	// Scroll handler for the horizontal scroll container
-	const handleScroll = (direction: "left" | "right") => {
-		const container = document.getElementById("champion-scroll-container");
-		if (container) {
-			const scrollAmount = 300; // Adjust as needed
-			const scrollPosition =
-				direction === "left"
-					? container.scrollLeft - scrollAmount
-					: container.scrollLeft + scrollAmount;
+        <div className="flex items-center">
+          <a
+            href="/champions"
+            className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-800 text-white hover:bg-slate-700 hover:text-blue-400 h-8 rounded-md px-3 border border-slate-700"
+          >
+            View More
+          </a>
+        </div>
+      </div>
 
-			container.scrollTo({
-				left: scrollPosition,
-				behavior: "smooth",
-			});
-		}
-	};
-
-	// Sort and filter coins based on the selected sort type and watchlist toggle
-	const filteredAndSortedCoins = () => {
-		let filtered = coins;
-
-		if (showOnlyFavorites) {
-			filtered = filtered.filter((coin) => coin.isFavorite);
-		}
-
-		switch (sortType) {
-			case "marketCap":
-				return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
-			case "new":
-				return [...filtered].sort(
-					(a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-				);
-			default:
-				return filtered;
-		}
-	};
-
-	return (
-		<div className="container mx-auto py-4">
-			<h2 className="text-2xl font-bold text-white mb-4">Previous Champions</h2>
-
-			<div className="flex justify-between items-center mb-4">
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							variant="outline"
-							className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
-						>
-							{sortType === "marketCap" ? "Market cap" : "New"}
-							<ChevronDown className="ml-2 h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="start">
-						<DropdownMenuItem onClick={() => handleSort("new")}>
-							New
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => handleSort("marketCap")}>
-							Market cap
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-
-				<div className="flex items-center gap-2">
-					{/* Watchlist toggle */}
-					<Button
-						variant="outline"
-						className={cn(
-							"bg-slate-800 border-slate-700 hover:bg-slate-700",
-							showOnlyFavorites && "text-yellow-400",
-						)}
-						onClick={handleToggleWatchlist}
-					>
-						⭐️
-					</Button>
-
-					{/* Refresh button */}
-					<Button
-						variant="outline"
-						size="icon"
-						className="bg-slate-800 border-slate-700 text-blue-400 hover:bg-slate-700"
-						onClick={handleRefresh}
-						disabled={isRefreshing}
-					>
-						<RotateCw
-							className={cn("h-5 w-5", isRefreshing && "animate-spin")}
-						/>
-						<span className="sr-only">Refresh</span>
-					</Button>
-
-					{/* Scroll buttons */}
-					<Button
-						variant="outline"
-						size="icon"
-						className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
-						onClick={() => handleScroll("left")}
-					>
-						<ChevronLeft className="h-5 w-5" />
-						<span className="sr-only">Scroll left</span>
-					</Button>
-
-					<Button
-						variant="outline"
-						size="icon"
-						className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700"
-						onClick={() => handleScroll("right")}
-					>
-						<ChevronRight className="h-5 w-5" />
-						<span className="sr-only">Scroll right</span>
-					</Button>
-				</div>
-			</div>
-
-			{/* Horizontal scrolling container */}
-			<div
-				id="champion-scroll-container"
-				className="flex overflow-x-auto pb-4 scrollbar-hide"
-				style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-			>
-				<div className="flex gap-4">
-					{filteredAndSortedCoins().map((coin) => (
-						<div
-							key={coin.address}
-							className="min-w-[300px] max-w-[300px] flex"
-						>
-							<div className="w-full">
-								<ChampionCoinCard
-									{...coin}
-									onToggleFavorite={handleToggleFavorite}
-								/>
-							</div>
-						</div>
-					))}
-				</div>
-			</div>
-		</div>
-	);
+      {/* Horizontal scrolling container */}
+      <div className="relative">
+        <div
+          id="champion-scroll-container"
+          className="flex overflow-x-auto pb-2 scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          <div className="flex gap-4">
+            {filteredAndSortedCoins()
+              .slice(0, 3)
+              .map((coin) => (
+                <div
+                  key={coin.address}
+                  className="min-w-[calc(33.33%-8px)] max-w-[calc(33.33%-8px)] flex"
+                >
+                  <div className="w-full">
+                    <ChampionCoinCard
+                      {...coin}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+
+// サーバーサイドレンダリングを無効化した動的インポート
+export const ChampionCoinList = dynamic(
+  () => Promise.resolve(ChampionCoinListContent),
+  {
+    ssr: false,
+    loading: () => <div className="container mx-auto px-4 h-[300px]" />,
+  },
+);

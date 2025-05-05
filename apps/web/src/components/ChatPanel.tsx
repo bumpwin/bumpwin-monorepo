@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Input } from "@workspace/shadcn/components/input";
+import { useState } from "react";
 
 interface ChatMessage {
   id: string;
@@ -18,100 +18,102 @@ export default function ChatPanel() {
   // Sample messages with more content to demonstrate vertical space
   const sampleMessages: ChatMessage[] = [
     {
-      id: '1',
-      username: 'miyazaki_ac8',
-      userId: 'miyazaki_ac8',
-      avatar: '🎁',
-      message: 'Thanks for sending the gift!',
-      timestamp: new Date()
+      id: "1",
+      username: "miyazaki_ac8",
+      userId: "miyazaki_ac8",
+      avatar: "🎁",
+      message: "Thanks for sending the gift!",
+      timestamp: new Date(),
     },
     {
-      id: '2',
-      username: 'akanbe6',
-      userId: '4kanbe6',
-      avatar: '🔴',
-      message: 'All\'s well that ends well',
-      timestamp: new Date()
+      id: "2",
+      username: "akanbe6",
+      userId: "4kanbe6",
+      avatar: "🔴",
+      message: "All's well that ends well",
+      timestamp: new Date(),
     },
     {
-      id: '3',
-      username: 'mieLand_mye1',
-      userId: 'mieLand_mye1',
-      avatar: '🎭',
-      message: 'The status vs status collision is so intense, upgrades are essential',
-      timestamp: new Date()
+      id: "3",
+      username: "mieLand_mye1",
+      userId: "mieLand_mye1",
+      avatar: "🎭",
+      message:
+        "The status vs status collision is so intense, upgrades are essential",
+      timestamp: new Date(),
     },
     {
-      id: '4',
-      username: 'miyazaki_ac8',
-      userId: 'miyazaki_ac8',
-      avatar: '🎁',
-      message: '💰',
-      timestamp: new Date()
+      id: "4",
+      username: "miyazaki_ac8",
+      userId: "miyazaki_ac8",
+      avatar: "🎁",
+      message: "💰",
+      timestamp: new Date(),
     },
     {
-      id: '5',
-      username: 'urien0202',
-      userId: 'urien0202',
-      avatar: '🔴',
-      message: 'Depending on the burst rotation rate, it might be worth mounting?',
-      timestamp: new Date()
+      id: "5",
+      username: "urien0202",
+      userId: "urien0202",
+      avatar: "🔴",
+      message:
+        "Depending on the burst rotation rate, it might be worth mounting?",
+      timestamp: new Date(),
     },
     {
-      id: '6',
-      username: 'akanbe6',
-      userId: '4kanbe6',
-      avatar: '🔴',
-      message: 'Captured but unharmed',
-      timestamp: new Date()
+      id: "6",
+      username: "akanbe6",
+      userId: "4kanbe6",
+      avatar: "🔴",
+      message: "Captured but unharmed",
+      timestamp: new Date(),
     },
     {
-      id: '7',
-      username: 'nerima009',
-      userId: 'rainman_009',
-      avatar: '🏍️',
-      message: 'Dash is slow',
-      timestamp: new Date()
+      id: "7",
+      username: "nerima009",
+      userId: "rainman_009",
+      avatar: "🏍️",
+      message: "Dash is slow",
+      timestamp: new Date(),
     },
     {
-      id: '8',
-      username: 'pokotan69',
-      userId: 'pokotan69',
-      avatar: '🔵',
-      message: 'Deep sea treasure hunting in the NFT ocean',
-      timestamp: new Date()
+      id: "8",
+      username: "pokotan69",
+      userId: "pokotan69",
+      avatar: "🔵",
+      message: "Deep sea treasure hunting in the NFT ocean",
+      timestamp: new Date(),
     },
     {
-      id: '9',
-      username: 'akanbe6',
-      userId: '4kanbe6',
-      avatar: '🔴',
-      message: 'Futures are looking bright for this project',
-      timestamp: new Date()
+      id: "9",
+      username: "akanbe6",
+      userId: "4kanbe6",
+      avatar: "🔴",
+      message: "Futures are looking bright for this project",
+      timestamp: new Date(),
     },
     {
-      id: '10',
-      username: 'miyazaki_ac8',
-      userId: 'miyazaki_ac8',
-      avatar: '🎁',
-      message: 'Team is delivering consistently, bullish!',
-      timestamp: new Date()
+      id: "10",
+      username: "miyazaki_ac8",
+      userId: "miyazaki_ac8",
+      avatar: "🎁",
+      message: "Team is delivering consistently, bullish!",
+      timestamp: new Date(),
     },
     {
-      id: '11',
-      username: 'urien0202',
-      userId: 'urien0202',
-      avatar: '🔴',
-      message: 'Chart is forming a nice pattern right now',
-      timestamp: new Date()
+      id: "11",
+      username: "urien0202",
+      userId: "urien0202",
+      avatar: "🔴",
+      message: "Chart is forming a nice pattern right now",
+      timestamp: new Date(),
     },
     {
-      id: '12',
-      username: 'mieLand_mye1',
-      userId: 'mieLand_mye1',
-      avatar: '🎭',
-      message: 'Don\'t sleep on this one, fundamentals are strong',
-      timestamp: new Date()
+      id: "12",
+      username: "mieLand_mye1",
+      userId: "mieLand_mye1",
+      avatar: "🎭",
+      message: "Don't sleep on this one, fundamentals are strong",
+      timestamp: new Date(),
     },
   ];
 
@@ -124,19 +126,19 @@ export default function ChatPanel() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
   return (
-    <div className="flex flex-col h-full border-l border-gray-800 bg-gray-900 w-96">
+    <>
       {/* Chat header */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-gray-800">
         <h2 className="font-bold text-white text-lg">Chat</h2>
         <div className="flex space-x-3">
-          <button className="text-gray-400 hover:text-white">
+          <button type="button" className="text-gray-400 hover:text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -154,7 +156,7 @@ export default function ChatPanel() {
               <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
             </svg>
           </button>
-          <button className="text-gray-400 hover:text-white">
+          <button type="button" className="text-gray-400 hover:text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -188,10 +190,10 @@ export default function ChatPanel() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1">
-                <span className="font-semibold text-sm text-gray-300">{msg.username}</span>
-                <span className="text-xs text-gray-500">
-                  ({msg.userId})
+                <span className="font-semibold text-sm text-gray-300">
+                  {msg.username}
                 </span>
+                <span className="text-xs text-gray-500">({msg.userId})</span>
               </div>
               <p className="text-sm text-white break-words">{msg.message}</p>
             </div>
@@ -210,6 +212,7 @@ export default function ChatPanel() {
             className="bg-gray-800 border-gray-700 pl-3 pr-12 py-3 w-full text-white rounded-md"
           />
           <button
+            type="button"
             onClick={handleSendMessage}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
           >
@@ -236,7 +239,7 @@ export default function ChatPanel() {
             <span>💎 0</span>
             <span>💝 38.7K</span>
           </div>
-          <button className="text-gray-400 hover:text-white">
+          <button type="button" className="text-gray-400 hover:text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -247,15 +250,14 @@ export default function ChatPanel() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4"
+              className="h-5 w-5"
               aria-hidden="true"
             >
-              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-              <circle cx="12" cy="12" r="3" />
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,187 +1,195 @@
 "use client";
 
 import {
-	CandlestickSeries,
-	type IChartApi,
-	createChart,
+  CandlestickSeries,
+  type IChartApi,
+  createChart,
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
-export default function LWCChart() {
-	const container = useRef<HTMLDivElement>(null);
+interface OHLCData {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
 
-	useEffect(() => {
-		if (!container.current) return;
+interface LWCChartProps {
+  data?: OHLCData[];
+  currentPrice?: number;
+}
 
-		const chart: IChartApi = createChart(container.current, {
-			layout: {
-				background: { color: "#0d1117" },
-				textColor: "#fff",
-			},
-			grid: {
-				vertLines: { color: "rgba(42, 46, 57, 0.5)" },
-				horzLines: { color: "rgba(42, 46, 57, 0.5)" },
-			},
-			width: container.current.clientWidth,
-			height: 400,
-			timeScale: {
-				timeVisible: true,
-				secondsVisible: false,
-				borderColor: "rgba(42, 46, 57, 0.5)",
-			},
-			rightPriceScale: {
-				borderColor: "rgba(42, 46, 57, 0.5)",
-			},
-		});
+export default function LWCChart({
+  data,
+  currentPrice = 0.000026,
+}: LWCChartProps) {
+  const container = useRef<HTMLDivElement>(null);
 
-		const candlestickSeries = chart.addSeries(CandlestickSeries, {
-			upColor: "#26a69a", // Green for up candles
-			downColor: "#ef5350", // Red for down candles
-			borderVisible: false,
-			wickUpColor: "#26a69a", // Green for upper wicks
-			wickDownColor: "#ef5350", // Red for lower wicks
-		});
+  useEffect(() => {
+    if (!container.current) return;
 
-		// Sample OHLC data (Open, High, Low, Close)
-		const ohlcData = [
-			{
-				time: "2022-01-01",
-				open: 0.000025,
-				high: 0.000028,
-				low: 0.000024,
-				close: 0.000026,
-			},
-			{
-				time: "2022-01-02",
-				open: 0.000026,
-				high: 0.000029,
-				low: 0.000025,
-				close: 0.000028,
-			},
-			{
-				time: "2022-01-03",
-				open: 0.000028,
-				high: 0.000032,
-				low: 0.000027,
-				close: 0.000031,
-			},
-			{
-				time: "2022-01-04",
-				open: 0.000031,
-				high: 0.000035,
-				low: 0.00003,
-				close: 0.000033,
-			},
-			{
-				time: "2022-01-05",
-				open: 0.000033,
-				high: 0.000037,
-				low: 0.000032,
-				close: 0.000035,
-			},
-			{
-				time: "2022-01-06",
-				open: 0.000035,
-				high: 0.00004,
-				low: 0.000034,
-				close: 0.000038,
-			},
-			{
-				time: "2022-01-07",
-				open: 0.000038,
-				high: 0.000045,
-				low: 0.000037,
-				close: 0.000043,
-			},
-			{
-				time: "2022-01-08",
-				open: 0.000043,
-				high: 0.000048,
-				low: 0.000042,
-				close: 0.000046,
-			},
-			{
-				time: "2022-01-09",
-				open: 0.000046,
-				high: 0.00005,
-				low: 0.000045,
-				close: 0.000049,
-			},
-			{
-				time: "2022-01-10",
-				open: 0.000049,
-				high: 0.000055,
-				low: 0.000048,
-				close: 0.000051,
-			},
-			{
-				time: "2022-01-11",
-				open: 0.000051,
-				high: 0.000058,
-				low: 0.00005,
-				close: 0.000055,
-			},
-			{
-				time: "2022-01-12",
-				open: 0.000055,
-				high: 0.00006,
-				low: 0.000054,
-				close: 0.000057,
-			},
-			{
-				time: "2022-01-13",
-				open: 0.000057,
-				high: 0.000059,
-				low: 0.00005,
-				close: 0.000052,
-			},
-			{
-				time: "2022-01-14",
-				open: 0.000052,
-				high: 0.000053,
-				low: 0.000045,
-				close: 0.000047,
-			},
-			{
-				time: "2022-01-15",
-				open: 0.000047,
-				high: 0.000048,
-				low: 0.000025,
-				close: 0.000026,
-			},
-		];
+    const chart: IChartApi = createChart(container.current, {
+      layout: {
+        background: { color: "#0d1117" },
+        textColor: "#fff",
+      },
+      grid: {
+        vertLines: { color: "rgba(42, 46, 57, 0.5)" },
+        horzLines: { color: "rgba(42, 46, 57, 0.5)" },
+      },
+      width: container.current.clientWidth,
+      height: 400,
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        borderColor: "rgba(42, 46, 57, 0.5)",
+      },
+      rightPriceScale: {
+        borderColor: "rgba(42, 46, 57, 0.5)",
+      },
+    });
 
-		candlestickSeries.setData(ohlcData);
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
+      upColor: "#26a69a", // Green for up candles
+      downColor: "#ef5350", // Red for down candles
+      borderVisible: false,
+      wickUpColor: "#26a69a", // Green for upper wicks
+      wickDownColor: "#ef5350", // Red for lower wicks
+    });
 
-		// Add volume data if needed
-		// const volumeSeries = chart.addHistogramSeries({
-		//   color: '#26a69a',
-		//   priceFormat: {
-		//     type: 'volume',
-		//   },
-		//   priceScaleId: '',
-		// });
+    // デフォルトのOHLCデータ
+    const defaultOhlcData: OHLCData[] = [
+      {
+        time: "2022-01-01",
+        open: 0.000025,
+        high: 0.000028,
+        low: 0.000024,
+        close: 0.000026,
+      },
+      {
+        time: "2022-01-02",
+        open: 0.000026,
+        high: 0.000029,
+        low: 0.000025,
+        close: 0.000028,
+      },
+      {
+        time: "2022-01-03",
+        open: 0.000028,
+        high: 0.000032,
+        low: 0.000027,
+        close: 0.000031,
+      },
+      {
+        time: "2022-01-04",
+        open: 0.000031,
+        high: 0.000035,
+        low: 0.00003,
+        close: 0.000033,
+      },
+      {
+        time: "2022-01-05",
+        open: 0.000033,
+        high: 0.000037,
+        low: 0.000032,
+        close: 0.000035,
+      },
+      {
+        time: "2022-01-06",
+        open: 0.000035,
+        high: 0.00004,
+        low: 0.000034,
+        close: 0.000038,
+      },
+      {
+        time: "2022-01-07",
+        open: 0.000038,
+        high: 0.000045,
+        low: 0.000037,
+        close: 0.000043,
+      },
+      {
+        time: "2022-01-08",
+        open: 0.000043,
+        high: 0.000048,
+        low: 0.000042,
+        close: 0.000046,
+      },
+      {
+        time: "2022-01-09",
+        open: 0.000046,
+        high: 0.00005,
+        low: 0.000045,
+        close: 0.000049,
+      },
+      {
+        time: "2022-01-10",
+        open: 0.000049,
+        high: 0.000055,
+        low: 0.000048,
+        close: 0.000051,
+      },
+      {
+        time: "2022-01-11",
+        open: 0.000051,
+        high: 0.000058,
+        low: 0.00005,
+        close: 0.000055,
+      },
+      {
+        time: "2022-01-12",
+        open: 0.000055,
+        high: 0.00006,
+        low: 0.000054,
+        close: 0.000057,
+      },
+      {
+        time: "2022-01-13",
+        open: 0.000057,
+        high: 0.000059,
+        low: 0.00005,
+        close: 0.000052,
+      },
+      {
+        time: "2022-01-14",
+        open: 0.000052,
+        high: 0.000053,
+        low: 0.000045,
+        close: 0.000047,
+      },
+      {
+        time: "2022-01-15",
+        open: 0.000047,
+        high: 0.000048,
+        low: 0.000025,
+        close: 0.000026,
+      },
+    ];
 
-		// Add price line at current price
-		candlestickSeries.createPriceLine({
-			price: 0.000026,
-			color: "#4CAF50",
-			lineWidth: 1,
-			lineStyle: 2, // dashed
-			axisLabelVisible: true,
-			title: "Current Price",
-		});
+    // 提供されたデータまたはデフォルトデータを使用
+    candlestickSeries.setData(data || defaultOhlcData);
 
-		chart.timeScale().fitContent();
+    // 現在価格のラインを追加
+    candlestickSeries.createPriceLine({
+      price: currentPrice,
+      color: "#4CAF50",
+      lineWidth: 1,
+      lineStyle: 2, // dashed
+      axisLabelVisible: true,
+      title: "Current Price",
+    });
 
-		const resize = () =>
-			chart.applyOptions({ width: container.current?.clientWidth });
-		window.addEventListener("resize", resize);
-		return () => {
-			window.removeEventListener("resize", resize);
-			chart.remove();
-		};
-	}, []);
+    chart.timeScale().fitContent();
 
-	return <div ref={container} className="w-full h-[400px]" />;
+    const resize = () =>
+      chart.applyOptions({ width: container.current?.clientWidth });
+    window.addEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+      chart.remove();
+    };
+  }, [data, currentPrice]);
+
+  return <div ref={container} className="w-full h-[400px]" />;
 }
