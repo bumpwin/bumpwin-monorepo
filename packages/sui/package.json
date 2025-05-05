@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@mysten/sui": "^1.28.2",
-    "@workspace/logger": "workspace:*"
+    "@workspace/logger": "workspace:*",
+    "neverthrow": "^8.2.0"
   }
 }

@@ -1,7 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
-import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
 import { SUI_BASE_UNIT, SUI_TYPE } from "./constants";
+import { NETWORK_TYPE } from "./config";
 
 /**
  * Get SUI balance for a wallet address
@@ -35,55 +35,43 @@ export function formatSuiBalance(balance: bigint | string): string {
   return (Number(balance) / SUI_BASE_UNIT).toFixed(3);
 }
 
-/**
- * Interface for coin creation parameters
- */
-export interface CreateCoinParams {
-  packageId: string;
-  treasuryCapID: string;
-  coinMetadataID: string;
-  name: string;
-  symbol: string;
-  description: string;
-  iconUrl: string;
-  senderAddress: string;
+export function isCoinMetadata(objectType: string): boolean {
+  return objectType.includes('0x2::coin::CoinMetadata');
+}
+
+export function isTreasuryCap(objectType: string): boolean {
+  return objectType.includes('0x2::coin::TreasuryCap');
 }
 
 /**
- * Creates a new coin using the OozeFam package
- * @param suiClient - SUI client instance
- * @param params - Coin creation parameters
- * @returns Transaction object that can be signed and executed
+ * Generate SuiScan URL for a wallet address
+ * @param address - Wallet address
+ * @param network - Network type (defaults to config NETWORK_TYPE)
+ * @returns SuiScan URL for the address
  */
-export async function createCoin(
-  suiClient: SuiClient,
-  params: CreateCoinParams,
-): Promise<Transaction> {
-  try {
-    logger.info("[Sui] Creating new coin", { params });
+export function getSuiScanUrl(address: string, network: string = NETWORK_TYPE): string {
+  return `https://suiscan.xyz/${network}/account/${address}`;
+}
 
-    const tx = new Transaction();
-    tx.setSender(params.senderAddress);
-    tx.setGasBudget(1_000_000_000);
+/**
+ * Generate SuiScan URL for a transaction
+ * @param digest - Transaction digest
+ * @param network - Network type (defaults to config NETWORK_TYPE)
+ * @returns SuiScan URL for the transaction
+ */
+export function getSuiScanTxUrl(digest: string, network: string = NETWORK_TYPE): string {
+  return `https://suiscan.xyz/${network}/tx/${digest}`;
+}
 
-    // Create coin using the published OozeFam package
-    const coinType = `${params.packageId}::ooze_fam_coin::OOZE_FAM_COIN`;
-
-    tx.moveCall({
-      target: `${params.packageId}::ooze_fam_coin::create`,
-      arguments: [
-        tx.object(params.treasuryCapID),
-        tx.object(params.coinMetadataID),
-        tx.pure.string(params.name),
-        tx.pure.string(params.symbol),
-        tx.pure.string(params.description),
-        tx.pure.string(params.iconUrl),
-      ],
-    });
-
-    return tx;
-  } catch (error) {
-    logger.error("[Sui] Failed to create coin transaction", { error });
-    throw error;
-  }
+/**
+ * Generate SuiScan URL for an object details page
+ * @param objectId - Object ID
+ * @param network - Network type (defaults to config NETWORK_TYPE)
+ * @returns SuiScan URL for the object
+ */
+export function getSuiScanObjectUrl(
+  objectId: string,
+  network: string = NETWORK_TYPE,
+): string {
+  return `https://suiscan.xyz/${network}/object/${objectId}`;
 }

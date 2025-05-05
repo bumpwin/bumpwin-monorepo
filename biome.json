@@ -22,7 +22,7 @@
       "build/",
       ".wrangler/",
       ".vercel/",
-      "packages/ooze-pilot/"
+      "packages/bumpwin-pilot/"
     ]
   }
 }
