@@ -1,7 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { logger } from "@workspace/logger";
-import { SUI_BASE_UNIT, SUI_TYPE } from "./constants";
 import { NETWORK_TYPE } from "./config";
+import { SUI_BASE_UNIT, SUI_TYPE } from "./constants";
 
 /**
  * Get SUI balance for a wallet address
@@ -36,11 +36,11 @@ export function formatSuiBalance(balance: bigint | string): string {
 }
 
 export function isCoinMetadata(objectType: string): boolean {
-  return objectType.includes('0x2::coin::CoinMetadata');
+  return objectType.includes("0x2::coin::CoinMetadata");
 }
 
 export function isTreasuryCap(objectType: string): boolean {
-  return objectType.includes('0x2::coin::TreasuryCap');
+  return objectType.includes("0x2::coin::TreasuryCap");
 }
 
 /**
@@ -49,7 +49,10 @@ export function isTreasuryCap(objectType: string): boolean {
  * @param network - Network type (defaults to config NETWORK_TYPE)
  * @returns SuiScan URL for the address
  */
-export function getSuiScanUrl(address: string, network: string = NETWORK_TYPE): string {
+export function getSuiScanUrl(
+  address: string,
+  network: string = NETWORK_TYPE,
+): string {
   return `https://suiscan.xyz/${network}/account/${address}`;
 }
 
@@ -59,7 +62,10 @@ export function getSuiScanUrl(address: string, network: string = NETWORK_TYPE): 
  * @param network - Network type (defaults to config NETWORK_TYPE)
  * @returns SuiScan URL for the transaction
  */
-export function getSuiScanTxUrl(digest: string, network: string = NETWORK_TYPE): string {
+export function getSuiScanTxUrl(
+  digest: string,
+  network: string = NETWORK_TYPE,
+): string {
   return `https://suiscan.xyz/${network}/tx/${digest}`;
 }
 

@@ -1,15 +1,8 @@
-import { Transaction } from '@mysten/sui/transactions';
-import { SuiClient } from '@mysten/sui/client';
-import { BumpFamCoin } from '../../bumpwin-pilot/sdk/src/moveCall/bumpFamCoin';
+import type { SuiClient } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
-import { isCoinMetadata, isTreasuryCap } from './utils';
-
-// Define error types
-type BlockchainError =
-  | { type: "transaction_build_error"; message: string; details?: any }
-  | { type: "transaction_sign_error"; message: string; details?: any }
-  | { type: "transaction_execution_error"; message: string; details?: any }
-  | { type: "unexpected_error"; message: string; details?: any };
+import { BumpFamCoin } from "../../bumpwin-pilot/sdk/src/moveCall/bumpFamCoin";
+import { isCoinMetadata, isTreasuryCap } from "./utils";
 
 /**
  * Helper function to sign and execute a transaction
@@ -19,13 +12,16 @@ type BlockchainError =
  */
 export async function signTransactionAndExecute(
   transactionBlock: Uint8Array,
-  signAndExecuteTransactionFn: (args: { transaction: string }, options: any) => void
+  signAndExecuteTransactionFn: (
+    args: { transaction: string },
+    options: any,
+  ) => void,
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     try {
       logger.info("Signing transaction...");
       // Convert Uint8Array to Base64 string
-      const base64Tx = Buffer.from(transactionBlock).toString('base64');
+      const base64Tx = Buffer.from(transactionBlock).toString("base64");
       signAndExecuteTransactionFn(
         {
           transaction: base64Tx,
@@ -39,13 +35,72 @@ export async function signTransactionAndExecute(
             logger.error("Transaction signing error:", error);
             reject(error);
           },
-        }
+        },
       );
     } catch (error) {
       logger.error("Error in signAndExecuteTransaction:", error);
       reject(error);
     }
   });
+}
+
+/**
+ * Fetch object IDs from a transaction digest
+ * @param client SuiClient instance
+ * @param digest Transaction digest
+ * @returns Object containing packageId, coinMetadataID, and treasuryCapID
+ */
+async function fetchObjectIdsFromTransaction(
+  client: SuiClient,
+  digest: string,
+): Promise<{
+  packageId: string;
+  coinMetadataID: string;
+  treasuryCapID: string;
+}> {
+  try {
+    // Wait a bit for transaction to be indexed
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Fetch transaction block with object changes
+    const txBlock = await client.getTransactionBlock({
+      digest,
+      options: { showEffects: true, showObjectChanges: true },
+    });
+
+    // Extract IDs from object changes
+    const packageId =
+      (txBlock.objectChanges?.find((c) => c.type === "published") as any)
+        ?.packageId || "";
+
+    const coinMetadataID =
+      (
+        txBlock.objectChanges?.find(
+          (c) => c.type === "created" && isCoinMetadata(c.objectType),
+        ) as any
+      )?.objectId || "";
+
+    const treasuryCapID =
+      (
+        txBlock.objectChanges?.find(
+          (c) => c.type === "created" && isTreasuryCap(c.objectType),
+        ) as any
+      )?.objectId || "";
+
+    logger.info("Extracted object IDs from transaction", {
+      packageId,
+      coinMetadataID,
+      treasuryCapID,
+    });
+
+    return { packageId, coinMetadataID, treasuryCapID };
+  } catch (error) {
+    logger.error("Failed to fetch object IDs from transaction", {
+      error,
+      digest,
+    });
+    return { packageId: "", coinMetadataID: "", treasuryCapID: "" };
+  }
 }
 
 /**
@@ -58,7 +113,7 @@ export async function signTransactionAndExecute(
 export async function publishBumpFamCoinPackage(
   client: SuiClient,
   senderAddress: string,
-  signCallback: (transactionBlock: Uint8Array) => Promise<string>
+  signCallback: (transactionBlock: Uint8Array) => Promise<string>,
 ): Promise<{
   packageId: string;
   coinMetadataID: string;
@@ -68,11 +123,11 @@ export async function publishBumpFamCoinPackage(
   try {
     const tx = new Transaction();
     tx.setSender(senderAddress);
-    tx.setGasBudget(800_000_000);
+    tx.setGasBudget(500_000_000);
 
     BumpFamCoin.publishBumpFamCoinPackage(tx, { sender: senderAddress });
 
-    let builtTx;
+    let builtTx: Uint8Array;
     try {
       builtTx = await tx.build({ client });
       logger.info("Transaction built successfully", { sender: senderAddress });
@@ -81,102 +136,72 @@ export async function publishBumpFamCoinPackage(
       throw {
         type: "transaction_build_error",
         message: "Failed to build transaction",
-        details: buildError
+        details: buildError,
       };
     }
 
-    let txResult;
+    let txResult: any;
+    let digest = "";
     try {
-      // signCallback内でsignAndExecuteTransactionを呼び出し、結果をJSON文字列として返す
       const txResultStr = await signCallback(builtTx);
 
       try {
-        // JSON文字列をパース
         txResult = JSON.parse(txResultStr);
         logger.info("Transaction signed and executed successfully", {
           digest: txResult.digest,
-          packageId: txResult.packageId,
-          coinMetadataID: txResult.coinMetadataID,
-          treasuryCapID: txResult.treasuryCapID
         });
+        digest = txResult.digest;
       } catch (parseError) {
-        // 古い形式（文字列のみ）の場合は、digestだけを抽出
-        logger.warn("Received legacy format transaction result", { result: txResultStr });
+        logger.warn("Received legacy format transaction result", {
+          result: txResultStr,
+        });
+        // Legacy format - just a digest string
+        digest = txResultStr;
         txResult = {
           digest: txResultStr,
           packageId: "",
           coinMetadataID: "",
-          treasuryCapID: ""
+          treasuryCapID: "",
         };
       }
     } catch (signError) {
-      logger.error("Failed to sign and execute transaction", { error: signError });
+      logger.error("Failed to sign and execute transaction", {
+        error: signError,
+      });
       throw {
         type: "transaction_sign_error",
         message: "Failed to sign and execute transaction",
-        details: signError
+        details: signError,
       };
     }
 
-    // 結果を組み立てる
+    // If package info is missing, fetch it from the blockchain
+    if (
+      !txResult.packageId ||
+      !txResult.coinMetadataID ||
+      !txResult.treasuryCapID
+    ) {
+      logger.info("Fetching object IDs from transaction", { digest });
+      const objectIds = await fetchObjectIdsFromTransaction(client, digest);
+
+      txResult.packageId = objectIds.packageId;
+      txResult.coinMetadataID = objectIds.coinMetadataID;
+      txResult.treasuryCapID = objectIds.treasuryCapID;
+    }
+
     const returnValue = {
       packageId: txResult.packageId || "",
       coinMetadataID: txResult.coinMetadataID || "",
       treasuryCapID: txResult.treasuryCapID || "",
-      digest: txResult.digest
+      digest,
     };
-
-    // パッケージ情報が取得できなかった場合でも、チェーン上のトランザクションを確認
-    if (!returnValue.packageId || !returnValue.coinMetadataID || !returnValue.treasuryCapID) {
-      logger.warn("Missing object information, attempting to fetch from blockchain", {
-        packageId: returnValue.packageId,
-        coinMetadataID: returnValue.coinMetadataID,
-        treasuryCapID: returnValue.treasuryCapID
-      });
-
-      try {
-        // 待機後に取得を試みる
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        const txBlock = await client.getTransactionBlock({
-          digest: txResult.digest,
-          options: { showEffects: true, showObjectChanges: true }
-        });
-
-        // パッケージ情報の更新
-        if (!returnValue.packageId) {
-          returnValue.packageId = (txBlock.objectChanges?.find(
-            (c) => c.type === 'published'
-          ) as any)?.packageId || "";
-        }
-
-        if (!returnValue.coinMetadataID) {
-          returnValue.coinMetadataID = (txBlock.objectChanges?.find(
-            (c) => c.type === 'created' && isCoinMetadata(c.objectType)
-          ) as any)?.objectId || "";
-        }
-
-        if (!returnValue.treasuryCapID) {
-          returnValue.treasuryCapID = (txBlock.objectChanges?.find(
-            (c) => c.type === 'created' && isTreasuryCap(c.objectType)
-          ) as any)?.objectId || "";
-        }
-
-        logger.info("Updated package information from blockchain", {
-          packageId: returnValue.packageId,
-          coinMetadataID: returnValue.coinMetadataID,
-          treasuryCapID: returnValue.treasuryCapID
-        });
-      } catch (fetchError) {
-        logger.warn("Failed to fetch additional transaction details", { error: fetchError });
-      }
-    }
 
     // Log the return values
     logger.info("BumpFamCoin package published", {
       packageId: returnValue.packageId,
       coinMetadataID: returnValue.coinMetadataID,
       treasuryCapID: returnValue.treasuryCapID,
-      digest: returnValue.digest
+      digest: returnValue.digest,
     });
 
     return returnValue;
@@ -207,51 +232,31 @@ export async function createBumpFamCoin(
     description: string;
     iconUrl?: string;
   },
-  signCallback: (transactionBlock: Uint8Array) => Promise<string>
+  signCallback: (transactionBlock: Uint8Array) => Promise<string>,
 ) {
   try {
-    // パラメータの検証
-    if (!packageId || packageId === "0x0000000000000000000000000000000000000000000000000000000000000000") {
-      logger.error("Invalid packageId:", { packageId });
-      throw new Error("Invalid package ID");
-    }
-
-    if (!params.treasuryCapID || params.treasuryCapID === "0x0000000000000000000000000000000000000000000000000000000000000000") {
-      logger.error("Invalid treasuryCapID:", { treasuryCapID: params.treasuryCapID });
-      throw new Error("Invalid treasury cap ID");
-    }
-
-    if (!params.coinMetadataID || params.coinMetadataID === "0x0000000000000000000000000000000000000000000000000000000000000000") {
-      logger.error("Invalid coinMetadataID:", { coinMetadataID: params.coinMetadataID });
-      throw new Error("Invalid coin metadata ID");
-    }
-
     const tx = new Transaction();
     tx.setSender(senderAddress);
-    tx.setGasBudget(900_000_000);
+    tx.setGasBudget(500_000_000);
 
-    BumpFamCoin.createCoin(
-      tx,
-      `${packageId}::bump_fam_coin::BUMP_FAM_COIN`,
-      {
-        treasuryCapID: params.treasuryCapID,
-        coinMetadataID: params.coinMetadataID,
-        name: params.name,
-        symbol: params.symbol,
-        description: params.description,
-        iconUrl: params.iconUrl || null,
-      }
-    );
+    BumpFamCoin.createCoin(tx, `${packageId}::bump_fam_coin::BUMP_FAM_COIN`, {
+      treasuryCapID: params.treasuryCapID,
+      coinMetadataID: params.coinMetadataID,
+      name: params.name,
+      symbol: params.symbol,
+      description: params.description,
+      iconUrl: params.iconUrl || null,
+    });
 
     logger.info("Creating BumpFamCoin with params", {
       packageId,
       treasuryCapID: params.treasuryCapID,
       coinMetadataID: params.coinMetadataID,
       name: params.name,
-      symbol: params.symbol
+      symbol: params.symbol,
     });
 
-    let builtTx;
+    let builtTx: Uint8Array;
     try {
       builtTx = await tx.build({ client });
       logger.info("Transaction built successfully");
@@ -260,26 +265,28 @@ export async function createBumpFamCoin(
       throw {
         type: "transaction_build_error",
         message: "Failed to build coin creation transaction",
-        details: buildError
+        details: buildError,
       };
     }
 
-    let txResult;
+    let txResult: any;
     try {
-      // signCallback内でsignAndExecuteTransactionを呼び出し、結果をJSON文字列として返す
       const txResultStr = await signCallback(builtTx);
 
       try {
-        // JSON文字列をパース
         txResult = JSON.parse(txResultStr);
-        logger.info("Coin creation transaction signed and executed successfully", {
-          digest: txResult.digest
-        });
+        logger.info(
+          "Coin creation transaction signed and executed successfully",
+          {
+            digest: txResult.digest,
+          },
+        );
       } catch (parseError) {
-        // 古い形式（文字列のみ）の場合は、digestだけを抽出
-        logger.warn("Received legacy format transaction result", { result: txResultStr });
+        logger.warn("Received legacy format transaction result", {
+          result: txResultStr,
+        });
         txResult = {
-          digest: txResultStr
+          digest: txResultStr,
         };
       }
     } catch (signError) {
@@ -287,14 +294,13 @@ export async function createBumpFamCoin(
       throw {
         type: "transaction_sign_error",
         message: "Failed to sign coin creation transaction",
-        details: signError
+        details: signError,
       };
     }
 
-    // 結果を組み立てる
     const returnValue = {
       digest: txResult.digest,
-      result: txResult
+      result: txResult,
     };
 
     // Log the coin creation result
@@ -302,7 +308,7 @@ export async function createBumpFamCoin(
       name: params.name,
       symbol: params.symbol,
       digest: returnValue.digest,
-      packageId: packageId
+      packageId: packageId,
     });
 
     return returnValue;
@@ -312,8 +318,8 @@ export async function createBumpFamCoin(
       params: {
         packageId,
         name: params.name,
-        symbol: params.symbol
-      }
+        symbol: params.symbol,
+      },
     });
     throw error;
   }

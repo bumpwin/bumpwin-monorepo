@@ -11,7 +11,11 @@ interface CollapsibleSectionProps {
   defaultOpen?: boolean;
 }
 
-export const CollapsibleSection = ({ title, children, defaultOpen = false }: CollapsibleSectionProps) => {
+export const CollapsibleSection = ({
+  title,
+  children,
+  defaultOpen = false,
+}: CollapsibleSectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -23,7 +27,10 @@ export const CollapsibleSection = ({ title, children, defaultOpen = false }: Col
       >
         <span>{title}</span>
         <ChevronDown
-          className={cn("h-5 w-5 transition-transform", isOpen && "transform rotate-180")}
+          className={cn(
+            "h-5 w-5 transition-transform",
+            isOpen && "transform rotate-180",
+          )}
         />
       </button>
       {isOpen && <div className="mt-4 space-y-4">{children}</div>}

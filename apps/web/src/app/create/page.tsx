@@ -1,25 +1,32 @@
 "use client";
 
-import { useCurrentAccount, useSuiClient, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
+import {
+  useCurrentAccount,
+  useSignAndExecuteTransaction,
+  useSuiClient,
+} from "@mysten/dapp-kit";
+import { logger } from "@workspace/logger";
 import { Button } from "@workspace/shadcn/components/button";
 import { Card, CardContent } from "@workspace/shadcn/components/card";
 import { Input } from "@workspace/shadcn/components/input";
 import { Textarea } from "@workspace/shadcn/components/textarea";
+import {
+  createBumpFamCoin,
+  publishBumpFamCoinPackage,
+  signTransactionAndExecute,
+} from "@workspace/sui/src/movecall";
+import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SuiWalletConnectButton } from "../../components/SuiWalletConnectButton";
-import { Transaction } from "@mysten/sui/transactions";
 import { toast } from "sonner";
 import { CollapsibleSection } from "../../components/CollapsibleSection";
 import { FormField } from "../../components/FormField";
 import { ImageUpload } from "../../components/ImageUpload";
-import { logger } from "@workspace/logger";
-import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
-import { publishBumpFamCoinPackage, createBumpFamCoin, signTransactionAndExecute } from "@workspace/sui/src/movecall";
-import { getSuiScanTxUrl, getSuiScanObjectUrl } from "@workspace/sui/src/utils";
+import { SuiWalletConnectButton } from "../../components/SuiWalletConnectButton";
 
 // Define phases
-type Phase = 'CONNECT_WALLET' | 'PUBLISH_PACKAGE' | 'CREATE_COIN' | 'COMPLETED';
+type Phase = "CONNECT_WALLET" | "PUBLISH_PACKAGE" | "CREATE_COIN" | "COMPLETED";
 
 export default function CreateCoinPage() {
   const router = useRouter();
@@ -27,7 +34,9 @@ export default function CreateCoinPage() {
   const suiClient = useSuiClient();
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [phase, setPhase] = useState<Phase>(account ? 'PUBLISH_PACKAGE' : 'CONNECT_WALLET');
+  const [phase, setPhase] = useState<Phase>(
+    account ? "PUBLISH_PACKAGE" : "CONNECT_WALLET",
+  );
   const [packageData, setPackageData] = useState<{
     packageId: string;
     coinMetadataID: string;
@@ -46,10 +55,10 @@ export default function CreateCoinPage() {
   const [isDragging, setIsDragging] = useState(false);
 
   // Update phase when wallet connection status changes
-  if (!account && phase !== 'CONNECT_WALLET') {
-    setPhase('CONNECT_WALLET');
-  } else if (account && phase === 'CONNECT_WALLET') {
-    setPhase('PUBLISH_PACKAGE');
+  if (!account && phase !== "CONNECT_WALLET") {
+    setPhase("CONNECT_WALLET");
+  } else if (account && phase === "CONNECT_WALLET") {
+    setPhase("PUBLISH_PACKAGE");
   }
 
   const handleChange = (
@@ -116,9 +125,9 @@ export default function CreateCoinPage() {
         async (transactionBlock: Uint8Array) => {
           return await signTransactionAndExecute(
             transactionBlock,
-            signAndExecuteTransaction
+            signAndExecuteTransaction,
           );
-        }
+        },
       );
 
       setPackageData({
@@ -140,9 +149,10 @@ export default function CreateCoinPage() {
               View transaction on Suiscan
             </a>
           </div>
-        </div>
+        </div>,
+        { duration: 3000 },
       );
-      setPhase('CREATE_COIN');
+      setPhase("CREATE_COIN");
     } catch (error) {
       logger.error("Failed to deploy package:", error);
       toast.error("Failed to deploy package");
@@ -185,9 +195,9 @@ export default function CreateCoinPage() {
         async (transactionBlock: Uint8Array) => {
           return await signTransactionAndExecute(
             transactionBlock,
-            signAndExecuteTransaction
+            signAndExecuteTransaction,
           );
-        }
+        },
       );
 
       toast.success(
@@ -203,9 +213,10 @@ export default function CreateCoinPage() {
               View transaction on Suiscan
             </a>
           </div>
-        </div>
+        </div>,
+        { duration: 3000 },
       );
-      setPhase('COMPLETED');
+      setPhase("COMPLETED");
 
       // Redirect after success (with a slight delay)
       setTimeout(() => {
@@ -219,18 +230,15 @@ export default function CreateCoinPage() {
     }
   };
 
-  // Current phase determines if form is disabled
-  const isFormDisabled = isProcessing || phase === 'CONNECT_WALLET' || phase === 'COMPLETED';
-
   // Determine if fields should be locked (read-only) after package is published
-  const areFieldsLocked = phase === 'CREATE_COIN' || phase === 'COMPLETED';
+  const areFieldsLocked = phase === "CREATE_COIN" || phase === "COMPLETED";
 
   // Display button based on current phase
   const renderActionButton = () => {
     switch (phase) {
-      case 'CONNECT_WALLET':
+      case "CONNECT_WALLET":
         return <SuiWalletConnectButton />;
-      case 'PUBLISH_PACKAGE':
+      case "PUBLISH_PACKAGE":
         return (
           <Button
             onClick={handlePublishPackage}
@@ -240,7 +248,7 @@ export default function CreateCoinPage() {
             {isProcessing ? "Deploying package..." : "Deploy Package"}
           </Button>
         );
-      case 'CREATE_COIN':
+      case "CREATE_COIN":
         return (
           <Button
             type="submit"
@@ -250,7 +258,7 @@ export default function CreateCoinPage() {
             {isProcessing ? "Creating coin..." : "Create Coin"}
           </Button>
         );
-      case 'COMPLETED':
+      case "COMPLETED":
         return (
           <Button
             className="w-full h-12 bg-green-500 hover:bg-green-600 text-white rounded-md font-medium text-base"
@@ -271,7 +279,12 @@ export default function CreateCoinPage() {
           <form onSubmit={handleCreateCoin} className="space-y-8">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="md:w-2/3 space-y-6">
-                <FormField id="name" label="Name" required disabled={areFieldsLocked}>
+                <FormField
+                  id="name"
+                  label="Name"
+                  required
+                  disabled={areFieldsLocked}
+                >
                   <Input
                     id="name"
                     name="name"
@@ -285,7 +298,12 @@ export default function CreateCoinPage() {
                   <p className="text-xs text-gray-400 mt-1">Enter token name</p>
                 </FormField>
 
-                <FormField id="symbol" label="Symbol" required disabled={areFieldsLocked}>
+                <FormField
+                  id="symbol"
+                  label="Symbol"
+                  required
+                  disabled={areFieldsLocked}
+                >
                   <Input
                     id="symbol"
                     name="symbol"
@@ -315,7 +333,12 @@ export default function CreateCoinPage() {
               </div>
             </div>
 
-            <FormField id="description" label="Description" required disabled={areFieldsLocked}>
+            <FormField
+              id="description"
+              label="Description"
+              required
+              disabled={areFieldsLocked}
+            >
               <Textarea
                 id="description"
                 name="description"
@@ -329,9 +352,16 @@ export default function CreateCoinPage() {
               <p className="text-xs text-gray-400 mt-1">Enter description</p>
             </FormField>
 
-            <CollapsibleSection title="Socials & more options" defaultOpen={true}>
+            <CollapsibleSection
+              title="Socials & more options"
+              defaultOpen={true}
+            >
               <div className="space-y-6 mt-4">
-                <FormField id="telegramLink" label="Telegram link" disabled={areFieldsLocked}>
+                <FormField
+                  id="telegramLink"
+                  label="Telegram link"
+                  disabled={areFieldsLocked}
+                >
                   <Input
                     id="telegramLink"
                     name="telegramLink"
@@ -343,7 +373,11 @@ export default function CreateCoinPage() {
                   />
                 </FormField>
 
-                <FormField id="websiteLink" label="Website link" disabled={areFieldsLocked}>
+                <FormField
+                  id="websiteLink"
+                  label="Website link"
+                  disabled={areFieldsLocked}
+                >
                   <Input
                     id="websiteLink"
                     name="websiteLink"
@@ -355,7 +389,11 @@ export default function CreateCoinPage() {
                   />
                 </FormField>
 
-                <FormField id="twitterLink" label="Twitter or X link" disabled={areFieldsLocked}>
+                <FormField
+                  id="twitterLink"
+                  label="Twitter or X link"
+                  disabled={areFieldsLocked}
+                >
                   <Input
                     id="twitterLink"
                     name="twitterLink"
@@ -371,25 +409,32 @@ export default function CreateCoinPage() {
 
             <div className="pt-6">
               <p className="text-yellow-500 text-sm mb-6 w-full">
-                Note: token data can't be changed after creation
+                Note: token data can&apos;t be changed after creation
               </p>
 
               <div className="flex flex-col space-y-4">
                 {renderActionButton()}
 
-                {phase === 'CONNECT_WALLET' && (
+                {phase === "CONNECT_WALLET" && (
                   <div className="text-center">
-                    <p className="text-gray-400 text-sm mb-2">Wallet connection required</p>
+                    <p className="text-gray-400 text-sm mb-2">
+                      Wallet connection required
+                    </p>
                   </div>
                 )}
-                {phase === 'PUBLISH_PACKAGE' && (
+                {phase === "PUBLISH_PACKAGE" && (
                   <div className="text-center">
-                    <p className="text-gray-400 text-sm mb-2">Package must be deployed first</p>
+                    <p className="text-gray-400 text-sm mb-2">
+                      Package must be deployed first
+                    </p>
                   </div>
                 )}
-                {phase === 'CREATE_COIN' && (
+                {phase === "CREATE_COIN" && (
                   <div className="text-center">
-                    <p className="text-blue-400 text-sm mb-2">Package deployed successfully! Fill in details and create your coin.</p>
+                    <p className="text-blue-400 text-sm mb-2">
+                      Package deployed successfully! Fill in details and create
+                      your coin.
+                    </p>
                   </div>
                 )}
               </div>
