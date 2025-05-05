@@ -1,26 +1,28 @@
 {
-	"extends": [],
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "off"
-			}
-		}
-	},
-	"formatter": {
-		"enabled": true
-	},
-	"files": {
-		"ignore": [
-			"node_modules/",
-			".next/",
-			"dist/",
-			"build/",
-			".wrangler/",
-			".vercel/",
-			"packages/ooze-pilot/"
-		]
-	}
+  "extends": [],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "files": {
+    "ignore": [
+      "node_modules/",
+      ".next/",
+      "dist/",
+      "build/",
+      ".wrangler/",
+      ".vercel/",
+      "packages/ooze-pilot/"
+    ]
+  }
 }
