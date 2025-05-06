@@ -1,4 +1,0 @@
-[submodule "packages/bumpwin-pilot"]
-	path = packages/bumpwin-pilot
-	url = https://github.com/fuyutarow/bumpwin-pilot.git
-	branch = alpha
