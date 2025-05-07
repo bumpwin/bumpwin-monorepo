@@ -1,7 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
-import { BumpFamCoin } from "../../bumpwin-pilot/sdk/src/moveCall/bumpFamCoin";
+import { BumpFamCoin } from "bumpwin";
 import { isCoinMetadata, isTreasuryCap } from "./utils";
 
 /**

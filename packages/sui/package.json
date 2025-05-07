@@ -14,6 +14,7 @@
   "dependencies": {
     "@mysten/sui": "^1.28.2",
     "@workspace/logger": "workspace:*",
+    "bumpwin": "^0.202505.5",
     "neverthrow": "^8.2.0"
   }
 }
