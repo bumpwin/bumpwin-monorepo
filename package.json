@@ -1,8 +1,12 @@
 {
   "name": "monorepo-template",
   "private": true,
-  "module": "index.ts",
   "type": "module",
+  "module": "index.ts",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
@@ -15,7 +19,10 @@
     "pages:preview": "pnpm -r --filter web run pages:preview",
     "pages:deploy": "pnpm -r --filter web run pages:deploy"
   },
-  "workspaces": ["apps/*", "packages/*"],
+  "dependencies": {
+    "@mysten/sui": "^1.29.1",
+    "bumpwin": "^0.202505.5"
+  },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/bun": "latest"

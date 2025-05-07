@@ -12,7 +12,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@mysten/sui": "^1.28.2",
     "@workspace/logger": "workspace:*",
     "neverthrow": "^8.2.0"
   }

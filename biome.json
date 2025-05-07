@@ -21,8 +21,7 @@
       "dist/",
       "build/",
       ".wrangler/",
-      ".vercel/",
-      "packages/bumpwin-pilot/"
+      ".vercel/"
     ]
   }
 }
