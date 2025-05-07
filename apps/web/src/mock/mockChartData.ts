@@ -36,8 +36,11 @@ function generateOHLCData(
     const high = Math.max(open, close) * (1 + Math.random() * (volatility / 2));
     const low = Math.min(open, close) * (1 - Math.random() * (volatility / 3));
 
+    const isoString = date.toISOString();
+    const dateString = isoString.split("T")[0] || isoString;
+
     data.push({
-      time: date.toISOString().split("T")[0],
+      time: dateString,
       open,
       high,
       low,
