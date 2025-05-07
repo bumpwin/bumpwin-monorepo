@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@workspace/logger": "workspace:*",
-    "neverthrow": "^8.2.0",
-    "bumpwin": "^0.202505.5"
+    "neverthrow": "^8.2.0"
   }
 }

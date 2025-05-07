@@ -6,7 +6,6 @@ const defineConfig = async (): Promise<NextConfig> => {
   const config: NextConfig = {
     /* config options here */
     output: "standalone",
-    transpilePackages: ['@workspace/sui', 'bumpwin'],
   };
 
   if (process.env.NODE_ENV === "development") {
