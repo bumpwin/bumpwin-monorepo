@@ -1,19 +1,22 @@
 {
   "name": "@workspace/sui",
   "version": "0.1.0",
-  "module": "index.ts",
   "type": "module",
-  "main": "index.ts",
-  "types": "index.ts",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup index.ts --format esm,cjs --dts",
+    "dev": "tsup index.ts --format esm,cjs --dts --watch"
   },
-  "peerDependencies": {
+  "devDependencies": {
+    "@types/bun": "latest",
+    "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@mysten/sui": "^1.28.2",
     "@workspace/logger": "workspace:*",
+    "bumpwin": "^0.202505.5",
     "neverthrow": "^8.2.0"
   }
 }
