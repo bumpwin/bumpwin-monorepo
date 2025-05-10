@@ -4,6 +4,8 @@ import { SupabaseRepository } from "@workspace/supabase/src/adapters";
 import { ApiError } from "@workspace/supabase/src/error";
 import { logger } from "@workspace/logger";
 
+export const runtime = "edge";
+
 const supabaseRepository = new SupabaseRepository(supabase);
 
 /**

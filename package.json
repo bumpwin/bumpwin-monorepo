@@ -18,11 +18,21 @@
   },
   "dependencies": {
     "@mysten/sui": "^1.29.1",
-    "bumpwin": "^0.202505.6"
+    "@supabase/supabase-js": "^2.49.4",
+    "@workspace/logger": "workspace:*",
+    "@workspace/shadcn": "workspace:*",
+    "@workspace/sui": "workspace:*",
+    "@workspace/supabase": "workspace:*",
+    "bumpwin": "^0.202505.7",
+    "hono": "^4.7.9",
+    "neverthrow": "^8.2.0",
+    "tsup": "^8.4.0",
+    "wrangler": "^4.14.4",
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/bun": "latest"
+    "@types/bun": "^1.2.12"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

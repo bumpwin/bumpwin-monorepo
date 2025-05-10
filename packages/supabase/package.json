@@ -1,19 +1,11 @@
 {
   "name": "@workspace/supabase",
   "version": "0.1.0",
-  "module": "index.ts",
   "type": "module",
-  "main": "index.ts",
-  "types": "index.ts",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@workspace/logger": "workspace:*",
-    "@supabase/supabase-js": "^2.49.4",
-    "neverthrow": "^8.2.0"
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
   }
 }

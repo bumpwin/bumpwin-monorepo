@@ -14,6 +14,10 @@ install:
     (cd packages/sui && bun install && pnpm install)
     echo "Installing dependencies for packages/logger..."
     (cd packages/logger && bun install && pnpm install)
+    echo "Installing dependencies for packages/supabase..."
+    (cd packages/supabase && bun install && pnpm install)
+    echo "Installing dependencies for packages/shadcn..."
+    (cd packages/shadcn && bun install && pnpm install)
     echo "All installations completed."
 
 dev:
@@ -27,6 +31,13 @@ format:
 
 lint:
     bun run lint
+
+build-packages:
+    echo "Building packages..."
+    pnpm --filter @workspace/logger build
+    pnpm --filter @workspace/sui build
+    pnpm --filter @workspace/supabase build
+    echo "All packages built."
 
 typecheck:
     bun run typecheck

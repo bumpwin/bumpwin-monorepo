@@ -6,17 +6,6 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.ts --format esm,cjs --dts",
-    "dev": "tsup index.ts --format esm,cjs --dts --watch"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@workspace/logger": "workspace:*",
-    "bumpwin": "^0.202505.5",
-    "neverthrow": "^8.2.0"
+    "build": "tsup"
   }
 }

@@ -5,16 +5,5 @@
   "private": true,
   "scripts": {
     "listen-chat": "bun run job/listenChatEvent.ts"
-  },
-  "dependencies": {
-    "@workspace/logger": "workspace:*",
-    "@workspace/supabase": "workspace:*",
-    "@workspace/sui": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   }
 }

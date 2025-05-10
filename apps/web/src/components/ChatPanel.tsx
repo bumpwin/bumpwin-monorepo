@@ -7,6 +7,10 @@ import type { ChatHistory } from "@workspace/supabase/src/domain";
 import { Loader2 } from "lucide-react";
 import React from "react";
 import { subscribeToChatMessages, unsubscribeFromChatMessages } from "@workspace/supabase/src/realtime";
+import { useSuiClient, useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
+import { sendChatMessage } from "@workspace/sui/src/movecall";
+import { toast } from "sonner";
+import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
 
 interface ChatMessage {
   id: string;
@@ -56,6 +60,12 @@ export default function ChatPanel() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
+
+  // Sui関連のフック
+  const client = useSuiClient();
+  const account = useCurrentAccount();
+  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
 
   // Reference to the message container for auto-scrolling
   const messagesContainerRef = React.useRef<HTMLDivElement>(null);
@@ -133,11 +143,79 @@ export default function ChatPanel() {
     };
   }, []);
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      // Message sending implementation would go here
-      console.log("Sending message:", message);
-      setMessage("");
+  const handleSendMessage = async () => {
+    if (message.trim() && !isSending && account) {
+      try {
+        setIsSending(true);
+
+        const signCallback = async (tx: Uint8Array) => {
+          const base64Tx = Buffer.from(tx).toString("base64");
+          return new Promise<string>((resolve, reject) => {
+            signAndExecuteTransaction(
+              {
+                transaction: base64Tx,
+              },
+              {
+                onSuccess: (result: { digest: string }) => {
+                  resolve(JSON.stringify({ digest: result.digest }));
+                },
+                onError: (error: Error) => {
+                  reject(error);
+                },
+              },
+            );
+          });
+        };
+
+        // メッセージ送信
+        const result = await sendChatMessage(
+          client,
+          account.address,
+          message.trim(),
+          "testnet",
+          signCallback
+        );
+
+        // 成功トーストを表示
+        toast.success(
+          <div>
+            Message sent successfully!
+            <div className="mt-2">
+              <a
+                href={getSuiScanTxUrl(result.digest)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                View transaction on Suiscan
+              </a>
+            </div>
+          </div>,
+          { duration: 3000 }
+        );
+
+        // 入力フィールドをクリア
+        setMessage("");
+      } catch (err) {
+        console.error("Failed to send message:", err);
+
+        // Check for InsufficientCoinBalance error
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        if (errorMessage.includes('InsufficientCoinBalance')) {
+          toast.error(
+            <div>
+              Insufficient SUI balance
+              <div className="mt-1 text-sm text-gray-300">
+                You need more SUI to pay for transaction fees
+              </div>
+            </div>
+          );
+        } else {
+          toast.error("Failed to send message");
+        }
+      } finally {
+        setIsSending(false);
+      }
     }
   };
 
@@ -203,32 +281,42 @@ export default function ChatPanel() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Send a message"
+            placeholder={
+              !account
+                ? "Please connect wallet"
+                : message.trim() === ""
+                  ? "Pay 0.000001SUI to send a message"
+                  : "Send a message"
+            }
             className="bg-gray-800 border-gray-700 pl-3 pr-12 py-1 w-full text-white rounded-md"
-            disabled={loading} // Disable input while loading
+            disabled={loading || isSending || !account} // アカウントがない場合も無効化
           />
           <button
             type="button"
             onClick={handleSendMessage}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white disabled:opacity-50"
-            disabled={loading || message.trim() === ""} // Disable button when loading or empty message
+            disabled={loading || isSending || message.trim() === "" || !account} // 送信中・アカウントなしの場合も無効化
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-              aria-hidden="true"
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
+            {isSending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <path d="m22 2-7 20-4-9-9-4Z" />
+                <path d="M22 2 11 13" />
+              </svg>
+            )}
           </button>
         </div>
       </div>

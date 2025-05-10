@@ -1,6 +1,3 @@
-// src/api
-export * from "../../apps/web/src/lib/api/profile";
-
 // src
 export * from "./src/adapters";
 export * from "./src/auth";
