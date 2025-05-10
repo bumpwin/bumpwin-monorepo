@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@workspace/supabase/src/client";
-import { SupabaseRepository } from "@workspace/supabase/src/adapters";
-import { ApiError } from "@workspace/supabase/src/error";
 import { logger } from "@workspace/logger";
+import { SupabaseRepository } from "@workspace/supabase/src/adapters";
+import { supabase } from "@workspace/supabase/src/client";
+import type { ApiError } from "@workspace/supabase/src/error";
+import { type NextRequest, NextResponse } from "next/server";
 
 export const runtime = "edge";
 
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const limitParam = searchParams.get("limit");
-    const limit = limitParam ? parseInt(limitParam, 10) : 10;
+    const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
 
     logger.info("Fetching chat messages", { limit });
     const result = await supabaseRepository.getLatestChatMessages({ limit });

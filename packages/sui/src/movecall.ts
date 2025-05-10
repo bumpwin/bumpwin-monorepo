@@ -70,22 +70,23 @@ async function fetchObjectIdsFromTransaction(
     });
 
     // Extract IDs from object changes
-    const packageId = (txBlock.objectChanges?.find((c) =>
-      c.type === "published"
-    ) as any)
-      ?.packageId || "";
+    const packageId =
+      (txBlock.objectChanges?.find((c) => c.type === "published") as any)
+        ?.packageId || "";
 
-    const coinMetadataID = (
-      txBlock.objectChanges?.find(
-        (c) => c.type === "created" && isCoinMetadata(c.objectType),
-      ) as any
-    )?.objectId || "";
+    const coinMetadataID =
+      (
+        txBlock.objectChanges?.find(
+          (c) => c.type === "created" && isCoinMetadata(c.objectType),
+        ) as any
+      )?.objectId || "";
 
-    const treasuryCapID = (
-      txBlock.objectChanges?.find(
-        (c) => c.type === "created" && isTreasuryCap(c.objectType),
-      ) as any
-    )?.objectId || "";
+    const treasuryCapID =
+      (
+        txBlock.objectChanges?.find(
+          (c) => c.type === "created" && isTreasuryCap(c.objectType),
+        ) as any
+      )?.objectId || "";
 
     logger.info("Extracted object IDs from transaction", {
       packageId,
@@ -330,16 +331,16 @@ export async function createBumpFamCoin(
  * @param client SuiClient
  * @param senderAddress Sender address
  * @param message Message text to send
- * @param network Network to use (mainnet or testnet)
  * @param signCallback Signature callback function that handles signing AND execution
+ * @param network Network to use (mainnet or testnet)
  * @returns Transaction result
  */
 export async function sendChatMessage(
   client: SuiClient,
   senderAddress: string,
   message: string,
-  network: "mainnet" | "testnet" = "testnet",
   signCallback: (transactionBlock: Uint8Array) => Promise<string>,
+  network: "mainnet" | "testnet" = "testnet",
 ) {
   try {
     // Check balance before proceeding
@@ -358,8 +359,7 @@ export async function sendChatMessage(
       });
       throw {
         type: "insufficient_balance",
-        message:
-          `Insufficient balance for gas. Available: ${totalBalance} MIST, Required estimate: ${gasEstimate} MIST`,
+        message: `Insufficient balance for gas. Available: ${totalBalance} MIST, Required estimate: ${gasEstimate} MIST`,
       };
     }
 
@@ -446,36 +446,32 @@ export async function sendChatMessage(
     } catch (signError) {
       logger.error("Failed to execute chat message transaction", {
         error: signError,
-        errorMessage: signError instanceof Error
-          ? signError.message
-          : String(signError),
+        errorMessage:
+          signError instanceof Error ? signError.message : String(signError),
       });
 
       // Check for specific error types to provide better messages
-      const errorMessage = signError instanceof Error
-        ? signError.message
-        : String(signError);
+      const errorMessage =
+        signError instanceof Error ? signError.message : String(signError);
       if (errorMessage.includes("InsufficientCoinBalance")) {
         throw {
           type: "insufficient_balance",
           message: "Insufficient SUI balance to pay for gas",
           details: signError,
         };
-      } else if (
-        errorMessage.includes("MoveAbort") && errorMessage.includes("1001")
-      ) {
+      }
+      if (errorMessage.includes("MoveAbort") && errorMessage.includes("1001")) {
         throw {
           type: "move_abort",
           message: "Smart contract rejected the message (code 1001)",
           details: signError,
         };
-      } else {
-        throw {
-          type: "transaction_execute_error",
-          message: "Failed to execute chat message transaction",
-          details: signError,
-        };
       }
+      throw {
+        type: "transaction_execute_error",
+        message: "Failed to execute chat message transaction",
+        details: signError,
+      };
     }
 
     const returnValue = {
@@ -494,12 +490,14 @@ export async function sendChatMessage(
   } catch (error) {
     logger.error("Error during chat message sending", {
       error,
-      errorType: error && typeof error === "object" && "type" in error
-        ? error.type
-        : "unknown",
-      errorMessage: error && typeof error === "object" && "message" in error
-        ? error.message
-        : String(error),
+      errorType:
+        error && typeof error === "object" && "type" in error
+          ? error.type
+          : "unknown",
+      errorMessage:
+        error && typeof error === "object" && "message" in error
+          ? error.message
+          : String(error),
     });
     throw error;
   }

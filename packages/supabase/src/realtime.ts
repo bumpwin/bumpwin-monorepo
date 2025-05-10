@@ -1,10 +1,10 @@
-import {
-  type RealtimeChannel,
-  type RealtimePostgresChangesPayload,
+import type {
+  RealtimeChannel,
+  RealtimePostgresChangesPayload,
 } from "@supabase/supabase-js";
-import type { ChatHistory } from "./domain";
 import { logger } from "@workspace/logger";
 import { supabase } from "./client";
+import type { ChatHistory } from "./domain";
 
 /**
  * Database schema for chat_history table
@@ -21,9 +21,8 @@ interface ChatHistoryRecord {
 /**
  * Type for the new chat message payload from real-time updates
  */
-export type ChatMessagePayload = RealtimePostgresChangesPayload<
-  ChatHistoryRecord
->;
+export type ChatMessagePayload =
+  RealtimePostgresChangesPayload<ChatHistoryRecord>;
 
 /**
  * Callback function type for chat message events
@@ -56,7 +55,7 @@ const activeSubscriptions: Map<string, RealtimeChannel> = new Map();
  */
 export function subscribeToChatMessages(
   callback: ChatMessageCallback,
-  channelName: string = "chat-updates",
+  channelName = "chat-updates",
 ): string {
   try {
     // Create a unique subscription ID

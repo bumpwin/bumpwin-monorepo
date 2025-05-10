@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { err, ok, type Result } from "neverthrow";
+import { type Result, err, ok } from "neverthrow";
 import {
   chatHistoryModelToDomain,
   pollCursorModelToDomain,
@@ -232,7 +232,8 @@ export class SupabaseRepository implements DbRepository {
       if (error) {
         // If no rows found, it might not be an error, depends on logic
         // For now, treating as an error if a cursor is expected to always exist
-        if (error.code === "PGRST116") { // PGRST116: Row not found
+        if (error.code === "PGRST116") {
+          // PGRST116: Row not found
           return err(createApiError("not_found", "Poll cursor not found"));
         }
         return err(createApiError("database", error.message, error));

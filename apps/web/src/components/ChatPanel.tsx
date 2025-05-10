@@ -1,16 +1,23 @@
 "use client";
 
-import { Input } from "@workspace/shadcn/components/input";
-import { useEffect, useState } from "react";
 import { chatApi } from "@/lib/api/chat";
-import type { ChatHistory } from "@workspace/supabase/src/domain";
-import { Loader2 } from "lucide-react";
-import React from "react";
-import { subscribeToChatMessages, unsubscribeFromChatMessages } from "@workspace/supabase/src/realtime";
-import { useSuiClient, useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
+import {
+  useCurrentAccount,
+  useSignAndExecuteTransaction,
+  useSuiClient,
+} from "@mysten/dapp-kit";
+import { Input } from "@workspace/shadcn/components/input";
 import { sendChatMessage } from "@workspace/sui/src/movecall";
-import { toast } from "sonner";
 import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
+import type { ChatHistory } from "@workspace/supabase/src/domain";
+import {
+  subscribeToChatMessages,
+  unsubscribeFromChatMessages,
+} from "@workspace/supabase/src/realtime";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import React from "react";
+import { toast } from "sonner";
 
 interface ChatMessage {
   id: string;
@@ -41,9 +48,10 @@ function shortenAddress(address: string | undefined | null): string {
 // Convert ChatHistory to ChatMessage
 function convertToMessage(chat: ChatHistory): ChatMessage {
   // Ensure conversion from bigint to string
-  const sequence = typeof chat.eventSequence === 'bigint'
-    ? chat.eventSequence.toString()
-    : String(chat.eventSequence);
+  const sequence =
+    typeof chat.eventSequence === "bigint"
+      ? chat.eventSequence.toString()
+      : String(chat.eventSequence);
 
   return {
     id: `${chat.txDigest}-${sequence}`,
@@ -91,7 +99,7 @@ export default function ChatPanel() {
 
         // Convert to ChatMessage format and sort by timestamp (oldest first)
         const convertedMessages = messages
-          .map(msg => convertToMessage(msg as ChatHistory))
+          .map((msg) => convertToMessage(msg as ChatHistory))
           .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
         setChatMessages(convertedMessages);
@@ -113,13 +121,14 @@ export default function ChatPanel() {
         const newChatMessage = convertToMessage(newMessage);
         setChatMessages((prevMessages) => {
           // Check if we already have this message (avoid duplicates)
-          if (prevMessages.some(msg => msg.id === newChatMessage.id)) {
+          if (prevMessages.some((msg) => msg.id === newChatMessage.id)) {
             return prevMessages;
           }
 
           // Add new message and ensure correct sort order
-          return [...prevMessages, newChatMessage]
-            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+          return [...prevMessages, newChatMessage].sort(
+            (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+          );
         });
       });
 
@@ -172,8 +181,8 @@ export default function ChatPanel() {
           client,
           account.address,
           message.trim(),
+          signCallback,
           "testnet",
-          signCallback
         );
 
         // 成功トーストを表示
@@ -191,7 +200,7 @@ export default function ChatPanel() {
               </a>
             </div>
           </div>,
-          { duration: 3000 }
+          { duration: 3000 },
         );
 
         // 入力フィールドをクリア
@@ -201,14 +210,14 @@ export default function ChatPanel() {
 
         // Check for InsufficientCoinBalance error
         const errorMessage = err instanceof Error ? err.message : String(err);
-        if (errorMessage.includes('InsufficientCoinBalance')) {
+        if (errorMessage.includes("InsufficientCoinBalance")) {
           toast.error(
             <div>
               Insufficient SUI balance
               <div className="mt-1 text-sm text-gray-300">
                 You need more SUI to pay for transaction fees
               </div>
-            </div>
+            </div>,
           );
         } else {
           toast.error("Failed to send message");
@@ -266,7 +275,9 @@ export default function ChatPanel() {
                       ({msg.userId.slice(0, 10)}...)
                     </span>
                   </div>
-                  <p className="text-sm text-white break-words">{msg.message}</p>
+                  <p className="text-sm text-white break-words">
+                    {msg.message}
+                  </p>
                 </div>
               </div>
             ))}

@@ -17,8 +17,7 @@ export interface UpdateProfileResponse {
 }
 
 // Insert a new chat message
-export interface InsertChatMessageRequest extends ChatHistory {
-}
+export interface InsertChatMessageRequest extends ChatHistory {}
 export interface InsertChatMessageResponse {
   success: boolean;
   chatMessage: ChatHistory;

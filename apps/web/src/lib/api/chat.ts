@@ -10,7 +10,7 @@ export interface SendChatMessageParams {
 }
 
 export const chatApi = {
-  async fetchLatest(limit: number = 10): Promise<ChatHistory[]> {
+  async fetchLatest(limit = 10): Promise<ChatHistory[]> {
     try {
       const response = await fetch(`/api/chat?limit=${limit}`);
       const data = await response.json();

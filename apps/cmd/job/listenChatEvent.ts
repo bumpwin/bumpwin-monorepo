@@ -1,6 +1,7 @@
 import process from "node:process";
 import type { EventId } from "@mysten/sui/client";
-import { EventFetcher } from "bumpwin";
+import { logger } from "@workspace/logger";
+import { NETWORK_TYPE } from "@workspace/sui";
 import { SupabaseRepository } from "@workspace/supabase";
 import { supabase } from "@workspace/supabase";
 import type {
@@ -8,8 +9,7 @@ import type {
   InsertChatMessageRequest,
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
-import { logger } from "@workspace/logger";
-import { NETWORK_TYPE } from "@workspace/sui";
+import { EventFetcher } from "bumpwin";
 
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 5000;
@@ -64,9 +64,8 @@ async function saveChatMessage(event: any): Promise<void> {
       messageText: event.text,
     };
 
-    const insertResult = await dbRepository.insertChatMessage(
-      chatMessageRequest,
-    );
+    const insertResult =
+      await dbRepository.insertChatMessage(chatMessageRequest);
     if (insertResult.isOk()) {
       logger.info(
         `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
@@ -91,9 +90,8 @@ async function updatePollCursor(cursor: EventId | null): Promise<void> {
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    const updateResult = await dbRepository.updatePollCursor(
-      updateCursorRequest,
-    );
+    const updateResult =
+      await dbRepository.updatePollCursor(updateCursorRequest);
     if (updateResult.isOk()) {
       logger.info(
         `Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`,
