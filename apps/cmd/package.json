@@ -1,0 +1,9 @@
+{
+  "name": "cmd",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "listen-chat": "bun run job/listenChatEvent.ts"
+  }
+}

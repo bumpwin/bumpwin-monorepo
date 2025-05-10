@@ -2,6 +2,7 @@ import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
 import { BumpFamCoin } from "bumpwin";
+import { Justchat } from "bumpwin";
 import { isCoinMetadata, isTreasuryCap } from "./utils";
 
 /**
@@ -320,6 +321,183 @@ export async function createBumpFamCoin(
         name: params.name,
         symbol: params.symbol,
       },
+    });
+    throw error;
+  }
+}
+
+/**
+ * Send a chat message using JustChat on Sui blockchain
+ * @param client SuiClient
+ * @param senderAddress Sender address
+ * @param message Message text to send
+ * @param signCallback Signature callback function that handles signing AND execution
+ * @param network Network to use (mainnet or testnet)
+ * @returns Transaction result
+ */
+export async function sendChatMessage(
+  client: SuiClient,
+  senderAddress: string,
+  message: string,
+  signCallback: (transactionBlock: Uint8Array) => Promise<string>,
+  network: "mainnet" | "testnet" = "testnet",
+) {
+  try {
+    // Check balance before proceeding
+    logger.info("Checking SUI balance before sending message");
+    const { totalBalance } = await client.getBalance({
+      owner: senderAddress,
+      coinType: "0x2::sui::SUI",
+    });
+
+    // Verify sufficient balance before proceeding (prevent common error)
+    const gasEstimate = 5_000_000; // Conservative estimate (5 million MIST)
+    if (BigInt(totalBalance) < BigInt(gasEstimate)) {
+      logger.error("Insufficient SUI balance for transaction", {
+        available: totalBalance,
+        required: gasEstimate,
+      });
+      throw {
+        type: "insufficient_balance",
+        message: `Insufficient balance for gas. Available: ${totalBalance} MIST, Required estimate: ${gasEstimate} MIST`,
+      };
+    }
+
+    // Create a new transaction
+    logger.info("Creating transaction");
+    const tx = new Transaction();
+    tx.setSender(senderAddress);
+
+    // Use a much lower gas budget to prevent InsufficientCoinBalance errors
+    const gasBudget = 2_000_000; // 2 million MIST (0.002 SUI)
+    tx.setGasBudget(gasBudget);
+
+    // Add message to transaction
+    logger.info("Adding message to transaction", {
+      messageLength: message.length,
+      sender: senderAddress,
+      network,
+    });
+
+    try {
+      const justchat = new Justchat(network);
+      logger.info("Created Justchat instance", { network });
+
+      justchat.sendMessage(tx, {
+        message: message,
+        sender: senderAddress,
+      });
+      logger.info("Added message to transaction using Justchat");
+    } catch (error) {
+      logger.error("Error adding message to transaction", {
+        error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
+      throw {
+        type: "message_add_error",
+        message: "Failed to add message to transaction",
+        details: error,
+      };
+    }
+
+    // Build the transaction
+    logger.info("Building transaction with gas budget:", { gasBudget });
+    let builtTx: Uint8Array;
+    try {
+      builtTx = await tx.build({ client });
+      logger.info("Transaction built successfully", {
+        gasBudget,
+        totalBalance,
+      });
+    } catch (buildError) {
+      logger.error("Failed to build chat message transaction", {
+        error: buildError,
+        gasBudget,
+      });
+      throw {
+        type: "transaction_build_error",
+        message: "Failed to build chat message transaction",
+        details: buildError,
+      };
+    }
+
+    // Sign and execute the transaction
+    logger.info("Signing and executing transaction");
+    let txResult: any;
+    try {
+      const txResultStr = await signCallback(builtTx);
+
+      try {
+        txResult = JSON.parse(txResultStr);
+        logger.info(
+          "Chat message transaction signed and executed successfully",
+          {
+            digest: txResult.digest,
+          },
+        );
+      } catch (parseError) {
+        logger.warn("Received legacy format transaction result", {
+          result: txResultStr,
+        });
+        txResult = {
+          digest: txResultStr,
+        };
+      }
+    } catch (signError) {
+      logger.error("Failed to execute chat message transaction", {
+        error: signError,
+        errorMessage:
+          signError instanceof Error ? signError.message : String(signError),
+      });
+
+      // Check for specific error types to provide better messages
+      const errorMessage =
+        signError instanceof Error ? signError.message : String(signError);
+      if (errorMessage.includes("InsufficientCoinBalance")) {
+        throw {
+          type: "insufficient_balance",
+          message: "Insufficient SUI balance to pay for gas",
+          details: signError,
+        };
+      }
+      if (errorMessage.includes("MoveAbort") && errorMessage.includes("1001")) {
+        throw {
+          type: "move_abort",
+          message: "Smart contract rejected the message (code 1001)",
+          details: signError,
+        };
+      }
+      throw {
+        type: "transaction_execute_error",
+        message: "Failed to execute chat message transaction",
+        details: signError,
+      };
+    }
+
+    const returnValue = {
+      digest: txResult.digest,
+      result: txResult,
+    };
+
+    // Log the chat message result
+    logger.info("Chat message sent successfully", {
+      sender: senderAddress,
+      digest: returnValue.digest,
+      network,
+    });
+
+    return returnValue;
+  } catch (error) {
+    logger.error("Error during chat message sending", {
+      error,
+      errorType:
+        error && typeof error === "object" && "type" in error
+          ? error.type
+          : "unknown",
+      errorMessage:
+        error && typeof error === "object" && "message" in error
+          ? error.message
+          : String(error),
     });
     throw error;
   }

@@ -18,24 +18,16 @@
   },
   "dependencies": {
     "@mysten/dapp-kit": "^0.16.0",
-    "@mysten/sui": "^1.28.2",
     "@tanstack/react-query": "^5.74.4",
-    "@workspace/logger": "workspace:*",
-    "@workspace/shadcn": "workspace:*",
-    "@workspace/sui": "workspace:*",
-    "bumpwin": "^0.202505.5",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",
-    "hono": "^4.7.7",
     "lightweight-charts": "^5.0.6",
     "lucide-react": "^0.507.0",
-    "neverthrow": "^8.2.0",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
-    "sonner": "^2.0.3",
-    "zod": "^3.24.3"
+    "sonner": "^2.0.3"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.12",
