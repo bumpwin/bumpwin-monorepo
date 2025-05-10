@@ -13,3 +13,4 @@ export * from "./src/models";
 export * from "./src/repository";
 export * from "./src/storage";
 export * from "./src/types";
+export * from "./src/realtime";
