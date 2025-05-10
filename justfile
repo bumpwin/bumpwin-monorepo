@@ -47,3 +47,39 @@ pages-preview:
 
 pages-deploy:
     pnpm run pages:deploy --project-name {{PROJECT_NAME}}
+
+
+## Supabase
+
+supabase-init:
+    supabase init
+
+supabase-login:
+    supabase login
+
+supabase-link project_ref:
+    supabase link --project-ref {{project_ref}}
+
+supabase-start:
+    supabase start
+
+supabase-stop:
+    supabase stop --no-backup
+
+supabase-reset:
+    supabase db reset
+
+supabase-migration-new name:
+    supabase migration new {{name}}
+
+supabase-pull:
+    supabase db pull
+
+supabase-push:
+    supabase db push
+
+supabase-status:
+    supabase status
+
+supabase-migration-list:
+    supabase migration list
