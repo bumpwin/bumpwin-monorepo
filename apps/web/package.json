@@ -23,6 +23,7 @@
     "@workspace/logger": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
+    "@workspace/supabase": "workspace:*",
     "bumpwin": "^0.202505.5",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",

@@ -83,3 +83,8 @@ supabase-status:
 
 supabase-migration-list:
     supabase migration list
+
+## Jobs
+
+listen-chat:
+    (cd apps/cmd && bun run listen-chat)

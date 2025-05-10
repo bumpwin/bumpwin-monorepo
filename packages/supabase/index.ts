@@ -1,5 +1,5 @@
 // src/api
-export * from "./src/api/profile";
+export * from "../../apps/web/src/lib/api/profile";
 
 // src
 export * from "./src/adapters";

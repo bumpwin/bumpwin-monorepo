@@ -1,6 +1,6 @@
 import { logger } from "@workspace/logger";
-import { getAuthSession } from "../auth";
-import type { Profile } from "../domain";
+import { getAuthSession } from "@workspace/supabase/src/auth";
+import type { Profile } from "@workspace/supabase/src/domain";
 
 export interface UpdateProfileParams {
   displayName: string;

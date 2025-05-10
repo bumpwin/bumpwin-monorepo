@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@mysten/sui": "^1.29.1",
-    "bumpwin": "^0.202505.5"
+    "bumpwin": "^0.202505.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
