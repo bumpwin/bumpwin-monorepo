@@ -14,54 +14,13 @@ import {
   subscribeToChatMessages,
   unsubscribeFromChatMessages,
 } from "@workspace/supabase/src/realtime";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send, MessageSquare, Clock, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
-
-interface ChatMessage {
-  id: string;
-  username: string;
-  userId: string;
-  avatar: string;
-  message: string;
-  timestamp: Date;
-}
-
-// Helper function to generate avatar emoji based on address
-function generateAvatar(address: string | undefined | null): string {
-  if (!address || address.length === 0) return "🌟"; // Default emoji
-
-  // Using a default index (0) if we can't get a valid character code
-  const lastChar = address.slice(-1).charCodeAt(0) || 0;
-  const index = Math.abs(lastChar % 10);
-  const emojis = ["🎁", "🔴", "🎭", "💎", "🏍️", "🔵", "🌟", "🚀", "🎮", "🎯"];
-  return emojis[index] || "🌟"; // Fallback emoji if index is somehow invalid
-}
-
-// Helper function to shorten address for display
-function shortenAddress(address: string | undefined | null): string {
-  if (!address || address.length < 10) return "unknown";
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
-// Convert ChatHistory to ChatMessage
-function convertToMessage(chat: ChatHistory): ChatMessage {
-  // Ensure conversion from bigint to string
-  const sequence =
-    typeof chat.eventSequence === "bigint"
-      ? chat.eventSequence.toString()
-      : String(chat.eventSequence);
-
-  return {
-    id: `${chat.txDigest}-${sequence}`,
-    username: shortenAddress(chat.senderAddress),
-    userId: chat.senderAddress,
-    avatar: generateAvatar(chat.senderAddress),
-    message: chat.messageText,
-    timestamp: new Date(chat.createdAt),
-  };
-}
+import { formatTime } from "@/utils/format";
+import { ChatMessage } from "@/types/chat";
+import { convertToMessage } from "@/utils/convert";
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -69,6 +28,7 @@ export default function ChatPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Sui関連のフック
   const client = useSuiClient();
@@ -236,101 +196,163 @@ export default function ChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-100px)]">
+    <div className="flex flex-col h-full max-h-[calc(100vh-100px)] bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden">
       {/* Chat header */}
-      <div className="flex-shrink-0 justify-between items-center px-4 py-2 border-b border-gray-800">
-        <h2 className="font-bold text-white text-lg">Chat</h2>
-      </div>
-
-      {/* Message list - scrollable area - add ref here */}
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto px-4 py-1 space-y-2"
-      >
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        ) : chatMessages.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400 text-sm">No messages yet</p>
-          </div>
-        ) : (
-          <>
-            {chatMessages.map((msg) => (
-              <div key={msg.id} className="flex items-start gap-3 py-1">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center">
-                  <span className="text-lg">{msg.avatar}</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-1">
-                    <span className="font-semibold text-sm text-gray-300">
-                      {msg.username}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      ({msg.userId.slice(0, 10)}...)
-                    </span>
-                  </div>
-                  <p className="text-sm text-white break-words">
-                    {msg.message}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-
-      {/* Chat input area - fixed at bottom */}
-      <div className="flex-shrink-0 border-t border-gray-800 p-1 bg-black">
-        <div className="relative">
-          <Input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              !account
-                ? "Please connect wallet"
-                : message.trim() === ""
-                  ? "Pay 0.000001SUI to send a message"
-                  : "Send a message"
-            }
-            className="bg-gray-800 border-gray-700 pl-3 pr-12 py-1 w-full text-white rounded-md"
-            disabled={loading || isSending || !account} // アカウントがない場合も無効化
-          />
-          <button
-            type="button"
-            onClick={handleSendMessage}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white disabled:opacity-50"
-            disabled={loading || isSending || message.trim() === "" || !account} // 送信中・アカウントなしの場合も無効化
-          >
-            {isSending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                <path d="m22 2-7 20-4-9-9-4Z" />
-                <path d="M22 2 11 13" />
-              </svg>
-            )}
-          </button>
+      <div className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-900 to-purple-900 border-b border-gray-700">
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-5 w-5 text-blue-300" />
+          <h2 className="font-bold text-white text-lg">Sui Chat</h2>
         </div>
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-gray-300 hover:text-white focus:outline-none"
+        >
+          {isExpanded ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 15h-6v6" /><path d="M18 21 9 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9h6V3" /><path d="M6 3l9 9" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {isExpanded && (
+        <>
+          {/* Message list - scrollable area */}
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950"
+          >
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-full gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                <p className="text-gray-400 text-sm">Loading messages...</p>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center h-full p-4 rounded-lg bg-red-900/20 border border-red-800">
+                <p className="text-red-400 text-sm">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-2 px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded-md"
+                >
+                  Reload
+                </button>
+              </div>
+            ) : chatMessages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="p-5 rounded-full bg-blue-900/20 mb-3">
+                  <MessageSquare className="h-8 w-8 text-blue-400" />
+                </div>
+                <p className="text-gray-300 text-sm font-medium">No messages yet</p>
+                <p className="text-gray-500 text-xs mt-1">Send the first message!</p>
+              </div>
+            ) : (
+              <>
+                <div className="py-2 text-center">
+                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full">
+                    <Clock className="inline-block h-3 w-3 mr-1" />
+                    Chat History
+                  </span>
+                </div>
+                {chatMessages.map((msg, index) => {
+                  // Always show all messages in the same layout, regardless of connection state
+                  // This ensures consistency when connecting/disconnecting
+                  const isCurrentUser = false; // All messages will appear on the left side
+                  const prevMsg = index > 0 ? chatMessages[index-1] : null;
+                  const showTimeHeader = index === 0 ||
+                    (prevMsg &&
+                     new Date(prevMsg.timestamp).getDate() !== new Date(msg.timestamp).getDate());
+
+                  return (
+                    <React.Fragment key={msg.id}>
+                      {showTimeHeader && (
+                        <div className="flex justify-center my-2">
+                          <div className="px-2 py-1 bg-gray-800/50 rounded-md text-xs text-gray-400">
+                            {msg.timestamp.toLocaleDateString([], {month: 'long', day: 'numeric'})}
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-start gap-3 py-1 group">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-900/30">
+                          <span className="text-lg">{msg.avatar}</span>
+                        </div>
+                        <div className="flex-1 max-w-[80%] text-left">
+                          <div className="flex items-center gap-1 mb-1 justify-start">
+                            <span className="font-semibold text-xs text-gray-300">
+                              {msg.username}
+                            </span>
+                            <a
+                              href={`https://suiscan.xyz/testnet/account/${msg.userId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-gray-500 hover:text-blue-400 transition-colors"
+                            >
+                              <ExternalLink className="inline h-3 w-3 ml-1" />
+                            </a>
+                            <span className="text-xs text-gray-500 ml-2">
+                              {formatTime(msg.timestamp)}
+                            </span>
+                          </div>
+                          <div
+                            className="relative px-3 py-2 rounded-lg shadow-sm text-left bg-gray-800/80 text-gray-100 rounded-tl-none mr-auto"
+                          >
+                            <p className="text-sm break-words">{msg.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+                <div className="h-2"></div>
+              </>
+            )}
+          </div>
+
+          {/* Chat input area - fixed at bottom */}
+          <div className="flex-shrink-0 border-t border-gray-800 p-3 bg-gray-900">
+            <div className="relative">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  !account
+                    ? "Please connect your wallet"
+                    : message.trim() === ""
+                      ? "Pay 0.000001SUI to send a message"
+                      : "Type your message"
+                }
+                className="bg-gray-800 border border-gray-700 hover:border-blue-700 focus:border-blue-600 pl-4 pr-14 py-3 w-full text-white rounded-lg shadow-inner transition-colors"
+                disabled={loading || isSending || !account}
+              />
+              <button
+                type="button"
+                onClick={handleSendMessage}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-1.5
+                  ${(!loading && !isSending && message.trim() !== "" && account)
+                    ? 'bg-blue-600 text-white hover:bg-blue-500'
+                    : 'bg-gray-700 text-gray-400'
+                  } transition-colors disabled:opacity-50`}
+                disabled={loading || isSending || message.trim() === "" || !account}
+              >
+                {isSending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            {!account && (
+              <div className="mt-2 text-center">
+                <span className="text-xs text-amber-400">Connect your wallet to send messages</span>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
