@@ -107,27 +107,27 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-black pt-6 relative">
-      <div className="w-full px-12 h-16 flex items-center">
-        {/* 左側グループ - 幅を明示的に指定 */}
-        <div className="flex items-center w-1/3">
+    <header className="w-full bg-black pt-3 relative">
+      <div className="w-full px-4 h-16 flex items-center relative">
+        {/* 左側グループ */}
+        <div className="flex items-center w-[45%]">
           {/* 1. ロゴ */}
-          <Link href="/" className="flex items-center gap-3 mr-10">
+          <Link href="/" className="flex items-center gap-2 mr-4">
             <Image
               src="/logo.png"
               alt="Ooze.fun Logo"
-              width={160}
-              height={50}
+              width={120}
+              height={38}
             />
           </Link>
 
           {/* 2. ナビゲーション */}
-          <nav className="flex items-center gap-10">
+          <nav className="flex items-center gap-5">
             <Link
               href="/rounds"
               onClick={handleRoundsClick}
               className={cn(
-                "text-lg font-medium transition-colors cursor-pointer",
+                "text-base font-medium transition-colors cursor-pointer",
                 isActive("/rounds")
                   ? "text-[#ff5e00] font-medium"
                   : "text-white hover:text-[#ff5e00]",
@@ -138,7 +138,7 @@ export default function Header() {
             <Link
               href="/champions"
               className={cn(
-                "text-lg font-medium transition-colors",
+                "text-base font-medium transition-colors",
                 isActive("/champions")
                   ? "text-[#ff5e00] font-medium"
                   : "text-white hover:text-[#ff5e00]",
@@ -149,7 +149,7 @@ export default function Header() {
             <Link
               href="/losers"
               className={cn(
-                "text-lg font-medium transition-colors",
+                "text-base font-medium transition-colors",
                 isActive("/losers")
                   ? "text-[#ff5e00] font-medium"
                   : "text-white hover:text-[#ff5e00]",
@@ -157,43 +157,40 @@ export default function Header() {
             >
               Losers
             </Link>
+
+            {/* Round 42 表示 - チャレンジ期間中は赤く点滅 */}
+            <div className="ml-12">
+              <span
+                className={cn(
+                  "font-bold text-2xl tracking-wide transition-colors",
+                  isChallengePeriod
+                    ? "text-red-500 animate-pulse"
+                    : "text-orange-500",
+                )}
+              >
+                Round 42
+              </span>
+            </div>
           </nav>
         </div>
 
-        {/* 3. カウントダウン（中央配置） - 幅を明示的に指定 */}
-        <div className="flex items-center justify-center w-1/3 relative">
-          {/* Round 42 表示 - チャレンジ期間中は赤く点滅 */}
-          <div className="absolute left-0">
-            <span
-              className={cn(
-                "font-bold text-2xl tracking-wide transition-colors",
-                isChallengePeriod
-                  ? "text-red-500 animate-pulse"
-                  : "text-orange-500",
-              )}
-            >
-              Round 42
-            </span>
-          </div>
-
-          {/* カウントダウン - 中央配置を維持 */}
-          <div className="flex justify-center items-center">
-            <BattleClock
-              totalSeconds={totalTime}
-              challengeSeconds={challengeTime}
-              onChallengeStatusChange={setIsChallengePeriod}
-              onRemainingTimeChange={setRemainingTime}
-            />
-          </div>
+        {/* 3. カウントダウン - 絶対位置で中央に配置 */}
+        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <BattleClock
+            totalSeconds={totalTime}
+            challengeSeconds={challengeTime}
+            onChallengeStatusChange={setIsChallengePeriod}
+            onRemainingTimeChange={setRemainingTime}
+          />
         </div>
 
-        {/* 右側グループ - 幅を明示的に指定 */}
-        <div className="flex items-center justify-end w-1/3">
+        {/* 右側グループ */}
+        <div className="flex items-center justify-end ml-auto">
           {/* 検索バー */}
-          <div className="mr-5 relative">
-            <div className="flex items-center bg-[#161a23] rounded-md px-2 h-9 w-64">
+          <div className="mr-3 relative">
+            <div className="flex items-center bg-[#161a23] rounded-md px-2 h-8 w-56">
               <svg
-                className="w-4 h-4 text-gray-400"
+                className="w-3.5 h-3.5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -210,7 +207,7 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Search token or address"
-                className="bg-transparent border-0 text-sm text-white placeholder-gray-500 focus:outline-none pl-2 w-full"
+                className="bg-transparent border-0 text-xs text-white placeholder-gray-500 focus:outline-none pl-2 w-full"
               />
             </div>
           </div>
@@ -220,14 +217,14 @@ export default function Header() {
             type="button"
             onClick={toggleCommunicationMode}
             className={cn(
-              "mr-5 transition-colors relative",
+              "mr-3 transition-colors relative",
               "text-white hover:text-[#ff5e00]",
             )}
           >
             {communicationMode === "chat" ? (
               /* Notification bell icon */
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -246,7 +243,7 @@ export default function Header() {
             ) : (
               /* Chat icon */
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -264,10 +261,10 @@ export default function Header() {
           </button>
 
           {/* 5. プライマリボタン */}
-          <Link href="/create" className="mr-5">
+          <Link href="/create" className="mr-3">
             <Button
               className={cn(
-                "bg-[#5D20D3] hover:bg-[#4D1BB0] text-white rounded-xl border-0 text-sm px-5 h-12 w-36",
+                "bg-[#5D20D3] hover:bg-[#4D1BB0] text-white rounded-full border-0 text-base font-light px-4 h-9",
                 isActive("/create") && "ring-2 ring-pink-400 ring-opacity-50",
               )}
             >
@@ -275,15 +272,15 @@ export default function Header() {
             </Button>
           </Link>
 
-          {/* 6. ウォレットメニュー */}
-          <div className="w-auto">
+          {/* 6. ウォレットメニュー - Create Coinと同じサイズに */}
+          <div className="h-9">
             <SuiWalletConnectButton />
           </div>
         </div>
       </div>
 
       {/* プログレスバー - カウントダウンに連動 */}
-      <div className="w-full h-1 bg-gray-800 mt-2 relative">
+      <div className="w-full h-1 bg-gray-800 mt-1 relative">
         {/* チャレンジポイントのマーカー */}
         <div
           className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"

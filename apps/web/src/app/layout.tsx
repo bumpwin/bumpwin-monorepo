@@ -36,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          {/* <InfoBar /> */}
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
