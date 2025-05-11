@@ -59,6 +59,9 @@ interface DominanceChartProps {
   className?: string;
   volume?: string;
   date?: string;
+  coinId?: string;
+  coinName?: string;
+  showSingleCoinOnly?: boolean;
 }
 
 const DominanceChart: React.FC<DominanceChartProps> = ({
@@ -67,6 +70,9 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
   className = '',
   volume = '$6,396,866 Vol.',
   date = 'Jun 18, 2025',
+  coinId,
+  coinName,
+  showSingleCoinOnly = false,
 }) => {
   return (
     <div className={`w-full ${className} relative`} style={{ height }}>
@@ -101,18 +107,31 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
             }}
           />
 
-          {data.coins.map((coin) => (
-            <Line
-              key={coin.id}
-              type="monotone"
-              dataKey={coin.id}
-              name={coin.name}
-              stroke={coin.color}
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 6, strokeWidth: 0 }}
-            />
-          ))}
+          {showSingleCoinOnly && coinId
+            ? data.coins.filter((c) => c.id === coinId).map((coin) => (
+                <Line
+                  key={coin.id}
+                  type="monotone"
+                  dataKey={coin.id}
+                  name={coin.name}
+                  stroke={coin.color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+              ))
+            : data.coins.map((coin) => (
+                <Line
+                  key={coin.id}
+                  type="monotone"
+                  dataKey={coin.id}
+                  name={coin.name}
+                  stroke={coin.color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+              ))}
         </LineChart>
       </ResponsiveContainer>
 
