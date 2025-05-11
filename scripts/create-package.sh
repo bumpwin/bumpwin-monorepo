@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 引数チェック
+# Check arguments
 if [ -z "$1" ]; then
   echo "Usage: $0 <package-name>"
   exit 1
@@ -9,35 +9,60 @@ fi
 PACKAGE_NAME=$1
 PACKAGE_DIR="packages/$PACKAGE_NAME"
 
-# ディレクトリが既に存在するかチェック
+# Check if directory already exists
 if [ -d "$PACKAGE_DIR" ]; then
   echo "Package directory $PACKAGE_DIR already exists."
   exit 1
 fi
 
-# ディレクトリ作成
+# Create directories
 mkdir -p "$PACKAGE_DIR"
+mkdir -p "$PACKAGE_DIR/src"
 cd "$PACKAGE_DIR"
 
-# bun initで初期化
-bun init -y
-
-# package.jsonを更新
+# Create package.json
 cat > package.json << EOF
 {
   "name": "@workspace/$PACKAGE_NAME",
   "version": "0.1.0",
-  "module": "index.ts",
   "type": "module",
-  "main": "index.ts",
-  "types": "index.ts",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
   }
 }
+EOF
+
+# Create tsup.config.ts
+cat > tsup.config.ts << EOF
+import { defineConfig } from "tsup";
+
+export default defineConfig({
+  entry: ["index.ts"],
+  outDir: "dist",
+  format: ["esm", "cjs"],
+  target: "esnext",
+  dts: true,
+  clean: true,
+});
+EOF
+
+# Create basic index.ts
+cat > index.ts << EOF
+// $PACKAGE_NAME package
+
+export const hello = () => {
+  console.log("Hello from @workspace/$PACKAGE_NAME");
+};
+EOF
+
+# Create .gitignore
+cat > .gitignore << EOF
+node_modules
+.DS_Store
+dist
 EOF
 
 echo "Package @workspace/$PACKAGE_NAME created successfully in $PACKAGE_DIR"
