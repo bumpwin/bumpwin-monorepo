@@ -62,24 +62,24 @@ export function SuiWalletConnectButton() {
       {!account ? (
         <ConnectButton
           connectText={
-            <div className="flex items-center justify-center w-full text-sm font-semibold">
+            <div className="flex items-center justify-center w-full text-xs font-sans font-light tracking-tight">
               Login
             </div>
           }
-          className="!w-40 !h-12 !px-6 !rounded-xl !bg-[#5D20D3] !text-white !shadow-lg hover:!bg-[#4D1BB0] !transition-all !duration-200 !border-none [&>div]:!text-white"
+          className="!w-auto !min-w-24 !h-9 !px-4 !rounded-full !bg-[#5D20D3] !text-white !shadow-lg hover:!bg-[#4D1BB0] !transition-all !duration-200 !border-none [&>div]:!text-white"
         />
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center justify-between gap-2 px-4 py-2 border rounded-xl h-12 bg-[#5D20D3] text-white hover:bg-[#4D1BB0] cursor-pointer transition-all duration-200 shadow-lg min-w-[160px] w-auto">
-              <div className="flex items-center gap-2 truncate">
-                <span className="font-semibold text-sm">{balance} SUI</span>
-                <span className="text-white text-xs border-l border-white/30 pl-2 truncate">
+            <div className="flex items-center justify-between gap-2 px-3 py-1 border rounded-full h-9 bg-[#5D20D3] text-white hover:bg-[#4D1BB0] cursor-pointer transition-all duration-200 shadow-lg min-w-[100px]">
+              <div className="flex items-center gap-1 truncate">
+                <span className="font-light text-base">{balance} SUI</span>
+                <span className="text-white text-xs font-light border-l border-white/30 pl-1 truncate">
                   {formatAddress(account.address)}
                 </span>
               </div>
               <svg
-                className="w-4 h-4 text-white flex-shrink-0"
+                className="w-3.5 h-3.5 text-white flex-shrink-0"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
