@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
 import { ChampionCoinList } from "@/components/ChampionCoinList";
 import { CoinList } from "@/components/CoinList";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import DominanceChart from "@/components/DominanceChart";
-import { mockDominanceData } from "@/mock/mockDominanceData";
-import InfoBar from "@/components/InfoBar";
-import Image from "next/image";
 import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapRoundCoinCard from "@/components/SwapRoundCoinCard";
+import { mockDominanceData } from "@/mock/mockDominanceData";
+import type { RoundCoin } from "@/types/roundcoin";
+import Image from "next/image";
 import { useState } from "react";
-import { mockRoundCoins } from "@/mock/mockRoundCoin";
-import { RoundCoin } from "@/types/roundcoin";
 
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(undefined);
+  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(
+    undefined,
+  );
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
       {/* <InfoBar /> */}
@@ -48,7 +48,10 @@ export default function Home() {
           <div className="px-4 mb-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start w-full">
               <div className="flex-1 min-w-0 flex flex-col justify-start">
-                <RoundCoinTable onSelectCoin={setSelectedCoin} selectedCoinId={selectedCoin?.id} />
+                <RoundCoinTable
+                  onSelectCoin={setSelectedCoin}
+                  selectedCoinId={selectedCoin?.id}
+                />
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
                 <div className="w-full self-start">

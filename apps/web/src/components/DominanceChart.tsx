@@ -1,31 +1,38 @@
-'use client';
+"use client";
 
-import React from 'react';
+import { format, parseISO } from "date-fns";
+import type React from "react";
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  type TooltipProps,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  TooltipProps
-} from 'recharts';
-import { format, parseISO } from 'date-fns';
-import { CoinDisplayInfo, DominanceChartData, DominancePoint } from '../types/dominance';
+} from "recharts";
+import type { DominanceChartData } from "../types/dominance";
 
 // Custom tooltip for better display
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-black/90 text-white p-4 rounded-lg shadow-lg border border-white/10 backdrop-blur-sm">
         <p className="font-medium text-center border-b border-white/20 pb-2 mb-2">
-          {format(parseISO(label), 'HH:mm')}
+          {format(parseISO(label), "HH:mm")}
         </p>
         <div className="space-y-2">
           {payload.map((entry) => (
-            <div key={entry.name} className="flex items-center justify-between gap-4">
+            <div
+              key={entry.name}
+              className="flex items-center justify-between gap-4"
+            >
               <div className="flex items-center gap-2">
                 <div
                   className="w-4 h-4 rounded-full"
@@ -33,7 +40,9 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
                 />
                 <span className="font-medium text-sm">{entry.name}</span>
               </div>
-              <span className="font-bold">{(entry.value as number * 100).toFixed(1)}%</span>
+              <span className="font-bold">
+                {((entry.value as number) * 100).toFixed(1)}%
+              </span>
             </div>
           ))}
         </div>
@@ -45,7 +54,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 
 // Format tick for x-axis
 const formatXAxis = (tickItem: string) => {
-  return format(parseISO(tickItem), 'HH:mm');
+  return format(parseISO(tickItem), "HH:mm");
 };
 
 // Format tick for y-axis (as percentage)
@@ -60,18 +69,16 @@ interface DominanceChartProps {
   volume?: string;
   date?: string;
   coinId?: string;
-  coinName?: string;
   showSingleCoinOnly?: boolean;
 }
 
 const DominanceChart: React.FC<DominanceChartProps> = ({
   data,
   height = 400,
-  className = '',
-  volume = '$6,396,866 Vol.',
-  date = 'Jun 18, 2025',
+  className = "",
+  volume = "$6,396,866 Vol.",
+  date = "Jun 18, 2025",
   coinId,
-  coinName,
   showSingleCoinOnly = false,
 }) => {
   return (
@@ -90,36 +97,38 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
           <XAxis
             dataKey="date"
             tickFormatter={formatXAxis}
-            tick={{ fontSize: 12, fill: '#999' }}
+            tick={{ fontSize: 12, fill: "#999" }}
             minTickGap={50}
           />
           <YAxis
             tickFormatter={formatYAxis}
             domain={[0, 1]}
-            tick={{ fontSize: 12, fill: '#999' }}
+            tick={{ fontSize: 12, fill: "#999" }}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{
               paddingTop: 10,
               bottom: 0,
-              opacity: 0.8
+              opacity: 0.8,
             }}
           />
 
           {showSingleCoinOnly && coinId
-            ? data.coins.filter((c) => c.id === coinId).map((coin) => (
-                <Line
-                  key={coin.id}
-                  type="monotone"
-                  dataKey={coin.id}
-                  name={coin.name}
-                  stroke={coin.color}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
-                />
-              ))
+            ? data.coins
+                .filter((c) => c.id === coinId)
+                .map((coin) => (
+                  <Line
+                    key={coin.id}
+                    type="monotone"
+                    dataKey={coin.id}
+                    name={coin.name}
+                    stroke={coin.color}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
+                  />
+                ))
             : data.coins.map((coin) => (
                 <Line
                   key={coin.id}
@@ -141,7 +150,20 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
           <span className="font-medium">{volume}</span>
         </div>
         <div className="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="mr-1"
+            aria-label="date icon"
+          >
+            <title>Date Icon</title>
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
