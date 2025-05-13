@@ -15,4 +15,3 @@ export const DOMINANCE_TABLE = `
     PARTITION BY HOUR      -- パーティション粒度
     WAL;                   -- Write-Ahead Log を有効化
 `;
-

@@ -9,4 +9,3 @@ export const COINS_TABLE = `
     name STRING    -- 例: 'Dogecoin', 'Pepe'
   );
 `;
-

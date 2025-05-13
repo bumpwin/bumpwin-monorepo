@@ -1,11 +1,11 @@
-import { withConn } from "./pool";
-import type { Dominance } from "./models/dominance";
 import type { Coin } from "./models/coin";
+import type { Dominance } from "./models/dominance";
+import { withConn } from "./pool";
 
 export async function insertDominance(data: Dominance) {
   await withConn(async (client) => {
     await client.query(
-      `INSERT INTO dominance (ts, coin_id, dominance, volume) VALUES ($1, $2, $3, $4)`,
+      "INSERT INTO dominance (ts, coin_id, dominance, volume) VALUES ($1, $2, $3, $4)",
       [data.timestamp, data.coin_id, data.dominance, data.volume],
     );
   });
@@ -19,9 +19,9 @@ export async function insertDominanceBatch(data: Dominance[]) {
     );
 
     await client.query(
-      `INSERT INTO dominance (ts, coin_id, dominance, volume) VALUES ${
-        values.join(",")
-      }`,
+      `INSERT INTO dominance (ts, coin_id, dominance, volume) VALUES ${values.join(
+        ",",
+      )}`,
     );
   });
 }

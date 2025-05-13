@@ -1,6 +1,6 @@
-import { withConn } from "./pool";
-import type { Dominance } from "./models/dominance";
 import type { Coin } from "./models/coin";
+import type { Dominance } from "./models/dominance";
+import { withConn } from "./pool";
 
 // 最新のドミナンスデータを取得
 export async function getLatestDominance(): Promise<Dominance[]> {
@@ -23,7 +23,7 @@ export async function getLatestDominance(): Promise<Dominance[]> {
 export async function getDominanceByPeriod(
   startTime: Date,
   endTime: Date,
-  interval: string = "1h",
+  interval = "1h",
 ): Promise<Dominance[]> {
   return await withConn(async (client) => {
     const result = await client.query(
@@ -61,7 +61,7 @@ export async function getCoinDominanceHistory(
   coinId: string,
   startTime: Date,
   endTime: Date,
-  interval: string = "1h",
+  interval = "1h",
 ): Promise<Dominance[]> {
   return await withConn(async (client) => {
     const result = await client.query(

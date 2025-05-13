@@ -24,6 +24,7 @@
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
+    "@workspace/questdb": "workspace:*",
     "bumpwin": "^0.202505.7",
     "hono": "^4.7.9",
     "neverthrow": "^8.2.0",
