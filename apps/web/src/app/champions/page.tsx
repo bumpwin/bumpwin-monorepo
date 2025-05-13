@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
-import Link from "next/link";
-import { ChampionCoinCard } from "../../components/ChampionCoinCard";
 import CommunicationPanel from "../../components/CommunicationPanel";
-import { mockChampionCoins } from "../../mock/mockChampionCoins";
+import { ChampionsList } from "../../components/Champions";
+import { mockChampionCoins } from "../../mock/mockChampions";
+import mockDominanceData from "../../mock/mockDominanceData";
 
 export default function ChampionsPage() {
   const [showConfetti, setShowConfetti] = useState(true);
@@ -57,18 +57,17 @@ export default function ChampionsPage() {
         </div>
       )}
       <div className="flex-1 h-[calc(100vh-4rem)] overflow-auto">
-        <div className="flex flex-col gap-4 p-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Champions</h1>
-            <Link href="/coins" className="text-blue-500 hover:underline">
-              View All Coins
-            </Link>
+        <div className="flex flex-col gap-6 p-4">
+          {/* シンプルなタイトルセクション */}
+          <div className="flex flex-col items-center justify-center py-6">
+            <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500">
+              CHAMPIONS
+            </h1>
+            <div className="mt-2 text-center text-gray-300">
+              The greatest coins of all time
+            </div>
           </div>
-          <div className="grid gap-4">
-            {mockChampionCoins.map((coin) => (
-              <ChampionCoinCard key={coin.address} {...coin} />
-            ))}
-          </div>
+          <ChampionsList coins={mockChampionCoins} dominanceData={mockDominanceData} />
         </div>
       </div>
       <CommunicationPanel />

@@ -70,6 +70,8 @@ interface DominanceChartProps {
   date?: string;
   coinId?: string;
   showSingleCoinOnly?: boolean;
+  hideLegend?: boolean;
+  compact?: boolean;
 }
 
 const DominanceChart: React.FC<DominanceChartProps> = ({
@@ -80,39 +82,48 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
   date = "Jun 18, 2025",
   coinId,
   showSingleCoinOnly = false,
+  hideLegend = false,
+  compact = false,
 }) => {
   return (
     <div className={`w-full ${className} relative`} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data.points}
-          margin={{
-            top: 5,
-            right: 30,
+          margin={compact ? {
+            top: 2,
+            right: 5,
+            left: 15,
+            bottom: 2,
+          } : {
+            top: 2,
+            right: 10,
             left: 20,
-            bottom: 30,
+            bottom: 5,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
           <XAxis
             dataKey="date"
             tickFormatter={formatXAxis}
-            tick={{ fontSize: 12, fill: "#999" }}
+            tick={{ fontSize: 10, fill: "#999" }}
             minTickGap={50}
           />
           <YAxis
             tickFormatter={formatYAxis}
             domain={[0, 1]}
-            tick={{ fontSize: 12, fill: "#999" }}
+            tick={{ fontSize: 10, fill: "#999" }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{
-              paddingTop: 10,
-              bottom: 0,
-              opacity: 0.8,
-            }}
-          />
+          {!hideLegend && (
+            <Legend
+              wrapperStyle={{
+                paddingTop: 10,
+                bottom: 0,
+                opacity: 0.8,
+              }}
+            />
+          )}
 
           {showSingleCoinOnly && coinId
             ? data.coins
@@ -146,29 +157,33 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
 
       {/* Volume and date information overlay */}
       <div className="absolute bottom-1 right-8 flex items-center gap-4 text-gray-400 text-sm pb-1">
-        <div className="flex items-center">
-          <span className="font-medium">{volume}</span>
-        </div>
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-1"
-            aria-label="date icon"
-          >
-            <title>Date Icon</title>
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span>{date}</span>
-        </div>
+        {volume && (
+          <div className="flex items-center">
+            <span className="font-medium">{volume}</span>
+          </div>
+        )}
+        {date && (
+          <div className="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-1"
+              aria-label="date icon"
+            >
+              <title>Date Icon</title>
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>{date}</span>
+          </div>
+        )}
       </div>
     </div>
   );
