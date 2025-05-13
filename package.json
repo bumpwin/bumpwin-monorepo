@@ -18,14 +18,17 @@
   },
   "dependencies": {
     "@mysten/sui": "^1.29.1",
+    "@questdb/nodejs-client": "^3.0.0",
     "@supabase/supabase-js": "^2.49.4",
     "@workspace/logger": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
+    "@workspace/questdb": "workspace:*",
     "bumpwin": "^0.202505.7",
     "hono": "^4.7.9",
     "neverthrow": "^8.2.0",
+    "pg": "^8.16.0",
     "tsup": "^8.4.0",
     "wrangler": "^4.14.4",
     "zod": "^3.24.4"
