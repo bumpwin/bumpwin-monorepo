@@ -202,7 +202,7 @@ export default function ChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-80px)] bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden fixed right-4 top-20 w-96 z-40">
+    <div className="flex flex-col h-full max-h-[calc(100vh-80px)] bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden fixed right-0 top-20 w-96 z-40">
       {/* Chat header */}
       <div className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-900 to-purple-900 border-b border-gray-700">
         <div className="flex items-center gap-2">
