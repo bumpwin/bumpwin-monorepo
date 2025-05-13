@@ -60,6 +60,23 @@ pages-deploy:
     pnpm run pages:deploy --project-name {{PROJECT_NAME}}
 
 
+## QuestDB
+
+questdb-start:
+    docker run -p 9000:9000 -p 8812:8812 questdb/questdb:latest
+
+questdb-stop:
+    # TODO:
+
+questdb-deploy:
+    (cd packages/questdb && QDB_HOST=localhost QDB_PG_PORT=8812 QDB_USER=admin QDB_PASSWORD=quest bunx tsx src/deploy.ts)
+
+questdb-seed:
+    (cd packages/questdb && QDB_HOST=localhost QDB_PG_PORT=8812 QDB_USER=admin QDB_PASSWORD=quest bunx tsx src/seed.ts)
+
+questdb-query:
+    (cd packages/questdb && QDB_HOST=localhost QDB_PG_PORT=8812 QDB_USER=admin QDB_PASSWORD=quest bunx tsx src/query.ts)
+
 ## Supabase
 
 supabase-init:
