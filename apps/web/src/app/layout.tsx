@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 import { Toaster } from "sonner";
-import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { Providers } from "./providers/Providers";
 
@@ -39,7 +38,7 @@ export default function RootLayout({
           {/* <InfoBar /> */}
           <Header />
           <main className="flex-1">{children}</main>
-          <Footer />
+          {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
         </Providers>
       </body>

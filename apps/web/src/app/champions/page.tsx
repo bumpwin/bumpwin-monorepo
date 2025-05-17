@@ -6,11 +6,13 @@ import CommunicationPanel from "../../components/CommunicationPanel";
 import { ChampionsList } from "../../components/Champions";
 import { mockChampionCoins } from "../../mock/mockChampions";
 import mockDominanceData from "../../mock/mockDominanceData";
+import { useBattleClock } from "../providers/BattleClockProvider";
 
 export default function ChampionsPage() {
-  const [showConfetti, setShowConfetti] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const { remainingTime } = useBattleClock();
 
   useEffect(() => {
     function updateSize() {
@@ -24,14 +26,18 @@ export default function ChampionsPage() {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
+  // カウントダウンが0になったときに紙吹雪を表示
   useEffect(() => {
-    const timer1 = setTimeout(() => setFadeOut(true), 3500);
-    const timer2 = setTimeout(() => setShowConfetti(false), 4500);
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
+    if (remainingTime === 0) {
+      setShowConfetti(true);
+      const timer1 = setTimeout(() => setFadeOut(true), 3500);
+      const timer2 = setTimeout(() => setShowConfetti(false), 4500);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
+    }
+  }, [remainingTime]);
 
   return (
     <div className="relative flex">

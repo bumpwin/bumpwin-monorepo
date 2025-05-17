@@ -6,8 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import BattleClock from "./BattleClock";
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
+import BattleClock from "./BattleClock";
 
 // CommunicationPanelのインターフェース
 interface CommunicationPanelGlobal {
@@ -24,16 +25,18 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const roundsClickRef = useRef(false);
-  const totalTime = 15; // カウントダウンの合計時間（秒）
-  const challengeTime = 5; // チャレンジ期間の時間（秒）
-  const challengePoint = ((totalTime - challengeTime) / totalTime) * 100; // チャレンジポイントの位置（%） - 残り時間がchallengeTimeになる地点
-
-  // BattleClockからのステータス
-  const [isChallengePeriod, setIsChallengePeriod] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(totalTime);
+  const {
+    isChallengePeriod,
+    remainingTime,
+    totalTime,
+    challengeTime,
+    setIsChallengePeriod,
+    setRemainingTime,
+  } = useBattleClock();
 
   // プログレスバーの進行度を計算
   const progress = ((totalTime - remainingTime) / totalTime) * 100;
+  const challengePoint = ((totalTime - challengeTime) / totalTime) * 100;
 
   // 通知アイコンとチャットアイコンを切り替えるための状態
   const [communicationMode, setCommunicationMode] = useState<"chat" | "inbox">(
