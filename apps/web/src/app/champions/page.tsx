@@ -67,7 +67,10 @@ export default function ChampionsPage() {
               The greatest coins of all time
             </div>
           </div>
-          <ChampionsList coins={mockChampionCoins} dominanceData={mockDominanceData} />
+          <ChampionsList
+            coins={mockChampionCoins}
+            dominanceData={mockDominanceData}
+          />
         </div>
       </div>
       <CommunicationPanel />

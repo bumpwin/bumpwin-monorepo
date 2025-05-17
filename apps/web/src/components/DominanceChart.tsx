@@ -90,17 +90,21 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data.points}
-          margin={compact ? {
-            top: 2,
-            right: 5,
-            left: 15,
-            bottom: 2,
-          } : {
-            top: 2,
-            right: 10,
-            left: 20,
-            bottom: 5,
-          }}
+          margin={
+            compact
+              ? {
+                  top: 2,
+                  right: 5,
+                  left: 15,
+                  bottom: 2,
+                }
+              : {
+                  top: 2,
+                  right: 10,
+                  left: 20,
+                  bottom: 5,
+                }
+          }
         >
           <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
           <XAxis
