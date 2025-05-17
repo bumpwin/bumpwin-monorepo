@@ -30,8 +30,8 @@ export default function Header() {
     remainingTime,
     totalTime,
     challengeTime,
+    currentRound,
     setIsChallengePeriod,
-    setRemainingTime,
   } = useBattleClock();
 
   // プログレスバーの進行度を計算
@@ -162,7 +162,7 @@ export default function Header() {
                 Losers
               </Link>
 
-              {/* Round 42 表示 - チャレンジ期間中は赤く点滅 */}
+              {/* Round 表示 - チャレンジ期間中は赤く点滅 */}
               <div className="ml-12">
                 <span
                   className={cn(
@@ -172,7 +172,7 @@ export default function Header() {
                       : "text-orange-500",
                   )}
                 >
-                  Round 42
+                  Round {currentRound}
                 </span>
               </div>
             </nav>
@@ -181,10 +181,9 @@ export default function Header() {
           {/* 3. カウントダウン - 絶対位置で中央に配置 */}
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <BattleClock
-              totalSeconds={totalTime}
+              totalSeconds={remainingTime}
               challengeSeconds={challengeTime}
               onChallengeStatusChange={setIsChallengePeriod}
-              onRemainingTimeChange={setRemainingTime}
             />
           </div>
 
