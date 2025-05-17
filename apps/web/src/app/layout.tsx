@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import Header from "../components/Header";
 import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
+// import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 
 export const runtime = "edge";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
+          {/* <ChallengeOverlay /> */}
         </Providers>
       </body>
     </html>
