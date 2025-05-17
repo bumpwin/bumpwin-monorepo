@@ -5,7 +5,7 @@ import AboutClient from './client';
 
 export const metadata = {
   title: "BUMP.WIN - Squid Game Style Meme Coin Battle Royale",
-  description: "唯一のミームコインだけが生き残る。コミュニティの支持を集め、バトルを勝ち抜き、市場を制覇せよ。",
+  description: "Only one meme coin survives. Rally community support, win the battle, and dominate the market.",
 };
 
 // Custom animation classes for scroll reveal
@@ -31,14 +31,14 @@ export default function AboutPage() {
             <h1 className="text-4xl md:text-6xl xl:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">Squid Game Style</h1>
             <h2 className="text-3xl md:text-5xl xl:text-6xl font-bold mb-8 text-white">Meme Launchpad</h2>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto md:mx-0 text-gray-300">
-              勝者総取りのミームコインバトルロワイヤル。<span className="text-yellow-400">唯一の勝者</span>だけが正式ローンチされ、<span className="text-yellow-400">全ての資金</span>を獲得する。
+              Winner-takes-all meme coin battle royale. <span className="text-yellow-400">Only one winner</span> gets officially launched and acquires <span className="text-yellow-400">all the liquidity</span>.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <a href="/rounds" className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg">
-                バトルに参加
+                Join the Battle
               </a>
               <a href="/create" className="px-8 py-3 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-colors">
-                コインを登録
+                Register Your Coin
               </a>
             </div>
           </div>
@@ -60,13 +60,13 @@ export default function AboutPage() {
           <div className="relative py-20 px-8 bg-gradient-to-r from-black/70 via-black/40 to-black/70 h-full flex items-center">
             <div className="max-w-4xl mx-auto text-center space-y-6 parallax-content" data-parallax-depth="0.2">
               <p className="text-2xl md:text-4xl font-bold leading-tight text-white">
-                毎日数多くのミームコインはロンチされるでしょう
+                Countless meme coins launch every day
               </p>
               <p className="text-2xl md:text-4xl font-bold leading-tight text-yellow-400">
-                でも BUMP.WINでは <span className="underline decoration-dashed">勝ち残るのは1つだけ</span>！
+                But on BUMP.WIN, <span className="underline decoration-dashed">only one survives</span>!
               </p>
               <p className="text-2xl md:text-4xl font-bold leading-tight text-white">
-                ほかの負けたミームコインはすべてバーンされます！
+                All other competing meme coins don't launch, and their funds boost the winner's liquidity!
               </p>
               <div className="w-32 h-1 bg-gradient-to-r from-pink-500 to-purple-500 mx-auto mt-8" />
             </div>
@@ -109,29 +109,29 @@ export default function AboutPage() {
                 <div>
                   <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Winner Takes All.</h2>
                   <p className="text-xl mb-2 text-gray-200 leading-relaxed">
-                    バーンされたミームコインの価値はすべて
+                    All liquidity from defeated competitors
                   </p>
                   <p className="text-xl mb-6 text-gray-200 leading-relaxed font-semibold">
-                    Champion Meme Coinが保有します
+                    goes directly to the Champion Meme Coin's liquidity pool
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-2xl font-bold mb-4 text-white">前回のChampion Memeはこちら</h3>
+                  <h3 className="text-2xl font-bold mb-4 text-white">Previous Champion Showcase</h3>
 
                   <div className="bg-gray-800/50 border-l-4 border-yellow-500 pl-4 py-3 mb-8">
                     <p className="text-lg text-gray-300 leading-relaxed">
-                      彼は118のミームコイン を焼き尽くし、
+                      They defeated 118 competing meme coins
                     </p>
                     <p className="text-lg text-white font-semibold">
-                      $114,514 のMarket Capを獲得しました
+                      and launched with a liquidity pool of $114,514
                     </p>
                   </div>
 
                   <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg mb-6">
                     <p className="text-white text-lg">
-                      <span className="text-yellow-400 font-bold">Champions AMM</span>で勝者ミームコインは永続的な流動性を獲得し、<br />
-                      敗者のすべての資金が勝者の価値を支えます
+                      With <span className="text-yellow-400 font-bold">Champions AMM</span>, the winning meme coin gains permanent liquidity<br />
+                      backed by all funds invested during the battle
                     </p>
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export default function AboutPage() {
           <div className="relative h-full flex items-center bg-gradient-to-r from-black/80 via-purple-900/20 to-black/80">
             <div className="max-w-4xl mx-auto text-center py-16 px-8 parallax-content-reverse" data-parallax-depth="0.15">
               <h2 className="text-3xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent">
-                あなたがぜひ次のChampion Memeをロンチしてください！
+                Launch the next Champion Meme coin!
               </h2>
             </div>
           </div>
@@ -173,15 +173,15 @@ export default function AboutPage() {
         <section className="mb-32 rounded-2xl overflow-hidden parallax-section" data-lenis-scroll-snap-align="center">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="p-6 md:p-10 parallax-layer" data-parallax-depth="0.05">
-              <h2 className="text-3xl font-bold mb-6 text-white">次回以降のラウンドに<br />ミームコインをレジスタすることができます！</h2>
+              <h2 className="text-3xl font-bold mb-6 text-white">Register your meme coin<br />for upcoming battle rounds!</h2>
               <p className="text-xl mb-8 text-gray-300">
-                簡単な登録プロセスで、あなたのミームコインを次のチャンピオンにする可能性を手に入れましょう。
+                With a simple registration process, your meme coin could become the next champion. Registration opens 3 days before each round starts.
               </p>
               <a
                 href="/create"
                 className="inline-block px-10 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
               >
-                今すぐコインを登録する
+                Register Your Coin Now
               </a>
             </div>
             <div className="rounded-xl overflow-hidden shadow-2xl border border-indigo-500/20 parallax-layer" data-parallax-depth="-0.05">
@@ -199,10 +199,10 @@ export default function AboutPage() {
         {/* Battle Rounds Explanation */}
         <section className="mb-32" data-lenis-scroll-snap-align="center">
           <div className="text-center mb-16 parallax-text" data-parallax-depth="0.2">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">ラウンドがはじまったら一斉にレース開始</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">When the Round Begins, the Race is On</h2>
             <div className="max-w-3xl mx-auto">
               <p className="text-xl text-white mb-3">
-                どのミームコインが勝つべきか、デスゲームのはじまりです！
+                The deadly game begins to determine which meme coin will triumph!
               </p>
               <p className="text-2xl font-bold text-yellow-400 mb-8">
                 Bet on Beliefs.
@@ -224,9 +224,9 @@ export default function AboutPage() {
             <div data-parallax-depth="-0.05">
               <div className="mb-10 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
                 <p className="text-xl mb-6 text-gray-200">
-                  現在開催中のラウンドのTop memeの勝率は <span className="text-blue-400 font-bold">43%</span>のChance!<br />
-                  もし <span className="text-green-400 font-bold">$1</span>をbetして実際に勝ち残ったら <span className="text-green-400 font-bold">$2.32</span> 価値相当の<br />
-                  Champion memeをあなたは受け取ることになるでしょう！
+                  The top meme in the current round has a <span className="text-blue-400 font-bold">43%</span> chance of winning!<br />
+                  If you invest <span className="text-green-400 font-bold">$1</span> worth of SUI and it wins, you'll receive <span className="text-green-400 font-bold">$2.32</span> worth<br />
+                  of Champion meme tokens! If it loses, you'll receive LOSER tokens.
                 </p>
               </div>
 
@@ -237,7 +237,7 @@ export default function AboutPage() {
                   </p>
                 </div>
                 <p className="text-lg mb-6 text-gray-300">
-                  バトルラウンドは <span className="font-bold">2つのフェーズ</span>で構成されます：<br />
+                  Battle rounds consist of <span className="font-bold">two phases</span>:<br />
                   <span className="text-blue-300 font-semibold">Daytime (24 H)</span> + <span className="text-purple-300 font-semibold">DarkNight (1H)</span>
                 </p>
               </div>
@@ -246,38 +246,38 @@ export default function AboutPage() {
                 <div className="bg-blue-900/20 p-4 rounded-lg border-l-2 border-blue-400">
                   <h4 className="text-lg font-bold text-blue-300 mb-2">Daytime (24 H)</h4>
                   <p className="text-lg text-gray-200">
-                    淘汰的な<span className="text-yellow-400">価格形成</span>によって<br />
-                    無数のミームコインからファイナリスト8名を選出します！
+                    Elimination through <span className="text-yellow-400">price discovery</span> selects<br />
+                    8 finalists from countless meme coin candidates!
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
-                    Brier Score Dual SCPM AMM - すべてのコイン候補の勝率合計は常に100%
+                    Brier Score Dual SCPM AMM - Total win probability across all coins always equals 100%, with withdrawals allowed but with a time-based fee
                   </p>
                 </div>
                 <div className="bg-purple-900/20 p-4 rounded-lg border-l-2 border-purple-400">
                   <h4 className="text-lg font-bold text-purple-300 mb-2">DarkNight (1H)</h4>
                   <p className="text-lg text-gray-200">
-                    ラスト1時間の<span className="text-yellow-400">決選投票</span>！<br />
-                    誰がどこにポジションを取っているか<span className="text-yellow-400">リアルタイムのシェアが隠されます</span>！
+                    Final hour of <span className="text-yellow-400">decisive voting</span>!<br />
+                    <span className="text-yellow-400">Real-time share positions are hidden</span> from all participants!
                   </p>
                   <p className="text-sm text-gray-400 mt-2">
-                    TLE暗号技術による完全秘匿のバッチオークション - 12分×5回の真の心理戦
+                    TLE cryptography enables fully-private batch auctions - 5 rounds of 12 minutes each in a true psychological battle
                   </p>
                 </div>
                 <div className="bg-red-900/20 p-4 rounded-lg border-l-2 border-red-400">
-                  <h4 className="text-lg font-bold text-red-300 mb-2">ルールの制約</h4>
+                  <h4 className="text-lg font-bold text-red-300 mb-2">Rule Constraints</h4>
                   <p className="text-lg text-gray-200">
-                    <span className="text-red-400 font-semibold">Withdraw不能！</span> 取り返しがつかない真のバトルロワイヤル<br />
-                    <span className="text-gray-300">不完全な情報の中でコミュニティの団結が勝利の鍵</span>
+                    <span className="text-red-400 font-semibold">No withdrawals during DarkNight!</span> A true battle royale with no turning back<br />
+                    <span className="text-gray-300">Community unity is key to victory in this environment of incomplete information</span>
                   </p>
                 </div>
               </div>
 
               <div className="p-4 bg-gray-800/40 rounded-lg border border-gray-700">
                 <p className="text-xl font-bold text-white text-center md:text-left">
-                  ライバルミームに勝ち切って、<span className="text-yellow-400">勝者総取り</span>を目指してください！
+                  Defeat rival memes and aim for <span className="text-yellow-400">winner-takes-all</span>!
                 </p>
                 <p className="text-sm text-gray-400 mt-2 text-center md:text-left">
-                  早期参加でより有利なポジションを確保し、情報優位性と戦略的選択で勝利を掴め
+                  Secure an advantageous position with early participation, information superiority, and strategic choices
                 </p>
               </div>
             </div>
@@ -290,18 +290,18 @@ export default function AboutPage() {
             <div className="p-8 md:p-12 parallax-content-offset" data-parallax-depth="0.05">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Bump That</h2>
               <p className="text-xl mb-6 text-gray-300">
-                Chatをしてコミュニティに<br />あなたの信念を押し出してください！
+                Chat with the community and<br />promote your convictions!
               </p>
               <p className="text-xl mb-6 text-gray-300">
-                みんなを巻き込んだミームがチャンピオンになるのです。
+                The meme that rallies the most community support becomes the champion.
               </p>
 
               <div className="mb-8 p-4 bg-gray-800/70 rounded-lg">
-                <h3 className="text-lg font-bold text-blue-300 mb-2">オンチェーン有料チャット</h3>
+                <h3 className="text-lg font-bold text-blue-300 mb-2">On-Chain Paid Chat</h3>
                 <ul className="list-disc pl-5 text-gray-300 space-y-2">
-                  <li>SUIを支払ってメッセージを送信</li>
-                  <li>支払い額に応じて表示優先度が決定</li>
-                  <li>戦略的な情報発信で他者に影響を与える</li>
+                  <li>Send messages by paying SUI</li>
+                  <li>Display priority determined by payment amount</li>
+                  <li>Influence others with strategic information</li>
                 </ul>
               </div>
 
@@ -337,7 +337,7 @@ export default function AboutPage() {
             </h2>
 
             <p className="text-xl text-gray-300 mb-12">
-              あなたの「信念」に賭けよう。<span className="text-yellow-400">勝ちたいコインは、勝てるコインになる。</span>
+              Bet on your convictions. <span className="text-yellow-400">The coin you want to win can become the coin that wins.</span>
             </p>
 
             <a
@@ -349,8 +349,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Script for Enhanced Parallax and Pinning Effects - Client Component */}
-        <div id="lenis-script" />
       </div>
     </AboutClient>
   );
