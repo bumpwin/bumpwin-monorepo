@@ -5,6 +5,7 @@ import "@mysten/dapp-kit/dist/index.css";
 import { Toaster } from "sonner";
 import Header from "../components/Header";
 import { Providers } from "./providers/Providers";
+import { ConfettiEffect } from "@/components/ConfettiEffect";
 
 export const runtime = "edge";
 
@@ -40,6 +41,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
+          <ConfettiEffect />
         </Providers>
       </body>
     </html>
