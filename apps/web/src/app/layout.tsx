@@ -7,6 +7,8 @@ import Header from "../components/Header";
 import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
+import { ResultView } from "@/components/ResultView";
+import { mockRoundCoins } from "@/mock/mockRoundCoin";
 
 export const runtime = "edge";
 
@@ -44,6 +46,7 @@ export default function RootLayout({
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
           {/* <ChallengeOverlay /> */}
+          <ResultView coin={mockRoundCoins[0]} />
         </Providers>
       </body>
     </html>

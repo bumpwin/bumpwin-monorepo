@@ -61,7 +61,7 @@ export function ConfettiEffect() {
         position: "fixed",
         inset: 0,
         pointerEvents: "none",
-        zIndex: 1000,
+        zIndex: 3001,
       }}
     >
       <Confetti
