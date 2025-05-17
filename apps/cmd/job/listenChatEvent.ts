@@ -141,7 +141,7 @@ async function processEvents(
 /**
  * Start polling for chat events
  */
-async function startPolling() {
+export async function startChatEventPolling() {
   // Keep track of processed event IDs to avoid duplicates
   const processedEventIds = new Set<string>();
 
@@ -195,7 +195,7 @@ async function startPolling() {
 // Start the main process
 async function main() {
   try {
-    await startPolling();
+    await startChatEventPolling();
   } catch (error) {
     logger.error("Failed to start polling script:", error);
     process.exit(1);

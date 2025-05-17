@@ -23,6 +23,9 @@ install:
 dev:
     bun run dev
 
+server-dev:
+    bun run server:dev
+
 build:
     bun run build
 
