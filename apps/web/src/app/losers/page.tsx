@@ -1,6 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
-
 export const metadata = {
   title: "LOSER Token - BUMP.WIN Protocol Fee Sharing",
   description: "Earn protocol fees from all BUMP.WIN transactions by staking LOSER tokens. Learn how losers can still win in the BUMP.WIN ecosystem.",
@@ -19,10 +16,10 @@ export default function LosersPage() {
                 <div>
                   <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-300 to-pink-500 bg-clip-text text-transparent">Even Losers Win.</h2>
                   <p className="text-xl mb-2 text-gray-200 leading-relaxed">
-                    If your chosen meme coin doesn't win the battle:
+                    If your chosen meme coin doesn&apos;t win the battle:
                   </p>
                   <p className="text-xl mb-6 text-gray-200 leading-relaxed font-semibold">
-                    You'll receive LOSER tokens proportional to your investment
+                    You&apos;ll receive LOSER tokens proportional to your investment
                   </p>
                 </div>
 
@@ -85,7 +82,7 @@ export default function LosersPage() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">LOSER Token</h1>
             <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">Protocol Fee Sharing Mechanism</h2>
             <p className="text-xl max-w-3xl text-gray-300 mb-8">
-              In BUMP.WIN, even losers win. When your chosen meme coin doesn't win the battle,
+              In BUMP.WIN, even losers win. When your chosen meme coin doesn&apos;t win the battle,
               you receive LOSER tokens that entitle you to protocol fees from <span className="text-pink-400">all future transactions</span>.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -120,7 +117,7 @@ export default function LosersPage() {
             <div>
               <p className="text-xl text-gray-200 mb-6">
                 LOSER token is <span className="text-pink-400 font-semibold">not a consolation prize</span>.
-                It's a powerful economic mechanism that aligns incentives across the BUMP.WIN ecosystem.
+                It&apos;s a powerful economic mechanism that aligns incentives across the BUMP.WIN ecosystem.
               </p>
 
               <div className="space-y-6">
@@ -134,7 +131,7 @@ export default function LosersPage() {
                 <div className="bg-gray-800/50 p-5 rounded-lg border-l-4 border-blue-500">
                   <h3 className="text-xl font-bold mb-2 text-white">How You Get It</h3>
                   <p className="text-gray-300">
-                    Issued exclusively to users who invested in meme coin candidates that didn't win the battle.
+                    Issued exclusively to users who invested in meme coin candidates that didn&apos;t win the battle.
                     <span className="block mt-2 font-semibold">Your original investment is not recoverable, but you gain perpetual fee rights instead.</span>
                   </p>
                 </div>
@@ -320,7 +317,7 @@ export default function LosersPage() {
           </h2>
           <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
             Join the BUMP.WIN ecosystem today. Whether you win or lose a battle,
-            there's a clear path to value in our winner-takes-all meme coin platform.
+            there&apos;s a clear path to value in our winner-takes-all meme coin platform.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
