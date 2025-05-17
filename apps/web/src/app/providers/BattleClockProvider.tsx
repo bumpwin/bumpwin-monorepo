@@ -16,8 +16,8 @@ const BattleClockContext = createContext<BattleClockContextType | undefined>(
 );
 
 export function BattleClockProvider({ children }: { children: ReactNode }) {
-  const totalTime = 15; // カウントダウンの合計時間（秒）
-  const challengeTime = 5; // チャレンジ期間の時間（秒）
+  const totalTime = 15000; // カウントダウンの合計時間（秒）
+  const challengeTime = 5000; // チャレンジ期間の時間（秒）
   const [isChallengePeriod, setIsChallengePeriod] = useState(false);
   const [remainingTime, setRemainingTime] = useState(totalTime);
 

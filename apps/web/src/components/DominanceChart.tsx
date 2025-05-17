@@ -115,7 +115,7 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
           />
           <YAxis
             tickFormatter={formatYAxis}
-            domain={[0, 1]}
+            domain={["auto", "auto"]}
             tick={{ fontSize: 10, fill: "#999" }}
           />
           <Tooltip content={<CustomTooltip />} />
