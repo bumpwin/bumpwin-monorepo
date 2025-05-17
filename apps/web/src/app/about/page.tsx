@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { useRef, useEffect } from 'react';
 
 export const metadata = {
-  title: "BUMP.WIN - Meme Coin Battle Royale",
-  description: "The ultimate meme coin battle platform where coins compete, users stake, and only one remains standing.",
+  title: "BUMP.WIN - Squid Game Style Meme Coin Battle Royale",
+  description: "唯一のミームコインだけが生き残る。コミュニティの支持を集め、バトルを勝ち抜き、市場を制覇せよ。",
 };
 
 // Custom animation classes for scroll reveal
@@ -17,7 +17,7 @@ export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-7xl">
       {/* Hero Section */}
-      <section className="mb-20 md:mb-32 flex flex-col md:flex-row items-center gap-12 min-h-[80vh] justify-center" data-lenis-scroll-snap-align="start">
+      <section className="mb-20 md:mb-32 flex flex-col md:flex-row items-center gap-12 min-h-[90vh] justify-center" data-lenis-scroll-snap-align="start">
         <div className="md:w-1/2" data-lenis-scroll-speed="-0.3">
           <Image
             src="/images/last-one-standing.png"
@@ -32,14 +32,14 @@ export default function AboutPage() {
           <h1 className="text-4xl md:text-6xl xl:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">Squid Game Style</h1>
           <h2 className="text-3xl md:text-5xl xl:text-6xl font-bold mb-8 text-white">Meme Launchpad</h2>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto md:mx-0 text-gray-300">
-            The ultimate meme coin battle royale platform where coins compete, users stake, and only one remains standing.
+            勝者総取りのミームコインバトルロワイヤル。<span className="text-yellow-400">唯一の勝者</span>だけが正式ローンチされ、<span className="text-yellow-400">全ての資金</span>を獲得する。
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Link href="/rounds" className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg">
-              Join The Battle
+              バトルに参加
             </Link>
             <Link href="/create" className="px-8 py-3 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-colors">
-              Register Your Coin
+              コインを登録
             </Link>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function AboutPage() {
               毎日数多くのミームコインはロンチされるでしょう
             </p>
             <p className="text-2xl md:text-4xl font-bold leading-tight text-yellow-400">
-              でも 勝ち残るのは Market Capが最大の1つだけ！
+              でも BUMP.WINでは <span className="underline decoration-dashed">勝ち残るのは1つだけ</span>！
             </p>
             <p className="text-2xl md:text-4xl font-bold leading-tight text-white">
               ほかの負けたミームコインはすべてバーンされます！
@@ -127,6 +127,13 @@ export default function AboutPage() {
                   </p>
                   <p className="text-lg text-white font-semibold">
                     $114,514 のMarket Capを獲得しました
+                  </p>
+                </div>
+
+                <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg mb-6">
+                  <p className="text-white text-lg">
+                    <span className="text-yellow-400 font-bold">Champions AMM</span>で勝者ミームコインは永続的な流動性を獲得し、<br />
+                    敗者のすべての資金が勝者の価値を支えます
                   </p>
                 </div>
               </div>
@@ -231,35 +238,49 @@ export default function AboutPage() {
                 </p>
               </div>
               <p className="text-lg mb-6 text-gray-300">
-                バトルラウンドは 2つのフェーズで構成されます。<br />
+                バトルラウンドは <span className="font-bold">2つのフェーズ</span>で構成されます：<br />
                 <span className="text-blue-300 font-semibold">Daytime (24 H)</span> + <span className="text-purple-300 font-semibold">DarkNight (1H)</span>
               </p>
             </div>
 
             <div className="space-y-6 mb-10">
               <div className="bg-blue-900/20 p-4 rounded-lg border-l-2 border-blue-400">
+                <h4 className="text-lg font-bold text-blue-300 mb-2">Daytime (24 H)</h4>
                 <p className="text-lg text-gray-200">
-                  <span className="text-blue-300 font-semibold">Daytime (24 H)</span> は 淘汰的な価格形成によって<br />
+                  淘汰的な<span className="text-yellow-400">価格形成</span>によって<br />
                   無数のミームコインからファイナリスト8名を選出します！
+                </p>
+                <p className="text-sm text-gray-400 mt-2">
+                  Brier Score Dual SCPM AMM - すべてのコイン候補の勝率合計は常に100%
                 </p>
               </div>
               <div className="bg-purple-900/20 p-4 rounded-lg border-l-2 border-purple-400">
+                <h4 className="text-lg font-bold text-purple-300 mb-2">DarkNight (1H)</h4>
                 <p className="text-lg text-gray-200">
-                  そして ラスト1時間 <span className="text-purple-300 font-semibold">DarkNight (1H)</span> では決選投票！<br />
-                  誰がどこにポジションを取っているかリアルタイムのシェアが隠されます！
+                  ラスト1時間の<span className="text-yellow-400">決選投票</span>！<br />
+                  誰がどこにポジションを取っているか<span className="text-yellow-400">リアルタイムのシェアが隠されます</span>！
+                </p>
+                <p className="text-sm text-gray-400 mt-2">
+                  TLE暗号技術による完全秘匿のバッチオークション - 12分×5回の真の心理戦
                 </p>
               </div>
-              <div className="bg-gray-800/40 p-4 rounded-lg">
+              <div className="bg-red-900/20 p-4 rounded-lg border-l-2 border-red-400">
+                <h4 className="text-lg font-bold text-red-300 mb-2">ルールの制約</h4>
                 <p className="text-lg text-gray-200">
-                  <span className="text-red-400 font-semibold">Withdraw不能！</span> ポジションの切り替えと積み増しだけができるのです！<br />
-                  不完全な情報のなかでコミュニティの団結しましょう！
+                  <span className="text-red-400 font-semibold">Withdraw不能！</span> 取り返しがつかない真のバトルロワイヤル<br />
+                  <span className="text-gray-300">不完全な情報の中でコミュニティの団結が勝利の鍵</span>
                 </p>
               </div>
             </div>
 
-            <p className="text-xl font-bold text-white text-center md:text-left">
-              ライバルミームに勝ち切って、<span className="text-yellow-400">勝者総取り</span>を目指してください！
-            </p>
+            <div className="p-4 bg-gray-800/40 rounded-lg border border-gray-700">
+              <p className="text-xl font-bold text-white text-center md:text-left">
+                ライバルミームに勝ち切って、<span className="text-yellow-400">勝者総取り</span>を目指してください！
+              </p>
+              <p className="text-sm text-gray-400 mt-2 text-center md:text-left">
+                早期参加でより有利なポジションを確保し、情報優位性と戦略的選択で勝利を掴め
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -272,9 +293,19 @@ export default function AboutPage() {
             <p className="text-xl mb-6 text-gray-300">
               Chatをしてコミュニティに<br />あなたの信念を押し出してください！
             </p>
-            <p className="text-xl mb-10 text-gray-300">
+            <p className="text-xl mb-6 text-gray-300">
               みんなを巻き込んだミームがチャンピオンになるのです。
             </p>
+
+            <div className="mb-8 p-4 bg-gray-800/70 rounded-lg">
+              <h3 className="text-lg font-bold text-blue-300 mb-2">オンチェーン有料チャット</h3>
+              <ul className="list-disc pl-5 text-gray-300 space-y-2">
+                <li>SUIを支払ってメッセージを送信</li>
+                <li>支払い額に応じて表示優先度が決定</li>
+                <li>戦略的な情報発信で他者に影響を与える</li>
+              </ul>
+            </div>
+
             <h3 className="text-2xl font-bold mb-8 text-white/90">Win the deadly game</h3>
             <Link
               href="/chat"
@@ -305,9 +336,13 @@ export default function AboutPage() {
           <h2 className="text-4xl md:text-6xl xl:text-7xl font-bold mb-6 text-white tracking-tight">
             Bet On The Tail.
           </h2>
-          <h2 className="text-4xl md:text-6xl xl:text-7xl font-bold mb-16 text-white tracking-tight">
+          <h2 className="text-4xl md:text-6xl xl:text-7xl font-bold mb-8 text-white tracking-tight">
             Build Your Dream.
           </h2>
+
+          <p className="text-xl text-gray-300 mb-12">
+            あなたの「信念」に賭けよう。<span className="text-yellow-400">勝ちたいコインは、勝てるコインになる。</span>
+          </p>
 
           <Link
             href="/rounds"
@@ -318,57 +353,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Script for Lenis Smooth Scroll */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('DOMContentLoaded', () => {
-              const lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: false,
-                touchMultiplier: 2,
-                infinite: false,
-              });
-
-              function raf(time) {
-                lenis.raf(time);
-                requestAnimationFrame(raf);
-              }
-
-              requestAnimationFrame(raf);
-
-              // Scroll reveal animations
-              const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-              };
-
-              const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                  if (entry.isIntersecting) {
-                    entry.target.classList.remove('opacity-0');
-                    entry.target.classList.remove('translate-y-10');
-                    entry.target.classList.remove('-translate-x-10');
-                    entry.target.classList.remove('translate-x-10');
-                    entry.target.classList.remove('scale-95');
-                    observer.unobserve(entry.target);
-                  }
-                });
-              }, observerOptions);
-
-              document.querySelectorAll('.${fadeInUp}, .${fadeInLeft}, .${fadeInRight}, .${fadeInScale}').forEach(el => {
-                observer.observe(el);
-              });
-            });
-          `,
-        }}
-      />
+      {/* Script for Lenis Smooth Scroll - Client Component */}
+      <div id="lenis-script" />
     </div>
   );
 }
