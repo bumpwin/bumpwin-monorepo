@@ -19,7 +19,7 @@ export default function AboutPage() {
     <AboutClient>
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         {/* Hero Section */}
-        <section className="mb-20 flex flex-col md:flex-row items-center gap-12 min-h-[80vh] justify-center" data-lenis-scroll-snap-align="start">
+        <section className="mt-20 mb-20 flex flex-col md:flex-row items-center gap-12 min-h-[80vh] justify-center" data-lenis-scroll-snap-align="start">
           <div className="md:w-1/2" data-parallax-depth="-0.3">
             <Image
               src="/images/last-one-standing.png"
@@ -265,62 +265,64 @@ export default function AboutPage() {
         </div>
 
         {/* Battle Rounds Explanation */}
-        <section className="mb-28 battle-phases-section" data-lenis-scroll-snap-align="center">
-          <div className="text-center mb-16" data-parallax-depth="0.2">
-            <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
-              When the Round Begins, the Race is On
-            </h2>
-            <p className="text-xl text-white max-w-3xl mx-auto">
-              The deadly game begins to determine which meme coin will triumph!
-              <span className="block text-2xl font-bold text-yellow-400 mt-4">Bet on Beliefs.</span>
-            </p>
-            <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mt-6" />
-          </div>
+        <section className="mb-28 battle-phases-section min-h-screen" data-lenis-scroll-snap-align="center">
+          <div className="sticky top-[60px] pt-8 pb-4 bg-gradient-to-b from-black via-black/95 to-transparent z-30">
+            <div className="text-center" data-parallax-depth="0.2">
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                When the Round Begins, the Race is On
+              </h2>
+              <p className="text-xl text-white max-w-3xl mx-auto">
+                The deadly game begins to determine which meme coin will triumph!
+                <span className="block text-2xl font-bold text-yellow-400 mt-2">Bet on Beliefs.</span>
+              </p>
+              <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
+            </div>
 
-          {/* Battle Phases Progress Bar */}
-          <div className="max-w-4xl mx-auto mb-16 battle-progress-container sticky top-6 z-40">
-            <div className="relative py-6 px-4 bg-gray-900/80 rounded-xl backdrop-blur shadow-lg">
-              {/* Progress Bar Background */}
-              <div className="absolute h-2 bg-gray-700 rounded-full w-full top-1/2 transform -translate-y-1/2" />
+            {/* Battle Phases Progress Bar */}
+            <div className="max-w-4xl mx-auto mt-8 battle-progress-container z-40">
+              <div className="relative py-6 px-4 bg-gray-900/80 rounded-xl backdrop-blur shadow-lg border border-gray-800">
+                {/* Progress Bar Background */}
+                <div className="absolute h-2 bg-gray-700 rounded-full w-full top-1/2 transform -translate-y-1/2" />
 
-              {/* Active Progress Bar */}
-              <div className="absolute h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full top-1/2 transform -translate-y-1/2 battle-progress-bar" style={{ width: '0%' }} />
+                {/* Active Progress Bar */}
+                <div className="absolute h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full top-1/2 transform -translate-y-1/2 battle-progress-bar" style={{ width: '43%' }} />
 
-              {/* Phase Markers */}
-              <div className="relative flex justify-between">
-                {/* Daytime */}
-                <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-daytime-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">1</span>
+                {/* Phase Markers */}
+                <div className="relative flex justify-between">
+                  {/* Daytime */}
+                  <div className="z-10 text-center">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-daytime-marker shadow-lg">
+                      <span className="text-sm font-bold text-white">1</span>
+                    </div>
+                    <p className="text-blue-400 font-bold phase-label phase-daytime-label">Daytime</p>
+                    <p className="text-xs text-gray-400">24 Hours</p>
                   </div>
-                  <p className="text-blue-400 font-bold phase-label phase-daytime-label">Daytime</p>
-                  <p className="text-xs text-gray-400">24 Hours</p>
-                </div>
 
-                {/* DarkNight */}
-                <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-darknight-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">2</span>
+                  {/* DarkNight */}
+                  <div className="z-10 text-center">
+                    <div className="w-8 h-8 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-darknight-marker shadow-lg">
+                      <span className="text-sm font-bold text-white">2</span>
+                    </div>
+                    <p className="text-purple-400 font-bold phase-label phase-darknight-label">DarkNight</p>
+                    <p className="text-xs text-gray-400">1 Hour</p>
                   </div>
-                  <p className="text-gray-400 font-bold phase-label phase-darknight-label">DarkNight</p>
-                  <p className="text-xs text-gray-400">1 Hour</p>
-                </div>
 
-                {/* Sunrise */}
-                <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-sunrise-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">3</span>
+                  {/* Sunrise */}
+                  <div className="z-10 text-center">
+                    <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-sunrise-marker shadow-lg">
+                      <span className="text-sm font-bold text-white">3</span>
+                    </div>
+                    <p className="text-gray-400 font-bold phase-label phase-sunrise-label">Sunrise</p>
+                    <p className="text-xs text-gray-400">Launch</p>
                   </div>
-                  <p className="text-gray-400 font-bold phase-label phase-sunrise-label">Sunrise</p>
-                  <p className="text-xs text-gray-400">Launch</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 items-start relative">
-            <div className="relative md:sticky top-36 h-auto w-full z-20">
-              <div className="rounded-xl overflow-hidden shadow-xl border border-blue-500/20 transform hover:rotate-0 transition-all duration-500 sticky-chart">
+          <div className="grid md:grid-cols-2 gap-12 items-start relative pt-24 px-4 mt-4">
+            <div className="relative md:sticky top-[300px] h-auto w-full z-20">
+              <div className="mt-40 rounded-xl overflow-hidden shadow-xl border border-blue-500/20 transform hover:rotate-0 transition-all duration-500 sticky-chart">
                 <Image
                   src="/images/prediction-chart.png"
                   alt="Live prediction chart"
@@ -331,21 +333,6 @@ export default function AboutPage() {
               </div>
             </div>
             <div data-parallax-depth="-0.05" className="pt-6 z-10">
-              <div className="mb-8 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
-                <p className="text-xl text-gray-200">
-                  The top meme in the current round has a <span className="text-blue-400 font-bold">43%</span> chance of winning!
-                  If you invest <span className="text-green-400 font-bold">$1</span> worth of SUI and it wins, you'll receive <span className="text-green-400 font-bold">$2.32</span> worth
-                  of Champion meme tokens! If it loses, you'll receive LOSER tokens.
-                </p>
-              </div>
-
-              <div className="border-t border-gray-700 pt-6 mb-8">
-                <div className="bg-gray-800/60 p-4 rounded-lg font-mono text-lg">
-                  <p className="text-white">
-                    Daytime (24H) &gt; DarkNight (1H)
-                  </p>
-                </div>
-              </div>
 
               <div className="space-y-6">
                 <div className="bg-blue-900/20 p-6 rounded-lg border-l-2 border-blue-400">
@@ -385,21 +372,22 @@ export default function AboutPage() {
                 </div>
               </div>
 
-              <div className="p-6 bg-gray-800/40 rounded-lg border border-gray-700 mt-8">
-                <p className="text-gray-300 mb-2">Community unity is key to victory in this environment of incomplete information</p>
-                <p className="text-xl font-bold text-white mb-2">
-                  Defeat rival memes and aim for <span className="text-yellow-400">winner-takes-all</span>!
-                </p>
-                <p className="text-sm text-gray-400">
-                  Secure an advantageous position with early participation, information superiority, and strategic choices
+
+
+              <div className="mb-8 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
+                <p className="text-xl text-gray-200">
+                  The top meme in the current round has a <span className="text-blue-400 font-bold">43%</span> chance of winning!
+                  If you invest <span className="text-green-400 font-bold">$1</span> worth of SUI and it wins, you'll receive <span className="text-green-400 font-bold">$2.32</span> worth
+                  of Champion meme tokens! If it loses, you'll receive LOSER tokens.
                 </p>
               </div>
+
             </div>
           </div>
         </section>
 
         {/* Visual Topic Divider */}
-        <div className="my-48 max-w-xl mx-auto px-4">
+        <div className="my-36 max-w-xl mx-auto px-4">
           <div className="flex items-center justify-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-gray-700" />
             <div className="text-center">
@@ -418,26 +406,29 @@ export default function AboutPage() {
         <section className="mb-28 bg-gradient-to-br from-gray-900 to-gray-800/60 rounded-2xl overflow-hidden shadow-xl min-h-[45vh]" data-lenis-scroll-snap-align="center">
           <div className="grid md:grid-cols-2 items-center">
             <div className="p-8" data-parallax-depth="0.05">
-              <h2 className="text-3xl font-bold mb-5">
+              <h2 className="text-3xl font-bold mb-5 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Bump That
               </h2>
               <p className="text-xl mb-6 text-gray-300">
-                Chat with the community and promote your convictions! The meme that rallies the most community support becomes the champion.
+                Chat with the community and rally support for your meme coin! In this battle of wits, community unity is key to victory in an environment of incomplete information.
               </p>
 
-              <div className="mb-8 p-4 bg-gray-800/70 rounded-lg">
-                <h3 className="text-lg font-bold text-blue-300 mb-3">
-                  On-Chain Paid Chat
+              <div className="mb-8 p-5 bg-gray-800/70 rounded-lg border-l-4 border-purple-500">
+                <h3 className="text-xl font-bold text-purple-300 mb-3">
+                  Strategic Communication
                 </h3>
+                <p className="text-gray-200 mb-4">
+                  Defeat rival memes and aim for <span className="text-yellow-400">winner-takes-all</span> through collective action!
+                </p>
                 <ul className="list-disc pl-5 text-gray-300 space-y-2">
-                  <li>Send messages by paying SUI</li>
-                  <li>Display priority determined by payment amount</li>
-                  <li>Influence others with strategic information</li>
+                  <li>Secure advantageous positions with early participation</li>
+                  <li>Gain information superiority through community insights</li>
+                  <li>Make strategic choices based on collective intelligence</li>
                 </ul>
               </div>
 
               <h3 className="text-2xl font-bold mb-6 text-white/90">
-                Win the deadly game
+                Win the deadly game together
               </h3>
               <Link
                 href="/chat"
@@ -460,6 +451,22 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Visual Topic Divider */}
+        <div className="my-36 max-w-xl mx-auto px-4">
+          <div className="flex items-center justify-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-gray-700" />
+            <div className="text-center">
+              <span className="inline-block p-3 bg-gray-800/80 rounded-full border border-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-gray-400" aria-hidden="true">
+                  <path fillRule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-7.152.52c-2.43 0-4.817-.178-7.152-.52C2.87 16.438 1.5 14.706 1.5 12.76V6.741c0-1.946 1.37-3.68 3.348-3.97z" clipRule="evenodd" />
+                  <path d="M7.5 8.25v6.75a.75.75 0 01-1.5 0V8.25a.75.75 0 011.5 0zM12 8.25v6.75a.75.75 0 01-1.5 0V8.25a.75.75 0 011.5 0zM16.5 8.25v6.75a.75.75 0 01-1.5 0V8.25a.75.75 0 011.5 0z" />
+                </svg>
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-gradient-to-r from-gray-700 to-transparent" />
+          </div>
+        </div>
 
         {/* Epic Final Call to Action */}
         <section
