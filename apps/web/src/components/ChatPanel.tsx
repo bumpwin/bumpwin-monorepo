@@ -17,12 +17,7 @@ import {
   subscribeToChatMessages,
   unsubscribeFromChatMessages,
 } from "@workspace/supabase/src/realtime";
-import {
-  Clock,
-  Loader2,
-  MessageSquare,
-  Send,
-} from "lucide-react";
+import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
