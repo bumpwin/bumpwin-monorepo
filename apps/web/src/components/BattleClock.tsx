@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 // Define the component props interface
 interface BattleClockProps {
@@ -185,45 +185,6 @@ export default function BattleClock({
     return () => clearInterval(flashTimer);
   }, [isChallenge]);
 
-  // Prepare confetti elements for completion animation
-  const confettiElements = useMemo(() => {
-    return Array.from({ length: 10 }).map((_, index) => {
-      const randomX = Math.random() * 100;
-      const randomY = Math.random() * 100;
-      const randomDelay = Math.random() * 0.5;
-      const randomRotation = Math.random() * 360;
-
-      return (
-        <motion.div
-          key={`confetti-${index}-${randomX}-${randomY}`}
-          className="absolute text-yellow-500"
-          initial={{
-            x: "50%",
-            y: "50%",
-            scale: 0,
-            rotate: 0,
-          }}
-          animate={{
-            x: `${randomX}%`,
-            y: `${randomY}%`,
-            scale: [0, 1.5, 0],
-            rotate: randomRotation,
-          }}
-          transition={{
-            duration: 1,
-            delay: randomDelay,
-            ease: "easeOut",
-          }}
-          style={{
-            fontSize: `${Math.random() * 2 + 1}rem`,
-          }}
-        >
-          ✨
-        </motion.div>
-      );
-    });
-  }, []);
-
   return (
     <AnimatePresence>
       <motion.div
@@ -243,8 +204,6 @@ export default function BattleClock({
         }
         transition={{ duration: isComplete ? 1 : 0.3, times: [0, 0.3, 1] }}
       >
-        {isComplete && confettiElements}
-
         <div className="flex justify-center items-center">
           <SevenSegmentDisplay
             value={formatTime(remaining)}
