@@ -116,7 +116,7 @@ export default function Header() {
           {/* 左側グループ */}
           <div className="flex items-center w-[45%]">
             {/* 1. ロゴ */}
-            <Link href="/" className="flex items-center gap-2 mr-4">
+            <Link href="/about" className="flex items-center gap-2 mr-4">
               <Image
                 src="/logo.png"
                 alt="Ooze.fun Logo"
