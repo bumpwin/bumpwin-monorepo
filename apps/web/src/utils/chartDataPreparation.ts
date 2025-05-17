@@ -32,7 +32,7 @@ export function prepareCoinsMetadata(
  * 全コイン用のチャートデータポイントを作成します
  */
 export function prepareMultiCoinChartData(
-  dominanceData: { timestamp: string; shares: number[] }[],
+  dominanceData: { timestamp: number; shares: number[] }[],
   relevantCoins: PreparedCoinMeta[],
 ): ChartDataPoint[] {
   return dominanceData.map((item) => {
@@ -53,14 +53,12 @@ export function prepareMultiCoinChartData(
  * 単一コイン用のチャートデータポイントを作成します
  */
 export function prepareSingleCoinChartData(
-  dominanceData: { timestamp: string; shares: number[] }[],
+  dominanceData: { timestamp: number; shares: number[] }[],
   coinMeta: PreparedCoinMeta | undefined,
 ): ChartDataPoint[] {
   return dominanceData.map((item) => {
     const point: ChartDataPoint = { timestamp: item.timestamp };
     if (coinMeta && item.shares && item.shares.length > 0) {
-      // item.shares[0] could be undefined if the array is shorter than expected
-      // Default to 0 if undefined to satisfy ChartDataPoint type.
       point[coinMeta.symbol] = item.shares[0] ?? 0;
     }
     return point;

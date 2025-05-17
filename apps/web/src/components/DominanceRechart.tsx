@@ -1,6 +1,5 @@
 "use client";
 
-import { format, parseISO } from "date-fns";
 import type React from "react";
 import {
   CartesianGrid,
@@ -13,11 +12,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useBattleClock } from "../app/providers/BattleClockProvider";
 
 // Define the structure for a single data point in the chart
 export interface ChartDataPoint {
-  timestamp: string;
-  [coinSymbol: string]: number | string; // Allow string for timestamp, number for shares
+  timestamp: number | string;
+  [coinSymbol: string]: number | string;
 }
 
 // Define the structure for coin metadata in the source data
@@ -54,7 +54,7 @@ const CustomTooltip = ({
     return (
       <div className="bg-black/90 text-white p-3 rounded-lg shadow-lg border border-white/10 backdrop-blur-sm">
         <p className="font-medium text-center border-b border-white/20 pb-1 mb-1 text-sm">
-          {format(parseISO(label), "HH:mm")}
+          {typeof label === "number" ? `${label} min` : label}
         </p>
         <div className="space-y-1">
           {payload.map((entry) => (
@@ -82,8 +82,10 @@ const CustomTooltip = ({
 };
 
 // Format tick for x-axis
-const formatXAxis = (tickItem: string) => {
-  return format(parseISO(tickItem), "HH:mm");
+const formatXAxis = (tickItem: number) => {
+  const hours = Math.floor(tickItem / 60);
+  const minutes = tickItem % 60;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 };
 
 // Format tick for y-axis (as percentage)
@@ -94,16 +96,25 @@ const formatYAxis = (tickItem: number) => {
 const DominanceRechart: React.FC<DominanceRechartProps> = ({
   points,
   coins,
-  height = 300, // Adjusted default height
+  height = 300,
   className = "",
   compact = false,
   hideLegend = false,
 }) => {
+  const { remainingTime, totalTime } = useBattleClock();
+  const currentMinute = Math.floor((totalTime - remainingTime) / 60);
+
+  // 現在時刻までのデータのみをフィルタリング
+  const filteredPoints = points.filter(
+    (point) =>
+      typeof point.timestamp === "number" && point.timestamp <= currentMinute,
+  );
+
   return (
     <div className={`w-full ${className}`} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={points}
+          data={filteredPoints}
           margin={
             compact
               ? { top: 5, right: 20, left: 5, bottom: hideLegend ? 5 : 20 }
@@ -151,7 +162,7 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
             <Line
               key={coin.symbol}
               type="monotone"
-              dataKey={coin.symbol} // Use coin symbol as dataKey
+              dataKey={coin.symbol}
               name={coin.name}
               stroke={coin.color}
               strokeWidth={2}
@@ -161,6 +172,9 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
                 strokeWidth: 0,
                 fill: coin.color,
               }}
+              animationDuration={1000}
+              animationBegin={0}
+              isAnimationActive={true}
             />
           ))}
         </LineChart>
