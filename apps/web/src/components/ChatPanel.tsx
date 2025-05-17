@@ -34,7 +34,6 @@ export default function ChatPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
 
   // Sui関連のフック
   const client = useSuiClient();
@@ -48,8 +47,15 @@ export default function ChatPanel() {
   useEffect(() => {
     if (messagesContainerRef.current && chatMessages.length > 0) {
       const container = messagesContainerRef.current;
-      // Scroll to the bottom of the container where the latest messages are
-      container.scrollTop = container.scrollHeight;
+      const lastMessage = container.lastElementChild;
+
+      if (lastMessage) {
+        const scrollOptions: ScrollIntoViewOptions = {
+          behavior: "smooth",
+          block: "end",
+        };
+        lastMessage.scrollIntoView(scrollOptions);
+      }
     }
   }, [chatMessages]);
 
@@ -209,191 +215,152 @@ export default function ChatPanel() {
           <MessageSquare className="h-5 w-5 text-blue-300" />
           <h2 className="font-bold text-white text-lg">Sui Chat</h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="text-gray-300 hover:text-white focus:outline-none"
-        >
-          {isExpanded ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <title>Collapse</title>
-              <path d="M18 15h-6v6" />
-              <path d="M18 21 9 12" />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <title>Expand</title>
-              <path d="M6 9h6V3" />
-              <path d="M6 3l9 9" />
-            </svg>
-          )}
-        </button>
       </div>
 
-      {isExpanded && (
-        <>
-          {/* Message list - scrollable area */}
-          <div
-            ref={messagesContainerRef}
-            className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950"
-          >
-            {loading ? (
-              <div className="flex flex-col items-center justify-center h-full gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-                <p className="text-gray-400 text-sm">Loading messages...</p>
-              </div>
-            ) : error ? (
-              <div className="flex flex-col items-center justify-center h-full p-4 rounded-lg bg-red-900/20 border border-red-800">
-                <p className="text-red-400 text-sm">{error}</p>
-                <button
-                  type="button"
-                  onClick={() => window.location.reload()}
-                  className="mt-2 px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded-md"
-                >
-                  Reload
-                </button>
-              </div>
-            ) : chatMessages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="p-5 rounded-full bg-blue-900/20 mb-3">
-                  <MessageSquare className="h-8 w-8 text-blue-400" />
-                </div>
-                <p className="text-gray-300 text-sm font-medium">
-                  No messages yet
-                </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  Send the first message!
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="py-2 text-center">
-                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full">
-                    <Clock className="inline-block h-3 w-3 mr-1" />
-                    Chat History
-                  </span>
-                </div>
-                {chatMessages.map((msg, index) => {
-                  const prevMsg = index > 0 ? chatMessages[index - 1] : null;
-                  const showTimeHeader =
-                    index === 0 ||
-                    (prevMsg &&
-                      new Date(prevMsg.timestamp).getDate() !==
-                        new Date(msg.timestamp).getDate());
-
-                  return (
-                    <React.Fragment key={msg.id}>
-                      {showTimeHeader && (
-                        <div className="flex justify-center my-2">
-                          <div className="px-2 py-1 bg-gray-800/50 rounded-md text-xs text-gray-400">
-                            {msg.timestamp.toLocaleDateString([], {
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-start gap-3 py-1 group">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-900/30">
-                          <span className="text-lg">{msg.avatar}</span>
-                        </div>
-                        <div className="flex-1 max-w-[80%] text-left">
-                          <div className="flex items-center gap-1 mb-1 justify-start">
-                            <span className="font-semibold text-xs text-gray-300">
-                              {msg.username}
-                            </span>
-                            <a
-                              href={`https://suiscan.xyz/testnet/account/${msg.userId}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs text-gray-500 hover:text-blue-400 transition-colors"
-                            >
-                              <ExternalLink className="inline h-3 w-3 ml-1" />
-                            </a>
-                            <span className="text-xs text-gray-500 ml-2">
-                              {formatTime(msg.timestamp)}
-                            </span>
-                          </div>
-                          <div className="relative px-3 py-2 rounded-lg shadow-sm text-left bg-gray-800/80 text-gray-100 rounded-tl-none mr-auto">
-                            <p className="text-sm break-words">{msg.message}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
-                <div className="h-2" />
-              </>
-            )}
-          </div>
-
-          {/* Chat input area - fixed at bottom */}
-          <div className="flex-shrink-0 border-t border-gray-800 p-3 bg-gray-900">
-            <div className="relative">
-              <Input
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  !account
-                    ? "Please connect your wallet"
-                    : message.trim() === ""
-                      ? "Pay 0.000001SUI to send a message"
-                      : "Type your message"
-                }
-                className="bg-gray-800 border border-gray-700 hover:border-blue-700 focus:border-blue-600 pl-4 pr-14 py-3 w-full text-white rounded-lg shadow-inner transition-colors"
-                disabled={loading || isSending || !account}
-              />
+      <>
+        {/* Message list - scrollable area */}
+        <div
+          ref={messagesContainerRef}
+          className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950 scroll-smooth"
+        >
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-full gap-2">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+              <p className="text-gray-400 text-sm">Loading messages...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full p-4 rounded-lg bg-red-900/20 border border-red-800">
+              <p className="text-red-400 text-sm">{error}</p>
               <button
                 type="button"
-                onClick={handleSendMessage}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-1.5
+                onClick={() => window.location.reload()}
+                className="mt-2 px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded-md"
+              >
+                Reload
+              </button>
+            </div>
+          ) : chatMessages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="p-5 rounded-full bg-blue-900/20 mb-3">
+                <MessageSquare className="h-8 w-8 text-blue-400" />
+              </div>
+              <p className="text-gray-300 text-sm font-medium">
+                No messages yet
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                Send the first message!
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="py-2 text-center">
+                <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full">
+                  <Clock className="inline-block h-3 w-3 mr-1" />
+                  Chat History
+                </span>
+              </div>
+              {chatMessages.map((msg, index) => {
+                const prevMsg = index > 0 ? chatMessages[index - 1] : null;
+                const showTimeHeader =
+                  index === 0 ||
+                  (prevMsg &&
+                    new Date(prevMsg.timestamp).getDate() !==
+                      new Date(msg.timestamp).getDate());
+
+                return (
+                  <React.Fragment key={msg.id}>
+                    {showTimeHeader && (
+                      <div className="flex justify-center my-2">
+                        <div className="px-2 py-1 bg-gray-800/50 rounded-md text-xs text-gray-400">
+                          {msg.timestamp.toLocaleDateString([], {
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-3 py-1 group">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-900/30">
+                        <span className="text-lg">{msg.avatar}</span>
+                      </div>
+                      <div className="flex-1 max-w-[80%] text-left">
+                        <div className="flex items-center gap-1 mb-1 justify-start">
+                          <span className="font-semibold text-xs text-gray-300">
+                            {msg.username}
+                          </span>
+                          {/*
+                          <a
+                            href={`https://suiscan.xyz/testnet/account/${msg.userId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-gray-500 hover:text-blue-400 transition-colors"
+                          >
+                            <ExternalLink className="inline h-3 w-3 ml-1" />
+                          </a>
+                          */}
+                          <span className="text-xs text-gray-500 ml-2">
+                            {formatTime(msg.timestamp)}
+                          </span>
+                        </div>
+                        <div className="relative px-3 py-2 rounded-lg shadow-sm text-left bg-gray-800/80 text-gray-100 rounded-tl-none mr-auto">
+                          <p className="text-sm break-words">{msg.message}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                );
+              })}
+              <div className="h-2" />
+            </>
+          )}
+        </div>
+
+        {/* Chat input area - fixed at bottom */}
+        <div className="flex-shrink-0 border-t border-gray-800 p-3 bg-gray-900">
+          <div className="relative">
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={
+                !account
+                  ? "Please connect your wallet"
+                  : message.trim() === ""
+                    ? "Pay 0.000001SUI to send a message"
+                    : "Type your message"
+              }
+              className="bg-gray-800 border border-gray-700 hover:border-blue-700 focus:border-blue-600 pl-4 pr-14 py-3 w-full text-white rounded-lg shadow-inner transition-colors"
+              disabled={loading || isSending || !account}
+            />
+            <button
+              type="button"
+              onClick={handleSendMessage}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-1.5
                   ${
                     !loading && !isSending && message.trim() !== "" && account
                       ? "bg-blue-600 text-white hover:bg-blue-500"
                       : "bg-gray-700 text-gray-400"
                   } transition-colors disabled:opacity-50`}
-                disabled={
-                  loading || isSending || message.trim() === "" || !account
-                }
-              >
-                {isSending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-            {!account && (
-              <div className="mt-2 text-center">
-                <span className="text-xs text-amber-400">
-                  Connect your wallet to send messages
-                </span>
-              </div>
-            )}
+              disabled={
+                loading || isSending || message.trim() === "" || !account
+              }
+            >
+              {isSending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </button>
           </div>
-        </>
-      )}
+          {!account && (
+            <div className="mt-2 text-center">
+              <span className="text-xs text-amber-400">
+                Connect your wallet to send messages
+              </span>
+            </div>
+          )}
+        </div>
+      </>
     </div>
   );
 }

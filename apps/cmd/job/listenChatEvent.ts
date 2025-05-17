@@ -64,9 +64,8 @@ async function saveChatMessage(event: any): Promise<void> {
       messageText: event.text,
     };
 
-    const insertResult = await dbRepository.insertChatMessage(
-      chatMessageRequest,
-    );
+    const insertResult =
+      await dbRepository.insertChatMessage(chatMessageRequest);
     if (insertResult.isOk()) {
       logger.info(
         `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
@@ -91,9 +90,8 @@ async function updatePollCursor(cursor: EventId | null): Promise<void> {
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    const updateResult = await dbRepository.updatePollCursor(
-      updateCursorRequest,
-    );
+    const updateResult =
+      await dbRepository.updatePollCursor(updateCursorRequest);
     if (updateResult.isOk()) {
       logger.info(
         `Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`,

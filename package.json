@@ -6,7 +6,8 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "bun run pm:dev",
-    "pm:dev": "pnpm -r --parallel --filter web --filter api --filter cmd dev",
+    "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
+    "server:dev": "pnpm -r --filter cmd dev",
     "build": "bun run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
