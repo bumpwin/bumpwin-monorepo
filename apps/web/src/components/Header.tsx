@@ -298,7 +298,8 @@ export default function Header() {
           />
         </div>
       </header>
-      <div className="h-[calc(4rem+1px)]" /> {/* ヘッダーの高さ分のスペーサー */}
+      <div className="h-[calc(4rem+1px)]" />{" "}
+      {/* ヘッダーの高さ分のスペーサー */}
     </>
   );
 }

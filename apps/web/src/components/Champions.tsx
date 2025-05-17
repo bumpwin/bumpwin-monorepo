@@ -9,7 +9,10 @@ interface ChampionsListProps {
   dominanceData: DominanceChartData;
 }
 
-export const ChampionsList: React.FC<ChampionsListProps> = ({ coins, dominanceData }) => {
+export const ChampionsList: React.FC<ChampionsListProps> = ({
+  coins,
+  dominanceData,
+}) => {
   return (
     <ul className="flex flex-col gap-4">
       {coins.map((coin) => {
@@ -21,7 +24,9 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins, dominanceDa
             {/* 左: ラウンド情報 */}
             <div className="w-28 flex-shrink-0 text-center bg-gray-800/80 rounded-lg py-2 px-3 border border-gray-700">
               <div className="text-xs text-gray-400 mb-1">Round</div>
-              <div className="text-2xl font-bold text-orange-400">{coin.round}</div>
+              <div className="text-2xl font-bold text-orange-400">
+                {coin.round}
+              </div>
             </div>
 
             {/* 中央: アイコン・シンボル */}
@@ -35,8 +40,12 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins, dominanceDa
                 />
               </div>
               <div className="min-w-0 overflow-hidden">
-                <div className="text-3xl font-bold text-white truncate">{coin.symbol}</div>
-                <div className="text-sm text-gray-300 truncate">{coin.name}</div>
+                <div className="text-3xl font-bold text-white truncate">
+                  {coin.symbol}
+                </div>
+                <div className="text-sm text-gray-300 truncate">
+                  {coin.name}
+                </div>
               </div>
             </div>
 
