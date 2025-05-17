@@ -103,9 +103,9 @@ export default function AboutPage() {
                   </svg>
                   Champion
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent backdrop-blur-sm px-4 py-3 relative z-10">
-                  <div className="text-2xl font-bold tracking-wider text-amber-400 -mb-1">BABLCT</div>
-                  <div className="text-gray-300 text-sm mb-2">Babel Cult</div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t bg-black/70 backdrop-blur-sm px-4 py-3 z-10 w-full">
+                  <div className="text-2xl font-bold tracking-wider text-amber-400 -mb-1">JELL</div>
+                  <div className="text-gray-300 text-sm mb-2">Jello Cult</div>
                   <div className="grid grid-cols-2 gap-1 border-t border-gray-700 pt-2">
                     <div>
                       <span className="text-gray-400 text-xs block">mcap </span>
@@ -165,7 +165,7 @@ export default function AboutPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Link
-                    href="/champions/bablct"
+                    href="/champions/JELL"
                     className="inline-block px-8 py-3.5 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-lg font-bold text-black hover:opacity-90 transition-all duration-300 hover:scale-[1.02] text-center"
                   >
                     Trade This Champ
@@ -197,7 +197,7 @@ export default function AboutPage() {
             <div
               className="w-full h-full bg-center bg-cover opacity-10"
               style={{
-                backgroundImage: "url('/images/mockmemes/BABLCT.png')"
+                backgroundImage: "url('/images/mockmemes/JELL.png')"
               }}
               data-parallax-pin="true"
               data-parallax-pin-offset="0.5"
