@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRef, useEffect } from 'react';
 import AboutClient from './client';
 
 export const metadata = {
@@ -8,7 +7,7 @@ export const metadata = {
   description: "Only one meme coin survives. Rally community support, win the battle, and dominate the market.",
 };
 
-// Custom animation classes for scroll reveal
+// Custom animation classes for scroll reveal - these will be applied by ParallaxScroller.tsx
 const fadeInUp = "opacity-0 translate-y-10 transition-all duration-1000";
 const fadeInLeft = "opacity-0 -translate-x-10 transition-all duration-1000";
 const fadeInRight = "opacity-0 translate-x-10 transition-all duration-1000";
@@ -93,7 +92,7 @@ export default function AboutPage() {
                 <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl z-0" />
                 <Image
                   src="/images/mockmemes/JELL.png"
-                  alt="Previous Champion - BABLCT"
+                  alt="Previous Champion - JELL"
                   width={400}
                   height={500}
                   className="w-full h-full object-cover relative z-10"
@@ -198,7 +197,7 @@ export default function AboutPage() {
             <div
               className="w-full h-full bg-center bg-cover opacity-10"
               style={{
-                backgroundImage: "url('/images/mockmemes/JELL.png')"
+                backgroundImage: "url('/images/mockmemes/BABLCT.png')"
               }}
               data-parallax-pin="true"
               data-parallax-pin-offset="0.5"
@@ -268,10 +267,10 @@ export default function AboutPage() {
         <section className="mb-28 battle-phases-section min-h-screen" data-lenis-scroll-snap-align="center">
           <div className="sticky top-[60px] pt-8 pb-4 bg-gradient-to-b from-black via-black/95 to-transparent z-30">
             <div className="text-center" data-parallax-depth="0.2">
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+              <h2 className={`text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent ${fadeInUp}`}>
                 When the Round Begins, the Race is On
               </h2>
-              <p className="text-xl text-white max-w-3xl mx-auto">
+              <p className={`text-xl text-white max-w-3xl mx-auto ${fadeInUp}`}>
                 The deadly game begins to determine which meme coin will triumph!
                 <span className="block text-2xl font-bold text-yellow-400 mt-2">Bet on Beliefs.</span>
               </p>
@@ -279,40 +278,40 @@ export default function AboutPage() {
             </div>
 
             {/* Battle Phases Progress Bar */}
-            <div className="max-w-4xl mx-auto mt-8 battle-progress-container z-40">
+            <div className="max-w-4xl mx-auto mt-8 battle-progress-container z-40 transition-opacity duration-500">
               <div className="relative py-6 px-4 bg-gray-900/80 rounded-xl backdrop-blur shadow-lg border border-gray-800">
                 {/* Progress Bar Background */}
                 <div className="absolute h-2 bg-gray-700 rounded-full w-full top-1/2 transform -translate-y-1/2" />
 
                 {/* Active Progress Bar */}
-                <div className="absolute h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full top-1/2 transform -translate-y-1/2 battle-progress-bar" style={{ width: '43%' }} />
+                <div className="absolute h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full top-1/2 transform -translate-y-1/2 battle-progress-bar transition-all duration-300" style={{ width: '0%' }} />
 
                 {/* Phase Markers */}
                 <div className="relative flex justify-between">
                   {/* Daytime */}
                   <div className="z-10 text-center">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-daytime-marker shadow-lg">
+                    <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-daytime-marker shadow-lg transition-all duration-300">
                       <span className="text-sm font-bold text-white">1</span>
                     </div>
-                    <p className="text-blue-400 font-bold phase-label phase-daytime-label">Daytime</p>
+                    <p className="text-gray-400 font-bold phase-label phase-daytime-label transition-all duration-300">Daytime</p>
                     <p className="text-xs text-gray-400">24 Hours</p>
                   </div>
 
                   {/* DarkNight */}
                   <div className="z-10 text-center">
-                    <div className="w-8 h-8 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-darknight-marker shadow-lg">
+                    <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-darknight-marker shadow-lg transition-all duration-300">
                       <span className="text-sm font-bold text-white">2</span>
                     </div>
-                    <p className="text-purple-400 font-bold phase-label phase-darknight-label">DarkNight</p>
+                    <p className="text-gray-400 font-bold phase-label phase-darknight-label transition-all duration-300">DarkNight</p>
                     <p className="text-xs text-gray-400">1 Hour</p>
                   </div>
 
                   {/* Sunrise */}
                   <div className="z-10 text-center">
-                    <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-sunrise-marker shadow-lg">
+                    <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-sunrise-marker shadow-lg transition-all duration-300">
                       <span className="text-sm font-bold text-white">3</span>
                     </div>
-                    <p className="text-gray-400 font-bold phase-label phase-sunrise-label">Sunrise</p>
+                    <p className="text-gray-400 font-bold phase-label phase-sunrise-label transition-all duration-300">Sunrise</p>
                     <p className="text-xs text-gray-400">Launch</p>
                   </div>
                 </div>
@@ -322,7 +321,7 @@ export default function AboutPage() {
 
           <div className="grid md:grid-cols-2 gap-12 items-start relative pt-24 px-4 mt-4">
             <div className="relative md:sticky top-[300px] h-auto w-full z-20">
-              <div className="mt-40 rounded-xl overflow-hidden shadow-xl border border-blue-500/20 transform hover:rotate-0 transition-all duration-500 sticky-chart">
+              <div className="mt-40 rounded-xl overflow-hidden shadow-xl border border-blue-500/20 transform hover:rotate-0 transition-all duration-500 sticky-chart transition-opacity duration-500">
                 <Image
                   src="/images/prediction-chart.png"
                   alt="Live prediction chart"
@@ -372,9 +371,7 @@ export default function AboutPage() {
                 </div>
               </div>
 
-
-
-              <div className="mb-8 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
+              <div className="mt-8 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
                 <p className="text-xl text-gray-200">
                   The top meme in the current round has a <span className="text-blue-400 font-bold">43%</span> chance of winning!
                   If you invest <span className="text-green-400 font-bold">$1</span> worth of SUI and it wins, you'll receive <span className="text-green-400 font-bold">$2.32</span> worth
