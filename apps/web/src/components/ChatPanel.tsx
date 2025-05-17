@@ -19,7 +19,6 @@ import {
 } from "@workspace/supabase/src/realtime";
 import {
   Clock,
-  ExternalLink,
   Loader2,
   MessageSquare,
   Send,
