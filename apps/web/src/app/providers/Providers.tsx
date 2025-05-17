@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { networks } from "@workspace/sui";
 import { useState } from "react";
 import "@mysten/dapp-kit/dist/index.css";
+import { BattleClockProvider } from "./BattleClockProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -13,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networks} defaultNetwork="testnet">
         <WalletProvider>
-          {children}
+          <BattleClockProvider>{children}</BattleClockProvider>
         </WalletProvider>
       </SuiClientProvider>
     </QueryClientProvider>
