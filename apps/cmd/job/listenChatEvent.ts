@@ -64,8 +64,9 @@ async function saveChatMessage(event: any): Promise<void> {
       messageText: event.text,
     };
 
-    const insertResult =
-      await dbRepository.insertChatMessage(chatMessageRequest);
+    const insertResult = await dbRepository.insertChatMessage(
+      chatMessageRequest,
+    );
     if (insertResult.isOk()) {
       logger.info(
         `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
@@ -90,8 +91,9 @@ async function updatePollCursor(cursor: EventId | null): Promise<void> {
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    const updateResult =
-      await dbRepository.updatePollCursor(updateCursorRequest);
+    const updateResult = await dbRepository.updatePollCursor(
+      updateCursorRequest,
+    );
     if (updateResult.isOk()) {
       logger.info(
         `Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`,
@@ -141,7 +143,7 @@ async function processEvents(
 /**
  * Start polling for chat events
  */
-async function startPolling() {
+export async function startChatEventPolling() {
   // Keep track of processed event IDs to avoid duplicates
   const processedEventIds = new Set<string>();
 
@@ -195,7 +197,7 @@ async function startPolling() {
 // Start the main process
 async function main() {
   try {
-    await startPolling();
+    await startChatEventPolling();
   } catch (error) {
     logger.error("Failed to start polling script:", error);
     process.exit(1);

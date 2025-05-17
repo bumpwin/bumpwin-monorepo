@@ -6,7 +6,7 @@
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "bun run pm:dev",
-    "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
+    "pm:dev": "pnpm -r --parallel --filter web --filter api --filter cmd dev",
     "build": "bun run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
@@ -17,14 +17,15 @@
     "pages:deploy": "pnpm -r --filter web run pages:deploy"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.1",
     "@mysten/sui": "^1.29.1",
     "@questdb/nodejs-client": "^3.0.0",
     "@supabase/supabase-js": "^2.49.4",
     "@workspace/logger": "workspace:*",
+    "@workspace/questdb": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
-    "@workspace/questdb": "workspace:*",
     "bumpwin": "^0.202505.7",
     "hono": "^4.7.9",
     "neverthrow": "^8.2.0",

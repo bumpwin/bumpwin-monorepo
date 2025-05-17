@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "bun run server/index.ts",
     "listen-chat": "bun run job/listenChatEvent.ts"
   }
 }
