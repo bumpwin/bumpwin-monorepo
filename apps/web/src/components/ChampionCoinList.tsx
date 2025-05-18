@@ -21,12 +21,12 @@ export const ChampionCoinList = () => {
             />
           </h2>
         </div>
-        <a
+        <Link
           href="/champions"
           className="text-blue-400 hover:text-blue-300 text-lg font-bold transition-colors drop-shadow"
         >
           View All Champions →
-        </a>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

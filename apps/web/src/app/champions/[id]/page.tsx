@@ -3,11 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export default function ChampionDetailPage({
-  params,
-}: { params: { id: string } }) {
+export default async function ChampionDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const coin = mockChampionCoinMetadata.find(
-    (c) => c.id.toString() === params.id,
+    (c) => c.id.toString() === id
   );
   if (!coin) return notFound();
 
