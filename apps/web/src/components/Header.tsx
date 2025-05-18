@@ -5,21 +5,10 @@ import { cn } from "@workspace/shadcn/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import BattleClock from "./BattleClock";
-
-// CommunicationPanelのインターフェース
-interface CommunicationPanelGlobal {
-  switchToChat: () => void;
-  switchToInbox: () => void;
-}
-
-// windowオブジェクトの型拡張
-interface CustomWindow extends Window {
-  __COMMUNICATION_PANEL__?: CommunicationPanelGlobal;
-}
 
 export default function Header() {
   const pathname = usePathname();
@@ -37,11 +26,6 @@ export default function Header() {
   // プログレスバーの進行度を計算
   const progress = ((totalTime - remainingTime) / totalTime) * 100;
   const challengePoint = ((totalTime - challengeTime) / totalTime) * 100;
-
-  // 通知アイコンとチャットアイコンを切り替えるための状態
-  const [communicationMode, setCommunicationMode] = useState<"chat" | "inbox">(
-    "chat",
-  );
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") {
@@ -87,25 +71,6 @@ export default function Header() {
     } else {
       // 別ページからホームに遷移
       router.push("/");
-    }
-  };
-
-  // パネル切り替え関数
-  const toggleCommunicationMode = () => {
-    const newMode = communicationMode === "chat" ? "inbox" : "chat";
-    setCommunicationMode(newMode);
-
-    // グローバルに公開されたメソッドを使用
-    if (typeof window !== "undefined") {
-      const customWindow = window as CustomWindow;
-      const panel = customWindow.__COMMUNICATION_PANEL__;
-      if (panel) {
-        if (newMode === "chat") {
-          panel.switchToChat();
-        } else {
-          panel.switchToInbox();
-        }
-      }
     }
   };
 
@@ -215,60 +180,11 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Communication mode toggle button */}
-            <button
-              type="button"
-              onClick={toggleCommunicationMode}
-              className={cn(
-                "mr-3 transition-colors relative",
-                "text-white hover:text-[#ff5e00]",
-              )}
-            >
-              {communicationMode === "chat" ? (
-                /* Notification bell icon */
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Notifications</title>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                  {/* Unread badge */}
-                  <circle cx="18" cy="6" r="3" fill="#FF5E00" />
-                </svg>
-              ) : (
-                /* Chat icon */
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Chat</title>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
-              )}
-            </button>
-
             {/* 5. プライマリボタン */}
             <Link href="/create" className="mr-3">
               <Button
                 className={cn(
                   "bg-[#5D20D3] hover:bg-[#4D1BB0] text-white rounded-full border-0 text-base font-light px-4 h-9",
-                  isActive("/create") && "ring-2 ring-pink-400 ring-opacity-50",
                 )}
               >
                 Create Coin
