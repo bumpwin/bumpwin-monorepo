@@ -8,7 +8,7 @@ import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
-import { mockRoundCoins } from "@/mock/mockRoundCoin";
+import { mockCoinMetadata } from "@/mock/mockData";
 
 export const runtime = "edge";
 
@@ -46,7 +46,18 @@ export default function RootLayout({
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
           {/* <ChallengeOverlay /> */}
-          <ResultView coin={mockRoundCoins[0]} />
+          {mockCoinMetadata[0] && (
+            <ResultView
+              coin={{
+                ...mockCoinMetadata[0],
+                id: mockCoinMetadata[0].id.toString(),
+                iconUrl: mockCoinMetadata[0].icon,
+                round: 1,
+                share: 25,
+                marketCap: 100000,
+              }}
+            />
+          )}
         </Providers>
       </body>
     </html>
