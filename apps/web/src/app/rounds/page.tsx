@@ -1,7 +1,6 @@
 "use client";
 
 import { ChampionCoinList } from "@/components/ChampionCoinList";
-import { CoinList } from "@/components/CoinList";
 import CommunicationPanel from "@/components/CommunicationPanel";
 // import DominanceChart from "@/components/DominanceChart";
 import DominanceRechart from "@/components/DominanceRechart";
@@ -110,9 +109,9 @@ export default function Home() {
           </div>
 
           {/* Current Round Contestants */}
-          <div id="current-round">
+          {/* <div id="current-round">
             <CoinList />
-          </div>
+          </div> */}
         </main>
 
         {/* Communication panel */}

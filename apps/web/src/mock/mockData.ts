@@ -25,9 +25,9 @@ export const mockCoinMetadata = [
   },
   {
     id: 2,
-    symbol: "SMUG",
-    name: "SMUG",
-    icon: "/images/mockmemes/SMUG.webp",
+    symbol: "ANTS",
+    name: "ANTS",
+    icon: "/images/mockmemes/ANTS.webp",
     color: "#FFD700",
     description:
       "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
@@ -46,6 +46,48 @@ export const mockCoinMetadata = [
     telegramLink: "https://t.me/shibatoken",
     websiteLink: "https://shibatoken.com",
     twitterLink: "https://twitter.com/shibtoken",
+  },
+];
+
+export const mockChampionCoinMetadata = [
+  {
+    id: 0,
+    round: 1,
+    symbol: "SMUG",
+    name: "SMUG",
+    icon: "/images/mockmemes/SMUG.webp",
+    color: "#FF69B4",
+    description:
+      "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/dogecoin",
+    websiteLink: "https://dogecoin.com",
+    twitterLink: "https://twitter.com/dogecoin",
+  },
+  {
+    id: 1,
+    round: 2,
+    symbol: "YAKIU",
+    name: "YAKIU",
+    icon: "/images/mockmemes/YAKIU.png",
+    color: "#3CB043",
+    description:
+      "Pepe is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/pepecoineth",
+    websiteLink: "https://www.pepe.vip",
+    twitterLink: "https://twitter.com/pepecoineth",
+  },
+  {
+    id: 2,
+    round: 3,
+    symbol: "CHEDER",
+    name: "CHEDER",
+    icon: "/images/mockmemes/CHEDER.png",
+    color: "#FFD700",
+    description:
+      "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/wifcoin",
+    websiteLink: "https://www.wifcoin.com",
+    twitterLink: "https://twitter.com/wifcoin",
   },
 ];
 
