@@ -25,14 +25,14 @@ export interface CoinMeta {
   id: number;
   symbol: string;
   name: string;
-  color?: string; // Optional color from mockData
+  color: string;
 }
 
 // Define the structure for prepared coin metadata
 export interface PreparedCoinMeta {
   symbol: string;
   name: string;
-  color: string; // Color will always be assigned
+  color: string;
 }
 
 interface DominanceRechartProps {
@@ -110,6 +110,10 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
       typeof point.timestamp === "number" && point.timestamp <= currentMinute,
   );
 
+  // 24時間の固定スケールを設定
+  const startTime = 0; // 00:00
+  const endTime = 25 * 60; // 25:00 (分単位)
+
   return (
     <div className={`w-full ${className}`} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -124,6 +128,8 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
           <CartesianGrid strokeDasharray="3 3" opacity={0.1} stroke="#555" />
           <XAxis
             dataKey="timestamp"
+            type="number"
+            domain={[startTime, endTime]}
             tickFormatter={formatXAxis}
             tick={{ fontSize: compact ? 8 : 10, fill: "#999" }}
             minTickGap={compact ? 60 : 40}

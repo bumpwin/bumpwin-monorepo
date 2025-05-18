@@ -1,20 +1,52 @@
 export const mockCoinMetadata = [
-  { id: 0, symbol: "FLUF", name: "Fluffy Coin" },
-  { id: 1, symbol: "BOOP", name: "Boop Token" },
-  { id: 2, symbol: "ZAZA", name: "Zaza Inu" },
-  { id: 3, symbol: "MOOF", name: "Moon Floof" },
-  { id: 4, symbol: "YIP", name: "Yipcoin" },
-  { id: 5, symbol: "BLIP", name: "Blip Blop" },
-  { id: 6, symbol: "NOOT", name: "Noot Power" },
-  { id: 7, symbol: "GRUB", name: "Grubzilla" },
-  { id: 8, symbol: "PUNG", name: "Pung Inu" },
-  { id: 9, symbol: "SPLAT", name: "Splat Coin" },
-  { id: 10, symbol: "ZONK", name: "Zonk Token" },
-  { id: 11, symbol: "BORK", name: "Bork Chain" },
-  { id: 12, symbol: "CHONK", name: "Chonk Max" },
-  { id: 13, symbol: "DERP", name: "DerpyCoin" },
-  { id: 14, symbol: "WOMP", name: "Womp Inu" },
-  { id: 15, symbol: "SNAX", name: "Snax Protocol" },
+  {
+    id: 0,
+    symbol: "RACC",
+    name: "RACC",
+    icon: "/images/mockmemes/RACC.webp",
+    color: "#FF69B4",
+    description:
+      "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/dogecoin",
+    websiteLink: "https://dogecoin.com",
+    twitterLink: "https://twitter.com/dogecoin",
+  },
+  {
+    id: 1,
+    symbol: "DITT",
+    name: "DITT",
+    icon: "/images/mockmemes/DITT.png",
+    color: "#3CB043",
+    description:
+      "Pepe is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/pepecoineth",
+    websiteLink: "https://www.pepe.vip",
+    twitterLink: "https://twitter.com/pepecoineth",
+  },
+  {
+    id: 2,
+    symbol: "SMUG",
+    name: "SMUG",
+    icon: "/images/mockmemes/SMUG.webp",
+    color: "#FFD700",
+    description:
+      "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/wifcoin",
+    websiteLink: "https://www.wifcoin.com",
+    twitterLink: "https://twitter.com/wifcoin",
+  },
+  {
+    id: 3,
+    symbol: "YELL",
+    name: "YELL",
+    icon: "/images/mockmemes/YELL.png",
+    color: "#FFA500",
+    description:
+      "Shiba Inu is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+    telegramLink: "https://t.me/shibatoken",
+    websiteLink: "https://shibatoken.com",
+    twitterLink: "https://twitter.com/shibtoken",
+  },
 ];
 
 export const mockDominanceChartData = [

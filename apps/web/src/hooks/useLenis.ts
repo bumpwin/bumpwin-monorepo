@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Lenis from 'lenis';
+import { useEffect, useState } from "react";
+import Lenis from "lenis";
 
 export interface LenisOptions {
   duration?: number;
   easing?: (t: number) => number;
-  orientation?: 'vertical' | 'horizontal';
-  gestureOrientation?: 'vertical' | 'horizontal';
+  orientation?: "vertical" | "horizontal";
+  gestureOrientation?: "vertical" | "horizontal";
   smoothWheel?: boolean;
   wheelMultiplier?: number;
   smoothTouch?: boolean;
@@ -30,8 +30,8 @@ export function useLenis(options: LenisOptions = {}): LenisInstance {
     const defaultOptions: LenisOptions = {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
+      orientation: "vertical",
+      gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1,
       smoothTouch: false,
@@ -61,7 +61,7 @@ export function useLenis(options: LenisOptions = {}): LenisInstance {
         lenisInstance.destroy();
       };
     } catch (error) {
-      console.error('Failed to initialize Lenis:', error);
+      console.error("Failed to initialize Lenis:", error);
       return () => {};
     }
   }, [options]);
@@ -78,10 +78,10 @@ export function useLenis(options: LenisOptions = {}): LenisInstance {
 export function scrollTo(
   lenis: LenisInstance,
   target: HTMLElement | string | number,
-  options?: { offset?: number; duration?: number; immediate?: boolean }
+  options?: { offset?: number; duration?: number; immediate?: boolean },
 ) {
   if (!lenis) return;
   lenis.scrollTo(target, options);
 }
 
-export default useLenis; 
+export default useLenis;
