@@ -42,6 +42,7 @@ interface DominanceRechartProps {
   className?: string;
   compact?: boolean;
   hideLegend?: boolean;
+  showAllTime?: boolean;
 }
 
 // Custom tooltip (similar to DominanceChart)
@@ -100,15 +101,19 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
   className = "",
   compact = false,
   hideLegend = false,
+  showAllTime = false,
 }) => {
   const { remainingTime, totalTime } = useBattleClock();
   const currentMinute = Math.floor((totalTime - remainingTime) / 60);
 
-  // 現在時刻までのデータのみをフィルタリング
-  const filteredPoints = points.filter(
-    (point) =>
-      typeof point.timestamp === "number" && point.timestamp <= currentMinute,
-  );
+  // データのフィルタリング
+  const filteredPoints = showAllTime
+    ? points
+    : points.filter(
+        (point) =>
+          typeof point.timestamp === "number" &&
+          point.timestamp <= currentMinute,
+      );
 
   // 24時間の固定スケールを設定
   const startTime = 0; // 00:00
@@ -137,9 +142,8 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
             tickLine={{ stroke: "#555" }}
           />
           <YAxis
-            // dataKey is not needed here as Line components define their values
             tickFormatter={formatYAxis}
-            domain={["auto", "auto"]} // Or specific like [0, 100] if shares are always percentages
+            domain={["auto", "auto"]}
             tick={{ fontSize: compact ? 8 : 10, fill: "#999" }}
             axisLine={{ stroke: "#555" }}
             tickLine={{ stroke: "#555" }}

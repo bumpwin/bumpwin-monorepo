@@ -24,6 +24,7 @@ import { CollapsibleSection } from "../../components/CollapsibleSection";
 import { FormField } from "../../components/FormField";
 import { ImageUpload } from "../../components/ImageUpload";
 import { SuiWalletConnectButton } from "../../components/SuiWalletConnectButton";
+import CommunicationPanel from "@/components/CommunicationPanel";
 
 // Define phases
 type Phase = "CONNECT_WALLET" | "PUBLISH_PACKAGE" | "CREATE_COIN" | "COMPLETED";
@@ -271,177 +272,200 @@ export default function CreateCoinPage() {
   };
 
   return (
-    <div className="flex flex-col items-center py-12 px-6 min-h-screen bg-[#0f1429]">
-      <h1 className="text-3xl font-bold text-white mb-8">Create Coin</h1>
+    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
+      <div className="flex flex-1">
+        <main className="flex-1 overflow-y-auto py-12 px-6 flex justify-center">
+          <div className="w-full max-w-2xl">
+            <h1 className="text-3xl font-bold text-white mb-8 text-center">
+              Create Coin
+            </h1>
 
-      <Card className="w-full max-w-2xl bg-[#141d38] border-[#2c2d3a] rounded-3xl shadow-xl overflow-hidden">
-        <CardContent className="p-8">
-          <form onSubmit={handleCreateCoin} className="space-y-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="md:w-2/3 space-y-6">
-                <FormField
-                  id="name"
-                  label="Name"
-                  required
-                  disabled={areFieldsLocked}
-                >
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Sui"
-                    className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+            <Card className="w-full bg-[#141d38] border-[#2c2d3a] rounded-3xl shadow-xl overflow-hidden">
+              <CardContent className="p-8">
+                <form onSubmit={handleCreateCoin} className="space-y-8">
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="md:w-2/3 space-y-6">
+                      <FormField
+                        id="name"
+                        label="Name"
+                        required
+                        disabled={areFieldsLocked}
+                      >
+                        <Input
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="Sui"
+                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          required
+                          disabled={areFieldsLocked}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Enter token name
+                        </p>
+                      </FormField>
+
+                      <FormField
+                        id="symbol"
+                        label="Symbol"
+                        required
+                        disabled={areFieldsLocked}
+                      >
+                        <Input
+                          id="symbol"
+                          name="symbol"
+                          value={formData.symbol}
+                          onChange={handleChange}
+                          placeholder="SUI"
+                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          required
+                          disabled={areFieldsLocked}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">
+                          Enter ticker
+                        </p>
+                      </FormField>
+                    </div>
+
+                    <div className="md:w-1/3">
+                      <FormField
+                        id="image"
+                        label="Icon"
+                        disabled={areFieldsLocked}
+                      >
+                        <ImageUpload
+                          preview={preview}
+                          isDragging={isDragging}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          onChange={handleImageChange}
+                          disabled={areFieldsLocked}
+                        />
+                      </FormField>
+                    </div>
+                  </div>
+
+                  <FormField
+                    id="description"
+                    label="Description"
                     required
                     disabled={areFieldsLocked}
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Enter token name</p>
-                </FormField>
-
-                <FormField
-                  id="symbol"
-                  label="Symbol"
-                  required
-                  disabled={areFieldsLocked}
-                >
-                  <Input
-                    id="symbol"
-                    name="symbol"
-                    value={formData.symbol}
-                    onChange={handleChange}
-                    placeholder="SUI"
-                    className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
-                    required
-                    disabled={areFieldsLocked}
-                  />
-                  <p className="text-xs text-gray-400 mt-1">Enter ticker</p>
-                </FormField>
-              </div>
-
-              <div className="md:w-1/3">
-                <FormField id="image" label="Icon" disabled={areFieldsLocked}>
-                  <ImageUpload
-                    preview={preview}
-                    isDragging={isDragging}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onChange={handleImageChange}
-                    disabled={areFieldsLocked}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            <FormField
-              id="description"
-              label="Description"
-              required
-              disabled={areFieldsLocked}
-            >
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Enter a description for your coin"
-                className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 min-h-[120px] rounded-md"
-                required
-                disabled={areFieldsLocked}
-              />
-              <p className="text-xs text-gray-400 mt-1">Enter description</p>
-            </FormField>
-
-            <CollapsibleSection
-              title="Socials & more options"
-              defaultOpen={true}
-            >
-              <div className="space-y-6 mt-4">
-                <FormField
-                  id="telegramLink"
-                  label="Telegram link"
-                  disabled={areFieldsLocked}
-                >
-                  <Input
-                    id="telegramLink"
-                    name="telegramLink"
-                    value={formData.telegramLink}
-                    onChange={handleChange}
-                    placeholder="https://t.me/yourgroup"
-                    className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
-                    disabled={areFieldsLocked}
-                  />
-                </FormField>
-
-                <FormField
-                  id="websiteLink"
-                  label="Website link"
-                  disabled={areFieldsLocked}
-                >
-                  <Input
-                    id="websiteLink"
-                    name="websiteLink"
-                    value={formData.websiteLink}
-                    onChange={handleChange}
-                    placeholder="https://yourwebsite.com"
-                    className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
-                    disabled={areFieldsLocked}
-                  />
-                </FormField>
-
-                <FormField
-                  id="twitterLink"
-                  label="Twitter or X link"
-                  disabled={areFieldsLocked}
-                >
-                  <Input
-                    id="twitterLink"
-                    name="twitterLink"
-                    value={formData.twitterLink}
-                    onChange={handleChange}
-                    placeholder="https://twitter.com/youraccount"
-                    className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
-                    disabled={areFieldsLocked}
-                  />
-                </FormField>
-              </div>
-            </CollapsibleSection>
-
-            <div className="pt-6">
-              <p className="text-yellow-500 text-sm mb-6 w-full">
-                Note: token data can&apos;t be changed after creation
-              </p>
-
-              <div className="flex flex-col space-y-4">
-                {renderActionButton()}
-
-                {phase === "CONNECT_WALLET" && (
-                  <div className="text-center">
-                    <p className="text-gray-400 text-sm mb-2">
-                      Wallet connection required
+                  >
+                    <Textarea
+                      id="description"
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      placeholder="Enter a description for your coin"
+                      className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 min-h-[120px] rounded-md"
+                      required
+                      disabled={areFieldsLocked}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Enter description
                     </p>
-                  </div>
-                )}
-                {phase === "PUBLISH_PACKAGE" && (
-                  <div className="text-center">
-                    <p className="text-gray-400 text-sm mb-2">
-                      Package must be deployed first
+                  </FormField>
+
+                  <CollapsibleSection
+                    title="Socials & more options"
+                    defaultOpen={false}
+                  >
+                    <div className="space-y-6 mt-4">
+                      <FormField
+                        id="telegramLink"
+                        label="Telegram link"
+                        disabled={areFieldsLocked}
+                      >
+                        <Input
+                          id="telegramLink"
+                          name="telegramLink"
+                          value={formData.telegramLink}
+                          onChange={handleChange}
+                          placeholder="https://t.me/yourgroup"
+                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          disabled={areFieldsLocked}
+                        />
+                      </FormField>
+
+                      <FormField
+                        id="websiteLink"
+                        label="Website link"
+                        disabled={areFieldsLocked}
+                      >
+                        <Input
+                          id="websiteLink"
+                          name="websiteLink"
+                          value={formData.websiteLink}
+                          onChange={handleChange}
+                          placeholder="https://yourwebsite.com"
+                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          disabled={areFieldsLocked}
+                        />
+                      </FormField>
+
+                      <FormField
+                        id="twitterLink"
+                        label="Twitter or X link"
+                        disabled={areFieldsLocked}
+                      >
+                        <Input
+                          id="twitterLink"
+                          name="twitterLink"
+                          value={formData.twitterLink}
+                          onChange={handleChange}
+                          placeholder="https://twitter.com/youraccount"
+                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          disabled={areFieldsLocked}
+                        />
+                      </FormField>
+                    </div>
+                  </CollapsibleSection>
+
+                  <div className="pt-6">
+                    <p className="text-yellow-500 text-sm mb-6 w-full">
+                      Note: token data can&apos;t be changed after creation
                     </p>
+
+                    <div className="flex flex-col space-y-4">
+                      {renderActionButton()}
+
+                      {phase === "CONNECT_WALLET" && (
+                        <div className="text-center">
+                          <p className="text-gray-400 text-sm mb-2">
+                            Wallet connection required
+                          </p>
+                        </div>
+                      )}
+                      {phase === "PUBLISH_PACKAGE" && (
+                        <div className="text-center">
+                          <p className="text-gray-400 text-sm mb-2">
+                            Package must be deployed first
+                          </p>
+                        </div>
+                      )}
+                      {phase === "CREATE_COIN" && (
+                        <div className="text-center">
+                          <p className="text-blue-400 text-sm mb-2">
+                            Package deployed successfully! Fill in details and
+                            create your coin.
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-                {phase === "CREATE_COIN" && (
-                  <div className="text-center">
-                    <p className="text-blue-400 text-sm mb-2">
-                      Package deployed successfully! Fill in details and create
-                      your coin.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+
+        {/* Communication panel */}
+        <aside className="hidden lg:block">
+          <CommunicationPanel />
+        </aside>
+      </div>
     </div>
   );
 }

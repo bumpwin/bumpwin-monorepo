@@ -49,6 +49,23 @@ export const mockCoinMetadata = [
   },
 ];
 
+export const mockLastChampionCoinMetadata = {
+  id: 0,
+  round: 4,
+  symbol: "JELL",
+  name: "JELL",
+  iconUrl: "/images/mockmemes/JELL.png",
+  color: "#FF69B4",
+  description:
+    "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
+  telegramLink: "https://t.me/dogecoin",
+  websiteLink: "https://dogecoin.com",
+  twitterLink: "https://twitter.com/dogecoin",
+  createdBy: "BUMP.WIN",
+  marketCap: 100000,
+  share: 68,
+};
+
 export const mockChampionCoinMetadata = [
   {
     id: 0,
@@ -62,6 +79,8 @@ export const mockChampionCoinMetadata = [
     telegramLink: "https://t.me/dogecoin",
     websiteLink: "https://dogecoin.com",
     twitterLink: "https://twitter.com/dogecoin",
+    createdBy: "BUMP.WIN",
+    marketCap: 100000,
   },
   {
     id: 1,
@@ -75,6 +94,8 @@ export const mockChampionCoinMetadata = [
     telegramLink: "https://t.me/pepecoineth",
     websiteLink: "https://www.pepe.vip",
     twitterLink: "https://twitter.com/pepecoineth",
+    createdBy: "BUMP.WIN",
+    marketCap: 40000,
   },
   {
     id: 2,
@@ -88,6 +109,8 @@ export const mockChampionCoinMetadata = [
     telegramLink: "https://t.me/wifcoin",
     websiteLink: "https://www.wifcoin.com",
     twitterLink: "https://twitter.com/wifcoin",
+    createdBy: "BUMP.WIN",
+    marketCap: 17000,
   },
 ];
 
