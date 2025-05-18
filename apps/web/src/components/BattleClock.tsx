@@ -8,17 +8,19 @@ interface BattleClockProps {
   totalSeconds: number;
   challengeSeconds: number;
   onChallengeStatusChange?: (isChallenge: boolean) => void;
-  onRemainingTimeChange?: (timeRemaining: number) => void;
 }
 
 // Helper function to format seconds to HH:MM:SS
 const formatTime = (seconds: number): string => {
+  if (seconds < 0) seconds = 0;
+
+  // 25時間サイクルに対応するため、時間を2桁ではなく必要な桁数で表示
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  return [hours, minutes, secs]
-    .map((val) => val.toString().padStart(2, "0"))
-    .join(":");
+
+  // 時間が10未満なら2桁で、それ以上なら必要な桁数で表示
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 };
 
 // 7セグメントLED風の数字コンポーネント
@@ -123,56 +125,20 @@ export default function BattleClock({
   totalSeconds,
   challengeSeconds,
   onChallengeStatusChange,
-  onRemainingTimeChange,
 }: BattleClockProps) {
-  // State to track remaining seconds
-  const [remaining, setRemaining] = useState(totalSeconds);
-
-  // State to control animation at the end
-  const [isComplete, setIsComplete] = useState(false);
-
   // Toggle for flashing effect in challenge phase
   const [toggle, setToggle] = useState(false);
 
-  // Determine current phase
-  const isChallenge = remaining <= challengeSeconds;
+  // Determine current phase - totalSecondsがremainingTimeとして渡される
+  const isChallenge = totalSeconds <= challengeSeconds;
 
   // 親コンポーネントにチャレンジステータスを通知
   useEffect(() => {
     onChallengeStatusChange?.(isChallenge);
   }, [isChallenge, onChallengeStatusChange]);
 
-  // 親コンポーネントに残り時間を通知
-  useEffect(() => {
-    onRemainingTimeChange?.(remaining);
-  }, [remaining, onRemainingTimeChange]);
-
-  // タイマーの終了とリセット処理
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    let resetTimer: NodeJS.Timeout;
-
-    if (isComplete) {
-      // アニメーションが終わった後に新しいサイクルを開始
-      resetTimer = setTimeout(() => {
-        setIsComplete(false);
-        setRemaining(totalSeconds); // 新しいサイクル開始
-      }, 1500);
-    } else if (remaining <= 0) {
-      // 0秒になったらアニメーション開始
-      setIsComplete(true);
-    } else {
-      // 通常のカウントダウン
-      timer = setInterval(() => {
-        setRemaining((prev) => prev - 1);
-      }, 1000);
-    }
-
-    return () => {
-      clearInterval(timer);
-      clearTimeout(resetTimer);
-    };
-  }, [remaining, isComplete, totalSeconds]);
+  // 残り時間のコールバックは不要（循環してしまう）
+  // BattleClockProviderがすでに管理しているため削除
 
   // Effect for the flashing toggle in challenge phase
   useEffect(() => {
@@ -190,23 +156,17 @@ export default function BattleClock({
       <motion.div
         className="relative w-full h-24 flex justify-center items-center overflow-hidden rounded-lg py-1.5"
         animate={
-          isComplete
+          isChallenge
             ? {
-                opacity: [1, 1, 1],
+                backgroundColor: toggle ? "rgba(40,0,0,0.3)" : "rgba(0,0,0,0)",
               }
-            : isChallenge
-              ? {
-                  backgroundColor: toggle
-                    ? "rgba(40,0,0,0.3)"
-                    : "rgba(0,0,0,0)",
-                }
-              : {}
+            : {}
         }
-        transition={{ duration: isComplete ? 1 : 0.3, times: [0, 0.3, 1] }}
+        transition={{ duration: 0.3 }}
       >
         <div className="flex justify-center items-center">
           <SevenSegmentDisplay
-            value={formatTime(remaining)}
+            value={formatTime(totalSeconds)}
             isChallenge={isChallenge}
             toggle={toggle}
           />
