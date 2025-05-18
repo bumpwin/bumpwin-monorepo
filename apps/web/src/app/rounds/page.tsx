@@ -97,7 +97,7 @@ export default function Home() {
                 />
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
-                <div className="w-full self-start">
+                <div className="w-full self-start mt-12">
                   <SwapRoundCoinCard coin={selectedCoin} />
                 </div>
               </div>
