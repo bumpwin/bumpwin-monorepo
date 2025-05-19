@@ -9,77 +9,54 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/shadcn/comp
 import { Send, Globe, Twitter, ArrowLeft } from "lucide-react";
 import SwapUI from "@/components/SwapUI";
 import { useQuery } from "@tanstack/react-query";
-
-// ローソク足チャート用のOHLCデータを生成
-function generateOHLCData(coinId: string): OHLCData[] {
-  const data: OHLCData[] = [];
-  const now = new Date();
-  // コインIDによって初期値を変える
-  // より小さな値を使用（仮想通貨価格を模倣）
-  const baseValue = 0.0001 + (Number.parseInt(coinId) % 3) * 0.0002;
-  let price = baseValue;
-
-  for (let i = 0; i < 30; i++) {
-    // 過去30日分のデータを生成
-    const date = new Date(now);
-    date.setDate(date.getDate() - (29 - i));
-
-    // 日付を YYYY-MM-DD 形式に変換
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const timeStr = `${year}-${month}-${day}`;
-
-    // 前日の価格を基準に変動を生成
-    const volatility = 0.05; // 5%の変動
-    const changePercent = (Math.random() - 0.5) * volatility * 2; // -5%から+5%
-
-    const open = price;
-    const close = open * (1 + changePercent);
-    const high = Math.max(open, close) * (1 + Math.random() * 0.02); // 最大2%高い
-    const low = Math.min(open, close) * (1 - Math.random() * 0.02); // 最大2%低い
-
-    data.push({
-      time: timeStr,
-      open,
-      high,
-      low,
-      close
-    });
-
-    // 次の日の始値は前日の終値
-    price = close;
-  }
-
-  return data;
-}
+import { mockprice } from "@/app/client";
 
 export default function ChampionDetailPage({ params }: { params: { id: string } }) {
   const id = params.id;
   const coin = mockChampionCoinMetadata.find((c) => c.id.toString() === id);
   if (!coin) return notFound();
 
-  // mock priceデータをreact-queryでfetch
+  // mock priceデータをreact-queryでfetch（クライアントを使用）
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", id],
     queryFn: async () => {
-      const res = await fetch(`/api/mockprice?seed=${id}&freq=day&count=30`);
-      if (!res.ok) throw new Error("Failed to fetch price data");
+      const res = await mockprice({ query: { seed: id, freq: 'day', count: '30' } });
       const json = await res.json();
+      
+      // エラーチェック
+      if ('error' in json) {
+        throw new Error(json.error as string);
+      }
+      
       // timestamp形式をtime形式に変換（LWCChartの期待する形式に合わせる）
-      return json.data.map((item: { timestamp: number; value: number }) => ({
-        time: new Date(item.timestamp).toISOString().split('T')[0],
-        open: item.value * 0.98,  // 仮の計算: 適当にOHLCデータを生成
-        high: item.value * 1.02,
-        low: item.value * 0.95,
-        close: item.value
-      }));
+      return json.data.map((item: { 
+        timestamp: number; 
+        open: number;
+        high: number;
+        low: number;
+        close: number;
+      }) => {
+        const date = new Date(item.timestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const timeStr = `${year}-${month}-${day}`;
+        
+        return {
+          time: timeStr,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close
+        };
+      });
     },
   });
 
-  const ohlcData = generateOHLCData(id);
+  // フォールバック用の空データ（APIエラー時に使用）
+  const fallbackData: OHLCData[] = [];
   const chartColor = coin.color || "rgba(76, 175, 80, 1)";
-  const currentPrice = ohlcData.length > 0 ? ohlcData[ohlcData.length - 1]?.close ?? 0 : 0;
+  const currentPrice = priceData && priceData.length > 0 ? priceData[priceData.length - 1]?.close ?? 0 : 0;
 
   // champion coin を RoundCoin 型にマッピング
   const roundCoin = {
@@ -113,7 +90,7 @@ export default function ChampionDetailPage({ params }: { params: { id: string } 
                 </div>
               ) : (
                 <LWCChart
-                  data={priceData || ohlcData}
+                  data={priceData || fallbackData}
                   currentPrice={currentPrice}
                   height={400}
                   className="mt-3"

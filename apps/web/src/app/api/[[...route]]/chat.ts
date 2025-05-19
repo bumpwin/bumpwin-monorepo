@@ -1,10 +1,8 @@
+import { Hono } from "hono";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase/src/adapters";
 import { supabase } from "@workspace/supabase/src/client";
 import type { ApiError } from "@workspace/supabase/src/error";
-import { type NextRequest, NextResponse } from "next/server";
-
-export const runtime = "edge";
 
 const supabaseRepository = new SupabaseRepository(supabase);
 
@@ -24,10 +22,9 @@ const supabaseRepository = new SupabaseRepository(supabase);
  * @error
  *   - 500: Internal Server Error - Database or unexpected errors
  */
-export async function GET(request: NextRequest) {
+export const app = new Hono().get("/", async (c) => {
   try {
-    const { searchParams } = new URL(request.url);
-    const limitParam = searchParams.get("limit");
+    const limitParam = c.req.query("limit");
     const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
 
     logger.info("Fetching chat messages", { limit });
@@ -38,21 +35,21 @@ export async function GET(request: NextRequest) {
         logger.info("Chat messages fetched successfully", {
           count: chatMessages.length,
         });
-        return NextResponse.json(chatMessages);
+        return c.json(chatMessages);
       },
       (error: ApiError) => {
         logger.error("Chat messages get error", { error });
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.code },
-        );
+        return new Response(JSON.stringify({ error: error.message }), { 
+          status: error.code,
+          headers: { 'Content-Type': 'application/json' }
+        });
       },
     );
   } catch (error) {
     logger.error("Unexpected error in chat messages fetch", { error });
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
-}
+});
