@@ -1,3 +1,5 @@
+"use client";
+
 import { mockChampionCoinMetadata } from "@/mock/mockData";
 import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import Image from "next/image";
@@ -6,6 +8,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/shadcn/components/card";
 import { Send, Globe, Twitter, ArrowLeft } from "lucide-react";
 import SwapUI from "@/components/SwapUI";
+import { useQuery } from "@tanstack/react-query";
 
 // ローソク足チャート用のOHLCデータを生成
 function generateOHLCData(coinId: string): OHLCData[] {
@@ -51,19 +54,31 @@ function generateOHLCData(coinId: string): OHLCData[] {
   return data;
 }
 
-export default async function ChampionDetailPage({
-  params,
-}: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function ChampionDetailPage({ params }: { params: { id: string } }) {
+  const id = params.id;
   const coin = mockChampionCoinMetadata.find((c) => c.id.toString() === id);
   if (!coin) return notFound();
 
+  // mock priceデータをreact-queryでfetch
+  const { data: priceData, isLoading: isPriceLoading } = useQuery({
+    queryKey: ["mockprice", id],
+    queryFn: async () => {
+      const res = await fetch(`/api/mockprice?seed=${id}&freq=day&count=30`);
+      if (!res.ok) throw new Error("Failed to fetch price data");
+      const json = await res.json();
+      // timestamp形式をtime形式に変換（LWCChartの期待する形式に合わせる）
+      return json.data.map((item: { timestamp: number; value: number }) => ({
+        time: new Date(item.timestamp).toISOString().split('T')[0],
+        open: item.value * 0.98,  // 仮の計算: 適当にOHLCデータを生成
+        high: item.value * 1.02,
+        low: item.value * 0.95,
+        close: item.value
+      }));
+    },
+  });
+
   const ohlcData = generateOHLCData(id);
-
-  // コインの色から適切なチャートラインの色を生成
   const chartColor = coin.color || "rgba(76, 175, 80, 1)";
-
-  // 現在の価格（最新のクローズ値）
   const currentPrice = ohlcData.length > 0 ? ohlcData[ohlcData.length - 1]?.close ?? 0 : 0;
 
   // champion coin を RoundCoin 型にマッピング
@@ -92,12 +107,18 @@ export default async function ChampionDetailPage({
               <CardTitle className="text-lg font-medium text-white">Price Chart</CardTitle>
             </CardHeader>
             <CardContent>
-              <LWCChart
-                data={ohlcData}
-                currentPrice={currentPrice}
-                height={400}
-                className="mt-3"
-              />
+              {isPriceLoading ? (
+                <div className="flex items-center justify-center h-40">
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+                </div>
+              ) : (
+                <LWCChart
+                  data={priceData || ohlcData}
+                  currentPrice={currentPrice}
+                  height={400}
+                  className="mt-3"
+                />
+              )}
             </CardContent>
           </Card>
         </div>
