@@ -2,6 +2,9 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
+// Edge Runtime configuration
+export const runtime = 'edge';
+
 const querySchema = z.object({
   seed: z.string().default("0"),
   freq: z.enum(["day", "min"]).default("day"),

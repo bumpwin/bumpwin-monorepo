@@ -4,6 +4,9 @@ import { SupabaseRepository } from "@workspace/supabase/src/adapters";
 import { supabase } from "@workspace/supabase/src/client";
 import type { ApiError } from "@workspace/supabase/src/error";
 
+// Edge Runtime configuration
+export const runtime = 'edge';
+
 const supabaseRepository = new SupabaseRepository(supabase);
 
 /**

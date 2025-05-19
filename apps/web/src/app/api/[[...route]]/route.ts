@@ -3,6 +3,9 @@ import { handle } from "hono/vercel";
 import { app as mockpriceApp } from "./mockprice";
 import { app as chatApp } from "./chat";
 
+// Edge Runtime configuration
+export const runtime = 'edge';
+
 // basePath は API ルートのベースパスを指定します
 const app = new Hono().basePath("/api");
 
@@ -16,11 +19,6 @@ const chatRoute = app.route("/chat", chatApp);
 export type AppType = typeof app;
 export type MockpriceRouteType = typeof mockpriceRoute;
 export type ChatRouteType = typeof chatRoute;
-
-// Export Edge Runtime configuration
-export const config = {
-  runtime: 'edge',
-};
 
 // Next.jsのルート関数のみをエクスポート
 export const GET = handle(app);
