@@ -167,5 +167,3 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
 };
 
 export default SwapRoundCoinCard;
-
-export { default } from "./SwapUI";

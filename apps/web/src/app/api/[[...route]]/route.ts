@@ -6,20 +6,22 @@ import { app as chatApp } from "./chat";
 // basePath は API ルートのベースパスを指定します
 const app = new Hono().basePath("/api");
 
-app.get("/", (c) => {
-  return c.json({ message: "Hello, World!" });
-});
+// ルートの追加と変数の保持
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockpriceRoute = app.route("/mockprice", mockpriceApp);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const chatRoute = app.route("/chat", chatApp);
 
-export const mockpriceRoute = app.route("/mockprice", mockpriceApp);
-export const chatRoute = app.route("/chat", chatApp);
-
+// 型定義用
 export type AppType = typeof app;
+export type MockpriceRouteType = typeof mockpriceRoute;
+export type ChatRouteType = typeof chatRoute;
 
 // Export Edge Runtime configuration
 export const config = {
-  runtime: "edge",
+  runtime: 'edge',
 };
 
-// Export handler
+// Next.jsのルート関数のみをエクスポート
 export const GET = handle(app);
 export const POST = handle(app);
