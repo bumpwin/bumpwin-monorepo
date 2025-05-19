@@ -4,6 +4,8 @@ export const metadata = {
     "Earn protocol fees from all BUMP.WIN transactions by staking LOSER tokens. Learn how losers can still win in the BUMP.WIN ecosystem.",
 };
 
+import Image from "next/image";
+
 export default function LosersPage() {
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -75,10 +77,12 @@ export default function LosersPage() {
               data-parallax-depth="0.1"
             >
               <div className="relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-purple-500/30 sticky-element">
-                <img
+                <Image
                   src="/images/mockmemes/LOSER.png"
                   alt="LOSER Token Staking"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
                   <div className="text-3xl font-bold tracking-wider mb-1">
@@ -135,11 +139,13 @@ export default function LosersPage() {
           </div>
           <div className="md:w-1/2">
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-2xl border border-pink-500/30">
-              <img
-                src="/images/mockmemes/LOSER.png"
-                alt="LOSER Token"
-                className="w-full h-full object-cover"
-              />
+                <Image
+                  src="/images/mockmemes/LOSER.png"
+                  alt="LOSER Token"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
                 <div className="text-2xl font-bold tracking-wider mb-1">
                   LOSER Token

@@ -5,7 +5,7 @@ import CommunicationPanel from "@/components/CommunicationPanel";
 // import DominanceChart from "@/components/DominanceChart";
 import DominanceRechart from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
-import SwapRoundCoinCard from "@/components/SwapRoundCoinCard";
+import SwapUI from "@/components/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 // import { mockDominanceData } from "@/mock/mockDominanceData";
 import { CoinMeta } from "@/components/DominanceRechart";
@@ -97,7 +97,7 @@ export default function Home() {
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
                 <div className="w-full self-start mt-12">
-                  <SwapRoundCoinCard coin={selectedCoin} />
+                  <SwapUI coin={selectedCoin} />
                 </div>
               </div>
             </div>

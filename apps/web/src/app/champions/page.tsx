@@ -20,7 +20,7 @@ export default function ChampionsPage() {
       round: coin.round,
       name: coin.name,
       symbol: coin.symbol,
-      iconUrl: coin.icon,
+      iconUrl: coin.iconUrl,
       description: coin.description,
       telegramLink: coin.telegramLink,
       websiteLink: coin.websiteLink,
@@ -66,7 +66,7 @@ export default function ChampionsPage() {
                   letterSpacing: "0.02em",
                 }}
               >
-                CHAMPIONS <span className="align-middle"></span>
+                CHAMPIONS <span className="align-middle" />
                 <span
                   className="absolute left-0 right-0 top-0 h-1/3 bg-white/60 rounded-full blur-md pointer-events-none"
                   style={{ zIndex: 1 }}

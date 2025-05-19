@@ -68,11 +68,11 @@ export const mockLastChampionCoinMetadata = {
 
 export const mockChampionCoinMetadata = [
   {
-    id: 0,
+    id: "0",
     round: 1,
     symbol: "SMUG",
     name: "SMUG",
-    icon: "/images/mockmemes/SMUG.webp",
+    iconUrl: "/images/mockmemes/SMUG.webp",
     color: "#FF69B4",
     description:
       "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
@@ -81,13 +81,14 @@ export const mockChampionCoinMetadata = [
     twitterLink: "https://twitter.com/dogecoin",
     createdBy: "BUMP.WIN",
     marketCap: 100000,
+    share: 40,
   },
   {
-    id: 1,
+    id: "1",
     round: 2,
     symbol: "YAKIU",
     name: "YAKIU",
-    icon: "/images/mockmemes/YAKIU.png",
+    iconUrl: "/images/mockmemes/YAKIU.png",
     color: "#3CB043",
     description:
       "Pepe is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
@@ -96,13 +97,14 @@ export const mockChampionCoinMetadata = [
     twitterLink: "https://twitter.com/pepecoineth",
     createdBy: "BUMP.WIN",
     marketCap: 40000,
+    share: 30,
   },
   {
-    id: 2,
+    id: "2",
     round: 3,
     symbol: "CHEDER",
     name: "CHEDER",
-    icon: "/images/mockmemes/CHEDER.png",
+    iconUrl: "/images/mockmemes/CHEDER.png",
     color: "#FFD700",
     description:
       "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
@@ -111,6 +113,7 @@ export const mockChampionCoinMetadata = [
     twitterLink: "https://twitter.com/wifcoin",
     createdBy: "BUMP.WIN",
     marketCap: 17000,
+    share: 30,
   },
 ];
 
