@@ -1,6 +1,4 @@
 "use client";
-
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -12,52 +10,16 @@ import {
 } from "@mysten/dapp-kit";
 import { getSuiBalance } from "@workspace/sui";
 
-interface SwapRoundCoinCardProps {
+interface SwapUIProps {
   coin?: RoundCoin;
 }
 
-const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
-  coin = (() => {
-    if (mockCoinMetadata.length > 0 && mockDominanceChartData.length > 0) {
-      const latestData = mockDominanceChartData[
-        mockDominanceChartData.length - 1
-      ] as { shares: number[] };
-      if (!latestData?.shares) return undefined;
-      const latestShares = latestData.shares as number[];
-      const maxShare = Math.max(...latestShares);
-      const maxShareIndex = latestShares.indexOf(maxShare);
-      if (maxShareIndex === -1) return undefined;
-      const defaultCoin = mockCoinMetadata[maxShareIndex];
-      if (
-        defaultCoin &&
-        Number.isFinite(maxShareIndex) &&
-        typeof latestShares[maxShareIndex] === "number"
-      ) {
-        return {
-          id: defaultCoin.id.toString(),
-          symbol: defaultCoin.symbol,
-          name: defaultCoin.name,
-          iconUrl: defaultCoin.icon,
-          round: 1,
-          share: latestShares[maxShareIndex],
-          marketCap: 0,
-          description: defaultCoin.description,
-          telegramLink: defaultCoin.telegramLink,
-          websiteLink: defaultCoin.websiteLink,
-          twitterLink: defaultCoin.twitterLink,
-          color: defaultCoin.color,
-        };
-      }
-    }
-    return undefined;
-  })(),
-}) => {
+const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState<number>(0);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
 
-  // ウォレット接続時にSUI残高を取得
   React.useEffect(() => {
     const fetchBalance = async () => {
       if (account) {
@@ -166,6 +128,4 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
   );
 };
 
-export default SwapRoundCoinCard;
-
-export { default } from "./SwapUI";
+export default SwapUI; 
