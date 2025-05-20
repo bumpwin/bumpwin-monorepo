@@ -9,6 +9,8 @@ import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import BattleClock from "./BattleClock";
+import { ConnectButton } from "@mysten/dapp-kit";
+import WordmarkLogo from "./WordmarkLogo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -76,148 +78,125 @@ export default function Header() {
 
   return (
     <>
-      <header className="w-full bg-black pt-3 fixed top-0 left-0 z-50">
-        <div className="w-full px-4 h-16 flex items-center relative">
-          {/* 左側グループ */}
-          <div className="flex items-center w-[45%]">
-            {/* 1. ロゴ */}
-            <Link href="/about" className="flex items-center gap-2 mr-4">
-              <Image
-                src="/logo.png"
-                alt="Ooze.fun Logo"
-                width={120}
-                height={38}
-              />
-            </Link>
-
-            {/* 2. ナビゲーション */}
-            <nav className="flex items-center gap-5">
-              <Link
-                href="/rounds"
-                onClick={handleRoundsClick}
-                className={cn(
-                  "text-base font-medium transition-colors cursor-pointer",
-                  isActive("/rounds")
-                    ? "text-[#ff5e00] font-medium"
-                    : "text-white hover:text-[#ff5e00]",
-                )}
-              >
-                Rounds
+      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm">
+        <div className="w-full px-8">
+          <div className="flex h-16 items-center justify-between">
+            {/* 左側グループ */}
+            <div className="flex items-center gap-0">
+              <Link href="/" className="flex items-center w-auto shrink-0 mr-[-6.5rem]">
+                <div className="scale-50 origin-left inline-flex translate-y-[-2px]">
+                  <WordmarkLogo />
+                </div>
               </Link>
-              <Link
-                href="/champions"
-                className={cn(
-                  "text-base font-medium transition-colors",
-                  isActive("/champions")
-                    ? "text-[#ff5e00] font-medium"
-                    : "text-white hover:text-[#ff5e00]",
-                )}
-              >
-                Champions
-              </Link>
-              <Link
-                href="/losers"
-                className={cn(
-                  "text-base font-medium transition-colors",
-                  isActive("/losers")
-                    ? "text-[#ff5e00] font-medium"
-                    : "text-white hover:text-[#ff5e00]",
-                )}
-              >
-                Losers
-              </Link>
-
-              {/* Round 表示 - チャレンジ期間中は赤く点滅 */}
-              <div className="ml-12">
-                <span
+              <nav className="hidden md:flex items-center">
+                <Link
+                  href="/rounds"
+                  onClick={handleRoundsClick}
                   className={cn(
-                    "font-bold text-2xl tracking-wide transition-colors",
-                    isChallengePeriod
-                      ? "text-red-500 animate-pulse"
-                      : "text-orange-500",
+                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors cursor-pointer",
+                    isActive("/rounds")
+                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
                   )}
                 >
-                  Round {currentRound}
-                </span>
+                  Battle
+                </Link>
+                <Link
+                  href="/champions"
+                  className={cn(
+                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
+                    isActive("/champions")
+                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
+                  )}
+                >
+                  Champions
+                </Link>
+                <Link
+                  href="/losers"
+                  className={cn(
+                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
+                    isActive("/losers")
+                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
+                  )}
+                >
+                  Losers
+                </Link>
+                {/* Round 表示 - チャレンジ期間中は赤く点滅 */}
+                {/* <div className="ml-12">
+                  <span
+                    className={cn(
+                      "font-bold text-2xl tracking-wide transition-colors",
+                      isChallengePeriod
+                        ? "text-red-500 animate-pulse"
+                        : "text-orange-500",
+                    )}
+                  >
+                    Round {currentRound}
+                  </span>
+                </div> */}
+              </nav>
+            </div>
+
+            {/* 中央のカウントダウン */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center py-1">
+              <BattleClock
+                totalSeconds={remainingTime}
+                challengeSeconds={challengeTime}
+                onChallengeStatusChange={setIsChallengePeriod}
+              />
+            </div>
+
+            {/* 右側グループ */}
+            <div className="flex items-center justify-end gap-4">
+              {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
+              <Link href="/create">
+                <button
+                  type="button"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
+                >
+                  Create Coin
+                </button>
+              </Link>
+
+              {/* ウォレット接続ボタン（豪華なConnectボタン） */}
+              <div className="h-12 flex items-center">
+                <button
+                  type="button"
+                  className="rounded-full px-10 py-2 text-xl font-bold border-3 border-purple-400 bg-black/80 hover:bg-black/60 transition-all duration-150 cursor-pointer"
+                  style={{}}
+                >
+                  <span
+                    className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent"
+                    style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                  >
+                    Login
+                  </span>
+                </button>
               </div>
-            </nav>
+            </div>
           </div>
 
-          {/* 3. カウントダウン - 絶対位置で中央に配置 */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <BattleClock
-              totalSeconds={remainingTime}
-              challengeSeconds={challengeTime}
-              onChallengeStatusChange={setIsChallengePeriod}
+          {/* プログレスバー */}
+          <div className="w-full h-1 bg-gray-800 relative">
+            {/* チャレンジポイントのマーカー */}
+            <div
+              className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"
+              style={{ left: `${challengePoint}%` }}
+            />
+
+            {/* プログレスバー - 左から右へ進行、色はカウントダウンに連動 */}
+            <div
+              className={cn(
+                "h-full transition-all duration-100 ease-linear",
+                isChallengePeriod ? "bg-red-500" : "bg-orange-500",
+              )}
+              style={{ width: `${progress}%` }}
             />
           </div>
-
-          {/* 右側グループ */}
-          <div className="flex items-center justify-end ml-auto">
-            {/* 検索バー */}
-            <div className="mr-3 relative">
-              <div className="flex items-center bg-[#161a23] rounded-md px-2 h-8 w-56">
-                <svg
-                  className="w-3.5 h-3.5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Search Icon</title>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search token or address"
-                  className="bg-transparent border-0 text-xs text-white placeholder-gray-500 focus:outline-none pl-2 w-full"
-                />
-              </div>
-            </div>
-
-            {/* 5. プライマリボタン */}
-            <Link href="/create" className="mr-3">
-              <Button
-                className={cn(
-                  "bg-[#5D20D3] hover:bg-[#4D1BB0] text-white rounded-full border-0 text-base font-light px-4 h-9",
-                )}
-              >
-                Create Coin
-              </Button>
-            </Link>
-
-            {/* 6. ウォレットメニュー - Create Coinと同じサイズに */}
-            <div className="h-9">
-              <SuiWalletConnectButton />
-            </div>
-          </div>
-        </div>
-
-        {/* プログレスバー - カウントダウンに連動 */}
-        <div className="w-full h-1 bg-gray-800 mt-1 relative">
-          {/* チャレンジポイントのマーカー */}
-          <div
-            className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"
-            style={{ left: `${challengePoint}%` }}
-          />
-
-          {/* プログレスバー - 左から右へ進行、色はカウントダウンに連動 */}
-          <div
-            className={cn(
-              "h-full transition-all duration-100 ease-linear",
-              isChallengePeriod ? "bg-red-500" : "bg-orange-500",
-            )}
-            style={{ width: `${progress}%` }}
-          />
         </div>
       </header>
-      <div className="h-[calc(4rem+1px)]" />{" "}
-      {/* ヘッダーの高さ分のスペーサー */}
     </>
   );
 }
