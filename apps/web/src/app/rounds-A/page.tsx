@@ -1,15 +1,18 @@
 import { mockmemes } from "@workspace/mockdata";
 import { RoundsACard } from "./RoundsACard";
 import CommunicationPanel from "@/components/CommunicationPanel";
+import { BattleNavBar } from "./BattleNavBar";
+import InfoBar from "@/components/InfoBar";
 
 export default function RoundsAPage() {
   return (
-    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
+    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="flex flex-1">
         {/* メインコンテンツ */}
-        <main className="flex-1 overflow-y-auto pb-6 pt-24">
+        <main className="flex-1 overflow-y-auto pb-6 pt-4">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl font-extrabold text-white mb-10 text-center tracking-tight drop-shadow-lg">Rounds-A Gallery</h1>
+            <InfoBar />
+            <h1 className="text-4xl font-extrabold text-white my-10 text-center tracking-tight drop-shadow-lg">Rounds-A Gallery</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
               {mockmemes.map((meme, i) => (
                 <RoundsACard

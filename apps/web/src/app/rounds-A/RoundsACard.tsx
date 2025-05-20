@@ -18,7 +18,7 @@ export const RoundsACard: React.FC<RoundsACardProps> = ({
   <div className="relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-purple-500/30 bg-gray-900 transition-transform duration-200 hover:scale-[1.03] hover:shadow-3xl group">
     {/* 右上順位バッジ */}
     {typeof rank === "number" && (
-      <div className="absolute top-2 right-2 z-10 bg-white/90 text-gray-900 text-lg font-extrabold px-3 rounded-full shadow-md border border-purple-500/30 ">
+      <div className="absolute top-3 right-3 z-10 bg-white/90 text-gray-900 text-lg font-extrabold px-3 rounded-full shadow-md border border-purple-500/30 ">
         #{rank}
       </div>
     )}
