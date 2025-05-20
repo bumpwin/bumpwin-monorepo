@@ -9,7 +9,7 @@ import BattleClock from "./BattleClock";
 import WordmarkLogo from "./WordmarkLogo";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
-export default function Header() {
+export default function AppBar() {
   const pathname = usePathname();
   const router = useRouter();
   const roundsClickRef = useRef(false);
@@ -150,7 +150,7 @@ export default function Header() {
               <Link href="/create">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
                 >
                   Create Coin
                 </button>
@@ -184,4 +184,4 @@ export default function Header() {
       </header>
     </>
   );
-}
+} 

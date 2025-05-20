@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 import { Toaster } from "sonner";
-import Header from "../components/Header";
+import AppBar from "../components/AppBar";
 import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
@@ -45,7 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Header />
+          <AppBar />
           <main className="flex-1">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
