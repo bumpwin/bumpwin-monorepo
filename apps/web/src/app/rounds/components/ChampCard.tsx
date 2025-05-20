@@ -15,7 +15,9 @@ interface ChampCardProps {
 
 export function ChampCard({ image, name, round, mcap, volume, subtitle, tradeUrl, allChampionsUrl, className }: ChampCardProps) {
   return (
-    <div className={`relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-indigo-500/30 hover:scale-[1.02] transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:shadow-[0_0_40px_rgba(255,215,0,0.4)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:z-0 bg-gradient-to-br from-gray-900/80 to-gray-800/40 ${className || ''}`}>
+    <div 
+      className={`relative w-full h-full overflow-hidden rounded-xl shadow-2xl border border-indigo-500/30 hover:scale-[1.02] transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:shadow-[0_0_40px_rgba(255,215,0,0.4)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:z-0 bg-gradient-to-br from-gray-900/80 to-gray-800/40 ${className || ''}`}
+    >
       <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl z-0" />
       <Image
         src={image}

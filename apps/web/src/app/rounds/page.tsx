@@ -214,8 +214,8 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
           data.state === 'active' ? 'shadow-[0_0_15px_rgba(168,85,247,0.4)]' : ''
         }`}
       >
-        {/* グリッドレイアウトに変更 - 明確な2カラム構造 */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
+        {/* グリッドレイアウトに変更 - 動的調整の2カラム構造 */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto]">
           {/* 左側 - メインコンテンツ */}
           <div className="p-6">
             {/* Header for mobile view */}
@@ -311,22 +311,30 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             </div>
           </div>
 
-          {/* 右側 - Champion Card - 常に表示されるように条件分岐を調整 */}
+          {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
           {(data.state === 'active' || (data.state === 'ended' && data.winner)) ? (
-            <div className="border-t lg:border-t-0 p-4 h-full">
-              {data.state === 'active' ? (
-                <div className="flex items-center justify-center h-full bg-black/60 rounded-xl">
-                  <span className="text-white text-lg font-bold opacity-60">Battle in progress</span>
-                </div>
-              ) : data.winner && (
-                <ChampCard
-                  image={data.winner.image}
-                  name={data.winner.name}
-                  round={data.winner.round}
-                  mcap={data.winner.mcap}
-                  volume={data.winner.volume}
-                />
-              )}
+            <div className="p-4" style={{height: "calc(100% - 8px)"}}>
+              <div style={{
+                height: "100%",
+                aspectRatio: "3/4",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                {data.state === 'active' ? (
+                  <div className="w-full h-full bg-black/60 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg font-bold opacity-60">Battle in progress</span>
+                  </div>
+                ) : data.winner && (
+                  <ChampCard
+                    image={data.winner.image}
+                    name={data.winner.name}
+                    round={data.winner.round}
+                    mcap={data.winner.mcap}
+                    volume={data.winner.volume}
+                  />
+                )}
+              </div>
             </div>
           ) : null}
         </div>
