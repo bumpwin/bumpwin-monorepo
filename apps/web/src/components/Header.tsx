@@ -1,15 +1,11 @@
 "use client";
 
-import { Button } from "@workspace/shadcn/components/button";
 import { cn } from "@workspace/shadcn/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
-import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import BattleClock from "./BattleClock";
-import { ConnectButton } from "@mysten/dapp-kit";
 import WordmarkLogo from "./WordmarkLogo";
 
 export default function Header() {
@@ -21,7 +17,6 @@ export default function Header() {
     remainingTime,
     totalTime,
     challengeTime,
-    currentRound,
     setIsChallengePeriod,
   } = useBattleClock();
 

@@ -33,7 +33,6 @@ export const BattleNavBar: React.FC<BattleNavBarProps> = ({
       setTimer(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`);
     }, 1000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line
   }, [timer]);
 
   return (

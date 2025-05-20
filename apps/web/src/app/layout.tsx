@@ -9,7 +9,6 @@ import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
 import { mockCoinMetadata } from "@/mock/mockData";
-import InfoBar from "@/components/InfoBar";
 
 export const runtime = "edge";
 

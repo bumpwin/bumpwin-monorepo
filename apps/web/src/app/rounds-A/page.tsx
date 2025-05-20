@@ -1,7 +1,6 @@
 import { mockmemes } from "@workspace/mockdata";
 import { RoundsACard } from "./RoundsACard";
 import CommunicationPanel from "@/components/CommunicationPanel";
-import { BattleNavBar } from "./BattleNavBar";
 import InfoBar from "@/components/InfoBar";
 
 export default function RoundsAPage() {
