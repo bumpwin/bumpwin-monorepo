@@ -35,10 +35,10 @@ const generateMockPriceData = (
 
   for (let i = 0; i < count; i++) {
     const timestamp = now - (count - 1 - i) * interval;
-    
+
     // 前日の価格を基準に変動を生成 (オリジナルと同様)
     const changePercent = (Math.random() - 0.5) * volatility * 2; // -5%から+5%
-    
+
     const open = price;
     const close = open * (1 + changePercent);
     const high = Math.max(open, close) * (1 + Math.random() * 0.02); // 最大2%高い

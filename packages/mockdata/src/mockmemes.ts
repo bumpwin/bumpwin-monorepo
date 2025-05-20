@@ -10,7 +10,7 @@ export const mockmemes: MockCoinMetaData[] = [
     symbol: "MOCAT",
     name: "Mocaccino Cat",
     description: "just knocked over $3B in TVL. still no regrets.",
-    iconUrl: "/images/mockmemes/MOCAT.webp",
+    iconUrl: "/images/mockmemes/MOCAT.jpg",
   },
   {
     symbol: "BUN",
@@ -21,7 +21,7 @@ export const mockmemes: MockCoinMetaData[] = [
   {
     symbol: "DITT",
     name: "DittoDAO",
-    description: ".",
+    description: "._.",
     iconUrl: "/images/mockmemes/DITT.png",
   },
   {
@@ -142,7 +142,7 @@ export const mockmemes: MockCoinMetaData[] = [
     symbol: "HOGGY",
     name: "Hoggy Forest",
     description: "forest-coded. emotionally tanky. cute armor. 🌲🦔",
-    iconUrl: "/images/mockmemes/HOGGY.gif",
+    iconUrl: "/images/mockmemes/HOGGY.webp",
   },
   {
     symbol: "LILCUTE",
