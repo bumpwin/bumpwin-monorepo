@@ -13,6 +13,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import Image from "next/image";
 import { RoundState } from "./types";
 import { ChampCard } from "./components/ChampCard";
+import CommunicationPanel from "@/components/CommunicationPanel";
 
 // Define types for our dashboard data
 interface TokenColors {
@@ -128,23 +129,30 @@ export default function RoundsPage() {
   }, {});
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#0A0D14] py-12 px-4 overflow-hidden relative">
-      {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[url('/images/grid.svg')] bg-center opacity-5 z-0" />
+    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="flex flex-1">
+        {/* Main content */}
+        <main className="flex-1 overflow-y-auto pb-6 pt-4">
+          <div className="max-w-7xl w-full mx-auto space-y-8">
+            <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFEB80] to-[#FFC700] text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]">
+              Battle Rounds
+            </h1>
 
-      <h1 className="text-5xl font-extrabold text-white text-center mb-14 tracking-tight z-10 relative">
-        Battle Rounds
-      </h1>
+            {dashboardData.map((dashboard) => (
+              <DashboardSection
+                key={dashboard.id}
+                data={dashboard}
+                tokenColors={tokenColors}
+                onCreateClick={dashboard.state === 'waiting' ? handleCreateClick : undefined}
+              />
+            ))}
+          </div>
+        </main>
 
-      <div className="max-w-7xl w-full mx-auto space-y-8 z-10 relative">
-        {dashboardData.map((dashboard) => (
-          <DashboardSection
-            key={dashboard.id}
-            data={dashboard}
-            tokenColors={tokenColors}
-            onCreateClick={dashboard.state === 'waiting' ? handleCreateClick : undefined}
-          />
-        ))}
+        {/* Right side chat panel */}
+        <aside className="hidden lg:block">
+          <CommunicationPanel />
+        </aside>
       </div>
 
       <CreateCoinModal
@@ -169,27 +177,36 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
           ease: [0.33, 1, 0.68, 1]
         }}
       >
-        <Card className="bg-[#141923] border-[#2D3748] overflow-hidden">
+        <Card className="bg-gradient-to-br from-[#1D1F2B] to-[#13151E] border border-[#343850]/80 shadow-[0_10px_50px_-12px_rgba(0,0,0,0.7),0_0_1px_0_rgba(255,215,0,0.1)] backdrop-blur-sm rounded-2xl overflow-hidden relative">
+          {/* State indicator line */}
+          <div className="absolute top-0 left-0 h-full w-2 bg-gray-700" />
+
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-bold text-gray-400">{data.id}</h1>
-                <span className="text-xl font-bold">{data.status}</span>
+                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
+                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]">{data.status}</span>
               </div>
-              <div className="text-sm text-gray-300 mt-2 md:mt-0">
+              <div className="text-sm text-gray-400 mt-2 md:mt-0 font-medium tracking-wide">
                 Start: {data.startDate} · End: {data.endDate}
               </div>
             </div>
 
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <p className="text-xl text-gray-300 mb-6">
+              <p className="text-xl text-gray-300 mb-8 font-medium">
                 This battle hasn't started yet. Create a coin to participate!
               </p>
               <button
                 onClick={onCreateClick}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors"
+                className="group relative px-8 py-4 bg-gradient-to-r from-[#FFD700] to-[#FFAA00] hover:from-[#FFE345] hover:to-[#FFB52E] text-black rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] shadow-[0_5px_30px_-10px_rgba(255,215,0,0.5)]"
               >
-                Create Coin
+                <span className="relative z-10 flex items-center gap-2">
+                  <span>Create Coin</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300 transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+                <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></span>
               </button>
             </div>
           </CardContent>
@@ -210,10 +227,17 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
       }}
     >
       <div
-        className={`bg-[#141923] w-full border border-[#2D3748] rounded-lg overflow-hidden ${
-          data.state === 'active' ? 'shadow-[0_0_15px_rgba(168,85,247,0.4)]' : ''
+        className={`bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative ${
+          data.state === 'active'
+            ? 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(255,215,0,0.25)]'
+            : 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]'
         }`}
       >
+        {/* State indicator line */}
+        <div className={`absolute top-0 left-0 h-full w-2 ${
+          data.state === 'active' ? "bg-purple-500 animate-pulse" : "bg-gray-700"
+        }`} />
+
         {/* グリッドレイアウトに変更 - 動的調整の2カラム構造 */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto]">
           {/* 左側 - メインコンテンツ */}
@@ -223,18 +247,22 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               <div className="flex flex-col space-y-2 mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-4xl font-bold text-gray-400">{data.id}</h1>
-                    <span className={`text-xl font-bold ${data.state === 'active' ? 'text-purple-300' : ''}`}>
+                    <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
+                    <span className={`text-xl font-bold ${
+                      data.state === 'active'
+                        ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]'
+                        : 'text-gray-300'
+                    }`}>
                       {data.status}
                       {data.state === 'active' && (
-                        <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse">
+                        <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#FFD700]/20 to-[#FFAA00]/20 text-[#FFD700] animate-pulse border border-[#FFD700]/30">
                           ● LIVE
                         </span>
                       )}
                     </span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-300">
+                <div className="text-sm text-gray-400 font-medium tracking-wide">
                   Start: {data.startDate} · End: {data.endDate}
                 </div>
               </div>
@@ -243,17 +271,21 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             {/* Header for desktop */}
             <div className="hidden lg:flex items-center justify-between mb-5">
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-bold text-gray-400">{data.id}</h1>
-                <span className={`text-xl font-bold ${data.state === 'active' ? 'text-purple-300' : ''}`}>
+                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
+                <span className={`text-xl font-bold ${
+                  data.state === 'active'
+                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]'
+                    : 'text-gray-300'
+                }`}>
                   {data.status}
                   {data.state === 'active' && (
-                    <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse">
+                    <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#FFD700]/20 to-[#FFAA00]/20 text-[#FFD700] animate-pulse border border-[#FFD700]/30">
                       ● LIVE
                     </span>
                   )}
                 </span>
               </div>
-              <div className="text-sm text-gray-300">
+              <div className="text-sm text-gray-400 font-medium tracking-wide">
                 Start: {data.startDate} · End: {data.endDate}
               </div>
             </div>
@@ -267,20 +299,33 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             </div>
 
             {/* Chart */}
-            <div className="bg-[#171923] rounded-lg border border-[#2D3748] overflow-hidden">
-              <div className="h-[240px] px-2 pt-4 pb-6">
+            <div className="bg-gradient-to-br from-[#181B27] to-[#0F1017] rounded-xl border border-[#343850]/50 overflow-hidden backdrop-filter backdrop-blur-sm shadow-inner">
+              <div className="h-[240px] px-2 pt-4 pb-6 relative">
+                {/* Chart subtle grid overlay */}
+                <div className="absolute inset-0 bg-[url('/images/grid-chart.svg')] bg-center opacity-[0.07] z-0" />
+
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.chartData}>
+                    <defs>
+                      {Object.keys(tokenColors).map(token => (
+                        <linearGradient key={`gradient-${token}`} id={`gradient-${token}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={tokenColors[token] || '#FFD700'} stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor={tokenColors[token] || '#FFD700'} stopOpacity={0.2}/>
+                        </linearGradient>
+                      ))}
+                    </defs>
                     <XAxis
                       dataKey="time"
-                      stroke="#4A5568"
-                      tick={{ fill: "#4A5568" }}
-                      axisLine={{ stroke: "#2D3748" }}
+                      stroke="#5A5A6A"
+                      tick={{ fill: "#5A5A6A" }}
+                      axisLine={{ stroke: "#343850" }}
+                      tickLine={{ stroke: "#343850" }}
                     />
                     <YAxis
-                      stroke="#4A5568"
-                      tick={{ fill: "#4A5568" }}
-                      axisLine={{ stroke: "#2D3748" }}
+                      stroke="#5A5A6A"
+                      tick={{ fill: "#5A5A6A" }}
+                      axisLine={{ stroke: "#343850" }}
+                      tickLine={{ stroke: "#343850" }}
                       tickFormatter={(value) => `${value}%`}
                       domain={[0, 'dataMax + 15']}
                     />
@@ -289,22 +334,32 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                         key={token}
                         type="monotone"
                         dataKey={token}
-                        stroke={tokenColors[token] || '#777'}
-                        strokeWidth={2}
+                        stroke={tokenColors[token] || '#FFD700'}
+                        strokeWidth={2.5}
                         dot={false}
+                        activeDot={{
+                          r: 6,
+                          stroke: tokenColors[token] || '#FFD700',
+                          strokeWidth: 2,
+                          fill: '#13151E'
+                        }}
                       />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex flex-wrap gap-6 justify-center py-3 border-t border-[#2D3748] bg-[#13161F]">
+              <div className="flex flex-wrap gap-6 justify-center py-3 border-t border-[#343850]/70 bg-[#13151E]/80 backdrop-blur-sm">
                 {Object.keys(tokenColors).map(token => (
-                  <div key={token} className="flex items-center gap-2">
+                  <div key={token} className="flex items-center gap-2 transition-transform hover:scale-105 duration-300">
                     <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: tokenColors[token] || '#777' }}
+                      className="w-[10px] h-[10px] rounded-full ring-2 ring-opacity-50"
+                      style={{
+                        backgroundColor: tokenColors[token] || '#FFD700',
+                        boxShadow: `0 0 10px ${tokenColors[token] || '#FFD700'}50`,
+                        '--ring-color': tokenColors[token] || '#FFD700'
+                      } as React.CSSProperties}
                     ></div>
-                    <span>{token}</span>
+                    <span className="text-gray-300 font-medium tracking-wide">{token}</span>
                   </div>
                 ))}
               </div>
@@ -322,8 +377,14 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                 justifyContent: "center"
               }}>
                 {data.state === 'active' ? (
-                  <div className="w-full h-full bg-black/60 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-lg font-bold opacity-60">Battle in progress</span>
+                  <div className="w-full h-full bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl flex items-center justify-center border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
+                    {/* Animated pulsing effect */}
+                    <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"></div>
+                    <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-purple-500 opacity-[0.03] blur-[50px] rounded-full"></div>
+
+                    <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300">
+                      Battle in progress
+                    </span>
                   </div>
                 ) : data.winner && (
                   <ChampCard
@@ -345,9 +406,12 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
 
 function StatCard({ title, value }: StatCardProps) {
   return (
-    <div className="bg-[#171923] rounded-lg p-3 border border-[#2D3748]">
-      <p className="text-gray-400 text-sm">{title}</p>
-      <p className="text-xl font-bold text-white">{value}</p>
+    <div className="bg-gradient-to-br from-[#1A1D2A]/80 to-[#13151E] rounded-xl p-4 border border-[#343850]/50 shadow-inner group hover:border-[#343850]/70 transition-all duration-300 overflow-hidden relative">
+      {/* Subtle shine effect on hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+
+      <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
+      <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 tracking-tight">{value}</p>
     </div>
   );
 }
