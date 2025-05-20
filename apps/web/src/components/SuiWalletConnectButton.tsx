@@ -18,7 +18,7 @@ import {
 import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Copy as CopyIcon, LogOut } from "lucide-react";
 import Image from "next/image";
 
 export function SuiWalletConnectButton() {
@@ -106,79 +106,20 @@ export function SuiWalletConnectButton() {
               <ChevronDown className="w-6 h-6 text-white flex-shrink-0 ml-2" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[200px] mt-2">
+          <DropdownMenuContent align="end" className="w-[240px] mt-2 rounded-2xl shadow-2xl border border-gray-800 bg-[#18122B] p-3">
             <DropdownMenuItem
               onClick={copyAddressToClipboard}
-              className="focus:bg-[#5D20D3]/10 hover:bg-[#5D20D3]/10 cursor-pointer"
+              className="focus:bg-[#5D20D3]/10 hover:bg-[#5D20D3]/20 cursor-pointer rounded-xl px-4 py-3 transition flex items-center gap-4 text-xl text-white font-bold"
             >
-              <div className="flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <title>Copy Address Icon</title>
-                  <rect
-                    x="9"
-                    y="9"
-                    width="13"
-                    height="13"
-                    rx="2"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Copy Address
-              </div>
+              <CopyIcon className="w-7 h-7 text-violet-400" />
+              <span>Copy Address</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisconnect}
-              className="text-red-600 focus:text-red-600 focus:bg-red-900/10 hover:bg-red-900/10 cursor-pointer"
+              className="focus:bg-red-900/10 hover:bg-red-900/20 cursor-pointer rounded-xl px-4 py-3 transition flex items-center gap-4 text-xl font-bold text-red-500 mt-2"
             >
-              <div className="flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <title>Disconnect Icon</title>
-                  <path
-                    d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16 17L21 12L16 7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M21 12H9"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Disconnect
-              </div>
+              <LogOut className="w-7 h-7 text-red-400" />
+              <span>Disconnect</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
