@@ -2,7 +2,7 @@
 
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleClock from "./BattleClock";
@@ -11,7 +11,6 @@ import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
 export default function AppBar() {
   const pathname = usePathname();
-  const router = useRouter();
   const roundsClickRef = useRef(false);
   const {
     isChallengePeriod,
@@ -50,27 +49,6 @@ export default function AppBar() {
       }, 100);
     }
   }, [pathname]);
-
-  // Roundsボタンのクリックハンドラ
-  const handleRoundsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    roundsClickRef.current = true;
-
-    if (pathname === "/") {
-      // 同一ページ内でのスクロール
-      const roundsElement = document.getElementById("current-round");
-      if (roundsElement) {
-        roundsElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    } else {
-      // 別ページからホームに遷移
-      router.push("/");
-    }
-  };
 
   return (
     <>

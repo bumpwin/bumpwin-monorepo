@@ -19,9 +19,12 @@ import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 export function SuiWalletConnectButton() {
-  const [balance, setBalance] = useState<string | null>(null);
+  // Using _balance to indicate we know it's not currently used but keeping it for future use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_balance, setBalance] = useState<string | null>(null);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
   const { mutate: disconnect } = useDisconnectWallet();
@@ -33,6 +36,8 @@ export function SuiWalletConnectButton() {
       if (account) {
         const balance = await getSuiBalance(suiClient, account.address);
         setBalance(balance);
+        // Balance is fetched but not used in the UI right now
+        // This will be used in a future update
       }
     };
     fetchBalance();
@@ -86,9 +91,11 @@ export function SuiWalletConnectButton() {
             <div className="flex items-center px-2 h-12 rounded-full bg-[#5D20D3] min-w-[180px] shadow-xl">
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5D20D3] -ml-4 overflow-hidden">
                 {currentWallet?.icon && (
-                  <img
+                  <Image
                     src={currentWallet.icon}
                     alt={currentWallet.name}
+                    width={24}
+                    height={24}
                     className="w-11 h-11"
                   />
                 )}
