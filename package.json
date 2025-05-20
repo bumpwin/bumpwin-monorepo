@@ -3,7 +3,10 @@
   "private": true,
   "type": "module",
   "module": "index.ts",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
@@ -27,7 +30,6 @@
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
-    "bumpwin": "^0.202505.16",
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
