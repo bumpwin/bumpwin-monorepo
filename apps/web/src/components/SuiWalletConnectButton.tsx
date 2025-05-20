@@ -5,6 +5,7 @@ import {
   useCurrentAccount,
   useDisconnectWallet,
   useSuiClient,
+  useCurrentWallet,
 } from "@mysten/dapp-kit";
 import { formatAddress } from "@mysten/sui/utils";
 import { logger } from "@workspace/logger";
@@ -17,12 +18,14 @@ import {
 import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ChevronDown } from "lucide-react";
 
 export function SuiWalletConnectButton() {
   const [balance, setBalance] = useState<string | null>(null);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
   const { mutate: disconnect } = useDisconnectWallet();
+  const { currentWallet } = useCurrentWallet();
 
   // Fetch SUI balance when wallet is connected
   useEffect(() => {
@@ -80,29 +83,20 @@ export function SuiWalletConnectButton() {
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center justify-between gap-2 px-3 py-1 border rounded-full h-9 bg-[#5D20D3] text-white hover:bg-[#4D1BB0] cursor-pointer transition-all duration-200 shadow-lg min-w-[100px]">
-              <div className="flex items-center gap-1 truncate">
-                <span className="font-light text-base">{balance} SUI</span>
-                <span className="text-white text-xs font-light border-l border-white/30 pl-1 truncate">
-                  {formatAddress(account.address)}
-                </span>
+            <div className="flex items-center px-2 h-12 rounded-full bg-[#5D20D3] min-w-[180px] shadow-xl">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5D20D3] -ml-4 overflow-hidden">
+                {currentWallet?.icon && (
+                  <img
+                    src={currentWallet.icon}
+                    alt={currentWallet.name}
+                    className="w-11 h-11"
+                  />
+                )}
               </div>
-              <svg
-                className="w-3.5 h-3.5 text-white flex-shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <title>Dropdown Menu Arrow</title>
-                <path
-                  d="M6 9L12 15L18 9"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <span className="flex-1 text-white text-xl font-bold text-center ml-2 tracking-wide">
+                {formatAddress(account.address)}
+              </span>
+              <ChevronDown className="w-6 h-6 text-white flex-shrink-0 ml-2" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px] mt-2">
