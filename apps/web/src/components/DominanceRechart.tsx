@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useBattleClock } from "../app/providers/BattleClockProvider";
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 
 // Define the structure for a single data point in the chart
 export interface ChartDataPoint {

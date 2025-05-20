@@ -1,5 +1,5 @@
 import DominanceRechart from "./DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "../mock/mockData";
+import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 
 const InfoBar = () => {
   // DominanceRechart用データ整形

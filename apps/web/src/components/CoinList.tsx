@@ -10,8 +10,8 @@ import {
 import { cn } from "@workspace/shadcn/lib/utils";
 import { ChevronDown, RotateCw } from "lucide-react";
 import { useState } from "react";
-import { mockCoins } from "../mock/mockCoins";
-import type { CoinCardProps } from "../types/coincard";
+import { mockCoins } from "@/mock/mockCoins";
+import type { CoinCardProps } from "@/types/coincard";
 import { CoinCard } from "./CoinCard";
 
 type SortType = "marketCap" | "new";

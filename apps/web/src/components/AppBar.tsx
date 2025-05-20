@@ -2,15 +2,15 @@
 
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleClock from "./BattleClock";
 import WordmarkLogo from "./WordmarkLogo";
+import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
-export default function Header() {
+export default function AppBar() {
   const pathname = usePathname();
-  const router = useRouter();
   const roundsClickRef = useRef(false);
   const {
     isChallengePeriod,
@@ -50,27 +50,6 @@ export default function Header() {
     }
   }, [pathname]);
 
-  // Roundsボタンのクリックハンドラ
-  const handleRoundsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    roundsClickRef.current = true;
-
-    if (pathname === "/") {
-      // 同一ページ内でのスクロール
-      const roundsElement = document.getElementById("current-round");
-      if (roundsElement) {
-        roundsElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    } else {
-      // 別ページからホームに遷移
-      router.push("/");
-    }
-  };
-
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm">
@@ -85,11 +64,10 @@ export default function Header() {
               </Link>
               <nav className="hidden md:flex items-center">
                 <Link
-                  href="/rounds"
-                  onClick={handleRoundsClick}
+                  href="/battle"
                   className={cn(
                     "px-6 py-2 rounded-lg text-xl font-bold transition-colors cursor-pointer",
-                    isActive("/rounds")
+                    isActive("/battle")
                       ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
                       : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
                   )}
@@ -157,18 +135,7 @@ export default function Header() {
 
               {/* ウォレット接続ボタン（豪華なConnectボタン） */}
               <div className="h-12 flex items-center">
-                <button
-                  type="button"
-                  className="rounded-full px-10 py-2 text-xl font-bold border-3 border-purple-400 bg-black/80 hover:bg-black/60 transition-all duration-150 cursor-pointer"
-                  style={{}}
-                >
-                  <span
-                    className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent"
-                    style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                  >
-                    Login
-                  </span>
-                </button>
+                <SuiWalletConnectButton />
               </div>
             </div>
           </div>
