@@ -12,6 +12,7 @@ import { Card, CardContent } from "@workspace/shadcn/components/card";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import Image from "next/image";
 import { RoundState } from "./types";
+import { ChampCard } from "./components/ChampCard";
 
 // Define types for our dashboard data
 interface TokenColors {
@@ -213,31 +214,32 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
           data.state === 'active' ? 'shadow-[0_0_15px_rgba(168,85,247,0.4)]' : ''
         }`}
       >
-        <div className="flex flex-col lg:flex-row">
-          {/* Header for mobile view */}
-          <div className="p-4 lg:hidden">
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-4xl font-bold text-gray-400">{data.id}</h1>
-                  <span className={`text-xl font-bold ${data.state === 'active' ? 'text-purple-300' : ''}`}>
-                    {data.status}
-                    {data.state === 'active' && (
-                      <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse">
-                        ● LIVE
-                      </span>
-                    )}
-                  </span>
+        {/* グリッドレイアウトに変更 - 明確な2カラム構造 */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
+          {/* 左側 - メインコンテンツ */}
+          <div className="p-6">
+            {/* Header for mobile view */}
+            <div className="lg:hidden">
+              <div className="flex flex-col space-y-2 mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-4xl font-bold text-gray-400">{data.id}</h1>
+                    <span className={`text-xl font-bold ${data.state === 'active' ? 'text-purple-300' : ''}`}>
+                      {data.status}
+                      {data.state === 'active' && (
+                        <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse">
+                          ● LIVE
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-300">
+                  Start: {data.startDate} · End: {data.endDate}
                 </div>
               </div>
-              <div className="text-sm text-gray-300">
-                Start: {data.startDate} · End: {data.endDate}
-              </div>
             </div>
-          </div>
 
-          {/* Left section - Main content */}
-          <div className="flex-1 p-6">
             {/* Header for desktop */}
             <div className="hidden lg:flex items-center justify-between mb-5">
               <div className="flex items-center gap-4">
@@ -309,90 +311,24 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             </div>
           </div>
 
-          {/* Right section - Champion Card */}
-          {(data.state === 'active' || (data.state === 'ended' && data.winner)) && (
-            <div className="w-full lg:w-[320px] border-t lg:border-t-0 lg:border-l border-[#2D3748]">
+          {/* 右側 - Champion Card - 常に表示されるように条件分岐を調整 */}
+          {(data.state === 'active' || (data.state === 'ended' && data.winner)) ? (
+            <div className="border-t lg:border-t-0 p-4 h-full">
               {data.state === 'active' ? (
-                <div className="h-full flex flex-col bg-black bg-opacity-70">
-                  <div className="bg-purple-500 text-white text-center py-1 text-sm font-medium">
-                    <span className="inline-flex items-center">
-                      <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
-                      IN PROGRESS
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center justify-center text-center p-6 h-full">
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                      Champion Not Yet Determined
-                    </h3>
-                    <p className="text-gray-400 text-sm mb-6">
-                      Battle in progress! The champion will be determined at the end of this round.
-                    </p>
-                    <button className="px-6 py-2 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-bold border border-purple-500/50 transition-all hover:scale-105 shadow-lg">
-                      Join The Battle
-                    </button>
-                  </div>
+                <div className="flex items-center justify-center h-full bg-black/60 rounded-xl">
+                  <span className="text-white text-lg font-bold opacity-60">Battle in progress</span>
                 </div>
               ) : data.winner && (
-                <div className="flex flex-col h-full">
-                  {/* Champion badge */}
-                  <div className="bg-[#F6AD37] text-black text-center py-1 text-sm font-medium">
-                    <span className="inline-flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="mr-1"
-                      >
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                        <path d="M4 22h16"></path>
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                      </svg>
-                      CHAMPION
-                    </span>
-                  </div>
-
-                  {/* Image - taking 75% of the column height */}
-                  <div className="flex-grow bg-black" style={{ flex: '3' }}>
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={data.winner.image}
-                        alt={`${data.winner.name} mascot`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Info section - taking 25% of the column height */}
-                  <div className="bg-[#141923] p-4" style={{ flex: '1' }}>
-                    <div>
-                      <h2 className="text-2xl font-bold text-[#F6AD37]">{data.winner.name}</h2>
-                      <p className="text-gray-400 text-sm">{data.winner.round}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <div>
-                        <p className="text-gray-400 text-xs">MCap</p>
-                        <p className="font-bold text-sm">{data.winner.mcap}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400 text-xs">volume</p>
-                        <p className="font-bold text-sm">{data.winner.volume}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ChampCard
+                  image={data.winner.image}
+                  name={data.winner.name}
+                  round={data.winner.round}
+                  mcap={data.winner.mcap}
+                  volume={data.winner.volume}
+                />
               )}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </motion.div>
