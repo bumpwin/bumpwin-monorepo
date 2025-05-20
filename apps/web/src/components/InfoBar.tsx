@@ -6,8 +6,7 @@ const InfoBar = () => {
   const chartPoints = mockDominanceChartData.map((point) => ({
     timestamp: point.timestamp,
     ...point.shares.reduce(
-      (acc, share, index) => ({
-        ...acc,
+      (acc, share, index) => Object.assign(acc, {
         [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]: share,
       }),
       {},
@@ -21,24 +20,24 @@ const InfoBar = () => {
 
   return (
     <div className="w-full bg-black/30 backdrop-blur-md py-3 rounded-xl mb-6">
-      <div className="max-w-5xl mx-auto flex flex-wrap justify-center items-center gap-6 px-4">
-        <span className="text-white font-bold text-lg mr-4">Battle Round 12</span>
-        <div className="flex flex-row gap-4">
-          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center min-w-[120px]">
-            <span className="text-gray-400 text-xs">Market Cap</span>
-            <span className="text-white font-bold text-lg">$180.09K</span>
+      <div className="max-w-5xl mx-auto flex items-center gap-6 px-4">
+        <span className="text-white font-bold text-2xl mr-4 flex-shrink-0">Battle Round 12</span>
+        <div className="flex flex-1 flex-row gap-4 justify-end">
+          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-lg">Market Cap</span>
+            <span className="text-white font-bold text-2xl">$180.09K</span>
           </div>
-          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center min-w-[120px]">
-            <span className="text-gray-400 text-xs">Volume</span>
-            <span className="text-white font-bold text-lg">$66K</span>
+          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-lg">Volume</span>
+            <span className="text-white font-bold text-2xl">$66K</span>
           </div>
-          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center min-w-[120px]">
-            <span className="text-gray-400 text-xs">Meme Count</span>
-            <span className="text-white font-bold text-lg">24</span>
+          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-lg">Meme Count</span>
+            <span className="text-white font-bold text-2xl">24</span>
           </div>
-          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center min-w-[120px]">
-            <span className="text-gray-400 text-xs">Trader Count</span>
-            <span className="text-white font-bold text-lg">119</span>
+          <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center flex-1">
+            <span className="text-gray-400 text-lg">Trader Count</span>
+            <span className="text-white font-bold text-2xl">119</span>
           </div>
         </div>
       </div>
