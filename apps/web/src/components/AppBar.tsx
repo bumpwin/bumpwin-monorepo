@@ -86,11 +86,10 @@ export default function AppBar() {
               </Link>
               <nav className="hidden md:flex items-center">
                 <Link
-                  href="/rounds"
-                  onClick={handleRoundsClick}
+                  href="/battle"
                   className={cn(
                     "px-6 py-2 rounded-lg text-xl font-bold transition-colors cursor-pointer",
-                    isActive("/rounds")
+                    isActive("/battle")
                       ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
                       : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
                   )}
@@ -184,4 +183,4 @@ export default function AppBar() {
       </header>
     </>
   );
-} 
+}
