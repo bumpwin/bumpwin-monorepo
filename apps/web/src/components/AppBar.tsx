@@ -124,7 +124,7 @@ export default function AppBar() {
             {/* 右側グループ */}
             <div className="flex items-center justify-end gap-4">
               {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
-              <Link href="/create">
+              <Link href="/rounds?intent=create-coin">
                 <button
                   type="button"
                   className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
