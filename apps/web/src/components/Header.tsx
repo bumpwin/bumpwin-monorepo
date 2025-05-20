@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleClock from "./BattleClock";
 import WordmarkLogo from "./WordmarkLogo";
+import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 
 export default function Header() {
   const pathname = usePathname();
@@ -149,7 +150,7 @@ export default function Header() {
               <Link href="/create">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
+                  className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
                 >
                   Create Coin
                 </button>
@@ -157,18 +158,7 @@ export default function Header() {
 
               {/* ウォレット接続ボタン（豪華なConnectボタン） */}
               <div className="h-12 flex items-center">
-                <button
-                  type="button"
-                  className="rounded-full px-10 py-2 text-xl font-bold border-3 border-purple-400 bg-black/80 hover:bg-black/60 transition-all duration-150 cursor-pointer"
-                  style={{}}
-                >
-                  <span
-                    className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent"
-                    style={{ WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-                  >
-                    Login
-                  </span>
-                </button>
+                <SuiWalletConnectButton />
               </div>
             </div>
           </div>

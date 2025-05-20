@@ -62,11 +62,20 @@ export function SuiWalletConnectButton() {
       {!account ? (
         <ConnectButton
           connectText={
-            <div className="flex items-center justify-center w-full text-xs font-sans font-light tracking-tight">
+            <span
+              className="bg-gradient-to-r from-fuchsia-400 via-purple-400 to-blue-400 bg-clip-text text-transparent font-extrabold !opacity-100"
+              style={{
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 800,
+                opacity: 1,
+                color: 'transparent',
+              }}
+            >
               Login
-            </div>
+            </span>
           }
-          className="!w-auto !min-w-24 !h-9 !px-4 !rounded-full !bg-[#5D20D3] !text-white !shadow-lg hover:!bg-[#4D1BB0] !transition-all !duration-200 !border-none [&>div]:!text-white"
+          className="!rounded-full !px-10 !py-2 !text-xl !font-bold !bg-gray-900 !border-2 !border-transparent hover:!border-violet-400 hover:!bg-black/60 !transition-all !duration-150 !cursor-pointer"
         />
       ) : (
         <DropdownMenu>

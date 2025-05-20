@@ -21,19 +21,19 @@
     "@hono/node-server": "^1.14.2",
     "@mysten/sui": "^1.29.1",
     "@questdb/nodejs-client": "^3.0.0",
-    "@supabase/supabase-js": "^2.49.5",
+    "@supabase/supabase-js": "^2.49.6",
     "@workspace/logger": "workspace:*",
     "@workspace/questdb": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
-    "bumpwin": "^0.202505.15",
+    "bumpwin": "^0.202505.16",
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
     "tsup": "^8.5.0",
-    "wrangler": "^4.15.2",
-    "zod": "^3.25.3"
+    "wrangler": "^4.16.0",
+    "zod": "^3.25.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
