@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 import { Toaster } from "sonner";
-import AppBar from "../components/AppBar";
+import AppBar from "@/components/AppBar";
 import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";

@@ -8,7 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency } from "@/utils/format";
 
 export function ChampionCoinCard({
   address,

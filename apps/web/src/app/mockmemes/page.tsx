@@ -1,5 +1,5 @@
 import { mockmemes } from "@workspace/mockdata";
-import { LoserCard } from "../losers/LoserCard";
+import { LoserCard } from "@/app/losers/LoserCard";
 
 export default function MockmemesPage() {
   return (

@@ -1,4 +1,4 @@
-import type { CoinCardProps } from "../types/coincard";
+import type { CoinCardProps } from "@/types/coincard";
 
 const now = Date.now();
 const day = 24 * 60 * 60 * 1000;

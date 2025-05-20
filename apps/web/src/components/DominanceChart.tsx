@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DominanceChartData } from "../types/dominance";
+import type { DominanceChartData } from "@/types/dominance";
 
 // Custom tooltip for better display
 const CustomTooltip = ({

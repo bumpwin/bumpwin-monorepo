@@ -1,6 +1,6 @@
 import React from "react";
-import type { ChampionCoin } from "../types/champion";
-import type { DominanceChartData } from "../types/dominance";
+import type { ChampionCoin } from "@/types/champion";
+import type { DominanceChartData } from "@/types/dominance";
 import DominanceRechart from "./DominanceRechart";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -9,7 +9,7 @@ import {
   mockCoinMetadata,
   mockDominanceChartData,
   mockChampionCoinMetadata,
-} from "../mock/mockData";
+} from "@/mock/mockData";
 
 interface ChampionsListProps {
   coins: ChampionCoin[];
