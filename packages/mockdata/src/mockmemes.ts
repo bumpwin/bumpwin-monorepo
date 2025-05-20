@@ -7,6 +7,12 @@ export interface MockCoinMetaData {
 
 export const mockmemes: MockCoinMetaData[] = [
   {
+    symbol: "LAG",
+    name: "Lag Girl",
+    description: "lagging since 2020",
+    iconUrl: "/images/mockmemes/LAG.jpg",
+  },
+  {
     symbol: "MOCAT",
     name: "Mocaccino Cat",
     description: "just knocked over $3B in TVL. still no regrets.",
