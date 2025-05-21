@@ -16,7 +16,7 @@ interface ResultViewProps {
 }
 
 export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
-  const { remainingTime, totalTime } = useBattleClock();
+  const { remainingTime } = useBattleClock();
   const [visible, setVisible] = useState(forceVisible);
   const prevTimeRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);

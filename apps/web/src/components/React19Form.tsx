@@ -44,8 +44,10 @@ export default function React19Form() {
       } else if (result.data && typeof result.data.name === "string") {
         setState({ name: result.data.name });
       }
-    } catch (e: any) {
-      setState({ ...state, error: e.message });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An error occurred";
+      setState({ ...state, error: errorMessage });
     } finally {
       setIsPending(false);
     }
@@ -78,7 +80,7 @@ export default function React19Form() {
         {/* Transitionコンポーネントの例 */}
         <div className="mt-4">
           {isPending ? (
-            <Transition placeholder={<Spinner />}>
+            <Transition>
               <div className="p-2 bg-green-100 rounded">フォーム送信中...</div>
             </Transition>
           ) : null}
@@ -88,22 +90,11 @@ export default function React19Form() {
   );
 }
 
-// Placeholderコンポーネント
-function Spinner() {
-  return (
-    <div className="flex justify-center p-2">
-      <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent" />
-    </div>
-  );
-}
-
 // React 19のTransitionコンポーネント
 function Transition({
   children,
-  placeholder,
 }: {
   children: React.ReactNode;
-  placeholder: React.ReactNode;
 }) {
   return <div className="transition-opacity duration-300">{children}</div>;
 }
