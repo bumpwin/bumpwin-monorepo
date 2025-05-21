@@ -36,6 +36,17 @@ function getRandomAddress(): string {
     Math.floor(Math.random() * 16).toString(16),
   ).join("");
   return `0x${hex}`;
+<<<<<<< HEAD
+=======
+}
+
+// Generate a random hex color
+function generateRandomColor() {
+  const hex = Array.from({ length: 6 }, () =>
+    Math.floor(Math.random() * 16).toString(16),
+  ).join("");
+  return `0x${hex}`;
+>>>>>>> origin/main
 }
 
 /**
