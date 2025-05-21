@@ -21,7 +21,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 // Format market cap to K/M/B format
-const formatMarketCap = (value: number): string => {
+const formatMarketCap = (value: number | undefined): string => {
+  if (!value) return "$0.0";
   if (value >= 1e9) {
     return `$${(value / 1e9).toFixed(1)}B`;
   }
@@ -98,14 +99,26 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="flex-1 flex flex-col max-w-5xl mx-auto py-8 px-4">
-        {/* HALL OF CHAMPIONS Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-5xl font-bold text-yellow-400">
+        {/* Title Section */}
+        <div className="flex flex-col items-center justify-center py-8 px-4 relative overflow-hidden">
+          {/* バックグラウンドエフェクト */}
+          <div className="absolute inset-0 bg-gradient-radial from-yellow-500/20 to-transparent opacity-60 blur-2xl" />
+
+          <h1
+            className="text-5xl font-extrabold text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]"
+            style={{
+              background:
+                "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
             HALL OF CHAMPIONS
           </h1>
-          <p className="text-xl text-yellow-300 mt-4">
-            The greatest champions of the Battle Royale
-          </p>
+
+          {/* サブタイトルは詳細ページでは非表示 */}
         </div>
 
         {/* Hero Section */}
