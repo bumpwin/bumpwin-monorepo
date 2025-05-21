@@ -123,11 +123,25 @@ export default function AppBar() {
 
             {/* 右側グループ */}
             <div className="flex items-center justify-end gap-4">
+              {/* Claim outcome ボタン */}
+              <Link href="/rounds?intent=claim-outcome">
+                <button
+                  type="button"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer 
+                    bg-black 
+                    bg-clip-padding
+                    text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text
+                    hover:border-yellow-400"
+                >
+                  Claim outcome
+                </button>
+              </Link>
+
               {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
               <Link href="/rounds?intent=create-coin">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
                 >
                   Create Coin
                 </button>

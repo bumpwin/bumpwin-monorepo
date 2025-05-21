@@ -45,6 +45,7 @@ interface DashboardData {
   traderCount: string;
   chartData: ChartDataPoint[];
   winner: Winner | null;
+  loserIssuance?: string;
 }
 
 interface DashboardSectionProps {
@@ -118,7 +119,8 @@ export default function RoundsPage() {
         mcap: round.metrics.mcap,
         volume: round.metrics.volume,
         image: getSafeIcon(mockCoinMetadata, round.round % mockCoinMetadata.length)
-      } : null
+      } : null,
+      loserIssuance: round.metrics.loserIssuance
     };
   });
 
@@ -291,11 +293,12 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
               <StatCard title="Market Cap" value={data.marketCap} />
               <StatCard title="Volume" value={data.volume} />
               <StatCard title="Meme Count" value={data.memeCount} />
               <StatCard title="Trader Count" value={data.traderCount} />
+              <StatCard title="LOSER Issurance" value={data.loserIssuance || "-"} />
             </div>
 
             {/* Chart */}
