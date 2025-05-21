@@ -10,15 +10,5 @@
     "dev": "tsup --watch",
     "lint": "eslint src/",
     "clean": "rm -rf dist"
-  },
-  "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
-    "eslint": "^8.56.0",
-    "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "@mysten/sui": "1.30.0"
   }
 }
