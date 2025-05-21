@@ -1,12 +1,10 @@
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
-import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { MOCKCOINS_OBJECT_IDS } from "bumpwin";
 import { mockcoins } from "bumpwin/suigen";
 import { motion } from "framer-motion";
 import React from "react";
-import { toast } from "sonner";
 
 interface ClaimOutcomeModalProps {
   isOpen: boolean;

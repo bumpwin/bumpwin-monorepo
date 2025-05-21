@@ -2,13 +2,12 @@
 
 import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import { Card, CardContent } from "@workspace/shadcn/components/card";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { ChampCard } from "./components/ChampCard";
+import { ChampionCard } from "../champions/ChampionCard";
 import { ClaimOutcomeModal } from "./components/ClaimOutcomeModal";
 import { CreateCoinModal } from "./components/CreateCoinModal";
 import { ROUNDS } from "./constants";
@@ -31,6 +30,7 @@ interface Winner {
   mcap: string;
   volume: string;
   image: string;
+  symbol: string;
 }
 
 interface DashboardData {
@@ -161,6 +161,10 @@ export default function RoundsPage() {
                 mockCoinMetadata,
                 round.round % mockCoinMetadata.length,
               ),
+              symbol: getSafeSymbol(
+                mockCoinMetadata,
+                round.round % mockCoinMetadata.length,
+              ),
             }
           : null,
       loserIssuance: round.metrics.loserIssuance,
@@ -183,7 +187,7 @@ export default function RoundsPage() {
         {/* Main content */}
         <main className="flex-1 overflow-y-auto pb-6 pt-4">
           <div className="max-w-7xl w-full mx-auto space-y-8">
-            <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFEB80] to-[#FFC700] text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]">
+            <h1 className="text-5xl font-extrabold text-white text-center mb-14 tracking-tight z-10 relative">
               Battle Rounds
             </h1>
 
@@ -763,23 +767,15 @@ function DashboardSection({
 
             {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
             {data.winner && (
-              <div className="p-6" style={{ height: "calc(100%)" }}>
-                {/* BattleRoundCardとの余白上下右が等幅であること */}
-                <div
-                  style={{
-                    height: "100%",
-                    aspectRatio: "3/4", // 重要: w:h = 3:4 のアスペクト比を厳守
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <ChampCard
-                    image={data.winner.image}
-                    name={data.winner.name}
-                    round={data.winner.round}
-                    mcap={data.winner.mcap}
-                    volume={data.winner.volume}
+              <div className="p-6 w-[350px]" style={{ height: "calc(100%)" }}>
+                {/* ChampionCardを固定サイズコンテナに配置 */}
+                <div className="w-full h-full">
+                  <ChampionCard
+                    imageUrl={data.winner.image || "/images/mockmemes/ANTS.webp"}
+                    symbol={data.winner.symbol || "WINNER"}
+                    name={data.winner.name || "Champion"}
+                    mcap={Number(data.winner.mcap) || 100000}
+                    round={Number.parseInt(data.id.replace('#', ''), 10) || 1}
                   />
                 </div>
               </div>
