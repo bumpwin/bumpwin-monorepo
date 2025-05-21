@@ -128,20 +128,9 @@ const DebugTxPage = () => {
       treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
       u64: WSUI_AMOUNT,
     });
-<<<<<<< HEAD
     if (currentAccount?.address) {
       tx.transferObjects([wsui], currentAccount.address);
     }
-=======
-
-    // Use optional chaining and ensure the address exists
-    if (!currentAccount || !currentAccount.address) {
-      toast.error("Wallet not connected");
-      return;
-    }
-
-    tx.transferObjects([wsui], currentAccount.address);
->>>>>>> origin/main
 
     if (isDryRun) {
       const result = await dryRunTransaction(tx);

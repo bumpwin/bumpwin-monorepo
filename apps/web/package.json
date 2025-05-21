@@ -19,6 +19,7 @@
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
     "@mysten/dapp-kit": "^0.16.0",
+    "@mysten/sui": "1.30.0",
     "@tanstack/react-query": "^5.74.4",
     "bumpwin": "^0.202505.17",
     "date-fns": "^4.1.0",
@@ -30,31 +31,27 @@
     "lucide-react": "^0.507.0",
     "mermaid": "^11.6.0",
     "next": "15.3.1",
-    "react": "19",
+    "react": "^19.0.0",
     "react-confetti": "^6.4.0",
-<<<<<<< HEAD
-    "react-dom": "19",
-=======
     "react-dom": "^19.0.0",
     "reactflow": "^11.11.4",
->>>>>>> origin/main
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
     "zod": "^3.25.3"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.12",
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@eslint/eslintrc": "^3.0.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9",
+    "eslint": "^9.0.0",
     "eslint-config-next": "15.3.1",
-    "tailwindcss": "^4",
-    "typescript": "^5",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.0.0",
     "vercel": "^41.7.0"
   }
 }

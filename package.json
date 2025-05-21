@@ -3,7 +3,10 @@
   "private": true,
   "type": "module",
   "module": "index.ts",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
@@ -22,7 +25,7 @@
     "@hono/node-server": "^1.14.2",
     "@mysten/sui": "^1.29.1",
     "@questdb/nodejs-client": "^3.0.0",
-    "@supabase/supabase-js": "^2.49.6",
+    "@supabase/supabase-js": "^2.49.7",
     "@workspace/logger": "workspace:*",
     "@workspace/questdb": "workspace:*",
     "@workspace/shadcn": "workspace:*",
@@ -33,7 +36,7 @@
     "pg": "^8.16.0",
     "tsup": "^8.5.0",
     "wrangler": "^4.16.0",
-    "zod": "^3.25.7"
+    "zod": "^3.25.17"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
