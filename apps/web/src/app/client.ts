@@ -1,9 +1,9 @@
-import type { InferResponseType } from "hono/client";
-import { hc } from "hono/client";
 import type {
   ChatRouteType,
   MockpriceRouteType,
-} from "./api/[[...route]]/route";
+} from "@/app/api/[[...route]]/route";
+import type { InferResponseType } from "hono/client";
+import { hc } from "hono/client";
 
 const baseUrl =
   typeof window !== "undefined"

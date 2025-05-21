@@ -2,10 +2,7 @@
   "name": "monorepo-template",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "bun run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
@@ -13,7 +10,7 @@
     "build": "bun run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
-    "lint": "biome check . --apply",
+    "lint": "biome check . --write",
     "fmt": "bun run format && bun run lint",
     "typecheck": "bunx tsc -b",
     "pages:build": "pnpm -r --filter web run pages:build",
@@ -44,7 +41,7 @@
     "@biomejs/biome": "^1.9.4",
     "@cloudflare/next-on-pages": "^1.13.12",
     "@types/bun": "^1.2.13",
-    "@types/node": "^20.0.0"
+    "@types/node": "^22.15.21"
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

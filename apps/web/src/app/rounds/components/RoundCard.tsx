@@ -1,9 +1,10 @@
+import { ChampionCard } from "@/components/ChampionCard";
 import { cn } from "@workspace/shadcn/lib/utils";
 import { motion } from "framer-motion";
 import React from "react";
 import type { ChartCoin, ChartPoint, CoinMetadata, Round } from "../types";
+import { getSafeIcon, getSafeSymbol } from "../utils";
 import { ActiveRoundCard } from "./ActiveRoundCard";
-import { ChampionCard } from "./ChampionCard";
 import { RoundChart } from "./RoundChart";
 import { RoundCoins } from "./RoundCoins";
 import { RoundMetrics } from "./RoundMetrics";
@@ -114,8 +115,17 @@ export function RoundCard({
               <div className="w-[320px]">
                 {round.state === "ended" && (
                   <ChampionCard
-                    round={round}
-                    mockCoinMetadata={mockCoinMetadata}
+                    imageUrl={getSafeIcon(
+                      mockCoinMetadata,
+                      round.round % mockCoinMetadata.length,
+                    )}
+                    symbol={getSafeSymbol(
+                      mockCoinMetadata,
+                      round.round % mockCoinMetadata.length,
+                    )}
+                    name={`Round ${round.round} Winner`}
+                    mcap={Number(round.metrics.mcap)}
+                    round={round.round}
                   />
                 )}
                 {round.state === "active" && (

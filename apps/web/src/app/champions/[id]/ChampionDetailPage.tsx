@@ -15,7 +15,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -132,81 +132,18 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                 <span className="text-base text-gray-400">({coin.symbol})</span>
               </div>
             </div>
-            {/* bonding curve progress */}
-            <div>
-              <div className="text-sm text-gray-300 mb-1">
-                bonding curve progress:{" "}
-                <span className="font-semibold text-white">1%</span>
-              </div>
-              <div className="w-full h-2 bg-gray-700 rounded">
-                <div
-                  className="h-2 bg-green-400 rounded"
-                  style={{ width: "1%" }}
-                />
-              </div>
-              <div className="text-xs text-gray-400 mt-1">
-                graduate this coin to PumpSwap at $68,387 market cap.
-                <br />
-                there is 0.007 SOL in the bonding curve.
-              </div>
-            </div>
-            {/* コントラクトアドレス */}
-            <div>
-              <div className="text-sm text-gray-300 mb-1">contract address</div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded text-gray-200 select-all">
-                  AWWMk...kjR4
-                </span>
-              </div>
-            </div>
-            {/* 外部リンク */}
-            <div className="flex gap-3">
-              {coin.telegramLink && (
-                <a
-                  href={coin.telegramLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Telegram"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Send size={28} />
-                </a>
-              )}
-              {coin.websiteLink && (
-                <a
-                  href={coin.websiteLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Website"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Globe size={28} />
-                </a>
-              )}
-              {coin.twitterLink && (
-                <a
-                  href={coin.twitterLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Twitter"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Twitter size={28} />
-                </a>
-              )}
-            </div>
             {/* トップホルダーリスト（ダミー） */}
             <div>
               <div className="text-sm text-gray-300 mb-1">top holders</div>
               <ul className="text-xs text-gray-200 bg-gray-800 rounded p-2 space-y-1">
                 <li>
-                  1. bonding curve <span className="float-right">99.97%</span>
+                  1. ZRYco2 <span className="float-right">0.02%</span>
                 </li>
                 <li>
-                  2. ZRYco2 <span className="float-right">0.02%</span>
+                  2. Eg1cRg <span className="float-right">0.00%</span>
                 </li>
                 <li>
-                  3. Eg1cRg <span className="float-right">0.00%</span>
+                  3. 8Kj2Lm <span className="float-right">0.00%</span>
                 </li>
               </ul>
             </div>

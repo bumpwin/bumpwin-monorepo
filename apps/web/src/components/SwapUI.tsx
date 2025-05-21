@@ -1,4 +1,6 @@
 "use client";
+import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
+import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
 import {
   ConnectButton,
@@ -9,6 +11,7 @@ import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
 import Image from "next/image";
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface SwapUIProps {
   coin?: RoundCoin;
@@ -19,6 +22,8 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
   const [balance, setBalance] = useState<number>(0);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
+  const { createSwapChampTransaction } = useTransactionCreators();
+  const { executeTransaction, isExecuting } = useExecuteTransaction();
 
   React.useEffect(() => {
     const fetchBalance = async () => {
@@ -29,6 +34,21 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
     };
     fetchBalance();
   }, [account, suiClient]);
+
+  const handleTransaction = async (isBuy: boolean) => {
+    if (!amount || amount <= 0) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    const tx = createSwapChampTransaction(amount, isBuy);
+    if (!tx) {
+      toast.error("Failed to create transaction");
+      return;
+    }
+
+    await executeTransaction(tx);
+  };
 
   if (!coin) return null;
 
@@ -93,15 +113,19 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
           <>
             <button
               type="button"
-              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-green-600 hover:bg-green-700 text-white"
+              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+              onClick={() => handleTransaction(true)}
+              disabled={isExecuting || amount <= 0}
             >
-              Buy
+              {isExecuting ? "Processing..." : "Buy"}
             </button>
             <button
               type="button"
-              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-red-600 hover:bg-red-700 text-white"
+              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
+              onClick={() => handleTransaction(false)}
+              disabled={isExecuting || amount <= 0}
             >
-              Sell
+              {isExecuting ? "Processing..." : "Sell"}
             </button>
           </>
         ) : (

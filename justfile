@@ -119,3 +119,7 @@ supabase-migration-list:
 
 listen-chat:
     (cd apps/cmd && bun run listen-chat)
+
+
+faucet-testnet:
+    open https://faucet.sui.io/?network=testnet

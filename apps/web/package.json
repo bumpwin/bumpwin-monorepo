@@ -6,7 +6,8 @@
     "NEXT_ON_PAGES_PACKAGE_MANAGER": "pnpm"
   },
   "scripts": {
-    "dev": "bun run next dev",
+    "dev": "NEXT_DEV_TURBOPACK=1 NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 bunx next dev",
+    "_dev": "bun run next dev",
     "build": "bun run next build",
     "start": "bun run next start",
     "lint": "bun run next lint",
