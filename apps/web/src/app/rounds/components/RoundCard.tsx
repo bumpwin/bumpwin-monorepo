@@ -1,7 +1,7 @@
+import { ChampionCard } from "@/components/ChampionCard";
 import { cn } from "@workspace/shadcn/lib/utils";
 import { motion } from "framer-motion";
 import React from "react";
-import { ChampionCard } from "../../champions/ChampionCard";
 import type { ChartCoin, ChartPoint, CoinMetadata, Round } from "../types";
 import { getSafeIcon, getSafeSymbol } from "../utils";
 import { ActiveRoundCard } from "./ActiveRoundCard";

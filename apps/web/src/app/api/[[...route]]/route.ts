@@ -1,7 +1,7 @@
+import { app as chatApp } from "@/app/api/[[...route]]/chat";
+import { app as mockpriceApp } from "@/app/api/[[...route]]/mockprice";
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
-import { app as chatApp } from "./chat";
-import { app as mockpriceApp } from "./mockprice";
 
 // Edge Runtime configuration
 export const runtime = "edge";

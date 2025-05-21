@@ -1,5 +1,6 @@
 "use client";
 
+import { ChampionCard } from "@/components/ChampionCard";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
@@ -7,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { ChampionCard } from "../champions/ChampionCard";
 import { ClaimOutcomeModal } from "./components/ClaimOutcomeModal";
 import { CreateCoinModal } from "./components/CreateCoinModal";
 import { ROUNDS } from "./constants";
@@ -392,7 +392,7 @@ function DashboardSection({
           />
 
           {/* グリッドレイアウトに変更 - 動的調整の2カラム構造 */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto]">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
             {/* 左側 - メインコンテンツ */}
             <div className="p-6">
               {/* Header for mobile view */}
@@ -553,27 +553,15 @@ function DashboardSection({
               </div>
             </div>
 
-            {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
-            <div className="p-6" style={{ height: "calc(100%)" }}>
-              {/* BattleRoundCardとの余白上下右が等幅であること */}
-              <div
-                style={{
-                  height: "100%",
-                  aspectRatio: "3/4", // 重要: w:h = 3:4 のアスペクト比を厳守
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <div className="w-full h-full bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl flex items-center justify-center border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
-                  {/* Animated pulsing effect */}
-                  <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
-                  <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-purple-500 opacity-[0.03] blur-[50px] rounded-full" />
-
-                  <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300">
-                    Battle in progress
+            {/* 右側 - Battle In Progress Box - アスペクト比3:4を厳密に保持 */}
+            <div className="p-6 flex items-center justify-center h-full">
+              <div className="w-full aspect-[3/4] max-w-[320px] flex items-center justify-center bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
+                <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                  Battle in progress
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse align-middle">
+                    ● LIVE
                   </span>
-                </div>
+                </span>
               </div>
             </div>
           </div>
@@ -600,7 +588,7 @@ function DashboardSection({
           <div className="absolute top-0 left-0 h-full w-2 bg-gray-700" />
 
           {/* グリッドレイアウトに変更 - 動的調整の2カラム構造 */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto]">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
             {/* 左側 - メインコンテンツ */}
             <div className="p-6">
               {/* Header for mobile view */}
@@ -767,15 +755,14 @@ function DashboardSection({
 
             {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
             {data.winner && (
-              <div className="p-6 w-[350px]" style={{ height: "calc(100%)" }}>
-                {/* ChampionCardを固定サイズコンテナに配置 */}
-                <div className="w-full h-full">
+              <div className="p-6 flex items-center justify-center h-full">
+                <div className="w-full aspect-[3/4] max-w-[320px]">
                   <ChampionCard
                     imageUrl={data.winner.image || "/images/mockmemes/ANTS.webp"}
                     symbol={data.winner.symbol || "WINNER"}
                     name={data.winner.name || "Champion"}
-                    mcap={Number(data.winner.mcap) || 100000}
-                    round={Number.parseInt(data.id.replace('#', ''), 10) || 1}
+                    mcap={Number(data.winner.mcap.replace(/[^0-9]/g, '')) || 100000}
+                    round={Number.parseInt(data.id.replace("#", ""), 10) || 1}
                   />
                 </div>
               </div>

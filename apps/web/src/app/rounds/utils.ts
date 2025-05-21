@@ -1,4 +1,4 @@
-import { DEFAULT_ICON } from "./constants";
+import { DEFAULT_ICON } from "@/app/rounds/constants";
 import type { ChartCoin, ChartPoint, CoinMetadata } from "./types";
 
 export function getSafeIcon(

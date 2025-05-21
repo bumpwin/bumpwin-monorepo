@@ -1,10 +1,10 @@
 "use client";
 
+import { ChampionCard } from "@/components/ChampionCard";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockChampionCoinMetadata } from "@/mock/mockData";
 import type { ChampionCoin } from "@/types/champion";
 import React from "react";
-import { ChampionCard } from "./ChampionCard";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to ChampionCoin type
