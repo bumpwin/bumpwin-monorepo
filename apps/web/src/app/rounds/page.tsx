@@ -9,6 +9,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ChampCard } from "./components/ChampCard";
+import { ClaimOutcomeModal } from "./components/ClaimOutcomeModal";
 import { CreateCoinModal } from "./components/CreateCoinModal";
 import { ROUNDS } from "./constants";
 import type { RoundState } from "./types";
@@ -52,6 +53,7 @@ interface DashboardSectionProps {
   data: DashboardData;
   tokenColors: TokenColors;
   onCreateClick?: () => void;
+  onClaimClick?: (winnerName: string, share: number, roundId: string) => void;
 }
 
 interface StatCardProps {
@@ -64,6 +66,11 @@ export default function RoundsPage() {
   const searchParams = useSearchParams();
   const intent = searchParams.get("intent");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimData, setClaimData] = useState({
+    winner: { name: "", share: 0 },
+    roundId: "",
+  });
 
   useEffect(() => {
     if (intent === "create-coin") {
@@ -80,6 +87,25 @@ export default function RoundsPage() {
     if (intent === "create-coin") {
       router.push("/rounds");
     }
+  };
+
+  const handleClaimClick = (
+    winnerName: string,
+    share: number,
+    roundId: string,
+  ) => {
+    setClaimData({
+      winner: {
+        name: winnerName,
+        share,
+      },
+      roundId,
+    });
+    setShowClaimModal(true);
+  };
+
+  const handleCloseClaimModal = () => {
+    setShowClaimModal(false);
   };
 
   const dashboardData = ROUNDS.map((round, i) => {
@@ -169,6 +195,7 @@ export default function RoundsPage() {
                 onCreateClick={
                   dashboard.state === "waiting" ? handleCreateClick : undefined
                 }
+                onClaimClick={handleClaimClick}
               />
             ))}
           </div>
@@ -181,6 +208,12 @@ export default function RoundsPage() {
       </div>
 
       <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />
+      <ClaimOutcomeModal
+        isOpen={showClaimModal}
+        onClose={handleCloseClaimModal}
+        winner={claimData.winner}
+        roundId={claimData.roundId}
+      />
     </div>
   );
 }
@@ -189,6 +222,7 @@ function DashboardSection({
   data,
   tokenColors,
   onCreateClick,
+  onClaimClick,
 }: DashboardSectionProps) {
   // Handle waiting round (upcoming battle)
   if (data.state === "waiting" && onCreateClick) {
@@ -353,6 +387,13 @@ function DashboardSection({
               <div className="flex items-center gap-4 mb-6">
                 <button
                   type="button"
+                  onClick={() =>
+                    onClaimClick?.(
+                      data.winner?.name || "",
+                      data.topShare || 42,
+                      data.id,
+                    )
+                  }
                   className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text hover:border-yellow-400"
                 >
                   Claim outcome
