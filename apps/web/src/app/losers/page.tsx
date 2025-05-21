@@ -7,23 +7,21 @@ import {
   AreaChart,
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-// LOSERトークンのインフレーションスケジュールデータ - 正確な半減期モデルに修正
+// LOSER token inflation schedule data - accurate half-life model
 const generateInflationData = () => {
-  const rounds = 15; // 表示するラウンド数
-  const initialRate = 100; // ラウンド1での発行率
-  const halfLife = 4; // 半減期（ラウンド数）
+  const rounds = 15; // Number of rounds to display
+  const initialRate = 100; // Initial issuance rate in Round 1
+  const halfLife = 4; // Half-life in rounds
 
   return Array.from({ length: rounds }, (_, i) => {
     const roundNumber = i + 1;
-    // 指数関数的減少: 初期値 * 0.5^(x/halfLife)
+    // Exponential decay: initial value * 0.5^(x/halfLife)
     const issuanceRate = Math.max(
       1,
       Math.round(initialRate * 0.5 ** ((roundNumber - 1) / halfLife)),
@@ -41,65 +39,61 @@ const loserInflationData = generateInflationData();
 export default function LosersPage() {
   return (
     <div className="bg-gray-900 min-h-screen">
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
-        {/* Hero Section - 上部に移動し横並び */}
-        <section className="mb-24">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            {/* 左：テキスト・ボタン */}
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* HERO SECTION */}
+        <section className="mb-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-3xl blur-3xl -z-10" />
+          <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-2">
+              <div className="inline-block px-4 py-1 bg-purple-900/40 rounded-full border border-purple-500/30 text-purple-300 font-medium mb-2">
+                Protocol Fee Sharing
+              </div>
+              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent leading-tight">
                 LOSER Token
               </h1>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-                Protocol Fee Sharing Mechanism
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
+                100% of Protocol Fees to Stakers
               </h2>
-              <p className="text-lg md:text-xl text-gray-300 mb-2">
-                In BUMP.WIN, even losers win. When your chosen meme coin
-                doesn&apos;t win the battle, you receive LOSER tokens that
-                entitle you to protocol fees from{" "}
-                <span className="text-pink-400">all future transactions</span>.
+              <p className="text-xl text-gray-300 leading-relaxed">
+                Lose a battle, win the war. When your chosen meme coin doesn't win,
+                you receive LOSER tokens that entitle you to
+                <span className="text-pink-400 font-semibold"> 100% of protocol fees </span>
+                from all future transactions.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <a
-                  href="/rounds"
-                  className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('staking');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-xl text-center"
                 >
-                  Join a Battle
-                </a>
-                <a
-                  href="#staking"
-                  className="px-8 py-3 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-colors"
-                >
-                  Learn About Staking
-                </a>
+                  Staking $LOSER
+                </button>
               </div>
             </div>
-            {/* 右：Even Losers Win.セクションのカードを移植 */}
-            <div className="flex justify-center md:justify-end">
-              <div className="relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-xl shadow-2xl border border-purple-500/30">
+            <div className="flex justify-center md:justify-end relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl" />
+              <div className="relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-2xl shadow-2xl border border-purple-500/30 z-10">
                 <Image
                   src="/images/mockmemes/LOSER.png"
-                  alt="LOSER Token Staking"
+                  alt="LOSER Token"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-6">
                   <div className="text-3xl font-bold tracking-wider mb-1">
                     LOSER
                   </div>
                   <div className="text-gray-300 text-sm">
-                    Protocol Fee Sharing Token
+                    Fee Distribution Token
                   </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="text-gray-400 text-xs">Projected APR</div>
-                    <div className="flex items-center gap-6">
-                      <div>
-                        <span className="text-gray-400 text-xs">Staking </span>
-                        <div className="text-white text-sm font-bold">
-                          15-25%
-                        </div>
-                      </div>
+                  <div className="flex justify-between items-center mt-3">
+                    <div className="text-gray-400 text-xs">Expected APR</div>
+                    <div className="text-white text-lg font-bold">
+                      15-25%
                     </div>
                   </div>
                 </div>
@@ -108,644 +102,300 @@ export default function LosersPage() {
           </div>
         </section>
 
-        {/* Fee Flow Diagram - 下に移動 */}
-        <section className="mb-24">
-          <FeeFlowChart
-            title="LOSERS TAKES ALL FEE"
-            subtitle="100% of Trading Fees go to LOSER Stakers"
-          />
-        </section>
-
-        {/* LOSER Inflation Schedule Chart - タイトル変更と正確な半減期チャートに */}
-        <section className="mb-28 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl p-8 md:p-10">
-          <h2 className="text-3xl md:text-5xl font-bold mb-3 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            Early Dominance: Be First, Earn More
-          </h2>
-          <p className="text-xl text-gray-300 text-center mb-8 max-w-3xl mx-auto">
-            <span className="font-semibold text-pink-400">
-              LOSER Inflation Schedule:
-            </span>{" "}
-            The earlier you join, the greater your lifetime protocol fee share.
-          </p>
-
-          <div className="h-[400px] w-full mb-8">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={loserInflationData}
-                margin={{ top: 10, right: 30, left: 10, bottom: 30 }}
-              >
-                <defs>
-                  <linearGradient
-                    id="colorIssuance"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#ec4899" stopOpacity={0.2} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                <XAxis
-                  dataKey="round"
-                  label={{
-                    value: "Battle Round",
-                    position: "insideBottom",
-                    offset: -15,
-                    fill: "#fff",
-                  }}
-                  tick={{ fill: "#ccc" }}
-                />
-                <YAxis
-                  label={{
-                    value: "LOSER per 1 SUI",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: 10,
-                    fill: "#fff",
-                  }}
-                  tick={{ fill: "#ccc" }}
-                  domain={[0, "dataMax"]}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#222",
-                    borderColor: "#444",
-                    color: "#fff",
-                  }}
-                  formatter={(value: number) => [
-                    `${value} LOSER`,
-                    "Tokens per 1 SUI",
-                  ]}
-                  labelFormatter={(label) => `Battle Round ${label}`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="issuanceRate"
-                  stroke="#a855f7"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorIssuance)"
-                  name="LOSER per 1 SUI"
-                />
-                <Legend wrapperStyle={{ color: "#fff" }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="bg-gray-800/50 p-6 rounded-lg border-l-4 border-pink-500 max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold mb-3 text-white">
-              Half-Life: Every 4 Rounds
-            </h3>
-            <p className="text-gray-300 mb-4">
-              LOSER token issuance follows a mathematical half-life model,
-              reducing by 50% every 4 rounds:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-200">
-              <div className="bg-gray-800/70 p-4 rounded-lg border border-purple-500/30">
-                <div className="flex items-center mb-2">
-                  <span className="inline-block w-4 h-4 rounded-full bg-purple-500 mr-2" />
-                  <span className="font-bold">Early Rounds</span>
-                </div>
-                <ul className="space-y-1 pl-6">
-                  <li>
-                    <strong>Round 1:</strong> 100 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 2:</strong> 84 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 3:</strong> 71 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 4:</strong> 59 LOSER
-                  </li>
-                </ul>
-              </div>
-              <div className="bg-gray-800/70 p-4 rounded-lg border border-pink-500/30">
-                <div className="flex items-center mb-2">
-                  <span className="inline-block w-4 h-4 rounded-full bg-pink-500 mr-2" />
-                  <span className="font-bold">Mid Rounds</span>
-                </div>
-                <ul className="space-y-1 pl-6">
-                  <li>
-                    <strong>Round 5:</strong> 50 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 6:</strong> 42 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 7:</strong> 35 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 8:</strong> 30 LOSER
-                  </li>
-                </ul>
-              </div>
-              <div className="bg-gray-800/70 p-4 rounded-lg border border-blue-500/30">
-                <div className="flex items-center mb-2">
-                  <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2" />
-                  <span className="font-bold">Late Rounds</span>
-                </div>
-                <ul className="space-y-1 pl-6">
-                  <li>
-                    <strong>Round 9:</strong> 25 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 12:</strong> 15 LOSER
-                  </li>
-                  <li>
-                    <strong>Round 13+:</strong> Diminishing
-                  </li>
-                  <li>
-                    <strong>Floor:</strong> 1 LOSER per SUI
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* LOSER Token Explanation - New Section */}
-        <section
-          className="mb-32 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl"
-          data-lenis-scroll-snap-align="center"
-        >
-          <div className="grid md:grid-cols-5 items-center">
-            <div
-              className="md:col-span-3 p-8 md:p-10"
-              data-parallax-depth="-0.05"
-            >
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-300 to-pink-500 bg-clip-text text-transparent">
-                    Even Losers Win.
-                  </h2>
-                  <p className="text-xl mb-2 text-gray-200 leading-relaxed">
-                    If your chosen meme coin doesn&apos;t win the battle:
-                  </p>
-                  <p className="text-xl mb-6 text-gray-200 leading-relaxed font-semibold">
-                    You&apos;ll receive LOSER tokens proportional to your
-                    investment
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-2xl font-bold mb-4 text-white">
-                    LOSER Token Benefits
-                  </h3>
-
-                  <div className="bg-gray-800/50 border-l-4 border-pink-500 pl-4 py-3 mb-8">
-                    <p className="text-lg text-gray-300 leading-relaxed">
-                      Stake your LOSER tokens to earn 100% of all protocol fees
-                    </p>
-                    <p className="text-lg text-white font-semibold">
-                      From both Battle AMM and Champions AMM transactions
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-purple-900/20 border border-purple-500/30 rounded-lg mb-6">
-                    <p className="text-white text-lg">
-                      The earlier you participate, the better your LOSER token
-                      ratio:
-                      <br />
-                      <span className="text-purple-400 font-bold">
-                        • Early rounds: 1 SUI = 100 LOSER
-                      </span>
-                      <br />
-                      <span className="text-purple-400 font-bold">
-                        • Later rounds: 1 SUI = 1 LOSER
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <a
-                  href="/losers"
-                  className="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                >
-                  Learn More About LOSER
-                </a>
-              </div>
-            </div>
-            {/* 右側カードは空にする */}
-            <div
-              className="md:col-span-2 p-8 md:p-10 sticky-container"
-              data-parallax-depth="0.1"
-            />
-          </div>
-        </section>
-        {/* Hero Section */}
-        <section className="mb-20 md:mb-32 flex flex-col md:flex-row items-center gap-12">
-          <div className="md:w-1/2">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
-              LOSER Token
-            </h1>
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">
-              Protocol Fee Sharing Mechanism
+        {/* LOSER TAKES ALL FEE */}
+        <section className="mb-20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-pink-900/20 rounded-3xl blur-3xl -z-10" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              LOSER TAKES ALL FEES
             </h2>
-            <p className="text-xl max-w-3xl text-gray-300 mb-8">
-              In BUMP.WIN, even losers win. When your chosen meme coin
-              doesn&apos;t win the battle, you receive LOSER tokens that entitle
-              you to protocol fees from{" "}
-              <span className="text-pink-400">all future transactions</span>.
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              100% of trading fees flow to LOSER stakers, not to developers or team members.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              <a
-                href="/rounds"
-                className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg"
-              >
-                Join a Battle
-              </a>
-              <a
-                href="#staking"
-                className="px-8 py-3 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-colors"
-              >
-                Learn About Staking
-              </a>
-            </div>
           </div>
-          <div className="md:w-1/2">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-2xl border border-pink-500/30">
-              <Image
-                src="/images/mockmemes/LOSER.png"
-                alt="LOSER Token"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
-                <div className="text-2xl font-bold tracking-wider mb-1">
-                  LOSER Token
+
+          <div className="max-w-4xl mx-auto">
+            <FeeFlowChart
+              title="100% FEE DISTRIBUTION"
+              subtitle="All Trading Fees go to LOSER Stakers"
+            />
+
+            <div className="bg-gray-800/50 p-6 rounded-xl border border-purple-500/20 mt-8 max-w-3xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">Fee Sources</h3>
+                  <ul className="space-y-2 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="inline-block w-4 h-4 rounded-full bg-pink-500 mr-2 mt-1" />
+                      <span>Battle AMM: 1% fixed fee on all trades</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-4 h-4 rounded-full bg-pink-500 mr-2 mt-1" />
+                      <span>Champion AMM: 1% fixed fee on all swaps</span>
+                    </li>
+                  </ul>
                 </div>
-                <div className="text-gray-300 text-sm">
-                  100% Protocol Fee Distribution
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">Distribution</h3>
+                  <ul className="space-y-2 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="inline-block w-4 h-4 rounded-full bg-green-500 mr-2 mt-1" />
+                      <span><strong className="text-green-400">100%</strong> to LOSER stakers</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-4 h-4 rounded-full bg-red-500 mr-2 mt-1" />
+                      <span><strong className="text-white">0%</strong> to protocol or team</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* What is LOSER Token Section */}
-        <section className="mb-28 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl p-8 md:p-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            What is LOSER Token?
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="text-xl text-gray-200 mb-6">
-                LOSER token is{" "}
-                <span className="text-pink-400 font-semibold">
-                  not a consolation prize
-                </span>
-                . It&apos;s a powerful economic mechanism that aligns incentives
-                across the BUMP.WIN ecosystem.
-              </p>
-
-              <div className="space-y-6">
-                <div className="bg-gray-800/50 p-5 rounded-lg border-l-4 border-pink-500">
-                  <h3 className="text-xl font-bold mb-2 text-white">
-                    Clear Definition
-                  </h3>
-                  <p className="text-gray-300">
-                    LOSER token represents the right to earn{" "}
-                    <span className="text-pink-400 font-semibold">
-                      100% of all protocol transaction fees
-                    </span>{" "}
-                    from both Battle AMM and Champions AMM.
-                  </p>
-                </div>
-
-                <div className="bg-gray-800/50 p-5 rounded-lg border-l-4 border-blue-500">
-                  <h3 className="text-xl font-bold mb-2 text-white">
-                    How You Get It
-                  </h3>
-                  <p className="text-gray-300">
-                    Issued exclusively to users who invested in meme coin
-                    candidates that didn&apos;t win the battle.
-                    <span className="block mt-2 font-semibold">
-                      Your original investment is not recoverable, but you gain
-                      perpetual fee rights instead.
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700">
-              <h3 className="text-xl font-bold mb-4 text-white">
-                Key LOSER Token Facts
-              </h3>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <div className="bg-pink-500 p-1 rounded-full mr-3 mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      aria-label="Checkmark"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="font-bold text-white">Issue Rate:</span>
-                    <p className="text-gray-300">
-                      Early rounds: 1 SUI = 100 LOSER
-                      <br />
-                      Later rounds: 1 SUI = 1 LOSER
-                      <br />
-                      <span className="text-sm text-pink-400">
-                        (Decreases gradually with each round)
-                      </span>
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-pink-500 p-1 rounded-full mr-3 mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      aria-label="Checkmark"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="font-bold text-white">
-                      Fee Entitlement:
-                    </span>
-                    <p className="text-gray-300">
-                      100% of all protocol fees (1% from all transactions)
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-pink-500 p-1 rounded-full mr-3 mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      aria-label="Checkmark"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="font-bold text-white">
-                      Principal Redemption:
-                    </span>
-                    <p className="text-gray-300">
-                      None. Your original investment is fully burned.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <div className="bg-pink-500 p-1 rounded-full mr-3 mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                      aria-label="Checkmark"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="font-bold text-white">Expected APR:</span>
-                    <p className="text-gray-300">
-                      15-25% for early stakers (varies with protocol volume)
-                    </p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+        {/* HOW TO GET LOSERS */}
+        <section className="mb-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-purple-900/20 rounded-3xl blur-3xl -z-10" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              HOW TO GET LOSER TOKENS
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              LOSER tokens are exclusively issued to participants who backed losing meme coins.
+            </p>
           </div>
-        </section>
 
-        {/* Fee Structure Section */}
-        <section className="mb-28" id="staking">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center text-white">
-            Fee Structure & Staking
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-16">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/80 rounded-2xl overflow-hidden shadow-xl p-8">
-              <h3 className="text-2xl font-bold mb-6 text-pink-400">
-                Fee Collection Sources
-              </h3>
-
-              <div className="space-y-6 mb-8">
-                <div className="bg-gray-800/70 p-4 rounded-lg">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Battle AMM Fees
-                  </h4>
-                  <ul className="text-gray-300 space-y-2">
-                    <li>
-                      <span className="text-pink-400 font-mono">1%</span> -
-                      Deposit Fee
-                    </li>
-                    <li>
-                      <span className="text-pink-400 font-mono">1%</span> -
-                      Switch Between Coins Fee
-                    </li>
-                    <li>
-                      <span className="text-pink-400 font-mono">0-48%</span> -
-                      Withdraw Fee (increases linearly over 24h)
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-gray-800/70 p-4 rounded-lg">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Champions AMM Fees
-                  </h4>
-                  <ul className="text-gray-300 space-y-2">
-                    <li>
-                      <span className="text-pink-400 font-mono">1%</span> - All
-                      Swap Transactions
-                    </li>
-                  </ul>
-                </div>
+          <div className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-2xl border border-blue-500/20 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-gray-900/50 p-6 rounded-xl border border-blue-500/30 relative overflow-hidden">
+                <div className="absolute -right-6 -top-6 w-12 h-12 rounded-full bg-blue-500/20 blur-xl" />
+                <div className="absolute top-2 right-2 bg-blue-900 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                <h3 className="text-xl font-bold mb-3 text-white">Join a Battle</h3>
+                <p className="text-gray-300">
+                  Stake SUI on your favorite meme coin candidate in any battle round
+                </p>
               </div>
-
-              <div className="bg-pink-900/20 p-4 rounded-lg border border-pink-800/30">
-                <p className="text-white">
-                  <span className="font-bold text-pink-400">100%</span> of all
-                  collected fees are distributed to LOSER stakers proportionally
-                  to their staked amount
+              <div className="bg-gray-900/50 p-6 rounded-xl border border-pink-500/30 relative overflow-hidden">
+                <div className="absolute -right-6 -top-6 w-12 h-12 rounded-full bg-pink-500/20 blur-xl" />
+                <div className="absolute top-2 right-2 bg-pink-900 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                <h3 className="text-xl font-bold mb-3 text-white">Lose the Battle</h3>
+                <p className="text-gray-300">
+                  If your chosen meme coin doesn't win the round, you qualify for LOSER tokens
+                </p>
+              </div>
+              <div className="bg-gray-900/50 p-6 rounded-xl border border-purple-500/30 relative overflow-hidden">
+                <div className="absolute -right-6 -top-6 w-12 h-12 rounded-full bg-purple-500/20 blur-xl" />
+                <div className="absolute top-2 right-2 bg-purple-900 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                <h3 className="text-xl font-bold mb-3 text-white">Receive LOSER</h3>
+                <p className="text-gray-300">
+                  Get LOSER tokens proportional to your burned SUI investment
                 </p>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/80 rounded-2xl overflow-hidden shadow-xl p-8">
-              <h3 className="text-2xl font-bold mb-6 text-pink-400">
-                Staking Mechanism
+            <div className="mt-8 bg-gray-900/50 p-6 rounded-xl border border-pink-500/20">
+              <h3 className="text-xl font-bold mb-4 text-white flex items-center">
+                <span className="inline-block w-4 h-4 rounded-full bg-pink-500 mr-2" />
+                Important Notes
               </h3>
-
-              <div className="space-y-6 mb-8">
-                <div className="bg-gray-800/70 p-4 rounded-lg">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Single Pool System
-                  </h4>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-gray-800/50 p-4 rounded-lg">
                   <p className="text-gray-300">
-                    All LOSER tokens are staked in a single pool regardless of
-                    which round they were issued in.
+                    <span className="text-red-400 font-bold">×</span> Your staked SUI is not returned
+                  </p>
+                  <p className="text-gray-300">
+                    <span className="text-green-400 font-bold">✓</span> <span className="text-white">100% burned</span> in exchange for LOSER tokens
                   </p>
                 </div>
-
-                <div className="bg-gray-800/70 p-4 rounded-lg">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Flexible Staking
-                  </h4>
+                <div className="bg-gray-800/50 p-4 rounded-lg">
                   <p className="text-gray-300">
-                    Stake and unstake at any time with no lockup period.
+                    <span className="text-red-400 font-bold">×</span> Not a consolation prize
                   </p>
-                </div>
-
-                <div className="bg-gray-800/70 p-4 rounded-lg">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Automated Distribution
-                  </h4>
                   <p className="text-gray-300">
-                    Fees are automatically distributed to stakers in real-time
-                    as they are collected.
+                    <span className="text-green-400 font-bold">✓</span> <span className="text-white">Fee distribution rights</span> token only
                   </p>
                 </div>
               </div>
+            </div>
 
-              <div className="bg-green-900/20 p-4 rounded-lg border border-green-800/30">
-                <p className="text-white">
-                  <span className="font-bold text-green-400">
-                    Early Advantage:
-                  </span>{" "}
-                  Early round participants receive significantly more LOSER
-                  tokens per SUI invested, giving them a larger share of all
-                  future protocol fees.
+            <div className="mt-12 text-center">
+              <a href="/rounds" className="inline-block px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                Join Current Battle
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* EARLY DOMINANCE */}
+        <section className="mb-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-pink-900/20 to-purple-900/20 rounded-3xl blur-3xl -z-10" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
+              EARLY DOMINANCE: BE FIRST, EARN MORE
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              The number of LOSER tokens issued per round decreases as rounds progress. The actual amount you receive is always proportional to the amount of SUI you burned in that round.
+            </p>
+          </div>
+          <div className="bg-gray-800/30 backdrop-blur-sm p-8 rounded-2xl border border-pink-500/20 max-w-4xl mx-auto">
+            <div className="h-[400px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={loserInflationData}
+                  margin={{ top: 10, right: 30, left: 10, bottom: 30 }}
+                >
+                  <defs>
+                    <linearGradient
+                      id="colorIssuance"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#ec4899" stopOpacity={0.2} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#444" opacity={0.5} />
+                  <XAxis
+                    dataKey="round"
+                    label={{
+                      value: "Battle Round",
+                      position: "insideBottom",
+                      offset: -15,
+                      fill: "#fff",
+                    }}
+                    tick={{ fill: "#ccc" }}
+                  />
+                  <YAxis
+                    label={{
+                      value: "LOSER per 1 SUI",
+                      angle: -90,
+                      position: "insideLeft",
+                      offset: 10,
+                      fill: "#fff",
+                    }}
+                    tick={{ fill: "#ccc" }}
+                    domain={[0, "dataMax"]}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#222",
+                      borderColor: "#444",
+                      color: "#fff",
+                    }}
+                    formatter={(value: number) => [`${value} LOSER`, "per 1 SUI"]}
+                    labelFormatter={(label) => `Battle Round ${label}`}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="issuanceRate"
+                    stroke="#a855f7"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorIssuance)"
+                    name="LOSER per 1 SUI"
+                  />
+                  <Legend wrapperStyle={{ color: "#fff" }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-8 grid md:grid-cols-3 gap-6">
+              <div className="bg-gray-900/50 p-4 rounded-lg border border-purple-500/30">
+                <h3 className="font-bold text-white mb-2 flex items-center">
+                  <span className="inline-block w-3 h-3 rounded-full bg-purple-500 mr-2" />
+                  Early Rounds
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  <strong>Rounds 1-4:</strong> Highest issuance rate starting at 100 LOSER per 1 SUI, decreasing to 59
+                </p>
+              </div>
+              <div className="bg-gray-900/50 p-4 rounded-lg border border-pink-500/30">
+                <h3 className="font-bold text-white mb-2 flex items-center">
+                  <span className="inline-block w-3 h-3 rounded-full bg-pink-500 mr-2" />
+                  Mid Rounds
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  <strong>Rounds 5-8:</strong> Medium issuance rate from 50 LOSER per 1 SUI, decreasing to 30
+                </p>
+              </div>
+              <div className="bg-gray-900/50 p-4 rounded-lg border border-blue-500/30">
+                <h3 className="font-bold text-white mb-2 flex items-center">
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500 mr-2" />
+                  Late Rounds
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  <strong>Rounds 9+:</strong> Lower issuance rate starting at 25 LOSER per 1 SUI, with floor of 1
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Strategic Considerations */}
-        <section className="mb-28 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl p-8 md:p-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center text-white">
-            Strategic Considerations
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700 hover:border-pink-500/30 transition-colors">
-              <h3 className="text-xl font-bold mb-4 text-white">
-                Win-Win Approach
-              </h3>
-              <p className="text-gray-300">
-                By participating in early rounds, you can win either way:
-                <span className="block mt-2">
-                  • Champion tokens if your coin wins
-                </span>
-                <span className="block">
-                  • Higher LOSER ratio if your coin loses
-                </span>
-              </p>
-            </div>
-
-            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700 hover:border-pink-500/30 transition-colors">
-              <h3 className="text-xl font-bold mb-4 text-white">
-                Diversification Strategy
-              </h3>
-              <p className="text-gray-300">
-                Consider investing in multiple coins within a battle round to:
-                <span className="block mt-2">
-                  • Increase chances of winning with a Champion
-                </span>
-                <span className="block">
-                  • Guarantee some LOSER tokens even if you back a winner
-                </span>
-              </p>
-            </div>
-
-            <div className="bg-gray-800/30 p-6 rounded-xl border border-gray-700 hover:border-pink-500/30 transition-colors">
-              <h3 className="text-xl font-bold mb-4 text-white">
-                Early Participation
-              </h3>
-              <p className="text-gray-300">
-                The earliest rounds offer the highest LOSER:SUI ratio,
-                providing:
-                <span className="block mt-2">
-                  • Up to 100 LOSER per 1 SUI in initial rounds
-                </span>
-                <span className="block">
-                  • Significantly higher share of all future protocol fees
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-12 p-6 bg-pink-900/20 rounded-lg border border-pink-800/30">
-            <h3 className="text-xl font-bold mb-4 text-center text-white">
-              Risk vs. Reward Balance
-            </h3>
-            <p className="text-center text-gray-300 max-w-3xl mx-auto">
-              BUMP.WIN creates a balanced ecosystem where both winners and
-              losers have clear value propositions. While Champions get
-              immediate token launches with strong liquidity, LOSER token
-              holders gain perpetual fee-earning rights.
+        {/* STAKING SECTION */}
+        <section className="mb-20 relative" id="staking">
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-purple-900/20 rounded-3xl blur-3xl -z-10" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              LOSER STAKING
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Stake your LOSER tokens to earn protocol fees from all transactions.
             </p>
           </div>
-        </section>
-
-        {/* Call to Action */}
-        <section className="py-16 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-            Ready to Earn Protocol Fees?
-          </h2>
-          <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-            Join the BUMP.WIN ecosystem today. Whether you win or lose a battle,
-            there&apos;s a clear path to value in our winner-takes-all meme coin
-            platform.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <a
-              href="/rounds"
-              className="px-10 py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-            >
-              Join Current Battle
-            </a>
-            <a
-              href="/stake"
-              className="px-10 py-4 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-all duration-300 hover:scale-105"
-            >
-              Stake LOSER Tokens
-            </a>
+          <div className="bg-[#151921] backdrop-blur-sm rounded-2xl shadow-xl border border-blue-900/30 max-w-4xl mx-auto overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-b border-blue-900/30 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                  <Image src="/images/mockmemes/LOSER.png" alt="LOSER" width={40} height={40} />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">LOSER</div>
+                  <div className="text-sm text-gray-400">Fee Distribution Token</div>
+                </div>
+              </div>
+            </div>
+            <div className="p-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-[#1c2028] p-4 rounded-xl">
+                  <div className="text-sm text-gray-400 mb-1">Pending Rewards</div>
+                  <div className="text-2xl font-bold text-white">0 LOSER</div>
+                  <div className="text-xs text-gray-500">$0.00</div>
+                </div>
+                <div className="bg-[#1c2028] p-4 rounded-xl">
+                  <div className="text-sm text-gray-400 mb-1">Total Staked</div>
+                  <div className="text-2xl font-bold text-white">0 LOSER</div>
+                  <div className="text-xs text-gray-500">$0.00</div>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-[#1E212A] rounded-xl p-6 border border-blue-900/30">
+                  <div className="text-lg font-semibold text-white mb-4">Available LOSER</div>
+                  <div className="flex items-end justify-between mb-4">
+                    <div>
+                      <div className="text-3xl font-bold text-white mb-1">0 LOSER</div>
+                      <div className="text-sm text-gray-400">$0.00</div>
+                    </div>
+                    <button type="button" className="px-8 py-3 bg-[#1c2028] text-gray-400 rounded-lg font-medium hover:bg-[#262a35] transition">MAX</button>
+                  </div>
+                  <button type="button" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 rounded-xl mt-4 hover:opacity-90 transition hover:shadow-lg">
+                    Stake
+                  </button>
+                </div>
+                <div className="bg-[#1E212A] rounded-xl p-6 border border-blue-900/30">
+                  <div className="text-lg font-semibold text-white mb-4">Pending Rewards</div>
+                  <div className="flex items-end justify-between mb-4">
+                    <div>
+                      <div className="text-3xl font-bold text-white mb-1">0 LOSER</div>
+                      <div className="text-sm text-gray-400">$0.00</div>
+                    </div>
+                  </div>
+                  <button type="button" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 rounded-xl mt-4 hover:opacity-90 transition hover:shadow-lg">
+                    Harvest
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>
