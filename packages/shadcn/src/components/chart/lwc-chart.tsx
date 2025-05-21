@@ -2,9 +2,9 @@
 
 import {
   CandlestickSeries,
+  ColorType,
   type IChartApi,
   createChart,
-  ColorType
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
@@ -88,7 +88,7 @@ export function LWCChart({
         chart.applyOptions({ width: container.current.clientWidth });
       }
     };
-    
+
     window.addEventListener("resize", resize);
     return () => {
       window.removeEventListener("resize", resize);
@@ -97,9 +97,9 @@ export function LWCChart({
   }, [data, currentPrice, height]);
 
   return (
-    <div 
-      ref={container} 
-      className={`w-full ${className}`} 
+    <div
+      ref={container}
+      className={`w-full ${className}`}
       style={{ height: `${height}px` }}
     />
   );
@@ -109,35 +109,35 @@ export function LWCChart({
 function generateDefaultData(): OHLCData[] {
   const baseDate = new Date();
   baseDate.setDate(baseDate.getDate() - 15); // 15日前から
-  
+
   const result: OHLCData[] = [];
   let price = 0.000025;
-  
+
   for (let i = 0; i < 15; i++) {
     const date = new Date(baseDate);
     date.setDate(date.getDate() + i);
-    
+
     // 日付をYYYY-MM-DD形式に変換
-    const timeStr = date.toISOString().split('T')[0] || '';
-    
+    const timeStr = date.toISOString().split("T")[0] || "";
+
     // ランダムな値動きを生成
     const changePercent = (Math.random() - 0.5) * 0.1; // -5%から+5%
     const open = price;
     const close = open * (1 + changePercent);
     const high = Math.max(open, close) * (1 + Math.random() * 0.03);
     const low = Math.min(open, close) * (1 - Math.random() * 0.03);
-    
+
     result.push({
       time: timeStr,
       open,
       high,
       low,
-      close
+      close,
     });
-    
+
     // 次の日の始値は前日の終値
     price = close;
   }
-  
+
   return result;
-} 
+}

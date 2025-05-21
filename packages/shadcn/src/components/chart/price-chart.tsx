@@ -1,6 +1,11 @@
 "use client";
 
-import { createChart, ColorType, LineStyle, type IChartApi } from "lightweight-charts";
+import {
+  ColorType,
+  type IChartApi,
+  LineStyle,
+  createChart,
+} from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 export interface PriceChartData {
@@ -24,7 +29,7 @@ function generateMockData(): PriceChartData[] {
   for (let i = 0; i < 30; i++) {
     const time = new Date(now.getTime() - (30 - i) * 24 * 60 * 60 * 1000);
     value = value + (Math.random() - 0.5) * 10;
-    const dateStr = time.toISOString().split('T')[0];
+    const dateStr = time.toISOString().split("T")[0];
     if (dateStr) {
       data.push({
         time: dateStr,
@@ -70,7 +75,7 @@ export function PriceChart({
       width: containerWidth,
       height,
       clientWidth: chartContainerRef.current.clientWidth,
-      clientHeight: chartContainerRef.current.clientHeight
+      clientHeight: chartContainerRef.current.clientHeight,
     });
 
     // サイズのバリデーション
@@ -101,10 +106,10 @@ export function PriceChart({
       });
 
       // データ形式の修正（日付形式をそのまま使用）
-      const formattedData = data.map(item => {
+      const formattedData = data.map((item) => {
         return {
           time: item.time, // 文字列形式のまま使用
-          value: item.value
+          value: item.value,
         };
       });
 
@@ -151,7 +156,7 @@ export function PriceChart({
       style={{
         width: width ? `${width}px` : "100%",
         height: `${height}px`,
-        minHeight: "200px"
+        minHeight: "200px",
       }}
     />
   );

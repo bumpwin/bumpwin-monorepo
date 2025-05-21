@@ -1,5 +1,6 @@
 "use client";
 
+import type { DominanceChartData } from "@/types/dominance";
 import { format, parseISO } from "date-fns";
 import type React from "react";
 import {
@@ -13,7 +14,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DominanceChartData } from "@/types/dominance";
 
 // Custom tooltip for better display
 const CustomTooltip = ({

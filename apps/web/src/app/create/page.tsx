@@ -1,5 +1,10 @@
 "use client";
 
+import { CollapsibleSection } from "@/components/CollapsibleSection";
+import CommunicationPanel from "@/components/CommunicationPanel";
+import { FormField } from "@/components/FormField";
+import { ImageUpload } from "@/components/ImageUpload";
+import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
 import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
 import {
   useCurrentAccount,
@@ -20,11 +25,6 @@ import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { FormField } from "@/components/FormField";
-import { ImageUpload } from "@/components/ImageUpload";
-import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
-import CommunicationPanel from "@/components/CommunicationPanel";
 
 // Define phases
 type Phase = "CONNECT_WALLET" | "PUBLISH_PACKAGE" | "CREATE_COIN" | "COMPLETED";

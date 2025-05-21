@@ -105,7 +105,8 @@ export const mockmemes: MockCoinMetaData[] = [
   {
     symbol: "YAKIU",
     name: "Yakiumin",
-    description: "why he shaped like that\n\nalso: devs are asleep, deploy sushi llama",
+    description:
+      "why he shaped like that\n\nalso: devs are asleep, deploy sushi llama",
     iconUrl: "/images/mockmemes/YAKIU.png",
   },
   {
@@ -123,7 +124,8 @@ export const mockmemes: MockCoinMetaData[] = [
   {
     symbol: "TREX",
     name: "T-Rex Chain",
-    description: "Sir, our tech is outdated.\n– SO IS THE T-REX AND IT ATE PEOPLE",
+    description:
+      "Sir, our tech is outdated.\n– SO IS THE T-REX AND IT ATE PEOPLE",
     iconUrl: "/images/mockmemes/TREX.png",
   },
   {
@@ -135,7 +137,7 @@ export const mockmemes: MockCoinMetaData[] = [
   {
     symbol: "HIGHER",
     name: "HigherFace",
-    description: "bears: \"it'll retrace\"\nme: *internal static intensifies*",
+    description: 'bears: "it\'ll retrace"\nme: *internal static intensifies*',
     iconUrl: "/images/mockmemes/HIGHER.webp",
   },
   {
@@ -161,5 +163,5 @@ export const mockmemes: MockCoinMetaData[] = [
     name: "Monke Vibe",
     description: "refuses to elaborate. eats banana. up 420%.",
     iconUrl: "/images/mockmemes/MONKE.jpeg",
-  }
+  },
 ];

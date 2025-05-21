@@ -3,9 +3,9 @@
 import {
   ConnectButton,
   useCurrentAccount,
+  useCurrentWallet,
   useDisconnectWallet,
   useSuiClient,
-  useCurrentWallet,
 } from "@mysten/dapp-kit";
 import { formatAddress } from "@mysten/sui/utils";
 import { logger } from "@workspace/logger";
@@ -16,10 +16,10 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
 import { getSuiBalance } from "@workspace/sui";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { ChevronDown, Copy as CopyIcon, LogOut } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function SuiWalletConnectButton() {
   // Using _balance to indicate we know it's not currently used but keeping it for future use
@@ -73,11 +73,11 @@ export function SuiWalletConnectButton() {
             <span
               className="bg-gradient-to-r from-fuchsia-400 via-purple-400 to-blue-400 bg-clip-text text-transparent font-extrabold !opacity-100"
               style={{
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
                 fontWeight: 800,
                 opacity: 1,
-                color: 'transparent',
+                color: "transparent",
               }}
             >
               Login
@@ -106,7 +106,10 @@ export function SuiWalletConnectButton() {
               <ChevronDown className="w-6 h-6 text-white flex-shrink-0 ml-2" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[240px] mt-2 rounded-2xl shadow-2xl border border-gray-800 bg-[#18122B] p-3">
+          <DropdownMenuContent
+            align="end"
+            className="w-[240px] mt-2 rounded-2xl shadow-2xl border border-gray-800 bg-[#18122B] p-3"
+          >
             <DropdownMenuItem
               onClick={copyAddressToClipboard}
               className="focus:bg-[#5D20D3]/10 hover:bg-[#5D20D3]/20 cursor-pointer rounded-xl px-4 py-3 transition flex items-center gap-4 text-xl text-white font-bold"

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import type React from "react";
 
 export interface LoserCardProps {
   imageUrl: string;
@@ -42,9 +42,17 @@ export const LoserCard: React.FC<LoserCardProps> = ({
       sizes="(max-width: 768px) 100vw, 50vw"
     />
     <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
-      <div className="text-3xl font-bold tracking-wider mb-1 text-white truncate">{title}</div>
-      {subtitle && <div className="text-gray-300 text-sm mb-1 truncate">{subtitle}</div>}
-      {description && <div className="text-gray-200 text-xs mb-2 whitespace-pre-line line-clamp-3">{description}</div>}
+      <div className="text-3xl font-bold tracking-wider mb-1 text-white truncate">
+        {title}
+      </div>
+      {subtitle && (
+        <div className="text-gray-300 text-sm mb-1 truncate">{subtitle}</div>
+      )}
+      {description && (
+        <div className="text-gray-200 text-xs mb-2 whitespace-pre-line line-clamp-3">
+          {description}
+        </div>
+      )}
       <div className="flex justify-between items-end mt-2 gap-4">
         <div>
           <div className="text-gray-400 text-xs">Price</div>
@@ -62,7 +70,9 @@ export const LoserCard: React.FC<LoserCardProps> = ({
             {stakingLabel && (
               <div>
                 <span className="text-gray-400 text-xs">{stakingLabel} </span>
-                <div className="text-white text-sm font-bold">{stakingValue}</div>
+                <div className="text-white text-sm font-bold">
+                  {stakingValue}
+                </div>
               </div>
             )}
             {aprValue && !stakingLabel && (
@@ -73,4 +83,4 @@ export const LoserCard: React.FC<LoserCardProps> = ({
       )}
     </div>
   </div>
-); 
+);

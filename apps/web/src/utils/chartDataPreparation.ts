@@ -1,4 +1,4 @@
-import {
+import type {
   ChartDataPoint,
   CoinMeta,
   PreparedCoinMeta,
@@ -18,7 +18,7 @@ const DEFAULT_COLOR_PALETTE = [
  */
 export function prepareCoinsMetadata(
   coinMetadata: CoinMeta[],
-  numberOfCoinsToDisplay: number = 4,
+  numberOfCoinsToDisplay = 4,
   colorPalette: string[] = DEFAULT_COLOR_PALETTE,
 ): PreparedCoinMeta[] {
   return coinMetadata.slice(0, numberOfCoinsToDisplay).map((coin, index) => ({

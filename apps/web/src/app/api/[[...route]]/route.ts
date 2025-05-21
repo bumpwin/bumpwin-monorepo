@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
-import { app as mockpriceApp } from "./mockprice";
 import { app as chatApp } from "./chat";
+import { app as mockpriceApp } from "./mockprice";
 
 // Edge Runtime configuration
-export const runtime = 'edge';
+export const runtime = "edge";
 
 // basePath は API ルートのベースパスを指定します
 const app = new Hono().basePath("/api");

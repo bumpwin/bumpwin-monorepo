@@ -1,17 +1,17 @@
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import DominanceRechart from "@/components/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
-import Image from "next/image";
-import type React from "react";
-import { useMemo, useState, useEffect } from "react";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface RoundCoinTableProps {
   onSelectCoin?: (coin: RoundCoin | undefined) => void;

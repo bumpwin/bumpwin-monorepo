@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 import DominanceRechart from "./DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
 interface ResultViewProps {
