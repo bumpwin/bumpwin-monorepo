@@ -16,7 +16,7 @@ interface ChampCardProps {
 export function ChampCard({ image, name, round, mcap, volume, subtitle, tradeUrl, allChampionsUrl, className }: ChampCardProps) {
   return (
     <div 
-      className={`relative w-full h-full overflow-hidden rounded-xl shadow-2xl border border-indigo-500/30 hover:scale-[1.02] transition-all duration-300 shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:shadow-[0_0_40px_rgba(255,215,0,0.4)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:z-0 bg-gradient-to-br from-gray-900/80 to-gray-800/40 ${className || ''}`}
+      className={`relative w-full h-full overflow-hidden rounded-xl shadow-2xl border border-yellow-500/30 hover:scale-[1.02] transition-all duration-300 shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:z-0 bg-gradient-to-br from-gray-900/80 to-gray-800/40 ${className || ''}`}
     >
       <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl z-0" />
       <Image
@@ -41,10 +41,10 @@ export function ChampCard({ image, name, round, mcap, volume, subtitle, tradeUrl
         </svg>
         Champion
       </div>
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t bg-black/70 backdrop-blur-sm px-4 py-3 z-10 w-full">
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent backdrop-blur-sm px-4 py-3 z-10 w-full">
         <div className="text-2xl font-bold tracking-wider text-amber-400 -mb-1">{name}</div>
         <div className="text-gray-300 text-sm mb-2">{subtitle || round}</div>
-        <div className="grid grid-cols-2 gap-1 border-t border-gray-700 pt-2">
+        <div className="grid grid-cols-2 gap-3 border-t border-gray-700/70 pt-2">
           <div>
             <span className="text-gray-400 text-xs block">mcap </span>
             <div className="flex items-center">

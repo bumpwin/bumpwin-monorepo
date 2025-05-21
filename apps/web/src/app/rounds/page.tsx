@@ -309,17 +309,16 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               </div>
             )}
             {data.state === 'active' && (
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex flex-row items-center gap-4 mb-6">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer shrink-0"
                 >
                   Join the Battle
                 </button>
-                <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
-                  The battle is heating up! Who will take the lead?<br />
-                  Join now and help your favorite meme coin win the round.
-                </span>
+                <div className="text-gray-400 text-base whitespace-normal max-w-xs">
+                  The battle is heating up! Join now and help your favorite meme coin win the round.
+                </div>
               </div>
             )}
 
@@ -402,10 +401,11 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
 
           {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
           {(data.state === 'active' || (data.state === 'ended' && data.winner)) ? (
-            <div className="p-4" style={{height: "calc(100% - 8px)"}}>
+            <div className="p-6" style={{height: "calc(100%)"}}>
+              {/* BattleRoundCardとの余白上下右が等幅であること */}
               <div style={{
                 height: "100%",
-                aspectRatio: "3/4",
+                aspectRatio: "3/4", // 重要: w:h = 3:4 のアスペクト比を厳守
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center"
