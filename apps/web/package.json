@@ -19,7 +19,6 @@
   "dependencies": {
     "@mysten/dapp-kit": "^0.16.0",
     "@tanstack/react-query": "^5.74.4",
-    "bumpwin": "^0.202505.17",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",
     "gsap": "^3.13.0",
