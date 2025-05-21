@@ -1,5 +1,5 @@
-import React from "react";
 import { Plus } from "lucide-react";
+import React from "react";
 
 interface WaitingRoundCardProps {
   startTime: string;
@@ -28,6 +28,7 @@ export function WaitingRoundCard({
         </div>
       </div>
       <button
+        type="button"
         onClick={onCreateClick}
         className="px-6 py-3 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-bold border border-purple-500/50 transition-all hover:scale-105 shadow-lg"
       >

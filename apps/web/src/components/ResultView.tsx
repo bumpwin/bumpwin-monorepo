@@ -3,10 +3,10 @@ import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
+import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import { Globe, Send, Twitter } from "lucide-react";
 import DominanceRechart from "./DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
@@ -26,12 +26,13 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
   const chartPoints: ChartDataPoint[] = mockDominanceChartData.map((point) => ({
     timestamp: point.timestamp,
     ...point.shares.reduce(
-      (acc, share, index) => ({
-        ...acc,
-        [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]:
-          share,
-      }),
-      {},
+      (acc, share, index) => {
+        const symbol =
+          mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
+        acc[symbol] = share;
+        return acc;
+      },
+      {} as Record<string, number>,
     ),
   }));
 
@@ -66,7 +67,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
         timerRef.current = null;
       }
     };
-  }, [remainingTime, totalTime, forceVisible]);
+  }, [remainingTime, forceVisible]);
 
   useEffect(() => {
     if (!visible && timerRef.current) {
@@ -113,6 +114,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
           >
             {!forceVisible && (
               <button
+                type="button"
                 onClick={handleClose}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold focus:outline-none"
                 aria-label="Close"
@@ -201,6 +203,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                   </div>
                   <div className="flex gap-4">
                     <button
+                      type="button"
                       onClick={() =>
                         router.push(`/trade/${coin.symbol.toLowerCase()}`)
                       }
@@ -209,12 +212,14 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                       Trade
                     </button>
                     <button
+                      type="button"
                       onClick={() => {}}
                       className="bg-yellow-400 text-[#23262F] font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-yellow-300 transition"
                     >
                       Claim ${coin.symbol}
                     </button>
                     <button
+                      type="button"
                       onClick={() => {}}
                       className="bg-red-400 text-white font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-red-300 transition"
                     >
@@ -241,6 +246,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
 
             {!forceVisible && (
               <button
+                type="button"
                 onClick={handleViewMore}
                 className="absolute right-8 bottom-8 bg-yellow-400 text-[#23262F] font-bold rounded-xl px-8 py-3 text-lg shadow-lg hover:bg-yellow-300 transition"
                 style={{ zIndex: 3100 }}

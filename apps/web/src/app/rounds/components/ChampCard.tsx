@@ -1,6 +1,6 @@
+import { Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trophy } from "lucide-react";
 
 interface ChampCardProps {
   image: string;

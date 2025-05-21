@@ -9,10 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
 
 interface RoundCoinTableProps {
   onSelectCoin?: (coin: RoundCoin | undefined) => void;
@@ -78,10 +78,9 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
 
     if (sortType === "marketcap") {
       return shares.sort((a, b) => b.share - a.share);
-    } else {
-      // tradedat: randomOrder順で並べる
-      return randomOrder.map((i) => shares[i]).filter(Boolean);
     }
+    // tradedat: randomOrder順で並べる
+    return randomOrder.map((i) => shares[i]).filter(Boolean);
   }, [currentMinute, sortType, randomOrder]);
 
   const handleSelect = (coin: RoundCoin) => {
@@ -99,7 +98,10 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
       <div className="flex justify-end mb-2 gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="bg-[#181A20] text-white px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm focus:outline-none focus:ring-0 text-base">
+            <button
+              type="button"
+              className="bg-[#181A20] text-white px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm focus:outline-none focus:ring-0 text-base"
+            >
               {sortType === "marketcap" ? "Market Cap" : "Traded At"}
               <ChevronDown className="w-4 h-4" />
             </button>

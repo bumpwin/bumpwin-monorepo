@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { submitForm } from "@/app/actions";
-import { Input } from "@workspace/shadcn/components/input";
 import { Button } from "@workspace/shadcn/components/button";
+import { Input } from "@workspace/shadcn/components/input";
+import { useState } from "react";
 
 interface FormState {
   name: string;
@@ -92,7 +92,7 @@ export default function React19Form() {
 function Spinner() {
   return (
     <div className="flex justify-center p-2">
-      <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+      <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent" />
     </div>
   );
 }

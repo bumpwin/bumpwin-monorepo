@@ -40,7 +40,7 @@ export default function AsyncDataFetcher() {
 function LoadingIndicator() {
   return (
     <div className="flex justify-center items-center h-20 bg-gray-100 rounded-lg">
-      <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+      <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent" />
     </div>
   );
 }

@@ -2,8 +2,8 @@
 
 import type { DominanceChartData } from "@/types/dominance";
 import { format, parseISO } from "date-fns";
-import type React from "react";
 import { Clock } from "lucide-react";
+import type React from "react";
 import {
   CartesianGrid,
   Legend,

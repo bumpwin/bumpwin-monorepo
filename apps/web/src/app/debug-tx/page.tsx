@@ -128,7 +128,9 @@ const DebugTxPage = () => {
       treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
       u64: WSUI_AMOUNT,
     });
-    tx.transferObjects([wsui], currentAccount!.address);
+    if (currentAccount?.address) {
+      tx.transferObjects([wsui], currentAccount.address);
+    }
 
     if (isDryRun) {
       const result = await dryRunTransaction(tx);

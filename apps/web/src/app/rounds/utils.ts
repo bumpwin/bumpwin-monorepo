@@ -51,10 +51,9 @@ export function getChartPoints(
     timestamp: point.timestamp,
     ...(point.shares || []).reduce(
       (acc: Record<string, number>, share: number, index: number) => {
-        const symbol =
-          mockCoinMetadata && mockCoinMetadata[index]
-            ? mockCoinMetadata[index].symbol.toLowerCase()
-            : `coin${index}`;
+        const symbol = mockCoinMetadata?.[index]
+          ? mockCoinMetadata[index].symbol.toLowerCase()
+          : `coin${index}`;
 
         return Object.assign(acc, { [symbol]: share });
       },

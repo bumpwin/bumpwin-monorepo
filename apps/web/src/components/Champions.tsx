@@ -6,9 +6,9 @@ import {
 import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData } from "@/types/dominance";
 import { motion } from "framer-motion";
+import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
-import { Globe, Send, Twitter } from "lucide-react";
 import DominanceRechart from "./DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
@@ -36,12 +36,13 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
   const chartPoints: ChartDataPoint[] = mockDominanceChartData.map((point) => ({
     timestamp: point.timestamp,
     ...point.shares.reduce(
-      (acc, share, index) => ({
-        ...acc,
-        [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]:
-          share / 100,
-      }),
-      {},
+      (acc, share, index) => {
+        const symbol =
+          mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
+        acc[symbol] = share / 100;
+        return acc;
+      },
+      {} as Record<string, number>,
     ),
   }));
 
@@ -59,7 +60,7 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
         );
         return (
           <div key={coin.id} className="relative">
-            <div className="block group cursor-pointer" tabIndex={0}>
+            <div className="block group cursor-pointer">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
