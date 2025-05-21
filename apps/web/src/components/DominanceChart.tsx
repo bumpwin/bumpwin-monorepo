@@ -3,6 +3,7 @@
 import type { DominanceChartData } from "@/types/dominance";
 import { format, parseISO } from "date-fns";
 import type React from "react";
+import { Clock } from "lucide-react";
 import {
   CartesianGrid,
   Legend,
@@ -168,23 +169,7 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
         )}
         {date && (
           <div className="flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-1"
-              aria-label="date icon"
-            >
-              <title>Date Icon</title>
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
+            <Clock className="w-4 h-4 mr-1" />
             <span>{date}</span>
           </div>
         )}

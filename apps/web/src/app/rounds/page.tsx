@@ -224,7 +224,8 @@ function DashboardSection({
 
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-xl text-gray-300 mb-8 font-medium">
-                This battle hasn&apos;t started yet. Create a coin to participate!
+                This battle hasn&apos;t started yet. Create a coin to
+                participate!
               </p>
               <button
                 onClick={onCreateClick}

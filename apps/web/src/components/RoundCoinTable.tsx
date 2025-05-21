@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
 
 interface RoundCoinTableProps {
   onSelectCoin?: (coin: RoundCoin | undefined) => void;
@@ -100,15 +101,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
           <DropdownMenuTrigger asChild>
             <button className="bg-[#181A20] text-white px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm focus:outline-none focus:ring-0 text-base">
               {sortType === "marketcap" ? "Market Cap" : "Traded At"}
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <path
-                  d="M6 8L10 12L14 8"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <ChevronDown className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-[#181A20] text-white">
@@ -215,15 +208,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                                   title="Telegram"
                                   className="text-gray-400"
                                 >
-                                  <svg
-                                    width={18}
-                                    height={18}
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                  >
-                                    <title>Telegram</title>
-                                    <path d="M9.04 13.94l-.37 3.66c.53 0 .76-.23 1.04-.5l2.5-2.38 5.18 3.78c.95.52 1.62.25 1.86-.88l3.38-15.88c.31-1.44-.52-2-1.44-1.66L2.2 9.24c-1.39.56-1.37 1.36-.24 1.7l4.1 1.28 9.52-6.02c.45-.28.87-.13.53.18z" />
-                                  </svg>
+                                  <Send className="w-[18px] h-[18px]" />
                                 </a>
                               )}
                               {coin.websiteLink && (
@@ -234,15 +219,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                                   title="Website"
                                   className="text-gray-400"
                                 >
-                                  <svg
-                                    width={18}
-                                    height={18}
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                  >
-                                    <title>Website</title>
-                                    <circle cx="12" cy="12" r="10" />
-                                  </svg>
+                                  <Globe className="w-[18px] h-[18px]" />
                                 </a>
                               )}
                               {coin.twitterLink && (
@@ -253,15 +230,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                                   title="Twitter"
                                   className="text-gray-400"
                                 >
-                                  <svg
-                                    width={18}
-                                    height={18}
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                  >
-                                    <title>Twitter</title>
-                                    <path d="M22.46 6c-.77.35-1.6.59-2.47.7a4.3 4.3 0 001.88-2.37 8.59 8.59 0 01-2.72 1.04A4.28 4.28 0 0016.11 4c-2.37 0-4.29 1.92-4.29 4.29 0 .34.04.67.11.99C7.69 9.13 4.07 7.38 1.64 4.7c-.37.64-.58 1.38-.58 2.17 0 1.5.76 2.82 1.92 3.6-.7-.02-1.36-.21-1.94-.53v.05c0 2.1 1.5 3.85 3.5 4.25-.36.1-.74.16-1.13.16-.28 0-.54-.03-.8-.08.54 1.7 2.1 2.94 3.95 2.97A8.6 8.6 0 012 19.54c-.63 0-1.25-.04-1.86-.11A12.13 12.13 0 006.29 21c7.55 0 11.68-6.26 11.68-11.68 0-.18-.01-.36-.02-.54A8.18 8.18 0 0024 4.59a8.36 8.36 0 01-2.54.7z" />
-                                  </svg>
+                                  <Twitter className="w-[18px] h-[18px]" />
                                 </a>
                               )}
                             </div>
