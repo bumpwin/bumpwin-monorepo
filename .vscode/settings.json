@@ -15,9 +15,7 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": true
   },
-  "deno.enablePaths": [
-    "supabase/functions"
-  ],
+  "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": [
     "bare-node-builtins",

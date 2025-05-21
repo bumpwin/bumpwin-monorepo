@@ -35,7 +35,15 @@ function getRandomAddress(): string {
   const hex = Array.from({ length: 64 }, () =>
     Math.floor(Math.random() * 16).toString(16),
   ).join("");
-  return "0x" + hex;
+  return `0x${hex}`;
+}
+
+// Generate a random hex color
+function generateRandomColor() {
+  const hex = Array.from({ length: 6 }, () =>
+    Math.floor(Math.random() * 16).toString(16),
+  ).join("");
+  return `0x${hex}`;
 }
 
 /**
@@ -49,10 +57,10 @@ async function insertChatMessage(
     if (insertResult.isOk()) {
       logger.info(`Message from ${message.senderAddress} saved to Supabase.`);
     } else {
-      logger.error(`Failed to save message:`, insertResult.error);
+      logger.error("Failed to save message:", insertResult.error);
     }
   } catch (error) {
-    logger.error(`Error saving message:`, error);
+    logger.error("Error saving message:", error);
   }
 }
 

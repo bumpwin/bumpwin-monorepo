@@ -9,14 +9,23 @@ interface FlowChartNodeProps {
   subtitle?: string;
 }
 
-const FlowChartNode = ({ label, subtitle, type = "regular", className = "" }: FlowChartNodeProps) => {
-  const baseClasses = "flex flex-col items-center justify-center text-center p-4 font-medium border shadow-lg";
+const FlowChartNode = ({
+  label,
+  subtitle,
+  type = "regular",
+  className = "",
+}: FlowChartNodeProps) => {
+  const baseClasses =
+    "flex flex-col items-center justify-center text-center p-4 font-medium border shadow-lg";
 
   const typeClasses = {
     regular: "bg-gray-800/70 border-gray-700 rounded-lg",
-    circle: "bg-purple-900/80 border-purple-500/60 rounded-full aspect-square min-w-[140px]",
-    highlight: "bg-gradient-to-br from-pink-900/70 to-purple-900/70 border-pink-500/60 rounded-lg",
-    success: "bg-gradient-to-br from-green-900/70 to-teal-900/70 border-green-500/60 rounded-lg"
+    circle:
+      "bg-purple-900/80 border-purple-500/60 rounded-full aspect-square min-w-[140px]",
+    highlight:
+      "bg-gradient-to-br from-pink-900/70 to-purple-900/70 border-pink-500/60 rounded-lg",
+    success:
+      "bg-gradient-to-br from-green-900/70 to-teal-900/70 border-green-500/60 rounded-lg",
   };
 
   return (
@@ -30,7 +39,6 @@ const FlowChartNode = ({ label, subtitle, type = "regular", className = "" }: Fl
 interface FlowChartArrowProps {
   label?: string;
   highlight?: boolean;
-  style?: "solid" | "dashed";
   className?: string;
   direction?: "right" | "left" | "down";
 }
@@ -38,16 +46,14 @@ interface FlowChartArrowProps {
 const FlowChartArrow = ({
   label,
   highlight = false,
-  style = "solid",
   className = "",
-  direction = "right"
+  direction = "right",
 }: FlowChartArrowProps) => {
-
   // Determine rotation based on direction
   const rotationClass = {
     right: "",
     left: "rotate-180",
-    down: "rotate-90"
+    down: "rotate-90",
   };
 
   const arrowWidth = direction === "down" ? "2px" : "100%";
@@ -55,25 +61,31 @@ const FlowChartArrow = ({
   const arrowColor = highlight ? "#ec4899" : "#6b7280";
 
   // Determine arrow head positioning
-  const arrowHeadRight = direction === "right" ? "-4px" : (direction === "down" ? "-6px" : "auto");
+  const arrowHeadRight =
+    direction === "right" ? "-4px" : direction === "down" ? "-6px" : "auto";
   const arrowHeadLeft = direction === "left" ? "-4px" : "auto";
   const arrowHeadBottom = direction === "down" ? "-4px" : "auto";
   const arrowHeadTop = direction !== "down" ? "-3px" : "auto";
 
   // Determine arrow head transform
-  const arrowHeadTransform = direction === "right"
-    ? "rotate(90deg)"
-    : (direction === "left" ? "rotate(-90deg)" : "");
+  const arrowHeadTransform =
+    direction === "right"
+      ? "rotate(90deg)"
+      : direction === "left"
+        ? "rotate(-90deg)"
+        : "";
 
   return (
-    <div className={`flex flex-col items-center justify-center min-w-[80px] ${className} ${rotationClass[direction]}`}>
+    <div
+      className={`flex flex-col items-center justify-center min-w-[80px] ${className} ${rotationClass[direction]}`}
+    >
       <div className="relative w-full flex justify-center">
         <div
           className="bg-pink-500"
           style={{
             width: arrowWidth,
             height: arrowHeight,
-            backgroundColor: arrowColor
+            backgroundColor: arrowColor,
           }}
         />
         <div
@@ -82,16 +94,18 @@ const FlowChartArrow = ({
             borderWidth: "0 6px 8px 6px",
             borderColor: `transparent transparent ${arrowColor} transparent`,
             transform: arrowHeadTransform,
-            position: "absolute" as "absolute",
+            position: "absolute" as const,
             right: arrowHeadRight,
             left: arrowHeadLeft,
             bottom: arrowHeadBottom,
-            top: arrowHeadTop
+            top: arrowHeadTop,
           }}
         />
       </div>
       {label && (
-        <div className={`text-xs font-medium mt-1 ${highlight ? "text-pink-400" : "text-gray-400"}`}>
+        <div
+          className={`text-xs font-medium mt-1 ${highlight ? "text-pink-400" : "text-gray-400"}`}
+        >
           {label}
         </div>
       )}
@@ -106,9 +120,16 @@ interface FlowChartProps {
   subtitle?: string;
 }
 
-const FlowChart = ({ className = "", children, title, subtitle }: FlowChartProps) => {
+const FlowChart = ({
+  className = "",
+  children,
+  title,
+  subtitle,
+}: FlowChartProps) => {
   return (
-    <div className={`relative p-8 rounded-xl overflow-hidden bg-gray-900/80 ${className}`}>
+    <div
+      className={`relative p-8 rounded-xl overflow-hidden bg-gray-900/80 ${className}`}
+    >
       {title && (
         <div className="text-center mb-8">
           <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import mermaid from "mermaid";
+import { useEffect, useRef } from "react";
 
 interface MermaidChartProps {
   chart: string;
@@ -41,4 +41,4 @@ const MermaidChart = ({ chart, className = "" }: MermaidChartProps) => {
   );
 };
 
-export default MermaidChart; 
+export default MermaidChart;
