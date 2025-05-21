@@ -4,7 +4,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { MOCKCOINS_OBJECT_IDS } from "bumpwin";
 import { mockcoins } from "bumpwin/suigen";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 
 interface ClaimOutcomeModalProps {
   isOpen: boolean;
@@ -24,29 +24,44 @@ export function ClaimOutcomeModal({
 }: ClaimOutcomeModalProps) {
   const currentAccount = useCurrentAccount();
   const { executeTransaction, isExecuting } = useExecuteTransaction();
+  const [txStatus, setTxStatus] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleClaim = async () => {
     if (!currentAccount) return;
 
-    const tx = new Transaction();
+    try {
+      setTxStatus("idle");
+      setErrorMessage("");
 
-    // Mint red token
-    const redCoin = mockcoins.red.mint(tx, {
-      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
-      u64: 100n * BigInt(1e9),
-    });
-    tx.transferObjects([redCoin], currentAccount.address);
+      const tx = new Transaction();
 
-    // Mint black token
-    const blackCoin = mockcoins.black.mint(tx, {
-      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
-      u64: 100n * BigInt(1e9),
-    });
-    tx.transferObjects([blackCoin], currentAccount.address);
+      // Mint red token
+      const redCoin = mockcoins.red.mint(tx, {
+        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
+        u64: 100n * BigInt(1e9),
+      });
+      tx.transferObjects([redCoin], currentAccount.address);
 
-    // Execute the combined transaction
-    await executeTransaction(tx);
-    onClose();
+      // Mint black token
+      const blackCoin = mockcoins.black.mint(tx, {
+        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
+        u64: 100n * BigInt(1e9),
+      });
+      tx.transferObjects([blackCoin], currentAccount.address);
+
+      // Execute the combined transaction
+      await executeTransaction(tx);
+      // Note: The success/error state will be handled by the toast notifications
+      // and the isExecuting state from useExecuteTransaction
+    } catch (error) {
+      setTxStatus("error");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Transaction failed",
+      );
+    }
   };
 
   if (!isOpen) return null;
@@ -98,6 +113,22 @@ export function ClaimOutcomeModal({
               <span className="text-white font-medium">200</span>
             </div>
           </div>
+
+          {isExecuting && (
+            <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+              <p className="text-yellow-400 text-center font-medium">
+                Transaction in progress...
+              </p>
+            </div>
+          )}
+
+          {!isExecuting && txStatus === "error" && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+              <p className="text-red-400 text-center font-medium">
+                {errorMessage || "Transaction failed. Please try again."}
+              </p>
+            </div>
+          )}
 
           <div className="flex justify-end gap-4">
             <button

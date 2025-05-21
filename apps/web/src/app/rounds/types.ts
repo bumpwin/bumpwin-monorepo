@@ -1,5 +1,7 @@
 export type RoundState = "waiting" | "active" | "ended";
 
+export type RoundIntent = "create-coin" | "claim-outcome" | null;
+
 export interface RoundMetrics {
   mcap: string;
   volume: string;

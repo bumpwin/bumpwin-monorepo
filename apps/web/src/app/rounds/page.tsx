@@ -6,12 +6,12 @@ import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { ClaimOutcomeModal } from "./components/ClaimOutcomeModal";
 import { CreateCoinModal } from "./components/CreateCoinModal";
 import { ROUNDS } from "./constants";
-import type { RoundState } from "./types";
+import type { RoundIntent, RoundState } from "./types";
 import { getChartPoints, getSafeIcon, getSafeSymbol } from "./utils";
 
 // Define types for our dashboard data
@@ -54,6 +54,8 @@ interface DashboardSectionProps {
   tokenColors: TokenColors;
   onCreateClick?: () => void;
   onClaimClick?: (winnerName: string, share: number, roundId: string) => void;
+  intent?: RoundIntent;
+  claimButtonRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
 interface StatCardProps {
@@ -64,7 +66,7 @@ interface StatCardProps {
 export default function RoundsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const intent = searchParams.get("intent");
+  const intent = searchParams.get("intent") as RoundIntent;
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimData, setClaimData] = useState({
@@ -72,9 +74,19 @@ export default function RoundsPage() {
     roundId: "",
   });
 
+  // Add ref for the claim button
+  const claimButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Add effect for auto-scrolling
   useEffect(() => {
-    if (intent === "create-coin") {
-      setShowCreateModal(true);
+    if (intent === "claim-outcome" && claimButtonRef.current) {
+      // Use a much larger offset to ensure visibility (adjusted for this UI)
+      setTimeout(() => {
+        window.scrollTo({
+          top: 450, // Fixed position that works with this UI layout
+          behavior: "smooth"
+        });
+      }, 100);
     }
   }, [intent]);
 
@@ -200,6 +212,8 @@ export default function RoundsPage() {
                   dashboard.state === "waiting" ? handleCreateClick : undefined
                 }
                 onClaimClick={handleClaimClick}
+                intent={intent}
+                claimButtonRef={claimButtonRef}
               />
             ))}
           </div>
@@ -227,6 +241,8 @@ function DashboardSection({
   tokenColors,
   onCreateClick,
   onClaimClick,
+  intent,
+  claimButtonRef,
 }: DashboardSectionProps) {
   // Handle waiting round (upcoming battle)
   if (data.state === "waiting" && onCreateClick) {
@@ -288,7 +304,11 @@ function DashboardSection({
                 <button
                   type="button"
                   onClick={onCreateClick}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-[#FFD700] to-[#FFAA00] hover:from-[#FFE345] hover:to-[#FFB52E] text-black rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] shadow-[0_5px_30px_-10px_rgba(255,215,0,0.5)]"
+                  className={`group relative px-8 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] ${
+                    intent === "create-coin"
+                      ? "bg-gradient-to-r from-purple-600 to-violet-600 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.5)] animate-pulse"
+                      : "bg-gradient-to-r from-purple-500 to-violet-500 hover:from-violet-500 hover:to-purple-500 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.3)]"
+                  } text-white`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     <span>Create Coin</span>
@@ -629,6 +649,7 @@ function DashboardSection({
               {data.winner && (
                 <div className="flex items-center gap-4 mb-6">
                   <button
+                    ref={claimButtonRef}
                     type="button"
                     onClick={() =>
                       onClaimClick?.(
@@ -637,7 +658,11 @@ function DashboardSection({
                         data.id,
                       )
                     }
-                    className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text hover:border-yellow-400"
+                    className={`rounded-full px-5 py-2 text-xl font-bold border-2 transition-all duration-150 cursor-pointer ${
+                      intent === "claim-outcome"
+                        ? "border-yellow-400 bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-[0_5px_30px_-10px_rgba(234,179,8,0.5)] animate-pulse"
+                        : "border-transparent bg-black text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text hover:border-yellow-400"
+                    }`}
                   >
                     Claim outcome
                   </button>
@@ -758,10 +783,14 @@ function DashboardSection({
               <div className="p-6 flex items-center justify-center h-full">
                 <div className="w-full aspect-[3/4] max-w-[320px]">
                   <ChampionCard
-                    imageUrl={data.winner.image || "/images/mockmemes/ANTS.webp"}
+                    imageUrl={
+                      data.winner.image || "/images/mockmemes/ANTS.webp"
+                    }
                     symbol={data.winner.symbol || "WINNER"}
                     name={data.winner.name || "Champion"}
-                    mcap={Number(data.winner.mcap.replace(/[^0-9]/g, '')) || 100000}
+                    mcap={
+                      Number(data.winner.mcap.replace(/[^0-9]/g, "")) || 100000
+                    }
                     round={Number.parseInt(data.id.replace("#", ""), 10) || 1}
                   />
                 </div>
