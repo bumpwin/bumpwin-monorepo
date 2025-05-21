@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { DominanceChartData } from "../types/dominance";
+import type { DominanceChartData } from "@/types/dominance";
 
 // Custom tooltip for better display
 const CustomTooltip = ({
@@ -115,7 +115,7 @@ const DominanceChart: React.FC<DominanceChartProps> = ({
           />
           <YAxis
             tickFormatter={formatYAxis}
-            domain={[0, 1]}
+            domain={["auto", "auto"]}
             tick={{ fontSize: 10, fill: "#999" }}
           />
           <Tooltip content={<CustomTooltip />} />

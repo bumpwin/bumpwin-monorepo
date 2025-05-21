@@ -1,12 +1,18 @@
 "use client";
 
 import { ChampionCoinList } from "@/components/ChampionCoinList";
-import { CoinList } from "@/components/CoinList";
 import CommunicationPanel from "@/components/CommunicationPanel";
-import DominanceChart from "@/components/DominanceChart";
+// import DominanceChart from "@/components/DominanceChart";
+import DominanceRechart from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
-import SwapRoundCoinCard from "@/components/SwapRoundCoinCard";
-import { mockDominanceData } from "@/mock/mockDominanceData";
+import SwapUI from "@/components/SwapUI";
+import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+// import { mockDominanceData } from "@/mock/mockDominanceData";
+import { CoinMeta } from "@/components/DominanceRechart";
+import {
+  prepareCoinsMetadata,
+  prepareMultiCoinChartData,
+} from "@/utils/chartDataPreparation";
 import type { RoundCoin } from "@/types/roundcoin";
 import Image from "next/image";
 import { useState } from "react";
@@ -15,6 +21,19 @@ export default function Home() {
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(
     undefined,
   );
+
+  // データ準備ロジックをユーティリティ関数で実装
+  const relevantCoins = prepareCoinsMetadata(mockCoinMetadata as CoinMeta[]);
+  const rechartPoints = prepareMultiCoinChartData(
+    mockDominanceChartData,
+    relevantCoins,
+  );
+
+  // 単一コイン用のデータ
+  // const firstCoinFromMeta = relevantCoins[0];
+  // const singleCoinMetaForChart = firstCoinFromMeta ? [firstCoinFromMeta] : [];
+  // const singleCoinRechartPoints = prepareSingleCoinChartData(mockDominanceChartData, firstCoinFromMeta);
+
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
       {/* <InfoBar /> */}
@@ -33,7 +52,7 @@ export default function Home() {
           </div>
 
           {/* Dominance Chart Section */}
-          <div className="px-4 mb-8">
+          {/* <div className="px-4 mb-8">
             <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
               <DominanceChart
                 data={mockDominanceData}
@@ -42,7 +61,30 @@ export default function Home() {
                 date="Jun 18, 2025"
               />
             </div>
+          </div> */}
+
+          {/* New DominanceRechart Section */}
+          <div className="px-4 mb-8">
+            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+              <DominanceRechart
+                points={rechartPoints}
+                coins={relevantCoins}
+                height={300} // Adjusted height for multi-line chart
+              />
+            </div>
           </div>
+
+          {/* Single Coin DominanceRechart Section */}
+          {/* <div className="px-4 mb-8">
+            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+              <DominanceRechart
+                points={singleCoinRechartPoints}
+                coins={singleCoinMetaForChart}
+                height={200}
+                hideLegend={true}
+              />
+            </div>
+          </div> */}
 
           {/* Round Coin Table Section */}
           <div className="px-4 mb-8">
@@ -54,8 +96,8 @@ export default function Home() {
                 />
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
-                <div className="w-full self-start">
-                  <SwapRoundCoinCard coin={selectedCoin} />
+                <div className="w-full self-start mt-12">
+                  <SwapUI coin={selectedCoin} />
                 </div>
               </div>
             </div>
@@ -67,9 +109,9 @@ export default function Home() {
           </div>
 
           {/* Current Round Contestants */}
-          <div id="current-round">
+          {/* <div id="current-round">
             <CoinList />
-          </div>
+          </div> */}
         </main>
 
         {/* Communication panel */}

@@ -13,7 +13,7 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency } from "@/utils/format";
 
 export function CoinCard({
   address,
