@@ -5,8 +5,6 @@ import { type Result, err, ok } from "neverthrow";
 import { useCallback, useState } from "react";
 import { setupTransaction } from "./utils";
 
-const GAS_BUDGET = 50000000; // 0.05 SUI
-
 export const useDryRunTransaction = () => {
   const [isLoading, setIsLoading] = useState(false);
   const suiClient = useSuiClient();

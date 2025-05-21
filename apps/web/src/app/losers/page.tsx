@@ -55,8 +55,8 @@ export default function LosersPage() {
                 100% of Protocol Fees to Stakers
               </h2>
               <p className="text-xl text-gray-300 leading-relaxed">
-                Lose a battle, win the war. When your chosen meme coin doesn't
-                win, you receive LOSER tokens that entitle you to
+                Lose a battle, win the war. When your chosen meme coin
+                doesn&apos;t win, you receive LOSER tokens that entitle you to
                 <span className="text-teal-400 font-semibold">
                   {" "}
                   100% of protocol fees{" "}
@@ -116,7 +116,7 @@ export default function LosersPage() {
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto w-full">
             <FeeFlowChart
               title="100% FEE DISTRIBUTION"
               subtitle="All Trading Fees go to LOSER Stakers"
@@ -202,8 +202,8 @@ export default function LosersPage() {
                   Lose the Battle
                 </h3>
                 <p className="text-gray-300">
-                  If your chosen meme coin doesn't win the round, you qualify
-                  for LOSER tokens
+                  If your chosen meme coin doesn&apos;t win the round, you
+                  qualify for LOSER tokens
                 </p>
               </div>
               <div className="bg-gray-900/50 p-6 rounded-xl border border-emerald-500/30 relative overflow-hidden">
@@ -399,7 +399,7 @@ export default function LosersPage() {
           <div className="bg-[#151921] backdrop-blur-sm rounded-2xl shadow-xl border border-teal-900/30 max-w-4xl mx-auto overflow-hidden">
             <div className="p-6 bg-gradient-to-r from-teal-900/20 to-cyan-900/20 border-b border-teal-900/30 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center">
                   <Image
                     src="/images/mockmemes/LOSER.png"
                     alt="LOSER"
