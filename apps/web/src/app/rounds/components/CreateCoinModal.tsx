@@ -1,9 +1,7 @@
 "use client";
 
 import { ImageUpload } from "@/components/ImageUpload";
-import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
 import { motion } from "framer-motion";
-import { Upload } from "lucide-react";
 import { useState } from "react";
 
 interface CreateCoinModalProps {
@@ -148,7 +146,12 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                 <textarea
                   id="coinDescription"
                   value={formData.description || ""}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                   placeholder="Describe your coin..."
                   rows={3}

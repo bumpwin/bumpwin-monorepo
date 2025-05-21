@@ -15,10 +15,10 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
+import { motion } from "framer-motion";
 import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 // Format market cap to K/M/B format
 const formatMarketCap = (value: number): string => {
@@ -99,10 +99,13 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
     <div className="flex min-h-[calc(100vh-var(--header-height))] bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="flex-1 flex flex-col max-w-5xl mx-auto py-8 px-4">
         {/* HALL OF CHAMPIONS Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-transparent bg-clip-text">
+        <div className="text-center mb-6">
+          <h1 className="text-5xl font-bold text-yellow-400">
             HALL OF CHAMPIONS
           </h1>
+          <p className="text-xl text-yellow-300 mt-4">
+            The greatest champions of the Battle Royale
+          </p>
         </div>
 
         {/* Hero Section */}
@@ -113,7 +116,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#181A20] border border-[#23262F] rounded-2xl p-6 hover:border-yellow-400 transition-colors shadow-lg"
+                className="bg-black/20 border border-[#23262F] rounded-2xl p-6 hover:border-yellow-400 transition-colors shadow-lg"
               >
                 <div className="flex items-start gap-6">
                   {/* Left: Coin Info */}

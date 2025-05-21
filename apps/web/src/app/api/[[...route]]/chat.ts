@@ -56,16 +56,16 @@ export const app = new Hono().get("/", async (c) => {
       (error: ApiError) => {
         logger.error("Chat messages get error", { error });
         return new Response(
-          JSON.stringify({ 
+          JSON.stringify({
             error: error.message,
             code: error.code,
-            details: error.details 
+            details: error.details,
           }),
           {
             status: error.code || 500,
-            headers: { 
+            headers: {
               "Content-Type": "application/json",
-              "Cache-Control": "no-cache, no-store, must-revalidate"
+              "Cache-Control": "no-cache, no-store, must-revalidate",
             },
           },
         );
@@ -74,15 +74,15 @@ export const app = new Hono().get("/", async (c) => {
   } catch (error) {
     logger.error("Unexpected error in chat messages fetch", { error });
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error"
+        details: error instanceof Error ? error.message : "Unknown error",
       }),
       {
         status: 500,
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache, no-store, must-revalidate"
+          "Cache-Control": "no-cache, no-store, must-revalidate",
         },
       },
     );
