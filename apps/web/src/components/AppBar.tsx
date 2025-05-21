@@ -3,15 +3,18 @@
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import BattleClock from "./BattleClock";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import WordmarkLogo from "./WordmarkLogo";
+import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
 
 export default function AppBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const roundsClickRef = useRef(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const {
     isChallengePeriod,
     remainingTime,
@@ -49,6 +52,21 @@ export default function AppBar() {
       }, 100);
     }
   }, [pathname]);
+
+  const handleCreateCoinClick = () => {
+    if (pathname === "/rounds") {
+      setShowCreateModal(true);
+    } else {
+      router.push("/rounds?intent=create-coin");
+    }
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    if (pathname === "/rounds") {
+      router.push("/rounds");
+    }
+  };
 
   return (
     <>
@@ -144,14 +162,13 @@ export default function AppBar() {
               </Link>
 
               {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
-              <Link href="/rounds?intent=create-coin">
-                <button
-                  type="button"
-                  className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
-                >
-                  Create Coin
-                </button>
-              </Link>
+              <button
+                type="button"
+                onClick={handleCreateCoinClick}
+                className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
+              >
+                Create Coin
+              </button>
 
               {/* ウォレット接続ボタン（豪華なConnectボタン） */}
               <div className="h-12 flex items-center">
@@ -179,6 +196,9 @@ export default function AppBar() {
           </div>
         </div>
       </header>
+
+      {/* Create Coin Modal */}
+      <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseCreateModal} />
     </>
   );
 }

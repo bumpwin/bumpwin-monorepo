@@ -1,8 +1,11 @@
 "use client";
 
 import { ImageUpload } from "@/components/ImageUpload";
+import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
+import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface CreateCoinModalProps {
   isOpen: boolean;
@@ -18,6 +21,8 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
   });
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { createIncrementCounterTransaction } = useTransactionCreators();
+  const { executeTransaction, isExecuting } = useExecuteTransaction();
 
   if (!isOpen) return null;
 
@@ -73,8 +78,14 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement coin creation logic
-    console.log("Form submitted:", formData);
+
+    const tx = createIncrementCounterTransaction();
+    if (!tx) {
+      toast.error("Failed to create transaction");
+      return;
+    }
+
+    await executeTransaction(tx);
   };
 
   return (
@@ -196,9 +207,10 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 rounded-lg font-bold text-white bg-purple-700 hover:bg-purple-600 transition-all hover:scale-[1.03]"
+                disabled={isExecuting}
+                className="px-6 py-3 rounded-lg font-bold text-white bg-purple-700 hover:bg-purple-600 transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create Coin
+                {isExecuting ? "Creating..." : "Create Coin"}
               </button>
             </div>
           </form>
