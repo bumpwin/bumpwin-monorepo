@@ -13,7 +13,7 @@
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": true
+    "source.organizeImports.biome": "explicit"
   },
   "deno.enablePaths": [
     "supabase/functions"
@@ -40,10 +40,6 @@
   "files.autoSave": "onFocusChange",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "editor.rulers": [
-    80,
-    100
-  ],
   "typescript.updateImportsOnFileMove.enabled": "always",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "typescript.preferences.importModuleSpecifier": "non-relative",
@@ -56,11 +52,5 @@
   "terminal.integrated.defaultProfile.linux": "zsh",
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
-  "git.autofetch": true,
-  "github.copilot.enable": {
-    "*": true,
-    "plaintext": false,
-    "markdown": true,
-    "scminput": false
-  }
+  "git.autofetch": true
 }
