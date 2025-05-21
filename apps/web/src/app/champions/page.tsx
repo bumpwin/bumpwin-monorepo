@@ -2,15 +2,15 @@
 
 import React from "react";
 import CommunicationPanel from "@/components/CommunicationPanel";
-import { ChampionsList } from "@/components/Champions";
+import { ChampionCard } from "./ChampionCard";
 import {
   mockChampionCoinMetadata,
-  mockDominanceChartData,
   mockLastChampionCoinMetadata,
 } from "@/mock/mockData";
 import type { ChampionCoin } from "@/types/champion";
-import type { DominanceChartData, DominancePoint } from "@/types/dominance";
 import { ResultView } from "@/components/ResultView";
+import InfoBar from "@/components/InfoBar";
+import { Crown, Trophy, Award } from "lucide-react";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to ChampionCoin type
@@ -30,75 +30,73 @@ export default function ChampionsPage() {
     }),
   );
 
-  // Transform mockDominanceChartData to DominanceChartData type
-  const dominanceData: DominanceChartData = {
-    points: mockDominanceChartData.map((point) => {
-      const dominancePoint: DominancePoint = {
-        date: new Date(point.timestamp * 1000).toISOString(),
-      };
-      // Add each coin's share as a property
-      point.shares.forEach((share, index) => {
-        const coin = championCoins[index];
-        if (coin) {
-          dominancePoint[coin.symbol.toLowerCase()] = share / 100; // Convert percentage to decimal
-        }
-      });
-      return dominancePoint;
-    }),
-    coins: championCoins.map((coin) => ({
-      id: coin.id,
-      name: coin.name,
-      color: "#FFD700", // Mock color
-    })),
-  };
-
   return (
-    <div className="relative flex min-h-[calc(100vh-var(--header-height))]">
-      <div className="flex-1 overflow-auto">
-        <div className="flex flex-col gap-6 p-4">
-          {/* Title Section */}
-          <div className="flex flex-col items-center justify-center py-6">
-            <div className="flex items-center gap-2">
+    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="flex flex-1">
+        {/* メインコンテンツ */}
+        <main className="flex-1 overflow-y-auto pb-6 pt-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Title Section */}
+            <div className="flex flex-col items-center justify-center py-8 px-4 relative overflow-hidden">
+              {/* バックグラウンドエフェクト */}
+              <div className="absolute inset-0 bg-gradient-radial from-yellow-500/20 to-transparent opacity-60 blur-2xl"></div>
+
               <h1
-                className="text-4xl md:text-6xl font-extrabold bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(255,255,180,0.35)] relative"
+                className="text-5xl font-extrabold text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]"
                 style={{
-                  WebkitTextStroke: "1px #fff9",
-                  letterSpacing: "0.02em",
+                  background: "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  color: "transparent",
                 }}
               >
-                CHAMPIONS <span className="align-middle" />
-                <span
-                  className="absolute left-0 right-0 top-0 h-1/3 bg-white/60 rounded-full blur-md pointer-events-none"
-                  style={{ zIndex: 1 }}
-                />
+                HALL OF CHAMPIONS
               </h1>
-            </div>
-            <div className="mt-4 text-center text-gray-300 text-xl font-medium drop-shadow-lg">
-              The greatest coins of all time
-            </div>
-          </div>
 
-          {/* Result View */}
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
-            <ResultView
-              coin={{
-                ...mockLastChampionCoinMetadata,
-                id: mockLastChampionCoinMetadata.id.toString(),
-              }}
-              forceVisible={true}
-            />
-          </div>
+              <div className="mt-6 text-center font-bold">
+                <span
+                  className="text-2xl bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-200 bg-clip-text text-transparent tracking-wider"
+                  style={{ textShadow: "0 0 10px rgba(253, 224, 71, 0.6)" }}
+                >
+                  The greatest champions of the Battle Royale
+                </span>
+              </div>
+            </div>
 
-          {/* Champions List */}
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
-            <ChampionsList
-              coins={championCoins}
-              dominanceData={dominanceData}
-            />
+            <InfoBar />
+
+            {/* Result View */}
+            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg mt-6">
+              <ResultView
+                coin={{
+                  ...mockLastChampionCoinMetadata,
+                  id: mockLastChampionCoinMetadata.id.toString(),
+                }}
+                forceVisible={true}
+              />
+            </div>
+
+            {/* Champions Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mt-10">
+              {championCoins.map((champion, i) => (
+                <ChampionCard
+                  key={champion.id}
+                  imageUrl={champion.iconUrl}
+                  symbol={champion.symbol}
+                  name={champion.name}
+                  share={champion.share}
+                  rank={i + 1}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        </main>
+        {/* 右側チャット欄 */}
+        <aside className="hidden lg:block">
+          <CommunicationPanel />
+        </aside>
       </div>
-      <CommunicationPanel />
     </div>
   );
 }
