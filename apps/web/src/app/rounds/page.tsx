@@ -46,6 +46,7 @@ interface DashboardData {
   chartData: ChartDataPoint[];
   winner: Winner | null;
   loserIssuance?: string;
+  topShare?: number;
 }
 
 interface DashboardSectionProps {
@@ -120,7 +121,8 @@ export default function RoundsPage() {
         volume: round.metrics.volume,
         image: getSafeIcon(mockCoinMetadata, round.round % mockCoinMetadata.length)
       } : null,
-      loserIssuance: round.metrics.loserIssuance
+      loserIssuance: round.metrics.loserIssuance,
+      topShare: round.topShare
     };
   });
 
@@ -231,7 +233,7 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
       <div
         className={`bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative ${
           data.state === 'active'
-            ? 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(255,215,0,0.25)]'
+            ? 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(168,85,247,0.25)]'
             : 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]'
         }`}
       >
@@ -252,12 +254,12 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                     <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
                     <span className={`text-xl font-bold ${
                       data.state === 'active'
-                        ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]'
+                        ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500'
                         : 'text-gray-300'
                     }`}>
-                      {data.status}
+                      {data.state === 'active' ? 'In Progress' : data.status}
                       {data.state === 'active' && (
-                        <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#FFD700]/20 to-[#FFAA00]/20 text-[#FFD700] animate-pulse border border-[#FFD700]/30">
+                        <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
                           ● LIVE
                         </span>
                       )}
@@ -276,12 +278,12 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                 <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
                 <span className={`text-xl font-bold ${
                   data.state === 'active'
-                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]'
+                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500'
                     : 'text-gray-300'
                 }`}>
-                  {data.status}
+                  {data.state === 'active' ? 'In Progress' : data.status}
                   {data.state === 'active' && (
-                    <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-[#FFD700]/20 to-[#FFAA00]/20 text-[#FFD700] animate-pulse border border-[#FFD700]/30">
+                    <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
                       ● LIVE
                     </span>
                   )}
@@ -292,13 +294,42 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               </div>
             </div>
 
+            {/* Action/description section: show for completed and active rounds */}
+            {(data.state === 'ended' && data.winner) && (
+              <div className="flex items-center gap-4 mb-6">
+                <button
+                  type="button"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text hover:border-yellow-400"
+                >
+                  Claim outcome
+                </button>
+                <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
+                  The ${data.winner.name} won the round with a {data.topShare || 42}% share. The remaining {100 - (data.topShare || 42)}% memes was burned.
+                </span>
+              </div>
+            )}
+            {data.state === 'active' && (
+              <div className="flex items-center gap-4 mb-6">
+                <button
+                  type="button"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
+                >
+                  Join the Battle
+                </button>
+                <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
+                  The battle is heating up! Who will take the lead?<br />
+                  Join now and help your favorite meme coin win the round.
+                </span>
+              </div>
+            )}
+
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
               <StatCard title="Market Cap" value={data.marketCap} />
               <StatCard title="Volume" value={data.volume} />
               <StatCard title="Meme Count" value={data.memeCount} />
               <StatCard title="Trader Count" value={data.traderCount} />
-              <StatCard title="LOSER Issurance" value={data.loserIssuance || "-"} />
+              <StatCard title="LOSER Inflation" value={parseFloat((data.loserIssuance || '0').replace(/[^\d.]/g, '')) + ''} />
             </div>
 
             {/* Chart */}

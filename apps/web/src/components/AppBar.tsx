@@ -127,8 +127,8 @@ export default function AppBar() {
               <Link href="/rounds?intent=claim-outcome">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer 
-                    bg-black 
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer
+                    bg-black
                     bg-clip-padding
                     text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text
                     hover:border-yellow-400"
@@ -141,7 +141,7 @@ export default function AppBar() {
               <Link href="/rounds?intent=create-coin">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
+                  className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
                 >
                   Create Coin
                 </button>
