@@ -2,17 +2,269 @@
 
 import FeeFlowChart from "@/components/FeeFlowChart";
 import Image from "next/image";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+// LOSERトークンのインフレーションスケジュールデータ - 正確な半減期モデルに修正
+const generateInflationData = () => {
+  const rounds = 15; // 表示するラウンド数
+  const initialRate = 100; // ラウンド1での発行率
+  const halfLife = 4; // 半減期（ラウンド数）
+
+  return Array.from({ length: rounds }, (_, i) => {
+    const roundNumber = i + 1;
+    // 指数関数的減少: 初期値 * 0.5^(x/halfLife)
+    const issuanceRate = Math.max(
+      1,
+      Math.round(initialRate * 0.5 ** ((roundNumber - 1) / halfLife)),
+    );
+    return {
+      round: roundNumber,
+      issuanceRate,
+      label: `Round ${roundNumber}`,
+    };
+  });
+};
+
+const loserInflationData = generateInflationData();
 
 export default function LosersPage() {
   return (
     <div className="bg-gray-900 min-h-screen">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
-        {/* Fee Flow Diagram - Using React Flow */}
+        {/* Hero Section - 上部に移動し横並び */}
+        <section className="mb-24">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            {/* 左：テキスト・ボタン */}
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent mb-2">
+                LOSER Token
+              </h1>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Protocol Fee Sharing Mechanism
+              </h2>
+              <p className="text-lg md:text-xl text-gray-300 mb-2">
+                In BUMP.WIN, even losers win. When your chosen meme coin
+                doesn&apos;t win the battle, you receive LOSER tokens that
+                entitle you to protocol fees from{" "}
+                <span className="text-pink-400">all future transactions</span>.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <a
+                  href="/rounds"
+                  className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                >
+                  Join a Battle
+                </a>
+                <a
+                  href="#staking"
+                  className="px-8 py-3 bg-gray-700 rounded-lg font-bold text-white hover:bg-gray-600 transition-colors"
+                >
+                  Learn About Staking
+                </a>
+              </div>
+            </div>
+            {/* 右：Even Losers Win.セクションのカードを移植 */}
+            <div className="flex justify-center md:justify-end">
+              <div className="relative aspect-[3/4] w-full max-w-xs overflow-hidden rounded-xl shadow-2xl border border-purple-500/30">
+                <Image
+                  src="/images/mockmemes/LOSER.png"
+                  alt="LOSER Token Staking"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
+                  <div className="text-3xl font-bold tracking-wider mb-1">
+                    LOSER
+                  </div>
+                  <div className="text-gray-300 text-sm">
+                    Protocol Fee Sharing Token
+                  </div>
+                  <div className="flex justify-between items-center mt-2">
+                    <div className="text-gray-400 text-xs">Projected APR</div>
+                    <div className="flex items-center gap-6">
+                      <div>
+                        <span className="text-gray-400 text-xs">Staking </span>
+                        <div className="text-white text-sm font-bold">
+                          15-25%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Fee Flow Diagram - 下に移動 */}
         <section className="mb-24">
           <FeeFlowChart
-            title="NO PROTOCOL FEE"
+            title="LOSERS TAKES ALL FEE"
             subtitle="100% of Trading Fees go to LOSER Stakers"
           />
+        </section>
+
+        {/* LOSER Inflation Schedule Chart - タイトル変更と正確な半減期チャートに */}
+        <section className="mb-28 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl p-8 md:p-10">
+          <h2 className="text-3xl md:text-5xl font-bold mb-3 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+            Early Dominance: Be First, Earn More
+          </h2>
+          <p className="text-xl text-gray-300 text-center mb-8 max-w-3xl mx-auto">
+            <span className="font-semibold text-pink-400">
+              LOSER Inflation Schedule:
+            </span>{" "}
+            The earlier you join, the greater your lifetime protocol fee share.
+          </p>
+
+          <div className="h-[400px] w-full mb-8">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={loserInflationData}
+                margin={{ top: 10, right: 30, left: 10, bottom: 30 }}
+              >
+                <defs>
+                  <linearGradient
+                    id="colorIssuance"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#ec4899" stopOpacity={0.2} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                <XAxis
+                  dataKey="round"
+                  label={{
+                    value: "Battle Round",
+                    position: "insideBottom",
+                    offset: -15,
+                    fill: "#fff",
+                  }}
+                  tick={{ fill: "#ccc" }}
+                />
+                <YAxis
+                  label={{
+                    value: "LOSER per 1 SUI",
+                    angle: -90,
+                    position: "insideLeft",
+                    offset: 10,
+                    fill: "#fff",
+                  }}
+                  tick={{ fill: "#ccc" }}
+                  domain={[0, "dataMax"]}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#222",
+                    borderColor: "#444",
+                    color: "#fff",
+                  }}
+                  formatter={(value: number) => [
+                    `${value} LOSER`,
+                    "Tokens per 1 SUI",
+                  ]}
+                  labelFormatter={(label) => `Battle Round ${label}`}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="issuanceRate"
+                  stroke="#a855f7"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorIssuance)"
+                  name="LOSER per 1 SUI"
+                />
+                <Legend wrapperStyle={{ color: "#fff" }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-gray-800/50 p-6 rounded-lg border-l-4 border-pink-500 max-w-3xl mx-auto">
+            <h3 className="text-xl font-bold mb-3 text-white">
+              Half-Life: Every 4 Rounds
+            </h3>
+            <p className="text-gray-300 mb-4">
+              LOSER token issuance follows a mathematical half-life model,
+              reducing by 50% every 4 rounds:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-200">
+              <div className="bg-gray-800/70 p-4 rounded-lg border border-purple-500/30">
+                <div className="flex items-center mb-2">
+                  <span className="inline-block w-4 h-4 rounded-full bg-purple-500 mr-2" />
+                  <span className="font-bold">Early Rounds</span>
+                </div>
+                <ul className="space-y-1 pl-6">
+                  <li>
+                    <strong>Round 1:</strong> 100 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 2:</strong> 84 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 3:</strong> 71 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 4:</strong> 59 LOSER
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gray-800/70 p-4 rounded-lg border border-pink-500/30">
+                <div className="flex items-center mb-2">
+                  <span className="inline-block w-4 h-4 rounded-full bg-pink-500 mr-2" />
+                  <span className="font-bold">Mid Rounds</span>
+                </div>
+                <ul className="space-y-1 pl-6">
+                  <li>
+                    <strong>Round 5:</strong> 50 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 6:</strong> 42 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 7:</strong> 35 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 8:</strong> 30 LOSER
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gray-800/70 p-4 rounded-lg border border-blue-500/30">
+                <div className="flex items-center mb-2">
+                  <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2" />
+                  <span className="font-bold">Late Rounds</span>
+                </div>
+                <ul className="space-y-1 pl-6">
+                  <li>
+                    <strong>Round 9:</strong> 25 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 12:</strong> 15 LOSER
+                  </li>
+                  <li>
+                    <strong>Round 13+:</strong> Diminishing
+                  </li>
+                  <li>
+                    <strong>Floor:</strong> 1 LOSER per SUI
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* LOSER Token Explanation - New Section */}
@@ -77,39 +329,11 @@ export default function LosersPage() {
                 </a>
               </div>
             </div>
+            {/* 右側カードは空にする */}
             <div
               className="md:col-span-2 p-8 md:p-10 sticky-container"
               data-parallax-depth="0.1"
-            >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-purple-500/30 sticky-element">
-                <Image
-                  src="/images/mockmemes/LOSER.png"
-                  alt="LOSER Token Staking"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
-                  <div className="text-3xl font-bold tracking-wider mb-1">
-                    LOSER
-                  </div>
-                  <div className="text-gray-300 text-sm">
-                    Protocol Fee Sharing Token
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="text-gray-400 text-xs">Projected APR</div>
-                    <div className="flex items-center gap-6">
-                      <div>
-                        <span className="text-gray-400 text-xs">Staking </span>
-                        <div className="text-white text-sm font-bold">
-                          15-25%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            />
           </div>
         </section>
         {/* Hero Section */}
