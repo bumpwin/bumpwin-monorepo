@@ -24,7 +24,7 @@ export function prepareCoinsMetadata(
   return coinMetadata.slice(0, numberOfCoinsToDisplay).map((coin, index) => ({
     symbol: coin.symbol,
     name: coin.symbol,
-    color: coin.color || colorPalette[index % colorPalette.length]!,
+    color: coin.color || colorPalette[index % colorPalette.length] || "#CCCCCC",
   }));
 }
 

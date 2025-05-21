@@ -12,8 +12,6 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.0",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.2"
+    "@types/pg": "^8.11.0"
   }
 }

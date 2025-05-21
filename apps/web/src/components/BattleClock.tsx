@@ -12,12 +12,13 @@ interface BattleClockProps {
 
 // Helper function to format seconds to HH:MM:SS
 const formatTime = (seconds: number): string => {
-  if (seconds < 0) seconds = 0;
+  let displaySeconds = seconds;
+  if (displaySeconds < 0) displaySeconds = 0;
 
   // 25時間サイクルに対応するため、時間を2桁ではなく必要な桁数で表示
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const hours = Math.floor(displaySeconds / 3600);
+  const minutes = Math.floor((displaySeconds % 3600) / 60);
+  const secs = displaySeconds % 60;
 
   // 時間が10未満なら2桁で、それ以上なら必要な桁数で表示
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;

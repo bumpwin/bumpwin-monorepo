@@ -38,14 +38,6 @@ function getRandomAddress(): string {
   return `0x${hex}`;
 }
 
-// Generate a random hex color
-function generateRandomColor() {
-  const hex = Array.from({ length: 6 }, () =>
-    Math.floor(Math.random() * 16).toString(16),
-  ).join("");
-  return `0x${hex}`;
-}
-
 /**
  * Save chat message to Supabase
  */

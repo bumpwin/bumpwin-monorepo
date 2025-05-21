@@ -2,8 +2,10 @@
   "name": "monorepo-template",
   "private": true,
   "type": "module",
-  "module": "index.ts",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "bun run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
@@ -11,7 +13,8 @@
     "build": "bun run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
-    "lint": "biome check .",
+    "lint": "biome check . --apply",
+    "fmt": "bun run format && bun run lint",
     "typecheck": "bunx tsc -b",
     "pages:build": "pnpm -r --filter web run pages:build",
     "pages:preview": "pnpm -r --filter web run pages:preview",
@@ -19,27 +22,29 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.2",
-    "@mysten/sui": "^1.29.1",
+    "@hono/zod-validator": "^0.5.0",
+    "@mysten/sui": "^1.30.0",
     "@questdb/nodejs-client": "^3.0.0",
-    "@supabase/supabase-js": "^2.49.6",
+    "@supabase/supabase-js": "^2.49.7",
     "@workspace/logger": "workspace:*",
     "@workspace/questdb": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
+    "bumpwin": "^0.202505.17",
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
     "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
     "wrangler": "^4.16.0",
-    "zod": "^3.25.7"
+    "zod": "^3.25.17"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.2.13"
-  },
-  "peerDependencies": {
-    "typescript": "^5.8.3"
+    "@cloudflare/next-on-pages": "^1.13.12",
+    "@types/bun": "^1.2.13",
+    "@types/node": "^20.0.0"
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

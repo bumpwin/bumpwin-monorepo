@@ -110,11 +110,11 @@ export default function RoundsPage() {
 
         // Extract token data from point
         const tokenData: { [key: string]: number } = {};
-        Object.keys(point).forEach((key) => {
+        for (const key of Object.keys(point)) {
           if (key !== "timestamp") {
             tokenData[key.toUpperCase()] = point[key] as number;
           }
-        });
+        }
 
         return {
           time,
@@ -228,6 +228,7 @@ function DashboardSection({
                 participate!
               </p>
               <button
+                type="button"
                 onClick={onCreateClick}
                 className="group relative px-8 py-4 bg-gradient-to-r from-[#FFD700] to-[#FFAA00] hover:from-[#FFE345] hover:to-[#FFB52E] text-black rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] shadow-[0_5px_30px_-10px_rgba(255,215,0,0.5)]"
               >
@@ -239,7 +240,10 @@ function DashboardSection({
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    role="img"
+                    aria-label="Arrow right"
                   >
+                    <title>Arrow right</title>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -248,7 +252,7 @@ function DashboardSection({
                     />
                   </svg>
                 </span>
-                <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></span>
+                <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300" />
               </button>
             </div>
           </CardContent>
@@ -383,11 +387,9 @@ function DashboardSection({
               <StatCard title="Trader Count" value={data.traderCount} />
               <StatCard
                 title="LOSER Inflation"
-                value={
-                  Number.parseFloat(
-                    (data.loserIssuance || "0").replace(/[^\d.]/g, ""),
-                  ) + ""
-                }
+                value={Number.parseFloat(
+                  (data.loserIssuance || "0").replace(/[^\d.]/g, ""),
+                ).toString()}
               />
             </div>
 
@@ -471,7 +473,7 @@ function DashboardSection({
                           "--ring-color": tokenColors[token] || "#FFD700",
                         } as React.CSSProperties
                       }
-                    ></div>
+                    />
                     <span className="text-gray-300 font-medium tracking-wide">
                       {token}
                     </span>
@@ -498,8 +500,8 @@ function DashboardSection({
                 {data.state === "active" ? (
                   <div className="w-full h-full bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl flex items-center justify-center border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
                     {/* Animated pulsing effect */}
-                    <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"></div>
-                    <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-purple-500 opacity-[0.03] blur-[50px] rounded-full"></div>
+                    <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
+                    <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-purple-500 opacity-[0.03] blur-[50px] rounded-full" />
 
                     <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300">
                       Battle in progress
@@ -529,7 +531,7 @@ function StatCard({ title, value }: StatCardProps) {
   return (
     <div className="bg-gradient-to-br from-[#1A1D2A]/80 to-[#13151E] rounded-xl p-4 border border-[#343850]/50 shadow-inner group hover:border-[#343850]/70 transition-all duration-300 overflow-hidden relative">
       {/* Subtle shine effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
 
       <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
       <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 tracking-tight">
