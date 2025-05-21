@@ -1,7 +1,7 @@
-import { mockmemes } from "@workspace/mockdata";
-import { RoundsACard } from "./RoundsACard";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import InfoBar from "@/components/InfoBar";
+import { mockmemes } from "@workspace/mockdata";
+import { RoundsACard } from "./RoundsACard";
 
 export default function RoundsAPage() {
   return (
@@ -11,7 +11,9 @@ export default function RoundsAPage() {
         <main className="flex-1 overflow-y-auto pb-6 pt-4">
           <div className="max-w-7xl mx-auto">
             <InfoBar />
-            <h1 className="text-4xl font-extrabold text-white my-10 text-center tracking-tight drop-shadow-lg">Rounds-A Gallery</h1>
+            <h1 className="text-4xl font-extrabold text-white my-10 text-center tracking-tight drop-shadow-lg">
+              Rounds-A Gallery
+            </h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
               {mockmemes.map((meme, i) => (
                 <RoundsACard

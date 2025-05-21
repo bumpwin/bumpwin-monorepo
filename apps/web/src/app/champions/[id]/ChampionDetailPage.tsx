@@ -1,53 +1,68 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { mockprice } from "@/app/client";
-import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
-import SwapUI from "@/components/SwapUI";
-import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/shadcn/components/card";
-import { Send, Globe, Twitter, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import type { Coin } from "@/types";
 import CommunicationPanel from "@/components/CommunicationPanel";
+import SwapUI from "@/components/SwapUI";
+import type { Coin } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/shadcn/components/card";
+import {
+  LWCChart,
+  type OHLCData,
+} from "@workspace/shadcn/components/chart/lwc-chart";
+import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", id],
     queryFn: async () => {
-      const res = await mockprice({ query: { seed: id, freq: 'day', count: '30' } });
+      const res = await mockprice({
+        query: { seed: id, freq: "day", count: "30" },
+      });
       const json = await res.json();
 
-      if ('error' in json) {
+      if ("error" in json) {
         throw new Error(json.error as string);
       }
 
-      return json.data.map((item: {
-        timestamp: number;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
-      }) => {
-        const date = new Date(item.timestamp);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const timeStr = `${year}-${month}-${day}`;
+      return json.data.map(
+        (item: {
+          timestamp: number;
+          open: number;
+          high: number;
+          low: number;
+          close: number;
+        }) => {
+          const date = new Date(item.timestamp);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const timeStr = `${year}-${month}-${day}`;
 
-        return {
-          time: timeStr,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close
-        };
-      });
+          return {
+            time: timeStr,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+          };
+        },
+      );
     },
   });
 
   const fallbackData: OHLCData[] = [];
-  const currentPrice = priceData && priceData.length > 0 ? priceData[priceData.length - 1]?.close ?? 0 : 0;
+  const currentPrice =
+    priceData && priceData.length > 0
+      ? (priceData[priceData.length - 1]?.close ?? 0)
+      : 0;
 
   // champion coin を RoundCoin 型にマッピング
   const roundCoin = {
@@ -73,7 +88,9 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           <div className="md:col-span-2 flex flex-col gap-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-white">Price Chart</CardTitle>
+                <CardTitle className="text-lg font-medium text-white">
+                  Price Chart
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
@@ -117,17 +134,29 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
             </div>
             {/* bonding curve progress */}
             <div>
-              <div className="text-sm text-gray-300 mb-1">bonding curve progress: <span className="font-semibold text-white">1%</span></div>
-              <div className="w-full h-2 bg-gray-700 rounded">
-                <div className="h-2 bg-green-400 rounded" style={{ width: '1%' }} />
+              <div className="text-sm text-gray-300 mb-1">
+                bonding curve progress:{" "}
+                <span className="font-semibold text-white">1%</span>
               </div>
-              <div className="text-xs text-gray-400 mt-1">graduate this coin to PumpSwap at $68,387 market cap.<br />there is 0.007 SOL in the bonding curve.</div>
+              <div className="w-full h-2 bg-gray-700 rounded">
+                <div
+                  className="h-2 bg-green-400 rounded"
+                  style={{ width: "1%" }}
+                />
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                graduate this coin to PumpSwap at $68,387 market cap.
+                <br />
+                there is 0.007 SOL in the bonding curve.
+              </div>
             </div>
             {/* コントラクトアドレス */}
             <div>
               <div className="text-sm text-gray-300 mb-1">contract address</div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded text-gray-200 select-all">AWWMk...kjR4</span>
+                <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded text-gray-200 select-all">
+                  AWWMk...kjR4
+                </span>
               </div>
             </div>
             {/* 外部リンク */}
@@ -170,9 +199,15 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
             <div>
               <div className="text-sm text-gray-300 mb-1">top holders</div>
               <ul className="text-xs text-gray-200 bg-gray-800 rounded p-2 space-y-1">
-                <li>1. bonding curve <span className="float-right">99.97%</span></li>
-                <li>2. ZRYco2 <span className="float-right">0.02%</span></li>
-                <li>3. Eg1cRg <span className="float-right">0.00%</span></li>
+                <li>
+                  1. bonding curve <span className="float-right">99.97%</span>
+                </li>
+                <li>
+                  2. ZRYco2 <span className="float-right">0.02%</span>
+                </li>
+                <li>
+                  3. Eg1cRg <span className="float-right">0.00%</span>
+                </li>
               </ul>
             </div>
           </div>

@@ -139,13 +139,13 @@ export default function LosersPage() {
           </div>
           <div className="md:w-1/2">
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl shadow-2xl border border-pink-500/30">
-                <Image
-                  src="/images/mockmemes/LOSER.png"
-                  alt="LOSER Token"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+              <Image
+                src="/images/mockmemes/LOSER.png"
+                alt="LOSER Token"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
               <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm p-4">
                 <div className="text-2xl font-bold tracking-wider mb-1">
                   LOSER Token

@@ -1,5 +1,5 @@
-import type React from "react";
 import Image from "next/image";
+import type React from "react";
 
 interface BattleInfoBarProps {
   round?: number;
@@ -16,7 +16,7 @@ export const BattleInfoBar: React.FC<BattleInfoBarProps> = ({
   memes = 24,
   volume = "$6,200",
   timeLeft = "03:15:37",
-  topCoin = { symbol: "MONKE", iconUrl: "/monke-icon.png" }
+  topCoin = { symbol: "MONKE", iconUrl: "/monke-icon.png" },
 }) => {
   return (
     <div className="w-full bg-black border-t border-b border-orange-600/30">

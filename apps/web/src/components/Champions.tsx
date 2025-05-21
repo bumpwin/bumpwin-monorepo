@@ -1,15 +1,15 @@
-import React from "react";
-import type { ChampionCoin } from "@/types/champion";
-import type { DominanceChartData } from "@/types/dominance";
-import DominanceRechart from "./DominanceRechart";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 import {
+  mockChampionCoinMetadata,
   mockCoinMetadata,
   mockDominanceChartData,
-  mockChampionCoinMetadata,
 } from "@/mock/mockData";
+import type { ChampionCoin } from "@/types/champion";
+import type { DominanceChartData } from "@/types/dominance";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import type React from "react";
+import DominanceRechart from "./DominanceRechart";
+import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
 interface ChampionsListProps {
   coins: ChampionCoin[];

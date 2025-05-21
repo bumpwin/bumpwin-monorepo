@@ -1,8 +1,8 @@
 "use client";
 
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
 
 export function ConfettiEffect() {
   const [confettiKey, setConfettiKey] = useState(0);

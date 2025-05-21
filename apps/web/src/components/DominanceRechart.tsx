@@ -1,5 +1,6 @@
 "use client";
 
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import type React from "react";
 import {
   CartesianGrid,
@@ -12,7 +13,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
 
 // Define the structure for a single data point in the chart
 export interface ChartDataPoint {

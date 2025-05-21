@@ -30,12 +30,18 @@ export const RoundsACard: React.FC<RoundsACardProps> = ({
       sizes="(max-width: 768px) 100vw, 50vw"
     />
     <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-4 py-2 flex flex-col gap-0.5">
-      <div className="text-2xl font-extrabold text-white tracking-wide truncate">{symbol}</div>
+      <div className="text-2xl font-extrabold text-white tracking-wide truncate">
+        {symbol}
+      </div>
       <div className="text-sm text-blue-200 truncate mb-2">{name}</div>
       {/* 右下 %chance */}
       <div className="absolute right-[1rem] bottom-[1rem] flex flex-col items-end">
-        <span className="text-xs text-gray-400 font-medium leading-none">% chance</span>
-        <span className="text-2xl font-extrabold text-green-300 leading-tight">{percent}</span>
+        <span className="text-xs text-gray-400 font-medium leading-none">
+          % chance
+        </span>
+        <span className="text-2xl font-extrabold text-green-300 leading-tight">
+          {percent}
+        </span>
       </div>
     </div>
   </div>

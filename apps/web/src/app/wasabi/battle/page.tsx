@@ -4,16 +4,16 @@ import { ChampionCoinList } from "@/components/ChampionCoinList";
 import CommunicationPanel from "@/components/CommunicationPanel";
 // import DominanceChart from "@/components/DominanceChart";
 import DominanceRechart from "@/components/DominanceRechart";
+// import { mockDominanceData } from "@/mock/mockDominanceData";
+import type { CoinMeta } from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapUI from "@/components/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-// import { mockDominanceData } from "@/mock/mockDominanceData";
-import { CoinMeta } from "@/components/DominanceRechart";
+import type { RoundCoin } from "@/types/roundcoin";
 import {
   prepareCoinsMetadata,
   prepareMultiCoinChartData,
 } from "@/utils/chartDataPreparation";
-import type { RoundCoin } from "@/types/roundcoin";
 import Image from "next/image";
 import { useState } from "react";
 

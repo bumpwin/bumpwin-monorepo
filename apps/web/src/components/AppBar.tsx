@@ -1,13 +1,13 @@
 "use client";
 
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleClock from "./BattleClock";
-import WordmarkLogo from "./WordmarkLogo";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
+import WordmarkLogo from "./WordmarkLogo";
 
 export default function AppBar() {
   const pathname = usePathname();
@@ -57,7 +57,10 @@ export default function AppBar() {
           <div className="flex h-16 items-center justify-between">
             {/* 左側グループ */}
             <div className="flex items-center gap-0">
-              <Link href="/" className="flex items-center w-auto shrink-0 mr-[-6.5rem]">
+              <Link
+                href="/"
+                className="flex items-center w-auto shrink-0 mr-[-6.5rem]"
+              >
                 <div className="scale-50 origin-left inline-flex translate-y-[-2px]">
                   <WordmarkLogo />
                 </div>
@@ -69,7 +72,7 @@ export default function AppBar() {
                     "px-6 py-2 rounded-lg text-xl font-bold transition-colors cursor-pointer",
                     isActive("/battle")
                       ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
                   )}
                 >
                   Battle
@@ -80,7 +83,7 @@ export default function AppBar() {
                     "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
                     isActive("/champions")
                       ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
                   )}
                 >
                   Champions
@@ -91,7 +94,7 @@ export default function AppBar() {
                     "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
                     isActive("/losers")
                       ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white"
+                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
                   )}
                 >
                   Losers
@@ -123,11 +126,25 @@ export default function AppBar() {
 
             {/* 右側グループ */}
             <div className="flex items-center justify-end gap-4">
-              {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
-              <Link href="/create">
+              {/* Claim outcome ボタン */}
+              <Link href="/rounds?intent=claim-outcome">
                 <button
                   type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer ml-2"
+                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer
+                    bg-black
+                    bg-clip-padding
+                    text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text
+                    hover:border-yellow-400"
+                >
+                  Claim outcome
+                </button>
+              </Link>
+
+              {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
+              <Link href="/rounds?intent=create-coin">
+                <button
+                  type="button"
+                  className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
                 >
                   Create Coin
                 </button>

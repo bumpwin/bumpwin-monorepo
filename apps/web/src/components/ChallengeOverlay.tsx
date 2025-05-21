@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { useEffect, useState } from "react";
 
 export function ChallengeOverlay() {
   const { isChallengePeriod } = useBattleClock();

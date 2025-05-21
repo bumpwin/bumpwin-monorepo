@@ -1,10 +1,10 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
 import { serve } from "@hono/node-server";
-import { z } from "zod";
-import { startChatEventPolling } from "../job/listenChatEvent";
-import { startChatMessageInsertion } from "../job/insertChat";
+import { zValidator } from "@hono/zod-validator";
 import { logger } from "@workspace/logger";
+import { Hono } from "hono";
+import { z } from "zod";
+import { startChatMessageInsertion } from "../job/insertChat";
+import { startChatEventPolling } from "../job/listenChatEvent";
 
 const app = new Hono();
 
