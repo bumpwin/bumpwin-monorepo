@@ -52,7 +52,10 @@ export default function AppBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm">
+      <header
+        id="app-bar"
+        className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm"
+      >
         <div className="w-full px-8">
           <div className="flex h-16 items-center justify-between">
             {/* 左側グループ */}

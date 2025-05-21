@@ -80,12 +80,25 @@ export default function RoundsPage() {
   // Add effect for auto-scrolling
   useEffect(() => {
     if (intent === "claim-outcome" && claimButtonRef.current) {
-      // Use a much larger offset to ensure visibility (adjusted for this UI)
       setTimeout(() => {
-        window.scrollTo({
-          top: 450, // Fixed position that works with this UI layout
-          behavior: "smooth"
-        });
+        if (!claimButtonRef.current) return;
+        const appBar = document.getElementById("app-bar");
+        const appBarHeight = appBar ? appBar.offsetHeight : 80;
+        const rect = claimButtonRef.current.getBoundingClientRect();
+        const scrollY = window.scrollY + rect.top - appBarHeight + 40; // 余白を大きく
+        window.scrollTo({ top: scrollY, behavior: "smooth" });
+
+        // スクロール後に再度チェックして、まだ隠れていたらさらにスクロール
+        setTimeout(() => {
+          if (!claimButtonRef.current) return;
+          const rect2 = claimButtonRef.current.getBoundingClientRect();
+          if (rect2.top < appBarHeight + 8) {
+            window.scrollBy({
+              top: rect2.top - appBarHeight - 8,
+              behavior: "smooth",
+            });
+          }
+        }, 400);
       }, 100);
     }
   }, [intent]);
