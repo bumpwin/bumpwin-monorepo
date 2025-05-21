@@ -31,19 +31,18 @@ const nodeStyles = {
     fontWeight: "bold",
   },
   championAmm: {
-    background:
-      "linear-gradient(135deg, rgba(107, 33, 168, 0.8), rgba(159, 18, 57, 0.8))",
-    color: "white",
-    border: "1px solid rgb(159, 18, 57)",
+    background: "linear-gradient(135deg, #ffe259 0%, #f6e27a 100%)",
+    color: "#7c4700",
+    border: "1.5px solid #ffe259",
     width: 160,
     borderRadius: 8,
     padding: "10px",
     fontWeight: "bold",
   },
   feeVault: {
-    background: "rgba(126, 34, 206, 0.8)",
+    background: "rgba(13, 148, 136, 0.85)",
     color: "white",
-    border: "1px solid rgb(139, 92, 246)",
+    border: "1.5px solid #14b8a6",
     width: 120,
     height: 120,
     borderRadius: "50%",
@@ -120,8 +119,8 @@ const initialEdges: Edge[] = [
     source: "champion-amm",
     target: "fee-vault",
     label: "Trading Fee 1%",
-    labelStyle: { fill: "#ec4899", fontWeight: "bold" },
-    style: { stroke: "#ec4899", strokeWidth: 2, strokeDasharray: "5,5" },
+    labelStyle: { fill: "#ffe259", fontWeight: "bold" },
+    style: { stroke: "#ffe259", strokeWidth: 2, strokeDasharray: "5,5" },
     animated: true,
   },
   {
@@ -129,8 +128,8 @@ const initialEdges: Edge[] = [
     source: "fee-vault",
     target: "loser-stakers",
     label: "100% of All Fees",
-    labelStyle: { fill: "#ec4899", fontWeight: "bold" },
-    style: { stroke: "#ec4899", strokeWidth: 2, strokeDasharray: "5,5" },
+    labelStyle: { fill: "#14b8a6", fontWeight: "bold" },
+    style: { stroke: "#14b8a6", strokeWidth: 2, strokeDasharray: "5,5" },
     animated: true,
   },
 ];
@@ -158,7 +157,7 @@ export default function FeeFlowChart({
 
       {title && (
         <div className="text-center mb-6">
-          <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+          <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
             {title}
           </h3>
           {subtitle && <p className="text-gray-300 mt-2">{subtitle}</p>}
@@ -191,9 +190,9 @@ export default function FeeFlowChart({
         </ReactFlow>
       </div>
 
-      <div className="max-w-2xl mx-auto text-center mt-6 p-6 bg-purple-900/20 rounded-lg border border-purple-500/30">
+      <div className="max-w-2xl mx-auto text-center mt-6 p-6 bg-teal-900/20 rounded-lg border border-teal-500/30">
         <p className="text-lg text-white">
-          <span className="text-pink-400 font-bold">Trading fee (1%)</span> from
+          <span className="text-teal-400 font-bold">Trading fee (1%)</span> from
           all transactions don&apos;t go to the team or developers -
           <span className="text-green-400 font-bold">
             {" "}

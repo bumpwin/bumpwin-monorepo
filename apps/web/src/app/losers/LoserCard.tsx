@@ -28,7 +28,7 @@ export const LoserCard: React.FC<LoserCardProps> = ({
   stakingLabel,
   stakingValue,
 }) => (
-  <div className="relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-purple-500/30 bg-gray-900">
+  <div className="relative aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-teal-500/30 bg-gray-900">
     {typeof rank === "number" && (
       <div className="absolute top-2 right-2 z-10 bg-white/90 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-md">
         #{rank}
