@@ -81,7 +81,7 @@ export const mockmemes: MockCoinMetaData[] = [
   {
     symbol: "LOSER",
     name: "Party Loser",
-    description: "lost my job, my house, my LP\nstill vibin 🥂",
+    description: "Losers of BUMP.WIN",
     iconUrl: "/images/mockmemes/LOSER.png",
   },
   {

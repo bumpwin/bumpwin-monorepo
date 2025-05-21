@@ -309,7 +309,8 @@ function DashboardSection({
                   <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300" />
                 </button>
                 <div className="text-gray-400 text-base whitespace-normal max-w-xs">
-                  This battle hasn&apos;t started yet. Create a coin to participate!
+                  This battle hasn&apos;t started yet. Create a coin to
+                  participate!
                 </div>
               </div>
 
@@ -649,8 +650,9 @@ function DashboardSection({
                     Claim outcome
                   </button>
                   <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
-                    The {data.winner.name} won the round with a {data.topShare || 42}%
-                    share. The remaining {100 - (data.topShare || 42)}% memes was burned.
+                    The {data.winner.name} won the round with a{" "}
+                    {data.topShare || 42}% share. The remaining{" "}
+                    {100 - (data.topShare || 42)}% memes was burned.
                   </span>
                 </div>
               )}

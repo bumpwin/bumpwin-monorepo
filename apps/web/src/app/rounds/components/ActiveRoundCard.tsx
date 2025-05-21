@@ -1,4 +1,5 @@
 import { Clock, Shield } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 interface ActiveRoundCardProps {
@@ -25,12 +26,12 @@ export function ActiveRoundCard({ endTime }: ActiveRoundCardProps) {
             Battle in progress! The champion will be determined at the end of
             this round.
           </p>
-          <button
-            type="button"
-            className="px-6 py-2 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-bold border border-purple-500/50 transition-all hover:scale-105 shadow-lg"
+          <Link
+            href="/battle"
+            className="px-6 py-2 rounded-lg bg-purple-800 hover:bg-purple-700 text-white font-bold border border-purple-500/50 transition-all hover:scale-105 shadow-lg text-center"
           >
             Join The Battle
-          </button>
+          </Link>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-3 py-2">

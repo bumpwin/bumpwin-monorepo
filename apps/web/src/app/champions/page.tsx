@@ -24,8 +24,8 @@ export default function ChampionsPage() {
       telegramLink: coin.telegramLink,
       websiteLink: coin.websiteLink,
       twitterLink: coin.twitterLink,
-      share: 0.35, // Mock data
-      marketCap: 1000000, // Mock data
+      share: coin.share, // use real share if needed
+      marketCap: coin.marketCap, // use real marketCap
     }),
   );
 
@@ -85,8 +85,8 @@ export default function ChampionsPage() {
                   imageUrl={champion.iconUrl}
                   symbol={champion.symbol}
                   name={champion.name}
-                  share={champion.share}
-                  rank={i + 1}
+                  mcap={champion.marketCap}
+                  round={champion.round}
                 />
               ))}
             </div>

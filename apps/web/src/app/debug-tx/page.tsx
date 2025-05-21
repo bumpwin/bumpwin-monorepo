@@ -36,17 +36,19 @@ const DebugTxPage = () => {
       try {
         if (isDryRun) {
           const result = await dryRunTransaction(tx);
-          result.map((dryRunResult) => {
-            console.log("Dry run result:", dryRunResult);
-            toast.success("Dry run successful", {
-              description: "Transaction simulation completed",
+          result
+            .map((dryRunResult) => {
+              console.log("Dry run result:", dryRunResult);
+              toast.success("Dry run successful", {
+                description: "Transaction simulation completed",
+              });
+            })
+            .mapErr((error) => {
+              console.error("Dry run error:", error);
+              toast.error("Dry run failed", {
+                description: error.message,
+              });
             });
-          }).mapErr((error) => {
-            console.error("Dry run error:", error);
-            toast.error("Dry run failed", {
-              description: error.message,
-            });
-          });
         } else {
           await executeTransaction(tx);
         }
