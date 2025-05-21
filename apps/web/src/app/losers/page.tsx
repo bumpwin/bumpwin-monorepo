@@ -3,10 +3,20 @@ export const metadata = {
   description: "Earn protocol fees from all BUMP.WIN transactions by staking LOSER tokens. Learn how losers can still win in the BUMP.WIN ecosystem.",
 };
 
+import FeeFlowChart from "../../components/FeeFlowChart";
+
 export default function LosersPage() {
   return (
     <div className="bg-gray-900 min-h-screen">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
+
+        {/* Fee Flow Diagram - Using React Flow */}
+        <section className="mb-24">
+          <FeeFlowChart 
+            title="NO PROTOCOL FEE" 
+            subtitle="100% of Trading Fees go to LOSER Stakers" 
+          />
+        </section>
 
         {/* LOSER Token Explanation - New Section */}
         <section className="mb-32 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl" data-lenis-scroll-snap-align="center">
