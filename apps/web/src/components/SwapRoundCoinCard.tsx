@@ -2,15 +2,15 @@
 
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
-import Image from "next/image";
-import React, { useState } from "react";
-import { Input } from "@workspace/shadcn/components/input";
 import {
+  ConnectButton,
   useCurrentAccount,
   useSuiClient,
-  ConnectButton,
 } from "@mysten/dapp-kit";
+import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
+import Image from "next/image";
+import React, { useState } from "react";
 
 interface SwapRoundCoinCardProps {
   coin?: RoundCoin;

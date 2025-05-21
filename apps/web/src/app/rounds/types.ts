@@ -1,10 +1,17 @@
-export type RoundState = 'waiting' | 'active' | 'ended';
+export type RoundState = "waiting" | "active" | "ended";
 
 export interface RoundMetrics {
   mcap: string;
   volume: string;
   memes: number;
   traders: number;
+}
+
+export interface ChampionData {
+  id: number;
+  symbol: string;
+  name: string;
+  icon: string;
 }
 
 export interface Round {
@@ -14,7 +21,7 @@ export interface Round {
   metrics: RoundMetrics;
   startTime: string;
   endTime: string;
-  champion?: any; // TODO: Define champion type
+  champion?: ChampionData;
 }
 
 export interface CoinMetadata {
@@ -30,7 +37,7 @@ export interface CoinMetadata {
 }
 
 export interface ChartPoint {
-  timestamp: string;
+  timestamp: string | number;
   [key: string]: string | number;
 }
 
@@ -38,4 +45,4 @@ export interface ChartCoin {
   symbol: string;
   name: string;
   color: string;
-} 
+}

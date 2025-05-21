@@ -1,11 +1,11 @@
 "use client";
 
 import {
+  type ReactNode,
   createContext,
   useContext,
-  useState,
   useEffect,
-  ReactNode,
+  useState,
 } from "react";
 
 interface BattleClockContextType {

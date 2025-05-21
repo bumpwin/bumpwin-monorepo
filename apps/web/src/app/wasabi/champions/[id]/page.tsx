@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation";
 import { mockChampionCoinMetadata } from "@/mock/mockData";
+import { notFound } from "next/navigation";
 import { ChampionDetailPage } from "./ChampionDetailPage";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {

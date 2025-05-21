@@ -1,4 +1,4 @@
-import { ChampionCoin } from "@/types/champion";
+import type { ChampionCoin } from "@/types/champion";
 
 export const mockChampionCoins: ChampionCoin[] = [
   {

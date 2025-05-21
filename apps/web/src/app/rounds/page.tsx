@@ -1,19 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
-import { ROUNDS } from "./constants";
-import { getChartPoints, getChartCoins, getSafeIcon, getSafeSymbol } from "./utils";
-import { CreateCoinModal } from "./components/CreateCoinModal";
-import { Card, CardContent } from "@workspace/shadcn/components/card";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import Image from "next/image";
-import { RoundState } from "./types";
-import { ChampCard } from "./components/ChampCard";
 import CommunicationPanel from "@/components/CommunicationPanel";
+import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { Card, CardContent } from "@workspace/shadcn/components/card";
+import { motion } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { ChampCard } from "./components/ChampCard";
+import { CreateCoinModal } from "./components/CreateCoinModal";
+import { ROUNDS } from "./constants";
+import type { RoundState } from "./types";
+import { getChartPoints, getSafeIcon, getSafeSymbol } from "./utils";
 
 // Define types for our dashboard data
 interface TokenColors {
@@ -63,13 +62,11 @@ interface StatCardProps {
 export default function RoundsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const intent = searchParams.get('intent');
-  const chartCoins = getChartCoins(mockCoinMetadata);
-  const { currentRound } = useBattleClock();
+  const intent = searchParams.get("intent");
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
-    if (intent === 'create-coin') {
+    if (intent === "create-coin") {
       setShowCreateModal(true);
     }
   }, [intent]);
@@ -80,8 +77,8 @@ export default function RoundsPage() {
 
   const handleCloseModal = () => {
     setShowCreateModal(false);
-    if (intent === 'create-coin') {
-      router.push('/rounds');
+    if (intent === "create-coin") {
+      router.push("/rounds");
     }
   };
 
@@ -96,41 +93,63 @@ export default function RoundsPage() {
       volume: round.metrics.volume,
       memeCount: round.metrics.memes.toString(),
       traderCount: round.metrics.traders.toString(),
-      chartData: getChartPoints(mockDominanceChartData, mockCoinMetadata, i).map(point => {
-        const time = typeof point.timestamp === 'number'
-          ? `${Math.floor(point.timestamp / 60).toString().padStart(2, '0')}:${(point.timestamp % 60).toString().padStart(2, '0')}`
-          : point.timestamp;
+      chartData: getChartPoints(
+        mockDominanceChartData,
+        mockCoinMetadata,
+        i,
+      ).map((point) => {
+        const time =
+          typeof point.timestamp === "number"
+            ? `${Math.floor(point.timestamp / 60)
+                .toString()
+                .padStart(
+                  2,
+                  "0",
+                )}:${(point.timestamp % 60).toString().padStart(2, "0")}`
+            : point.timestamp;
 
         // Extract token data from point
-        const tokenData: {[key: string]: number} = {};
-        Object.keys(point).forEach(key => {
-          if (key !== 'timestamp') {
+        const tokenData: { [key: string]: number } = {};
+        Object.keys(point).forEach((key) => {
+          if (key !== "timestamp") {
             tokenData[key.toUpperCase()] = point[key] as number;
           }
         });
 
         return {
           time,
-          ...tokenData
+          ...tokenData,
         };
       }),
-      winner: round.state === 'ended' ? {
-        name: getSafeSymbol(mockCoinMetadata, round.round % mockCoinMetadata.length),
-        round: `Round ${round.round} Winner`,
-        mcap: round.metrics.mcap,
-        volume: round.metrics.volume,
-        image: getSafeIcon(mockCoinMetadata, round.round % mockCoinMetadata.length)
-      } : null,
+      winner:
+        round.state === "ended"
+          ? {
+              name: getSafeSymbol(
+                mockCoinMetadata,
+                round.round % mockCoinMetadata.length,
+              ),
+              round: `Round ${round.round} Winner`,
+              mcap: round.metrics.mcap,
+              volume: round.metrics.volume,
+              image: getSafeIcon(
+                mockCoinMetadata,
+                round.round % mockCoinMetadata.length,
+              ),
+            }
+          : null,
       loserIssuance: round.metrics.loserIssuance,
-      topShare: round.topShare
+      topShare: round.topShare,
     };
   });
 
   // Token colors - matching to the colors used in the application
-  const tokenColors: TokenColors = mockCoinMetadata.reduce((acc: TokenColors, coin) => {
-    acc[coin.symbol.toUpperCase()] = coin.color;
-    return acc;
-  }, {});
+  const tokenColors: TokenColors = mockCoinMetadata.reduce(
+    (acc: TokenColors, coin) => {
+      acc[coin.symbol.toUpperCase()] = coin.color;
+      return acc;
+    },
+    {},
+  );
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
@@ -147,7 +166,9 @@ export default function RoundsPage() {
                 key={dashboard.id}
                 data={dashboard}
                 tokenColors={tokenColors}
-                onCreateClick={dashboard.state === 'waiting' ? handleCreateClick : undefined}
+                onCreateClick={
+                  dashboard.state === "waiting" ? handleCreateClick : undefined
+                }
               />
             ))}
           </div>
@@ -159,17 +180,18 @@ export default function RoundsPage() {
         </aside>
       </div>
 
-      <CreateCoinModal
-        isOpen={showCreateModal}
-        onClose={handleCloseModal}
-      />
+      <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />
     </div>
   );
 }
 
-function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSectionProps) {
+function DashboardSection({
+  data,
+  tokenColors,
+  onCreateClick,
+}: DashboardSectionProps) {
   // Handle waiting round (upcoming battle)
-  if (data.state === 'waiting' && onCreateClick) {
+  if (data.state === "waiting" && onCreateClick) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -178,7 +200,7 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
         transition={{
           duration: 0.5,
           delay: 0.1,
-          ease: [0.33, 1, 0.68, 1]
+          ease: [0.33, 1, 0.68, 1],
         }}
       >
         <Card className="bg-gradient-to-br from-[#1D1F2B] to-[#13151E] border border-[#343850]/80 shadow-[0_10px_50px_-12px_rgba(0,0,0,0.7),0_0_1px_0_rgba(255,215,0,0.1)] backdrop-blur-sm rounded-2xl overflow-hidden relative">
@@ -188,8 +210,12 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
-                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]">{data.status}</span>
+                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">
+                  {data.id}
+                </h1>
+                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFC700]">
+                  {data.status}
+                </span>
               </div>
               <div className="text-sm text-gray-400 mt-2 md:mt-0 font-medium tracking-wide">
                 Start: {data.startDate} · End: {data.endDate}
@@ -198,7 +224,7 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
 
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <p className="text-xl text-gray-300 mb-8 font-medium">
-                This battle hasn't started yet. Create a coin to participate!
+                This battle hasn&apos;t started yet. Create a coin to participate!
               </p>
               <button
                 onClick={onCreateClick}
@@ -206,8 +232,19 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <span>Create Coin</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300 transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 transition-transform duration-300 transform group-hover:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
                   </svg>
                 </span>
                 <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></span>
@@ -227,20 +264,24 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
       transition={{
         duration: 0.5,
         delay: 0.1,
-        ease: [0.33, 1, 0.68, 1]
+        ease: [0.33, 1, 0.68, 1],
       }}
     >
       <div
         className={`bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative ${
-          data.state === 'active'
-            ? 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(168,85,247,0.25)]'
-            : 'shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]'
+          data.state === "active"
+            ? "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(168,85,247,0.25)]"
+            : "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]"
         }`}
       >
         {/* State indicator line */}
-        <div className={`absolute top-0 left-0 h-full w-2 ${
-          data.state === 'active' ? "bg-purple-500 animate-pulse" : "bg-gray-700"
-        }`} />
+        <div
+          className={`absolute top-0 left-0 h-full w-2 ${
+            data.state === "active"
+              ? "bg-purple-500 animate-pulse"
+              : "bg-gray-700"
+          }`}
+        />
 
         {/* グリッドレイアウトに変更 - 動的調整の2カラム構造 */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto]">
@@ -251,14 +292,18 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               <div className="flex flex-col space-y-2 mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
-                    <span className={`text-xl font-bold ${
-                      data.state === 'active'
-                        ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500'
-                        : 'text-gray-300'
-                    }`}>
-                      {data.state === 'active' ? 'In Progress' : data.status}
-                      {data.state === 'active' && (
+                    <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">
+                      {data.id}
+                    </h1>
+                    <span
+                      className={`text-xl font-bold ${
+                        data.state === "active"
+                          ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      {data.state === "active" ? "In Progress" : data.status}
+                      {data.state === "active" && (
                         <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
                           ● LIVE
                         </span>
@@ -275,14 +320,18 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             {/* Header for desktop */}
             <div className="hidden lg:flex items-center justify-between mb-5">
               <div className="flex items-center gap-4">
-                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">{data.id}</h1>
-                <span className={`text-xl font-bold ${
-                  data.state === 'active'
-                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500'
-                    : 'text-gray-300'
-                }`}>
-                  {data.state === 'active' ? 'In Progress' : data.status}
-                  {data.state === 'active' && (
+                <h1 className="text-4xl font-bold text-gray-200 drop-shadow-md">
+                  {data.id}
+                </h1>
+                <span
+                  className={`text-xl font-bold ${
+                    data.state === "active"
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-violet-500"
+                      : "text-gray-300"
+                  }`}
+                >
+                  {data.state === "active" ? "In Progress" : data.status}
+                  {data.state === "active" && (
                     <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
                       ● LIVE
                     </span>
@@ -295,7 +344,7 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
             </div>
 
             {/* Action/description section: show for completed and active rounds */}
-            {(data.state === 'ended' && data.winner) && (
+            {data.state === "ended" && data.winner && (
               <div className="flex items-center gap-4 mb-6">
                 <button
                   type="button"
@@ -304,11 +353,13 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                   Claim outcome
                 </button>
                 <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
-                  The ${data.winner.name} won the round with a {data.topShare || 42}% share. The remaining {100 - (data.topShare || 42)}% memes was burned.
+                  The {data.winner.name} won the round with a{" "}
+                  {data.topShare || 42}% share. The remaining{" "}
+                  {100 - (data.topShare || 42)}% memes was burned.
                 </span>
               </div>
             )}
-            {data.state === 'active' && (
+            {data.state === "active" && (
               <div className="flex flex-row items-center gap-4 mb-6">
                 <button
                   type="button"
@@ -317,7 +368,8 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                   Join the Battle
                 </button>
                 <div className="text-gray-400 text-base whitespace-normal max-w-xs">
-                  The battle is heating up! Join now and help your favorite meme coin win the round.
+                  The battle is heating up! Join now and help your favorite meme
+                  coin win the round.
                 </div>
               </div>
             )}
@@ -328,7 +380,14 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
               <StatCard title="Volume" value={data.volume} />
               <StatCard title="Meme Count" value={data.memeCount} />
               <StatCard title="Trader Count" value={data.traderCount} />
-              <StatCard title="LOSER Inflation" value={parseFloat((data.loserIssuance || '0').replace(/[^\d.]/g, '')) + ''} />
+              <StatCard
+                title="LOSER Inflation"
+                value={
+                  Number.parseFloat(
+                    (data.loserIssuance || "0").replace(/[^\d.]/g, ""),
+                  ) + ""
+                }
+              />
             </div>
 
             {/* Chart */}
@@ -340,10 +399,25 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.chartData}>
                     <defs>
-                      {Object.keys(tokenColors).map(token => (
-                        <linearGradient key={`gradient-${token}`} id={`gradient-${token}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={tokenColors[token] || '#FFD700'} stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor={tokenColors[token] || '#FFD700'} stopOpacity={0.2}/>
+                      {Object.keys(tokenColors).map((token) => (
+                        <linearGradient
+                          key={`gradient-${token}`}
+                          id={`gradient-${token}`}
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor={tokenColors[token] || "#FFD700"}
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor={tokenColors[token] || "#FFD700"}
+                            stopOpacity={0.2}
+                          />
                         </linearGradient>
                       ))}
                     </defs>
@@ -360,21 +434,21 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                       axisLine={{ stroke: "#343850" }}
                       tickLine={{ stroke: "#343850" }}
                       tickFormatter={(value) => `${value}%`}
-                      domain={[0, 'dataMax + 15']}
+                      domain={[0, "dataMax + 15"]}
                     />
-                    {Object.keys(tokenColors).map(token => (
+                    {Object.keys(tokenColors).map((token) => (
                       <Line
                         key={token}
                         type="monotone"
                         dataKey={token}
-                        stroke={tokenColors[token] || '#FFD700'}
+                        stroke={tokenColors[token] || "#FFD700"}
                         strokeWidth={2.5}
                         dot={false}
                         activeDot={{
                           r: 6,
-                          stroke: tokenColors[token] || '#FFD700',
+                          stroke: tokenColors[token] || "#FFD700",
                           strokeWidth: 2,
-                          fill: '#13151E'
+                          fill: "#13151E",
                         }}
                       />
                     ))}
@@ -382,17 +456,24 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                 </ResponsiveContainer>
               </div>
               <div className="flex flex-wrap gap-6 justify-center py-3 border-t border-[#343850]/70 bg-[#13151E]/80 backdrop-blur-sm">
-                {Object.keys(tokenColors).map(token => (
-                  <div key={token} className="flex items-center gap-2 transition-transform hover:scale-105 duration-300">
+                {Object.keys(tokenColors).map((token) => (
+                  <div
+                    key={token}
+                    className="flex items-center gap-2 transition-transform hover:scale-105 duration-300"
+                  >
                     <div
                       className="w-[10px] h-[10px] rounded-full ring-2 ring-opacity-50"
-                      style={{
-                        backgroundColor: tokenColors[token] || '#FFD700',
-                        boxShadow: `0 0 10px ${tokenColors[token] || '#FFD700'}50`,
-                        '--ring-color': tokenColors[token] || '#FFD700'
-                      } as React.CSSProperties}
+                      style={
+                        {
+                          backgroundColor: tokenColors[token] || "#FFD700",
+                          boxShadow: `0 0 10px ${tokenColors[token] || "#FFD700"}50`,
+                          "--ring-color": tokenColors[token] || "#FFD700",
+                        } as React.CSSProperties
+                      }
                     ></div>
-                    <span className="text-gray-300 font-medium tracking-wide">{token}</span>
+                    <span className="text-gray-300 font-medium tracking-wide">
+                      {token}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -400,17 +481,20 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
           </div>
 
           {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
-          {(data.state === 'active' || (data.state === 'ended' && data.winner)) ? (
-            <div className="p-6" style={{height: "calc(100%)"}}>
+          {data.state === "active" ||
+          (data.state === "ended" && data.winner) ? (
+            <div className="p-6" style={{ height: "calc(100%)" }}>
               {/* BattleRoundCardとの余白上下右が等幅であること */}
-              <div style={{
-                height: "100%",
-                aspectRatio: "3/4", // 重要: w:h = 3:4 のアスペクト比を厳守
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}>
-                {data.state === 'active' ? (
+              <div
+                style={{
+                  height: "100%",
+                  aspectRatio: "3/4", // 重要: w:h = 3:4 のアスペクト比を厳守
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {data.state === "active" ? (
                   <div className="w-full h-full bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl flex items-center justify-center border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
                     {/* Animated pulsing effect */}
                     <div className="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out"></div>
@@ -420,14 +504,16 @@ function DashboardSection({ data, tokenColors, onCreateClick }: DashboardSection
                       Battle in progress
                     </span>
                   </div>
-                ) : data.winner && (
-                  <ChampCard
-                    image={data.winner.image}
-                    name={data.winner.name}
-                    round={data.winner.round}
-                    mcap={data.winner.mcap}
-                    volume={data.winner.volume}
-                  />
+                ) : (
+                  data.winner && (
+                    <ChampCard
+                      image={data.winner.image}
+                      name={data.winner.name}
+                      round={data.winner.round}
+                      mcap={data.winner.mcap}
+                      volume={data.winner.volume}
+                    />
+                  )
                 )}
               </div>
             </div>
@@ -445,7 +531,9 @@ function StatCard({ title, value }: StatCardProps) {
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
 
       <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
-      <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 tracking-tight">{value}</p>
+      <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 tracking-tight">
+        {value}
+      </p>
     </div>
   );
 }

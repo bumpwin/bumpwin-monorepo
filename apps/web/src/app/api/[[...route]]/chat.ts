@@ -1,11 +1,11 @@
-import { Hono } from "hono";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase/src/adapters";
 import { supabase } from "@workspace/supabase/src/client";
 import type { ApiError } from "@workspace/supabase/src/error";
+import { Hono } from "hono";
 
 // Edge Runtime configuration
-export const runtime = 'edge';
+export const runtime = "edge";
 
 const supabaseRepository = new SupabaseRepository(supabase);
 
@@ -42,17 +42,17 @@ export const app = new Hono().get("/", async (c) => {
       },
       (error: ApiError) => {
         logger.error("Chat messages get error", { error });
-        return new Response(JSON.stringify({ error: error.message }), { 
+        return new Response(JSON.stringify({ error: error.message }), {
           status: error.code,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         });
       },
     );
   } catch (error) {
     logger.error("Unexpected error in chat messages fetch", { error });
-    return new Response(JSON.stringify({ error: "Internal server error" }), { 
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 });

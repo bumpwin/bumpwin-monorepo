@@ -1,1 +1,1 @@
-export * from './mockmemes'; 
+export * from "./mockmemes";

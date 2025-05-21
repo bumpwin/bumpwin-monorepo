@@ -1,6 +1,6 @@
-import React from 'react';
 import DominanceRechart from "@/components/DominanceRechart";
-import { ChartPoint, ChartCoin } from '../types';
+import React from "react";
+import type { ChartCoin, ChartPoint } from "../types";
 
 interface RoundChartProps {
   points: ChartPoint[];
@@ -20,4 +20,4 @@ export function RoundChart({ points, coins }: RoundChartProps) {
       />
     </div>
   );
-} 
+}

@@ -1,7 +1,7 @@
-import React from 'react';
-import Image from 'next/image';
-import { Round, CoinMetadata } from '../types';
-import { getSafeIcon, getSafeSymbol } from '../utils';
+import Image from "next/image";
+import React from "react";
+import type { CoinMetadata, Round } from "../types";
+import { getSafeIcon, getSafeSymbol } from "../utils";
 
 interface ChampionCardProps {
   round: Round;
@@ -32,8 +32,14 @@ export function ChampionCard({ round, mockCoinMetadata }: ChampionCardProps) {
         {/* Coin image - taking most of the height */}
         <div className="w-full pt-[75%] relative">
           <Image
-            src={getSafeIcon(mockCoinMetadata, round.round % mockCoinMetadata.length)}
-            alt={getSafeSymbol(mockCoinMetadata, round.round % mockCoinMetadata.length)}
+            src={getSafeIcon(
+              mockCoinMetadata,
+              round.round % mockCoinMetadata.length,
+            )}
+            alt={getSafeSymbol(
+              mockCoinMetadata,
+              round.round % mockCoinMetadata.length,
+            )}
             fill
             className="object-cover absolute top-0 left-0"
           />
@@ -42,21 +48,30 @@ export function ChampionCard({ round, mockCoinMetadata }: ChampionCardProps) {
         {/* Info footer */}
         <div className="bg-black/80 backdrop-blur-sm px-3 py-2">
           <div className="text-2xl font-extrabold text-yellow-400 tracking-wide truncate">
-            {getSafeSymbol(mockCoinMetadata, round.round % mockCoinMetadata.length)}
+            {getSafeSymbol(
+              mockCoinMetadata,
+              round.round % mockCoinMetadata.length,
+            )}
           </div>
-          <div className="text-sm text-gray-300 truncate mb-1">Round {round.round} Winner</div>
+          <div className="text-sm text-gray-300 truncate mb-1">
+            Round {round.round} Winner
+          </div>
 
           <div className="grid grid-cols-2 gap-1 border-t border-gray-700 pt-1">
             <div>
               <span className="text-gray-400 text-xs block">MCap</span>
               <div className="flex items-center">
-                <span className="text-white text-sm font-bold">{round.metrics.mcap}</span>
+                <span className="text-white text-sm font-bold">
+                  {round.metrics.mcap}
+                </span>
               </div>
             </div>
             <div>
               <span className="text-gray-400 text-xs block">volume</span>
               <div className="flex items-center">
-                <span className="text-white text-sm font-bold">{round.metrics.volume}</span>
+                <span className="text-white text-sm font-bold">
+                  {round.metrics.volume}
+                </span>
               </div>
             </div>
           </div>
@@ -64,4 +79,4 @@ export function ChampionCard({ round, mockCoinMetadata }: ChampionCardProps) {
       </div>
     </div>
   );
-} 
+}

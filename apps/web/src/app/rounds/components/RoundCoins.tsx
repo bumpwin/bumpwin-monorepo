@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { CoinMetadata } from '../types';
+import { motion } from "framer-motion";
+import Image from "next/image";
+import React from "react";
+import type { CoinMetadata } from "../types";
 
 interface RoundCoinsProps {
   coins: CoinMetadata[];
@@ -32,11 +32,30 @@ export function RoundCoins({ coins }: RoundCoinsProps) {
             />
             <div>
               <div className="font-bold text-white">{coin.symbol}</div>
-              <div className="text-xs text-gray-400">{j === 0 ? '32%' : j === 1 ? '28%' : j === 2 ? '22%' : '18%'} share</div>
+              <div className="text-xs text-gray-400">
+                {j === 0 ? "32%" : j === 1 ? "28%" : j === 2 ? "22%" : "18%"}{" "}
+                share
+              </div>
             </div>
             <div className="ml-auto">
-              <span className={j === 0 ? "text-green-400" : j === 1 ? "text-green-300" : j === 2 ? "text-red-300" : "text-red-400"}>
-                {j === 0 ? '+2.4%' : j === 1 ? '+1.2%' : j === 2 ? '-0.8%' : '-1.5%'}
+              <span
+                className={
+                  j === 0
+                    ? "text-green-400"
+                    : j === 1
+                      ? "text-green-300"
+                      : j === 2
+                        ? "text-red-300"
+                        : "text-red-400"
+                }
+              >
+                {j === 0
+                  ? "+2.4%"
+                  : j === 1
+                    ? "+1.2%"
+                    : j === 2
+                      ? "-0.8%"
+                      : "-1.5%"}
               </span>
             </div>
           </motion.div>
@@ -44,4 +63,4 @@ export function RoundCoins({ coins }: RoundCoinsProps) {
       })}
     </div>
   );
-} 
+}

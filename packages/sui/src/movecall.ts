@@ -16,18 +16,21 @@ const BumpFamCoin = {
   createCoin: (tx: Transaction, coinType: string, params: any) => {
     logger.info("Mock BumpFamCoin.createCoin called", { coinType, params });
     // This is a placeholder - no actual implementation
-  }
+  },
 };
 
 class Justchat {
   private network: "mainnet" | "testnet";
-  
+
   constructor(network: "mainnet" | "testnet") {
     this.network = network;
   }
-  
+
   sendMessage(tx: Transaction, params: { message: string; sender: string }) {
-    logger.info("Mock Justchat.sendMessage called", { ...params, network: this.network });
+    logger.info("Mock Justchat.sendMessage called", {
+      ...params,
+      network: this.network,
+    });
     // This is a placeholder - no actual implementation
   }
 }

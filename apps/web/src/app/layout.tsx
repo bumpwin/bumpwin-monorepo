@@ -2,20 +2,20 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
-import { Toaster } from "sonner";
 import AppBar from "@/components/AppBar";
-import { Providers } from "./providers/Providers";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
 import { mockCoinMetadata } from "@/mock/mockData";
+import { Toaster } from "sonner";
+import { Providers } from "./providers/Providers";
 
 export const runtime = "edge";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
   preload: true,
   adjustFontFallback: true,
 });
@@ -23,7 +23,7 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  display: 'swap',
+  display: "swap",
   preload: true,
   adjustFontFallback: true,
 });

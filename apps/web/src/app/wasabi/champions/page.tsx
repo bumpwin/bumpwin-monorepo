@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import { ChampionsList } from "@/components/Champions";
+import CommunicationPanel from "@/components/CommunicationPanel";
+import { ResultView } from "@/components/ResultView";
 import {
   mockChampionCoinMetadata,
   mockDominanceChartData,
@@ -10,7 +10,7 @@ import {
 } from "@/mock/mockData";
 import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
-import { ResultView } from "@/components/ResultView";
+import React from "react";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to ChampionCoin type

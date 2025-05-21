@@ -1,16 +1,15 @@
 "use client";
 
-import React from "react";
 import CommunicationPanel from "@/components/CommunicationPanel";
-import { ChampionCard } from "./ChampionCard";
+import InfoBar from "@/components/InfoBar";
+import { ResultView } from "@/components/ResultView";
 import {
   mockChampionCoinMetadata,
   mockLastChampionCoinMetadata,
 } from "@/mock/mockData";
 import type { ChampionCoin } from "@/types/champion";
-import { ResultView } from "@/components/ResultView";
-import InfoBar from "@/components/InfoBar";
-import { Crown, Trophy, Award } from "lucide-react";
+import React from "react";
+import { ChampionCard } from "./ChampionCard";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to ChampionCoin type
@@ -44,7 +43,8 @@ export default function ChampionsPage() {
               <h1
                 className="text-5xl font-extrabold text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]"
                 style={{
-                  background: "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",
+                  background:
+                    "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",

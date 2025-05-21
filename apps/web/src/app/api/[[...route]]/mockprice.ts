@@ -1,23 +1,27 @@
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { zValidator } from "@hono/zod-validator";
 
 // Edge Runtime configuration
-export const runtime = 'edge';
+export const runtime = "edge";
 
 const querySchema = z.object({
   seed: z.string().default("0"),
   freq: z.enum(["day", "min"]).default("day"),
-  count: z.string().transform(Number).refine(val => !Number.isNaN(val) && val > 0 && val <= 1000, {
-    message: "count must be a number between 1 and 1000",
-  }).default("30"),
+  count: z
+    .string()
+    .transform(Number)
+    .refine((val) => !Number.isNaN(val) && val > 0 && val <= 1000, {
+      message: "count must be a number between 1 and 1000",
+    })
+    .default("30"),
 });
 
 // Mock price data generation function - オリジナルのロジックを踏襲
 const generateMockPriceData = (
   seed: string,
   freq: "day" | "min" = "day",
-  count = 30
+  count = 30,
 ) => {
   const data = [];
   const now = Date.now();
@@ -50,7 +54,7 @@ const generateMockPriceData = (
       open,
       high,
       low,
-      close
+      close,
     });
 
     // 次の日の始値は前日の終値 (オリジナルと同様)
@@ -58,11 +62,14 @@ const generateMockPriceData = (
   }
 
   return data;
-}
+};
 
-export const app = new Hono()
-  .get("/", zValidator("query", querySchema), (c) => {
+export const app = new Hono().get(
+  "/",
+  zValidator("query", querySchema),
+  (c) => {
     const { seed, freq, count } = c.req.valid("query");
     const data = generateMockPriceData(seed, freq, count);
     return c.json({ data });
-  });
+  },
+);

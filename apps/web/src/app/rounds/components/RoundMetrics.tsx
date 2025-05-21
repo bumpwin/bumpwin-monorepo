@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { RoundMetrics as RoundMetricsType } from '../types';
+import { motion } from "framer-motion";
+import React from "react";
+import type { RoundMetrics as RoundMetricsType } from "../types";
 
 interface RoundMetricsProps {
   metrics: RoundMetricsType;
@@ -48,4 +48,4 @@ export function RoundMetrics({ metrics, index }: RoundMetricsProps) {
       </motion.div>
     </>
   );
-} 
+}

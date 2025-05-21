@@ -1,14 +1,16 @@
-import DominanceRechart from "./DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import DominanceRechart from "./DominanceRechart";
 
 const InfoBar = () => {
   // DominanceRechart用データ整形
   const chartPoints = mockDominanceChartData.map((point) => ({
     timestamp: point.timestamp,
     ...point.shares.reduce(
-      (acc, share, index) => Object.assign(acc, {
-        [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]: share,
-      }),
+      (acc, share, index) =>
+        Object.assign(acc, {
+          [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]:
+            share,
+        }),
       {},
     ),
   }));
@@ -21,7 +23,9 @@ const InfoBar = () => {
   return (
     <div className="w-full bg-black/30 backdrop-blur-md py-3 rounded-xl mb-6">
       <div className="max-w-5xl mx-auto flex items-center gap-6 px-4">
-        <span className="text-white font-bold text-2xl mr-4 flex-shrink-0">Battle Round 12</span>
+        <span className="text-white font-bold text-2xl mr-4 flex-shrink-0">
+          Battle Round 12
+        </span>
         <div className="flex flex-1 flex-row gap-4 justify-end">
           <div className="bg-white/5 border border-gray-700 rounded-lg px-5 py-2 flex flex-col items-center flex-1">
             <span className="text-gray-400 text-lg">Market Cap</span>
@@ -42,7 +46,13 @@ const InfoBar = () => {
         </div>
       </div>
       <div className="w-full mt-4">
-        <DominanceRechart points={chartPoints} coins={chartCoins} height={180} compact hideLegend />
+        <DominanceRechart
+          points={chartPoints}
+          coins={chartCoins}
+          height={180}
+          compact
+          hideLegend
+        />
       </div>
     </div>
   );
