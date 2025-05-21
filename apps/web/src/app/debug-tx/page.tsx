@@ -1,67 +1,22 @@
 "use client";
 
+import { useDryRunTransaction } from "@/hooks/transactions/useDryRunTransaction";
+import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
+import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
-import { CHAMP_MARKET_OBJECT_IDS, MOCKCOINS_OBJECT_IDS } from "bumpwin";
-import { champMarket, counter, mockcoins } from "bumpwin/suigen";
+import type { Transaction } from "@mysten/sui/transactions";
 import { useCallback } from "react";
-import { useDryRunTransaction } from "../../hooks/transactions/useDryRunTransaction";
-import { useExecuteTransaction } from "../../hooks/transactions/useExecuteTransaction";
-
-// Constants
-const COUNTER_ID =
-  "0x184d597dacb67afb95037132af97d146f15d1650e11cd0f1abc09c6fe8e1f0cc";
-const WSUI_AMOUNT = 100n * BigInt(1e9);
+import { toast } from "sonner";
 
 const DebugTxPage = () => {
   const currentAccount = useCurrentAccount();
   const { dryRunTransaction, isLoading: isDryRunning } = useDryRunTransaction();
   const { executeTransaction, isExecuting } = useExecuteTransaction();
-
-  const createMintWSUITransaction = useCallback(() => {
-    if (!currentAccount) return null;
-
-    const tx = new Transaction();
-    const wsui = mockcoins.wsui.mint(tx, {
-      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
-      u64: WSUI_AMOUNT,
-    });
-    tx.transferObjects([wsui], currentAccount.address);
-    return tx;
-  }, [currentAccount]);
-
-  const createIncrementCounterTransaction = useCallback(() => {
-    if (!currentAccount) return null;
-
-    const tx = new Transaction();
-    counter.objectTableCounter.increment(tx, {
-      root: COUNTER_ID,
-      id: COUNTER_ID,
-    });
-    return tx;
-  }, [currentAccount]);
-
-  const createSwapChampTransaction = useCallback(() => {
-    if (!currentAccount) return null;
-
-    const tx = new Transaction();
-    const coinIn = mockcoins.wsui.mint(tx, {
-      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
-      u64: WSUI_AMOUNT,
-    });
-
-    const coinOut = champMarket.cpmm.swapYToX(
-      tx,
-      [mockcoins.wsui.WSUI.$typeName, mockcoins.wsui.WSUI.$typeName],
-      {
-        pool: CHAMP_MARKET_OBJECT_IDS.POOLS.BLUE_WSUI,
-        coin: coinIn,
-      },
-    );
-
-    tx.transferObjects([coinOut], currentAccount.address);
-    return tx;
-  }, [currentAccount]);
+  const {
+    createMintWSUITransaction,
+    createIncrementCounterTransaction,
+    createSwapChampTransaction,
+  } = useTransactionCreators();
 
   const handleTransaction = useCallback(
     async (createTx: () => Transaction | null, isDryRun = true) => {
@@ -69,7 +24,13 @@ const DebugTxPage = () => {
       if (!tx) return;
 
       if (isDryRun) {
-        await dryRunTransaction(tx);
+        const result = await dryRunTransaction(tx);
+        result.map((dryRunResult) => {
+          console.log("Dry run result:", dryRunResult);
+          toast.success("Dry run successful", {
+            description: "Transaction simulation completed",
+          });
+        });
       } else {
         await executeTransaction(tx);
       }
@@ -107,7 +68,9 @@ const DebugTxPage = () => {
             <button
               type="button"
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              onClick={() => handleTransaction(createMintWSUITransaction, false)}
+              onClick={() =>
+                handleTransaction(createMintWSUITransaction, false)
+              }
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Execute"}
@@ -121,7 +84,9 @@ const DebugTxPage = () => {
             <button
               type="button"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-              onClick={() => handleTransaction(createIncrementCounterTransaction, true)}
+              onClick={() =>
+                handleTransaction(createIncrementCounterTransaction, true)
+              }
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Dry Run"}
@@ -130,7 +95,9 @@ const DebugTxPage = () => {
             <button
               type="button"
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              onClick={() => handleTransaction(createIncrementCounterTransaction, false)}
+              onClick={() =>
+                handleTransaction(createIncrementCounterTransaction, false)
+              }
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Execute"}
@@ -144,7 +111,9 @@ const DebugTxPage = () => {
             <button
               type="button"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-              onClick={() => handleTransaction(createSwapChampTransaction, true)}
+              onClick={() =>
+                handleTransaction(createSwapChampTransaction, true)
+              }
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Dry Run"}
@@ -153,7 +122,9 @@ const DebugTxPage = () => {
             <button
               type="button"
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              onClick={() => handleTransaction(createSwapChampTransaction, false)}
+              onClick={() =>
+                handleTransaction(createSwapChampTransaction, false)
+              }
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Execute"}
