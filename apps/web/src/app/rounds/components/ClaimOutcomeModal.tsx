@@ -1,5 +1,12 @@
+import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
+import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { MOCKCOINS_OBJECT_IDS } from "bumpwin";
+import { mockcoins } from "bumpwin/suigen";
 import { motion } from "framer-motion";
 import React from "react";
+import { toast } from "sonner";
 
 interface ClaimOutcomeModalProps {
   isOpen: boolean;
@@ -17,6 +24,33 @@ export function ClaimOutcomeModal({
   winner = { name: "SUP_DOGE", share: 42 },
   roundId = "#42",
 }: ClaimOutcomeModalProps) {
+  const currentAccount = useCurrentAccount();
+  const { executeTransaction, isExecuting } = useExecuteTransaction();
+
+  const handleClaim = async () => {
+    if (!currentAccount) return;
+
+    const tx = new Transaction();
+
+    // Mint red token
+    const redCoin = mockcoins.red.mint(tx, {
+      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
+      u64: 100n * BigInt(1e9),
+    });
+    tx.transferObjects([redCoin], currentAccount.address);
+
+    // Mint black token
+    const blackCoin = mockcoins.black.mint(tx, {
+      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
+      u64: 100n * BigInt(1e9),
+    });
+    tx.transferObjects([blackCoin], currentAccount.address);
+
+    // Execute the combined transaction
+    await executeTransaction(tx);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -77,9 +111,11 @@ export function ClaimOutcomeModal({
             </button>
             <button
               type="submit"
-              className="px-6 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 transition-all hover:scale-[1.03]"
+              onClick={handleClaim}
+              disabled={isExecuting}
+              className="px-6 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Claim Rewards
+              {isExecuting ? "Claiming..." : "Claim Rewards"}
             </button>
           </div>
         </div>

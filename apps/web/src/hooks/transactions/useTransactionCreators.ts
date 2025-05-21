@@ -11,66 +11,86 @@ const COUNTER_ID =
 export const useTransactionCreators = () => {
   const currentAccount = useCurrentAccount();
 
-  const createMintWSUITransaction = useCallback(() => {
-    if (!currentAccount) return null;
-
-    const tx = new Transaction();
-    const wsui = mockcoins.wsui.mint(tx, {
-      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
-      u64: 100n * BigInt(1e9),
-    });
-    tx.transferObjects([wsui], currentAccount.address);
-    return tx;
-  }, [currentAccount]);
-
-  const createIncrementCounterTransaction = useCallback(() => {
-    if (!currentAccount) return null;
-
-    const tx = new Transaction();
-    counter.objectTableCounter.increment(tx, {
-      root: COUNTER_ID,
-      id: COUNTER_ID,
-    });
-    return tx;
-  }, [currentAccount]);
-
-  const createSwapChampTransaction = useCallback(
-    (amount: number, isBuy: boolean) => {
+  return {
+    createMintWSUITransaction: useCallback(() => {
       if (!currentAccount) return null;
 
       const tx = new Transaction();
-      const coinIn = mockcoins.wsui.mint(tx, {
+      const wsui = mockcoins.wsui.mint(tx, {
         treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
-        u64: BigInt(amount * 1e9), // Convert to SUI decimals
+        u64: 100n * BigInt(1e9),
       });
-
-      const coinOut = isBuy
-        ? champMarket.cpmm.swapYToX(
-            tx,
-            [mockcoins.wsui.WSUI.$typeName, mockcoins.wsui.WSUI.$typeName],
-            {
-              pool: CHAMP_MARKET_OBJECT_IDS.POOLS.BLUE_WSUI,
-              coin: coinIn,
-            },
-          )
-        : champMarket.cpmm.swapXToY(
-            tx,
-            [mockcoins.wsui.WSUI.$typeName, mockcoins.wsui.WSUI.$typeName],
-            {
-              pool: CHAMP_MARKET_OBJECT_IDS.POOLS.BLUE_WSUI,
-              coin: coinIn,
-            },
-          );
-
-      tx.transferObjects([coinOut], currentAccount.address);
+      tx.transferObjects([wsui], currentAccount.address);
       return tx;
-    },
-    [currentAccount],
-  );
+    }, [currentAccount]),
 
-  return {
-    createMintWSUITransaction,
-    createIncrementCounterTransaction,
-    createSwapChampTransaction,
+    createMintRedTokenTransaction: useCallback(() => {
+      if (!currentAccount) return null;
+
+      const tx = new Transaction();
+      const coin = mockcoins.red.mint(tx, {
+        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
+        u64: 100n * BigInt(1e9),
+      });
+      tx.transferObjects([coin], currentAccount.address);
+      return tx;
+    }, [currentAccount]),
+
+    createMintBlackTokenTransaction: useCallback(() => {
+      if (!currentAccount) return null;
+
+      const tx = new Transaction();
+      const coin = mockcoins.black.mint(tx, {
+        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
+        u64: 100n * BigInt(1e9),
+      });
+      tx.transferObjects([coin], currentAccount.address);
+      return tx;
+    }, [currentAccount]),
+
+    createIncrementCounterTransaction: useCallback(() => {
+      if (!currentAccount) return null;
+
+      const tx = new Transaction();
+      counter.objectTableCounter.increment(tx, {
+        root: COUNTER_ID,
+        id: COUNTER_ID,
+      });
+      return tx;
+    }, [currentAccount]),
+
+    createSwapChampTransaction: useCallback(
+      (amount: number, isBuy: boolean) => {
+        if (!currentAccount) return null;
+
+        const tx = new Transaction();
+        const coinIn = mockcoins.wsui.mint(tx, {
+          treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.WSUI,
+          u64: BigInt(amount * 1e9), // Convert to SUI decimals
+        });
+
+        const coinOut = isBuy
+          ? champMarket.cpmm.swapYToX(
+              tx,
+              [mockcoins.wsui.WSUI.$typeName, mockcoins.wsui.WSUI.$typeName],
+              {
+                pool: CHAMP_MARKET_OBJECT_IDS.POOLS.BLUE_WSUI,
+                coin: coinIn,
+              },
+            )
+          : champMarket.cpmm.swapXToY(
+              tx,
+              [mockcoins.wsui.WSUI.$typeName, mockcoins.wsui.WSUI.$typeName],
+              {
+                pool: CHAMP_MARKET_OBJECT_IDS.POOLS.BLUE_WSUI,
+                coin: coinIn,
+              },
+            );
+
+        tx.transferObjects([coinOut], currentAccount.address);
+        return tx;
+      },
+      [currentAccount],
+    ),
   };
 };

@@ -47,15 +47,7 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
       return;
     }
 
-    try {
-      await executeTransaction(tx);
-      toast.success(
-        `${isBuy ? "Buy" : "Sell"} transaction executed successfully`,
-      );
-    } catch (error) {
-      console.error("Transaction failed:", error);
-      toast.error("Transaction failed");
-    }
+    await executeTransaction(tx);
   };
 
   if (!coin) return null;
