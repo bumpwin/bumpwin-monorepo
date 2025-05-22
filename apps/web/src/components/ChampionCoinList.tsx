@@ -1,8 +1,8 @@
 "use client";
 
 import { mockChampionCoinMetadata } from "@/mock/mockData";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 
 export const ChampionCoinList = () => {
@@ -51,7 +51,7 @@ export const ChampionCoinList = () => {
                           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
                           <div className="absolute inset-0 rounded-full overflow-hidden">
                             <Image
-                              src={coin.icon}
+                              src={coin.iconUrl}
                               alt={coin.name}
                               width={112}
                               height={112}

@@ -1,11 +1,11 @@
 "use client";
 
 import {
+  type ReactNode,
   createContext,
   useContext,
-  useState,
   useEffect,
-  ReactNode,
+  useState,
 } from "react";
 
 interface BattleClockContextType {
@@ -57,7 +57,7 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
       const isInChallengePeriod = timeInCurrentCycle < challengePeriodDuration;
 
       // 残り時間の計算
-      let remaining;
+      let remaining: number;
       if (isInChallengePeriod) {
         remaining = Math.floor(
           (challengePeriodDuration - timeInCurrentCycle) / 1000,

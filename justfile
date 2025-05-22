@@ -138,3 +138,10 @@ fly-status:
 
 fly-logs:
     fly logs
+
+listen-chat:
+    (cd apps/cmd && bun run listen-chat)
+
+
+faucet-testnet:
+    open https://faucet.sui.io/?network=testnet

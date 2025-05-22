@@ -26,7 +26,7 @@ export function ImageUpload({
   return (
     <div
       className={cn(
-        "relative border border-[#2c2d3a] rounded-md flex flex-col justify-center items-center aspect-square bg-[#10172d]",
+        "relative border border-gray-700 rounded-lg flex flex-col justify-center items-center h-48 bg-black/50",
         isDragging && "border-[#00c8ff] bg-[#00c8ff]/10",
         disabled && "opacity-50 cursor-not-allowed",
       )}
@@ -39,8 +39,8 @@ export function ImageUpload({
           <Image
             src={preview}
             alt="Preview"
-            width={64}
-            height={64}
+            width={120}
+            height={120}
             className="object-cover rounded-md"
           />
         </div>

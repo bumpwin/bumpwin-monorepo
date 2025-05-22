@@ -1,10 +1,10 @@
 "use client";
 
+import type { CoinDetailData } from "@/mock/mockCoinDetail";
 import { Button } from "@workspace/shadcn/components/button";
 import { Input } from "@workspace/shadcn/components/input";
 import Image from "next/image";
 import { useState } from "react";
-import type { CoinDetailData } from "../mock/mockCoinDetail";
 
 interface SwapPanelProps {
   coinData: CoinDetailData;

@@ -2,24 +2,30 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
-import { Toaster } from "sonner";
-import Header from "../components/Header";
-import { Providers } from "./providers/Providers";
+import AppBar from "@/components/AppBar";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
 import { mockCoinMetadata } from "@/mock/mockData";
+import { Toaster } from "sonner";
+import { Providers } from "./providers/Providers";
 
 export const runtime = "edge";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -39,8 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          {/* <InfoBar /> */}
-          <Header />
+          <AppBar />
           <main className="flex-1">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />

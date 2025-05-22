@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Lenis from "lenis";
+import { useEffect, useState } from "react";
 
 export interface LenisOptions {
   duration?: number;

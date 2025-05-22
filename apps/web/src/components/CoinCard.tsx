@@ -1,6 +1,7 @@
 "use client";
 
 import type { CoinCardProps } from "@/types/coincard";
+import { formatCurrency } from "@/utils/format";
 import {
   Card,
   CardContent,
@@ -13,7 +14,6 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { formatCurrency } from "../utils/format";
 
 export function CoinCard({
   address,
