@@ -1,10 +1,22 @@
 "use client";
 
+import { mockprice } from "@/app/client";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import InfoBar from "@/components/InfoBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
-import { mockmemes, type MockCoinMetaData } from "@workspace/mockdata";
+import { useQuery } from "@tanstack/react-query";
+import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/shadcn/components/card";
+import {
+  LWCChart,
+  type OHLCData,
+} from "@workspace/shadcn/components/chart/lwc-chart";
 import { useState } from "react";
 import { RoundsACard } from "./RoundsACard";
 
@@ -37,11 +49,55 @@ const defaultCoin: RoundCoin = {
 export default function RoundsAPage() {
   // 最初のmemeを安全に取得
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
-  
+
   // 最初は1つ目のmemeを選択（存在しない場合はデフォルト）
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
-    firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin
+    firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin,
   );
+
+  const { data: priceData, isLoading: isPriceLoading } = useQuery({
+    queryKey: ["mockprice", selectedCoin.id],
+    queryFn: async () => {
+      const res = await mockprice({
+        query: { seed: selectedCoin.id, freq: "day", count: "30" },
+      });
+      const json = await res.json();
+
+      if ("error" in json) {
+        throw new Error(json.error as string);
+      }
+
+      return json.data.map(
+        (item: {
+          timestamp: number;
+          open: number;
+          high: number;
+          low: number;
+          close: number;
+        }) => {
+          const date = new Date(item.timestamp);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          const timeStr = `${year}-${month}-${day}`;
+
+          return {
+            time: timeStr,
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+          };
+        },
+      );
+    },
+  });
+
+  const fallbackData: OHLCData[] = [];
+  const currentPrice =
+    priceData && priceData.length > 0
+      ? (priceData[priceData.length - 1]?.close ?? 0)
+      : 0;
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
@@ -57,9 +113,27 @@ export default function RoundsAPage() {
                 <h1 className="text-4xl font-extrabold text-white mb-6 text-center tracking-tight drop-shadow-lg">
                   Battle Round 12
                 </h1>
-                <div className="w-full h-64 bg-black/20 rounded-xl mb-4">
-                  {/* Battle chart or visualization would go here */}
-                </div>
+                <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium text-white">
+                      Price Chart
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isPriceLoading ? (
+                      <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+                      </div>
+                    ) : (
+                      <LWCChart
+                        data={priceData || fallbackData}
+                        currentPrice={currentPrice}
+                        height={400}
+                        className="mt-3"
+                      />
+                    )}
+                  </CardContent>
+                </Card>
                 <div className="grid grid-cols-4 gap-4">
                   <div className="bg-black/20 border border-gray-800 rounded-lg p-3">
                     <div className="text-sm text-gray-400">Market Cap</div>
