@@ -28,7 +28,7 @@
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
-    "bumpwin": "^0.202505.17",
+    "bumpwin": "^0.202505.18",
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
