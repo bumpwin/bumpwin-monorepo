@@ -2,7 +2,9 @@ import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase/src/adapters";
 import { createSupabaseClient } from "@workspace/supabase/src/client";
 import type { ApiError } from "@workspace/supabase/src/error";
+import { createApiError } from "@workspace/supabase/src/error";
 import { Hono } from "hono";
+import { type Result, err, ok } from "neverthrow";
 
 // Edge Runtime configuration
 export const runtime = "edge";
@@ -20,16 +22,39 @@ export const dynamic = "force-dynamic";
 // const supabaseRepository = new SupabaseRepository(supabase);
 
 let supabaseRepo: SupabaseRepository | null = null;
-const getRepo = () => {
-  if (supabaseRepo) return supabaseRepo;
+
+const getRepo = (): Result<SupabaseRepository, ApiError> => {
+  if (supabaseRepo) return ok(supabaseRepo);
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anon) throw new Error("Supabase env not set");
+
+  if (!url || !anon) {
+    return err(createApiError(
+      "database",
+      "Supabase environment variables are not configured",
+      "Please check your environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    ));
+  }
 
   const client = createSupabaseClient(url, anon);
   supabaseRepo = new SupabaseRepository(client);
-  return supabaseRepo;
+  return ok(supabaseRepo);
+};
+
+const parseLimit = (limitParam: string | undefined): Result<number, ApiError> => {
+  if (!limitParam) return ok(10);
+
+  const limit = Number.parseInt(limitParam, 10);
+  if (Number.isNaN(limit) || limit < 1) {
+    return err(createApiError(
+      "validation",
+      "Invalid limit parameter",
+      "Limit must be a positive number"
+    ));
+  }
+
+  return ok(limit);
 };
 
 /**
@@ -49,66 +74,73 @@ const getRepo = () => {
  *   - 500: Internal Server Error - Database or unexpected errors
  */
 export const app = new Hono().get("/", async (c) => {
-  try {
-    const repo = getRepo();
-    const limitParam = c.req.query("limit");
-    const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
-
-    if (Number.isNaN(limit) || limit < 1) {
-      return new Response(
-        JSON.stringify({ error: "Invalid limit parameter" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    logger.info("Fetching chat messages", { limit });
-    const result = await repo.getLatestChatMessages({ limit });
-
-    return result.match(
-      (chatMessages) => {
-        logger.info("Chat messages fetched successfully", {
-          count: chatMessages.length,
-        });
-        return c.json(chatMessages, 200, {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-        });
-      },
-      (error: ApiError) => {
-        logger.error("Chat messages get error", { error });
-        return new Response(
-          JSON.stringify({
-            error: error.message,
-            code: error.code,
-            details: error.details,
-          }),
-          {
-            status: error.code || 500,
-            headers: {
-              "Content-Type": "application/json",
-              "Cache-Control": "no-cache, no-store, must-revalidate",
-            },
-          },
-        );
-      },
-    );
-  } catch (error) {
-    logger.error("Unexpected error in chat messages fetch", { error });
+  const repoResult = getRepo();
+  if (repoResult.isErr()) {
+    logger.error("Failed to get repository", { error: repoResult.error });
     return new Response(
       JSON.stringify({
-        error: "Internal server error",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: repoResult.error.message,
+        details: repoResult.error.details
       }),
       {
-        status: 500,
+        status: repoResult.error.code || 500,
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
-      },
+      }
     );
   }
+
+  const limitResult = parseLimit(c.req.query("limit"));
+  if (limitResult.isErr()) {
+    logger.error("Invalid limit parameter", { error: limitResult.error });
+    return new Response(
+      JSON.stringify({
+        error: limitResult.error.message,
+        details: limitResult.error.details
+      }),
+      {
+        status: limitResult.error.code || 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+
+  const repo = repoResult.value;
+  const limit = limitResult.value;
+
+  logger.info("Fetching chat messages", { limit });
+  const result = await repo.getLatestChatMessages({ limit });
+
+  return result.match(
+    (chatMessages) => {
+      logger.info("Chat messages fetched successfully", {
+        count: chatMessages.length,
+      });
+      return c.json(chatMessages, 200, {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      });
+    },
+    (error: ApiError) => {
+      logger.error("Chat messages get error", { error });
+      return new Response(
+        JSON.stringify({
+          error: error.message,
+          code: error.code,
+          details: error.details,
+        }),
+        {
+          status: error.code || 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        }
+      );
+    }
+  );
 });

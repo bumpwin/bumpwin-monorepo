@@ -57,57 +57,67 @@ export default function ChatPanel() {
   // Fetch messages on component mount
   useEffect(() => {
     let subscriptionId: string | null = null;
+    let intervalId: NodeJS.Timeout | null = null;
 
-    async function fetchMessages() {
-      try {
-        setLoading(true);
-        setError(null);
-        const messages = await chatApi.fetchLatest(20); // Get latest 20 messages
+    const fetchMessages = async () => {
+      setLoading(true);
+      setError(null);
 
-        // Convert to ChatMessage format and sort by timestamp (oldest first)
-        const convertedMessages = messages
-          .map((msg) => convertToMessage(msg as ChatHistory))
-          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      const result = await chatApi.fetchLatest(20);
 
-        setChatMessages(convertedMessages);
-      } catch (err) {
-        console.error("Failed to fetch chat messages:", err);
-        setError("Failed to load chat messages. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    }
+      result.match(
+        (messages) => {
+          // Convert to ChatMessage format and sort by timestamp (oldest first)
+          const convertedMessages = messages
+            .map((msg) => convertToMessage(msg))
+            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+          setChatMessages(convertedMessages);
+        },
+        (err) => {
+          console.error("Failed to fetch chat messages:", err);
+          if (err.message.includes("Supabase environment variables are not configured")) {
+            setError("Chat service is not properly configured. Please contact the administrator.");
+          } else {
+            setError("Failed to load chat messages. Please try again later.");
+          }
+        }
+      );
+
+      setLoading(false);
+    };
 
     // Load initial messages
     fetchMessages();
 
     // Setup real-time subscription for new messages
-    try {
-      subscriptionId = subscribeToChatMessages(supabase, (newMessage) => {
-        // Add the new message to our state
-        const newChatMessage = convertToMessage(newMessage);
-        setChatMessages((prevMessages) => {
-          // Check if we already have this message (avoid duplicates)
-          if (prevMessages.some((msg) => msg.id === newChatMessage.id)) {
-            return prevMessages;
-          }
+    if (supabase) {
+      try {
+        subscriptionId = subscribeToChatMessages(supabase, (newMessage) => {
+          // Add the new message to our state
+          const newChatMessage = convertToMessage(newMessage);
+          setChatMessages((prevMessages) => {
+            // Check if we already have this message (avoid duplicates)
+            if (prevMessages.some((msg) => msg.id === newChatMessage.id)) {
+              return prevMessages;
+            }
 
-          // Add new message and ensure correct sort order
-          return [...prevMessages, newChatMessage].sort(
-            (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
-          );
+            // Add new message and ensure correct sort order
+            return [...prevMessages, newChatMessage].sort(
+              (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+            );
+          });
         });
-      });
 
-      console.log("Set up real-time chat subscription:", subscriptionId);
-    } catch (err) {
-      console.error("Failed to subscribe to real-time updates:", err);
-      // Fallback to polling if real-time fails
-      const intervalId = setInterval(() => {
-        fetchMessages();
-      }, 30000);
-
-      return () => clearInterval(intervalId);
+        console.log("Set up real-time chat subscription:", subscriptionId);
+      } catch (err) {
+        console.error("Failed to subscribe to real-time updates:", err);
+        // Fallback to polling if real-time fails
+        intervalId = setInterval(fetchMessages, 30000);
+      }
+    } else {
+      // If supabase is not available, use polling
+      intervalId = setInterval(fetchMessages, 30000);
     }
 
     // Cleanup: unsubscribe when component unmounts
@@ -115,6 +125,9 @@ export default function ChatPanel() {
       if (subscriptionId) {
         console.log("Cleaning up chat subscription:", subscriptionId);
         unsubscribeFromChatMessages(subscriptionId);
+      }
+      if (intervalId) {
+        clearInterval(intervalId);
       }
     };
   }, []);
