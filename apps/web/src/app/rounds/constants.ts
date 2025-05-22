@@ -45,6 +45,12 @@ export const ROUNDS = [
     topShare: 51,
     startTime: "05/21 00:00",
     endTime: "05/22 01:00",
+    champion: {
+      id: "2",
+      symbol: "DOGE",
+      name: "Doge",
+      icon: "/icon.png",
+    },
   },
   {
     round: 1,
@@ -60,5 +66,32 @@ export const ROUNDS = [
     topShare: 42,
     startTime: "05/18 00:00",
     endTime: "05/19 01:00",
+    champion: {
+      id: "1",
+      symbol: "PEPE",
+      name: "Pepe",
+      icon: "/icon.png",
+    },
+  },
+  {
+    round: 0,
+    status: "Completed",
+    state: "ended",
+    metrics: {
+      mcap: "$150.00K",
+      volume: "$80K",
+      memes: 25,
+      traders: 120,
+      loserIssuance: "$20K",
+    },
+    topShare: 45,
+    startTime: "05/15 00:00",
+    endTime: "05/16 01:00",
+    champion: {
+      id: "3",
+      symbol: "BONK",
+      name: "Bonk",
+      icon: "/icon.png",
+    },
   },
 ];
