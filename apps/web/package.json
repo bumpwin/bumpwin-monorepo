@@ -35,7 +35,7 @@
     "reactflow": "^11.11.4",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
-    "@mysten/sui": "1.30.0"
+    "@mysten/sui": "^1.30.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",

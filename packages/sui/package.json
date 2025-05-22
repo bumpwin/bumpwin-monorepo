@@ -9,6 +9,5 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@mysten/sui": "1.30.0"
   }
 }

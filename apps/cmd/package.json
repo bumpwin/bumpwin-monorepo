@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "bumpwin": "^0.202505.17",
-    "@mysten/sui": "1.29.1",
     "@supabase/supabase-js": "^2.49.4",
     "@workspace/logger": "workspace:*",
     "@workspace/sui": "workspace:*",
