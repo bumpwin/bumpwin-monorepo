@@ -19,7 +19,7 @@
     "next": "next"
   },
   "dependencies": {
-    "@mysten/dapp-kit": "^0.16.0",
+    "@mysten/dapp-kit": "^0.16.4",
     "@tanstack/react-query": "^5.74.4",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",
@@ -35,7 +35,7 @@
     "reactflow": "^11.11.4",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
-    "@mysten/sui": "1.29.1"
+    "@mysten/sui": "1.30.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
