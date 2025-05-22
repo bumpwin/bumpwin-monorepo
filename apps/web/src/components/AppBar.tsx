@@ -1,6 +1,7 @@
 "use client";
 
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,7 +9,6 @@ import { useEffect, useRef, useState } from "react";
 import BattleClock from "./BattleClock";
 import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
 import WordmarkLogo from "./WordmarkLogo";
-import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
 
 export default function AppBar() {
   const pathname = usePathname();
@@ -198,7 +198,10 @@ export default function AppBar() {
       </header>
 
       {/* Create Coin Modal */}
-      <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseCreateModal} />
+      <CreateCoinModal
+        isOpen={showCreateModal}
+        onClose={handleCloseCreateModal}
+      />
     </>
   );
 }

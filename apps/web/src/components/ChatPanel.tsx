@@ -4,6 +4,7 @@ import { chatApi } from "@/lib/api/chat";
 import type { ChatMessage } from "@/types/chat";
 import { convertToMessage } from "@/utils/convert";
 import { formatTime } from "@/utils/format";
+import { supabase } from "@/utils/supabaseClient";
 import {
   useCurrentAccount,
   useSignAndExecuteTransaction,
@@ -82,7 +83,7 @@ export default function ChatPanel() {
 
     // Setup real-time subscription for new messages
     try {
-      subscriptionId = subscribeToChatMessages((newMessage) => {
+      subscriptionId = subscribeToChatMessages(supabase, (newMessage) => {
         // Add the new message to our state
         const newChatMessage = convertToMessage(newMessage);
         setChatMessages((prevMessages) => {
