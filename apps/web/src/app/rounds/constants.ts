@@ -47,9 +47,9 @@ export const ROUNDS = [
     endTime: "05/22 01:00",
     champion: {
       id: "2",
-      symbol: "DOGE",
-      name: "Doge",
-      icon: "/icon.png",
+      symbol: "YAKIU",
+      name: "YAKIU",
+      icon: "/images/mockmemes/YAKIU.webp",
     },
   },
   {
@@ -68,9 +68,9 @@ export const ROUNDS = [
     endTime: "05/19 01:00",
     champion: {
       id: "1",
-      symbol: "PEPE",
-      name: "Pepe",
-      icon: "/icon.png",
+      symbol: "SMUG",
+      name: "SMUG",
+      icon: "/images/mockmemes/SMUG.webp",
     },
   },
   {
@@ -89,9 +89,9 @@ export const ROUNDS = [
     endTime: "05/16 01:00",
     champion: {
       id: "3",
-      symbol: "BONK",
-      name: "Bonk",
-      icon: "/icon.png",
+      symbol: "CHEDER",
+      name: "CHEDER",
+      icon: "/images/mockmemes/CHEDER.webp",
     },
   },
 ];

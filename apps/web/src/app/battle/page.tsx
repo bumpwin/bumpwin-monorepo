@@ -1,22 +1,47 @@
+"use client";
+
 import CommunicationPanel from "@/components/CommunicationPanel";
 import InfoBar from "@/components/InfoBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
-import { mockmemes } from "@workspace/mockdata";
+import { mockmemes, type MockCoinMetaData } from "@workspace/mockdata";
+import { useState } from "react";
 import { RoundsACard } from "./RoundsACard";
 
-export default function RoundsAPage() {
-  // Create a mock coin for the SwapUI
-  const selectedCoin: RoundCoin = {
-    id: "battle-coin",
-    symbol: "YAKIU",
-    name: "Yakiu",
-    iconUrl: "/images/mockmemes/YAKIU.png",
+// mockmemesをRoundCoin型に変換する関数
+function memeToRoundCoin(meme: MockCoinMetaData): RoundCoin {
+  return {
+    id: meme.symbol,
+    symbol: meme.symbol,
+    name: meme.name,
+    iconUrl: meme.iconUrl,
     round: 12,
     share: 0,
     marketCap: 180000,
-    description: "Battle coin",
+    description: meme.description,
   };
+}
+
+// デフォルトのコイン
+const defaultCoin: RoundCoin = {
+  id: "default",
+  symbol: "YAKIU",
+  name: "Yakiu",
+  iconUrl: "/images/mockmemes/YAKIU.png",
+  round: 12,
+  share: 0,
+  marketCap: 180000,
+  description: "Default coin",
+};
+
+export default function RoundsAPage() {
+  // 最初のmemeを安全に取得
+  const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
+  
+  // 最初は1つ目のmemeを選択（存在しない場合はデフォルト）
+  const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
+    firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin
+  );
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
@@ -64,14 +89,26 @@ export default function RoundsAPage() {
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {mockmemes.map((meme, i) => (
-                <RoundsACard
+                <button
                   key={meme.symbol}
-                  imageUrl={meme.iconUrl}
-                  symbol={meme.symbol}
-                  name={meme.name}
-                  percent={i % 2 === 0 ? "0.9%" : "13%"}
-                  rank={i + 1}
-                />
+                  onClick={() => setSelectedCoin(memeToRoundCoin(meme))}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      setSelectedCoin(memeToRoundCoin(meme));
+                  }}
+                  tabIndex={0}
+                  className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
+                  aria-pressed={selectedCoin.symbol === meme.symbol}
+                  type="button"
+                >
+                  <RoundsACard
+                    imageUrl={meme.iconUrl}
+                    symbol={meme.symbol}
+                    name={meme.name}
+                    percent={i % 2 === 0 ? "0.9%" : "13%"}
+                    rank={i + 1}
+                  />
+                </button>
               ))}
             </div>
           </div>
