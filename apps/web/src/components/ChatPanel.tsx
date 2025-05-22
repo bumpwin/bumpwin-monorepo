@@ -63,9 +63,7 @@ export default function ChatPanel() {
       setLoading(true);
       setError(null);
 
-      const result = await chatApi.fetchLatest(20);
-
-      result.match(
+      const result = await chatApi.fetchLatest(20).match(
         (messages) => {
           // Convert to ChatMessage format and sort by timestamp (oldest first)
           const convertedMessages = messages

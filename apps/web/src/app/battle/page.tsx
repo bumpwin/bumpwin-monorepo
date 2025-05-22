@@ -2,7 +2,7 @@
 
 import { mockprice } from "@/app/client";
 import CommunicationPanel from "@/components/CommunicationPanel";
-import DominanceChart from "@/components/DominanceChart";
+import InfoBar from "@/components/InfoBar";
 import SwapUI from "@/components/SwapUI";
 import type { DominanceChartData } from "@/types/dominance";
 import type { RoundCoin } from "@/types/roundcoin";
