@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
+    "@hono/zod-validator": "^0.5.0",
     "@mysten/sui": "^1.29.1",
     "@questdb/nodejs-client": "^3.0.0",
     "@supabase/supabase-js": "^2.49.4",

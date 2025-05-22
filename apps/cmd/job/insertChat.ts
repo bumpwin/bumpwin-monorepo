@@ -1,10 +1,10 @@
 import process from "node:process";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
-import { supabase } from "@workspace/supabase";
+import { supabase } from "./supabaseClient";
 import type { InsertChatMessageRequest } from "@workspace/supabase";
 import { randomUUID } from "node:crypto";
-
+import { insertChatIntervalMs } from "./config";
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 200;
 
@@ -59,10 +59,10 @@ async function insertChatMessage(
 /**
  * Start polling for chat message insertion
  */
-export async function startChatMessageInsertion() {
+export async function startChatMessageInsertion(insertChatIntervalMs: number) {
   try {
     logger.info("🚀 Starting chat message insertion polling...");
-    logger.info(`Interval: ${POLLING_INTERVAL_MS}ms`);
+    logger.info(`Interval: ${insertChatIntervalMs}ms`);
 
     // Start the polling interval
     const intervalId = setInterval(async () => {
@@ -100,7 +100,7 @@ export async function startChatMessageInsertion() {
 
 // Run the main function if this file is executed directly
 if (require.main === module) {
-  startChatMessageInsertion().catch((error) => {
+  startChatMessageInsertion(insertChatIntervalMs).catch((error) => {
     logger.error("Failed to start chat message insertion polling:", error);
     process.exit(1);
   });

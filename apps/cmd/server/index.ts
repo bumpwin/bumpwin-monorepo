@@ -5,6 +5,10 @@ import { z } from "zod";
 import { startChatEventPolling } from "../job/listenChatEvent";
 import { startChatMessageInsertion } from "../job/insertChat";
 import { logger } from "@workspace/logger";
+import {
+  insertChatIntervalMs,
+  listenChatEventPollingIntervalMs,
+} from "../job/config";
 
 const app = new Hono();
 
@@ -25,12 +29,13 @@ const server = serve(
 );
 
 // Start both polling processes
-Promise.all([startChatEventPolling(), startChatMessageInsertion()]).catch(
-  (err) => {
-    logger.error("Failed to start polling processes:", err);
-    process.exit(1);
-  },
-);
+Promise.all([
+  startChatEventPolling(listenChatEventPollingIntervalMs),
+  startChatMessageInsertion(insertChatIntervalMs),
+]).catch((err) => {
+  logger.error("Failed to start polling processes:", err);
+  process.exit(1);
+});
 
 process.on("SIGINT", () => {
   logger.info("Received SIGINT. Shutting down...");

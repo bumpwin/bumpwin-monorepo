@@ -115,7 +115,26 @@ supabase-status:
 supabase-migration-list:
     supabase migration list
 
-## Jobs
+## Fly.io
 
-listen-chat:
-    (cd apps/cmd && bun run listen-chat)
+fly-login:
+    fly auth login
+
+fly-launch project_name:
+    fly launch --name {{project_name}} \
+              --region nrt \
+              --dockerfile ./Dockerfile \
+              --no-deploy
+
+fly-secrets-set supabase_url supabase_anon_key:
+    fly secrets set SUPABASE_URL={{supabase_url}} \
+              SUPABASE_ANON_KEY={{supabase_anon_key}}
+
+fly-deploy:
+    fly deploy --remote-only
+
+fly-status:
+    fly status
+
+fly-logs:
+    fly logs

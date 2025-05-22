@@ -21,6 +21,7 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
+import { supabase } from "@/utils/supabaseClient";
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -82,7 +83,7 @@ export default function ChatPanel() {
 
     // Setup real-time subscription for new messages
     try {
-      subscriptionId = subscribeToChatMessages((newMessage) => {
+      subscriptionId = subscribeToChatMessages(supabase, (newMessage) => {
         // Add the new message to our state
         const newChatMessage = convertToMessage(newMessage);
         setChatMessages((prevMessages) => {
