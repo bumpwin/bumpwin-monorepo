@@ -4,7 +4,6 @@ import { mockprice } from "@/app/client";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import InfoBar from "@/components/InfoBar";
 import SwapUI from "@/components/SwapUI";
-import type { DominanceChartData } from "@/types/dominance";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
@@ -47,34 +46,6 @@ const defaultCoin: RoundCoin = {
   description: "Default coin",
 };
 
-// ダミードミナンスデータの作成
-const createMockDominanceData = (): DominanceChartData => {
-  // 現在時刻から6時間のデータを生成
-  const now = new Date();
-  const points = Array.from({ length: 12 }, (_, i) => {
-    const date = new Date(now);
-    date.setHours(date.getHours() - (11 - i) / 2);
-
-    return {
-      date: date.toISOString(),
-      LAG: 0.2 + Math.random() * 0.15,
-      MOCAT: 0.3 + Math.random() * 0.15,
-      BUN: 0.15 + Math.random() * 0.1,
-      DITT: 0.25 + Math.random() * 0.1,
-    };
-  });
-
-  return {
-    points,
-    coins: [
-      { id: "LAG", name: "Lag Girl", color: "#ff6b9d" },
-      { id: "MOCAT", name: "Mocaccino Cat", color: "#8884d8" },
-      { id: "BUN", name: "Bun Protocol", color: "#ffc658" },
-      { id: "DITT", name: "DittoDAO", color: "#e072c8" },
-    ],
-  };
-};
-
 export default function RoundsAPage() {
   // 最初のmemeを安全に取得
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
@@ -83,9 +54,6 @@ export default function RoundsAPage() {
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
     firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin,
   );
-
-  // ドミナンスチャートデータ
-  const dominanceData = createMockDominanceData();
 
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", selectedCoin.id],

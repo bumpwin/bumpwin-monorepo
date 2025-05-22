@@ -13,7 +13,6 @@ import {
 import { Input } from "@workspace/shadcn/components/input";
 import { sendChatMessage } from "@workspace/sui/src/movecall";
 import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
-import type { ChatHistory } from "@workspace/supabase/src/domain";
 import {
   subscribeToChatMessages,
   unsubscribeFromChatMessages,
@@ -63,7 +62,7 @@ export default function ChatPanel() {
       setLoading(true);
       setError(null);
 
-      const result = await chatApi.fetchLatest(20).match(
+      await chatApi.fetchLatest(20).match(
         (messages) => {
           // Convert to ChatMessage format and sort by timestamp (oldest first)
           const convertedMessages = messages
@@ -161,7 +160,7 @@ export default function ChatPanel() {
         };
 
         // メッセージ送信
-        const result = await sendChatMessage(
+        const txResult = await sendChatMessage(
           client,
           account.address,
           message.trim(),
@@ -175,7 +174,7 @@ export default function ChatPanel() {
             Message sent successfully!
             <div className="mt-2">
               <a
-                href={getSuiScanTxUrl(result.digest)}
+                href={getSuiScanTxUrl(txResult.digest)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline"

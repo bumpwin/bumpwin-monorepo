@@ -2,7 +2,7 @@ import { logger } from "@workspace/logger";
 import type { ChatHistory } from "@workspace/supabase/src/domain";
 import type { ApiError } from "@workspace/supabase/src/error";
 import { createApiError } from "@workspace/supabase/src/error";
-import { type Result, ResultAsync, err, ok } from "neverthrow";
+import { ResultAsync, err, ok } from "neverthrow";
 
 export interface SendChatMessageParams {
   txDigest: string;
