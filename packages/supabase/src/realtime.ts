@@ -1,9 +1,9 @@
 import type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
+  SupabaseClient,
 } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { supabase } from "./client";
 import type { ChatHistory } from "./domain";
 
 /**
@@ -54,6 +54,7 @@ const activeSubscriptions: Map<string, RealtimeChannel> = new Map();
  * @returns Subscription ID that can be used to unsubscribe
  */
 export function subscribeToChatMessages(
+  supabase: SupabaseClient,
   callback: ChatMessageCallback,
   channelName = "chat-updates",
 ): string {

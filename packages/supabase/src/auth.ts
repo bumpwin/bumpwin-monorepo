@@ -1,7 +1,6 @@
-import type { Session } from "@supabase/supabase-js";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
 import { type Result, err, ok } from "neverthrow";
-import { supabase } from "./client";
 import type { ApiError } from "./error";
 import { createApiError } from "./error";
 
@@ -25,7 +24,9 @@ export function extractBearerToken(
  * Get current auth session
  * @throws Error if no session is found
  */
-export async function getAuthSession(): Promise<Session> {
+export async function getAuthSession(
+  supabase: SupabaseClient,
+): Promise<Session> {
   const {
     data: { session },
     error,

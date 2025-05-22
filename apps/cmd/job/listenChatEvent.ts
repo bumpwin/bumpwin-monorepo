@@ -3,14 +3,14 @@ import type { EventId } from "@mysten/sui/client";
 import { logger } from "@workspace/logger";
 import { NETWORK_TYPE } from "@workspace/sui";
 import { SupabaseRepository } from "@workspace/supabase";
-import { supabase } from "@workspace/supabase";
 import type {
   GetPollCursorResponse,
   InsertChatMessageRequest,
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
 import { EventFetcher } from "bumpwin";
-
+import { listenChatEventPollingIntervalMs } from "./config";
+import { supabase } from "./supabaseClient";
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 5000;
 
@@ -141,7 +141,7 @@ async function processEvents(
 /**
  * Start polling for chat events
  */
-export async function startChatEventPolling() {
+export async function startChatEventPolling(pollingIntervalMs: number) {
   // Keep track of processed event IDs to avoid duplicates
   const processedEventIds = new Set<string>();
 
@@ -150,7 +150,7 @@ export async function startChatEventPolling() {
     let cursor = await getInitialCursor();
 
     logger.info("🚀 Starting polling for chat events...");
-    logger.info(`Network: ${NETWORK_TYPE}, Interval: ${POLLING_INTERVAL_MS}ms`);
+    logger.info(`Network: ${NETWORK_TYPE}, Interval: ${pollingIntervalMs}ms`);
 
     // Start the polling interval
     const intervalId = setInterval(async () => {
@@ -195,7 +195,7 @@ export async function startChatEventPolling() {
 // Start the main process
 async function main() {
   try {
-    await startChatEventPolling();
+    await startChatEventPolling(listenChatEventPollingIntervalMs);
   } catch (error) {
     logger.error("Failed to start polling script:", error);
     process.exit(1);
