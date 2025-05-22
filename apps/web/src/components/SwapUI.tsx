@@ -53,7 +53,7 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
   if (!coin) return null;
 
   return (
-    <div className="bg-[#181A20] border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
+    <div className="bg-black/20 border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
       <div className="flex items-center gap-3 mb-2">
         <Image
           src={coin.iconUrl}

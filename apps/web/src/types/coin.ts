@@ -11,4 +11,5 @@ export interface Coin {
   websiteLink?: string;
   twitterLink?: string;
   color: string;
+  createdBy?: string;
 }

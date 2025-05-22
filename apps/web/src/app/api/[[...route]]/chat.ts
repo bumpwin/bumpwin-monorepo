@@ -30,6 +30,16 @@ export const app = new Hono().get("/", async (c) => {
     const limitParam = c.req.query("limit");
     const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
 
+    if (Number.isNaN(limit) || limit < 1) {
+      return new Response(
+        JSON.stringify({ error: "Invalid limit parameter" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     logger.info("Fetching chat messages", { limit });
     const result = await supabaseRepository.getLatestChatMessages({ limit });
 
@@ -38,21 +48,43 @@ export const app = new Hono().get("/", async (c) => {
         logger.info("Chat messages fetched successfully", {
           count: chatMessages.length,
         });
-        return c.json(chatMessages);
+        return c.json(chatMessages, 200, {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        });
       },
       (error: ApiError) => {
         logger.error("Chat messages get error", { error });
-        return new Response(JSON.stringify({ error: error.message }), {
-          status: error.code,
-          headers: { "Content-Type": "application/json" },
-        });
+        return new Response(
+          JSON.stringify({
+            error: error.message,
+            code: error.code,
+            details: error.details,
+          }),
+          {
+            status: error.code || 500,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache, no-store, must-revalidate",
+            },
+          },
+        );
       },
     );
   } catch (error) {
     logger.error("Unexpected error in chat messages fetch", { error });
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      },
+    );
   }
 });
