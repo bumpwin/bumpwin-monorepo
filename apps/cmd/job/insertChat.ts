@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import process from "node:process";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
-import { supabase } from "./supabaseClient";
 import type { InsertChatMessageRequest } from "@workspace/supabase";
 import { insertChatIntervalMs } from "./config";
+import { supabase } from "./supabaseClient";
 
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 200;

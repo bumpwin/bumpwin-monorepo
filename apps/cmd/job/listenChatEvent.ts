@@ -3,7 +3,6 @@ import type { EventId } from "@mysten/sui/client";
 import { logger } from "@workspace/logger";
 import { NETWORK_TYPE } from "@workspace/sui";
 import { SupabaseRepository } from "@workspace/supabase";
-import { supabase } from "./supabaseClient";
 import type {
   GetPollCursorResponse,
   InsertChatMessageRequest,
@@ -11,6 +10,7 @@ import type {
 } from "@workspace/supabase";
 import { EventFetcher } from "bumpwin";
 import { listenChatEventPollingIntervalMs } from "./config";
+import { supabase } from "./supabaseClient";
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 5000;
 

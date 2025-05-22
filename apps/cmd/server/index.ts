@@ -1,12 +1,12 @@
 import { serve } from "@hono/node-server";
 import { zValidator } from "@hono/zod-validator";
 import { logger } from "@workspace/logger";
+import { Hono } from "hono";
+import { z } from "zod";
 import {
   insertChatIntervalMs,
   listenChatEventPollingIntervalMs,
 } from "../job/config";
-import { Hono } from "hono";
-import { z } from "zod";
 import { startChatMessageInsertion } from "../job/insertChat";
 import { startChatEventPolling } from "../job/listenChatEvent";
 

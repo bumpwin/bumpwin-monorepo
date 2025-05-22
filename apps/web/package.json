@@ -7,15 +7,16 @@
   },
   "scripts": {
     "dev": "NEXT_DEV_TURBOPACK=1 NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 bunx next dev",
-    "_dev": "bun run next dev",
-    "build": "bun run next build",
-    "start": "bun run next start",
-    "lint": "bun run next lint",
+    "_dev": "pnpm run next dev",
+    "build": "pnpm run next build",
+    "start": "pnpm run next start",
+    "lint": "pnpm run next lint",
     "pages:build": "pnpm dlx @cloudflare/next-on-pages@1",
     "pages:preview": "wrangler pages dev .vercel/output/static",
     "pages:deploy": "wrangler pages deploy .vercel/output/static",
     "prepages:preview": "pnpm run pages:build",
-    "prepages:deploy": "pnpm run pages:build"
+    "prepages:deploy": "pnpm run pages:build",
+    "next": "next"
   },
   "dependencies": {
     "@mysten/dapp-kit": "^0.16.0",
@@ -33,7 +34,8 @@
     "react-dom": "^19.0.0",
     "reactflow": "^11.11.4",
     "recharts": "^2.15.3",
-    "sonner": "^2.0.3"
+    "sonner": "^2.0.3",
+    "@mysten/sui": "1.29.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",

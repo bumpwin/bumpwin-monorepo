@@ -4,6 +4,7 @@ import { chatApi } from "@/lib/api/chat";
 import type { ChatMessage } from "@/types/chat";
 import { convertToMessage } from "@/utils/convert";
 import { formatTime } from "@/utils/format";
+import { supabase } from "@/utils/supabaseClient";
 import {
   useCurrentAccount,
   useSignAndExecuteTransaction,
@@ -21,7 +22,6 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
-import { supabase } from "@/utils/supabaseClient";
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");

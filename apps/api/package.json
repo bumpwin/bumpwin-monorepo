@@ -1,8 +1,0 @@
-{
-  "name": "api",
-  "scripts": {
-    "dev": "bunx wrangler dev",
-    "deploy": "bunx wrangler deploy --minify",
-    "cf-typegen": "bunx wrangler types --env-interface CloudflareBindings"
-  }
-}

@@ -1,6 +1,6 @@
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { err, ok, type Result } from "neverthrow";
+import { type Result, err, ok } from "neverthrow";
 import type { ApiError } from "./error";
 import { createApiError } from "./error";
 
