@@ -422,7 +422,7 @@ export default function LosersPage() {
                   <div className="text-sm text-gray-400 mb-1">
                     Pending Rewards
                   </div>
-                  <div className="text-2xl font-bold text-white">0 LOSER</div>
+                  <div className="text-2xl font-bold text-white">0 WSUI</div>
                   <div className="text-xs text-gray-500">$0.00</div>
                 </div>
                 <div className="bg-[#1c2028] p-4 rounded-xl">
@@ -453,6 +453,9 @@ export default function LosersPage() {
                   <button
                     type="button"
                     className="w-full bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-bold py-3 rounded-xl mt-4 hover:opacity-90 transition hover:shadow-lg"
+                    onClick={() =>
+                      alert("Stake functionality is not implemented yet")
+                    }
                   >
                     Stake
                   </button>
@@ -464,7 +467,7 @@ export default function LosersPage() {
                   <div className="flex items-end justify-between mb-4">
                     <div>
                       <div className="text-3xl font-bold text-white mb-1">
-                        0 LOSER
+                        0 WSUI
                       </div>
                       <div className="text-sm text-gray-400">$0.00</div>
                     </div>
@@ -472,6 +475,9 @@ export default function LosersPage() {
                   <button
                     type="button"
                     className="w-full bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-bold py-3 rounded-xl mt-4 hover:opacity-90 transition hover:shadow-lg"
+                    onClick={() =>
+                      alert("Harvest functionality is not implemented yet")
+                    }
                   >
                     Harvest
                   </button>
