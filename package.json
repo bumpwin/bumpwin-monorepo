@@ -7,14 +7,14 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run pm:dev",
-    "pm:dev": "pnpm -r --parallel --filter web --filter api dev",
+    "dev": "pnpm run pm:dev",
+    "pm:dev": "pnpm -r --parallel --filter web dev",
     "server:dev": "pnpm -r --filter cmd dev",
-    "build": "bun run pm:build",
+    "build": "pnpm run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
     "lint": "biome check . --write",
-    "fmt": "bun run format && bun run lint",
+    "fmt": "pnpm run format && pnpm run lint",
     "typecheck": "bunx tsc -b",
     "pages:build": "pnpm -r --filter web run pages:build",
     "pages:preview": "pnpm -r --filter web run pages:preview",

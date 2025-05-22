@@ -4,36 +4,36 @@ PROJECT_NAME := "monorepo-template-web"
 
 install:
     echo "Installing dependencies for all packages..."
-    bun install
+    # bun install
     pnpm install
     echo "Installing dependencies for apps/api..."
-    (cd apps/api && bun install && pnpm install)
+    (cd apps/api && pnpm install)
     echo "Installing dependencies for apps/web..."
-    (cd apps/web && bun install && pnpm install)
+    (cd apps/web && pnpm install)
     echo "Installing dependencies for packages/sui..."
-    (cd packages/sui && bun install && pnpm install)
+    (cd packages/sui && pnpm install)
     echo "Installing dependencies for packages/logger..."
-    (cd packages/logger && bun install && pnpm install)
+    (cd packages/logger && pnpm install)
     echo "Installing dependencies for packages/supabase..."
-    (cd packages/supabase && bun install && pnpm install)
+    (cd packages/supabase && pnpm install)
     echo "Installing dependencies for packages/shadcn..."
-    (cd packages/shadcn && bun install && pnpm install)
+    (cd packages/shadcn && pnpm install)
     echo "All installations completed."
 
 dev:
-    bun run dev
+    pnpm run dev
 
 server-dev:
-    bun run server:dev
+    pnpm run server:dev
 
 build:
-    bun run build
+    pnpm run build
 
 format:
-    bun run format
+    pnpm run format
 
 lint:
-    bun run lint
+    pnpm run lint
 
 build-packages:
     echo "Building packages..."
@@ -43,7 +43,7 @@ build-packages:
     echo "All packages built."
 
 typecheck:
-    bun run typecheck
+    pnpm run typecheck
 
 checkall: format lint # typecheck
 
@@ -51,7 +51,7 @@ create-package pkg_name:
     ./scripts/create-package.sh {{pkg_name}}
 
 shadcn-add component_name:
-    (cd packages/shadcn && bunx --bun shadcn@canary add {{component_name}})
+    (cd packages/shadcn && bunx shadcn@canary add {{component_name}})
 
 pages-build:
     pnpm run pages:build
@@ -115,11 +115,32 @@ supabase-status:
 supabase-migration-list:
     supabase migration list
 
-## Jobs
+## Fly.io
+
+fly-login:
+    fly auth login
+
+fly-launch project_name:
+    fly launch --name {{project_name}} \
+              --region nrt \
+              --dockerfile ./Dockerfile \
+              --no-deploy
+
+fly-secrets-set supabase_url supabase_anon_key:
+    fly secrets set SUPABASE_URL={{supabase_url}} \
+              SUPABASE_ANON_KEY={{supabase_anon_key}}
+
+fly-deploy:
+    fly deploy --remote-only
+
+fly-status:
+    fly status
+
+fly-logs:
+    fly logs
 
 listen-chat:
-    (cd apps/cmd && bun run listen-chat)
-
+    (cd apps/cmd && pnpm run listen-chat)
 
 faucet-testnet:
     open https://faucet.sui.io/?network=testnet

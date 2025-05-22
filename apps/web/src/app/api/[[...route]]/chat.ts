@@ -1,13 +1,36 @@
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase/src/adapters";
-import { supabase } from "@workspace/supabase/src/client";
+import { createSupabaseClient } from "@workspace/supabase/src/client";
 import type { ApiError } from "@workspace/supabase/src/error";
 import { Hono } from "hono";
 
 // Edge Runtime configuration
 export const runtime = "edge";
+export const dynamic = "force-dynamic";
 
-const supabaseRepository = new SupabaseRepository(supabase);
+// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// if (!supabaseUrl || !supabaseAnonKey) {
+//   throw new Error("Required environment variables are not defined");
+// }
+
+// const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey);
+
+// const supabaseRepository = new SupabaseRepository(supabase);
+
+let supabaseRepo: SupabaseRepository | null = null;
+const getRepo = () => {
+  if (supabaseRepo) return supabaseRepo;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) throw new Error("Supabase env not set");
+
+  const client = createSupabaseClient(url, anon);
+  supabaseRepo = new SupabaseRepository(client);
+  return supabaseRepo;
+};
 
 /**
  * Get latest chat messages
@@ -27,6 +50,7 @@ const supabaseRepository = new SupabaseRepository(supabase);
  */
 export const app = new Hono().get("/", async (c) => {
   try {
+    const repo = getRepo();
     const limitParam = c.req.query("limit");
     const limit = limitParam ? Number.parseInt(limitParam, 10) : 10;
 
@@ -41,7 +65,7 @@ export const app = new Hono().get("/", async (c) => {
     }
 
     logger.info("Fetching chat messages", { limit });
-    const result = await supabaseRepository.getLatestChatMessages({ limit });
+    const result = await repo.getLatestChatMessages({ limit });
 
     return result.match(
       (chatMessages) => {
