@@ -30,11 +30,13 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anon) {
-    return err(createApiError(
-      "database",
-      "Supabase environment variables are not configured",
-      "Please check your environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY"
-    ));
+    return err(
+      createApiError(
+        "database",
+        "Supabase environment variables are not configured",
+        "Please check your environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      ),
+    );
   }
 
   const client = createSupabaseClient(url, anon);
@@ -42,16 +44,20 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
   return ok(supabaseRepo);
 };
 
-const parseLimit = (limitParam: string | undefined): Result<number, ApiError> => {
+const parseLimit = (
+  limitParam: string | undefined,
+): Result<number, ApiError> => {
   if (!limitParam) return ok(10);
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
-    return err(createApiError(
-      "validation",
-      "Invalid limit parameter",
-      "Limit must be a positive number"
-    ));
+    return err(
+      createApiError(
+        "validation",
+        "Invalid limit parameter",
+        "Limit must be a positive number",
+      ),
+    );
   }
 
   return ok(limit);
@@ -80,7 +86,7 @@ export const app = new Hono().get("/", async (c) => {
     return new Response(
       JSON.stringify({
         error: repoResult.error.message,
-        details: repoResult.error.details
+        details: repoResult.error.details,
       }),
       {
         status: repoResult.error.code || 500,
@@ -88,7 +94,7 @@ export const app = new Hono().get("/", async (c) => {
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
-      }
+      },
     );
   }
 
@@ -98,14 +104,14 @@ export const app = new Hono().get("/", async (c) => {
     return new Response(
       JSON.stringify({
         error: limitResult.error.message,
-        details: limitResult.error.details
+        details: limitResult.error.details,
       }),
       {
         status: limitResult.error.code || 400,
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
   }
 
@@ -139,8 +145,8 @@ export const app = new Hono().get("/", async (c) => {
             "Content-Type": "application/json",
             "Cache-Control": "no-cache, no-store, must-revalidate",
           },
-        }
+        },
       );
-    }
+    },
   );
 });

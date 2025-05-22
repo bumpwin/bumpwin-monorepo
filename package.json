@@ -2,10 +2,7 @@
   "name": "monorepo-template",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "pnpm run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web dev",

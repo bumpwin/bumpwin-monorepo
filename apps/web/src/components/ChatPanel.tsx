@@ -76,12 +76,18 @@ export default function ChatPanel() {
         },
         (err) => {
           console.error("Failed to fetch chat messages:", err);
-          if (err.message.includes("Supabase environment variables are not configured")) {
-            setError("Chat service is not properly configured. Please contact the administrator.");
+          if (
+            err.message.includes(
+              "Supabase environment variables are not configured",
+            )
+          ) {
+            setError(
+              "Chat service is not properly configured. Please contact the administrator.",
+            );
           } else {
             setError("Failed to load chat messages. Please try again later.");
           }
-        }
+        },
       );
 
       setLoading(false);
