@@ -99,22 +99,6 @@ export const ChampionDetailPage = ({
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
-      {/* タイトル */}
-      <div className="px-8 pt-8 pb-4">
-        <h1
-          className="text-5xl font-extrabold text-center mb-4 tracking-tight drop-shadow-lg"
-          style={{
-            background:
-              "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
-          HALL OF CHAMPIONS
-        </h1>
-      </div>
       {/* メイン2カラム */}
       <div className="flex flex-1 px-8 pb-8 gap-8 items-start min-h-[600px]">
         {/* 左: 詳細/チャート/Stats/About */}

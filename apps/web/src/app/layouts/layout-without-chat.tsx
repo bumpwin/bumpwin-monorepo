@@ -6,8 +6,7 @@ export default function LayoutWithoutChat({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[calc(100vh-var(--header-height))]">
-      {/* メインコンテンツのみ */}
+    <div className="flex bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="w-full">{children}</div>
     </div>
   );
