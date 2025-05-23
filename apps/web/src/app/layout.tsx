@@ -42,7 +42,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-500 h-full`}
+        // Do not modify background color - used for debugging purposes
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-blue-300`}
       >
         <Providers>
           <AppBar />
