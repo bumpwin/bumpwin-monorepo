@@ -1,7 +1,6 @@
 "use client";
 
 import { ChampionsList } from "@/components/Champions";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import { ResultView } from "@/components/ResultView";
 import {
   mockChampionCoinMetadata,
@@ -98,7 +97,6 @@ export default function ChampionsPage() {
           </div>
         </div>
       </div>
-      <CommunicationPanel />
     </div>
   );
 }

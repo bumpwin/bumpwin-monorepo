@@ -13,7 +13,7 @@ export default function LayoutWithChat({
 
     // Do not modify background color - used for debugging purposes
 
-    <div className="flex h-full w-full">
+    <div className="flex min-h-[calc(100vh-4rem)] w-full">
       <main className="flex-1 min-w-0 h-full bg-green-300 overflow-auto">
         {children}
       </main>
