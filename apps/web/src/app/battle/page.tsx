@@ -100,7 +100,7 @@ export default function RoundsAPage() {
       : 0;
 
   return (
-    <>
+    <div className="flex h-full">
       {/* メインコンテンツ */}
       <main className="flex-1 border-r border-gray-700">
         <div className="h-full flex flex-col">
@@ -168,11 +168,11 @@ export default function RoundsAPage() {
       </main>
 
       {/* Swap UI */}
-      <aside className="w-96 flex-shrink-0 border-r border-gray-700 overflow-hidden">
-        <div className="p-4">
+      <aside className="w-[400px] flex-shrink-0 border-l border-gray-700 overflow-y-auto">
+        <div className="sticky top-0 p-4">
           <SwapUI coin={selectedCoin} />
         </div>
       </aside>
-    </>
+    </div>
   );
 }
