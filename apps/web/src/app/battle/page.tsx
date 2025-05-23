@@ -93,6 +93,19 @@ export default function RoundsAPage() {
     },
   });
 
+  // 市場占有率データの計算
+  const dominanceData = mockmemes.map((meme, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (mockmemes.length - index)); // 過去の日付を生成
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return {
+      time: `${year}-${month}-${day}`,
+      value: (100 / mockmemes.length) * (mockmemes.length - index), // 仮のデータ: ランクに基づいて占有率を計算
+    };
+  });
+
   const fallbackData: OHLCData[] = [];
   const currentPrice =
     priceData && priceData.length > 0
@@ -107,10 +120,10 @@ export default function RoundsAPage() {
           <div className="h-full flex flex-col">
             {/* 固定部分: InfoBarとタイトル */}
             <div className="flex-none px-4 pt-4">
-              <InfoBar />
               <h1 className="text-4xl font-extrabold text-white mb-6 mt-4 text-center tracking-tight drop-shadow-lg">
                 Battle Round 12
               </h1>
+              <InfoBar />
             </div>
 
             {/* スクロール可能部分: Price Chartから下 */}
@@ -119,7 +132,7 @@ export default function RoundsAPage() {
                 <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg font-medium text-white">
-                      Price Chart
+                      Price Chart of ${selectedCoin.symbol}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -131,34 +144,13 @@ export default function RoundsAPage() {
                       <LWCChart
                         data={priceData || fallbackData}
                         currentPrice={currentPrice}
-                        height={400}
+                        height={200}
                         className="mt-3"
                       />
                     )}
                   </CardContent>
                 </Card>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="bg-black/20 border border-gray-800 rounded-lg p-3">
-                    <div className="text-sm text-gray-400">Market Cap</div>
-                    <div className="text-xl font-bold text-white">$180.09K</div>
-                  </div>
-                  <div className="bg-black/20 border border-gray-800 rounded-lg p-3">
-                    <div className="text-sm text-gray-400">Volume</div>
-                    <div className="text-xl font-bold text-white">$66K</div>
-                  </div>
-                  <div className="bg-black/20 border border-gray-800 rounded-lg p-3">
-                    <div className="text-sm text-gray-400">Meme Count</div>
-                    <div className="text-xl font-bold text-white">24</div>
-                  </div>
-                  <div className="bg-black/20 border border-gray-800 rounded-lg p-3">
-                    <div className="text-sm text-gray-400">Trader Count</div>
-                    <div className="text-xl font-bold text-white">119</div>
-                  </div>
-                </div>
 
-                <h2 className="text-3xl font-extrabold text-white my-6 text-center tracking-tight drop-shadow-lg">
-                  Rounds-A Gallery
-                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {mockmemes.map((meme, i) => (
                     <button
