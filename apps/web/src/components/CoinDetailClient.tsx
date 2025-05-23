@@ -327,7 +327,6 @@ export default function CoinDetailClient({
           </div>
         )}
       </div>
-
     </div>
   );
 }

@@ -222,7 +222,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           </Link>
         </div>
       </div>
-
     </div>
   );
 }

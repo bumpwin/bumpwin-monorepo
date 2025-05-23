@@ -6,7 +6,6 @@ import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints, getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -219,11 +218,6 @@ export default function RoundsPage() {
             ))}
           </div>
         </main>
-
-        {/* Right side chat panel */}
-        <aside className="hidden lg:block">
-          <CommunicationPanel />
-        </aside>
       </div>
 
       <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />

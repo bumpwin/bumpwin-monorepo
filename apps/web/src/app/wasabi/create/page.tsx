@@ -459,8 +459,6 @@ export default function CreateCoinPage() {
             </Card>
           </div>
         </main>
-
-
       </div>
     </div>
   );
