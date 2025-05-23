@@ -1,7 +1,6 @@
 "use client";
 
 import { ChampionCoinList } from "@/components/ChampionCoinList";
-import CommunicationPanel from "@/components/CommunicationPanel";
 // import DominanceChart from "@/components/DominanceChart";
 import DominanceRechart from "@/components/DominanceRechart";
 // import { mockDominanceData } from "@/mock/mockDominanceData";
@@ -114,10 +113,6 @@ export default function Home() {
           </div> */}
         </main>
 
-        {/* Communication panel */}
-        <aside className="hidden lg:block">
-          <CommunicationPanel />
-        </aside>
       </div>
     </div>
   );

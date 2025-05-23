@@ -72,7 +72,7 @@ export default function AppBar() {
     <>
       <header
         id="app-bar"
-        className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm"
+        className="sticky top-0 z-50 w-full border-b bg-gray-900 backdrop-blur-md shadow-lg shadow-gray-900"
       >
         <div className="w-full px-8">
           <div className="flex h-16 items-center justify-between">

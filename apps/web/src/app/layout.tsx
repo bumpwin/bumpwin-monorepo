@@ -40,13 +40,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // Do not modify background color - used for debugging purposes
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-blue-300`}
       >
         <Providers>
           <AppBar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 h-full">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />

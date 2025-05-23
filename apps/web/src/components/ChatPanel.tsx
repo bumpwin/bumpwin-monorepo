@@ -219,9 +219,9 @@ export default function ChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-80px)] bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden fixed right-0 top-20 w-96 z-40">
+    <div className="flex flex-col h-full w-full bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden">
       {/* Chat header */}
-      <div className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-900 to-purple-900 border-b border-gray-700">
+      <div className="flex-shrink-0 flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-900 to-purple-900 border-b border-gray-700">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-blue-300" />
           <h2 className="font-bold text-white text-lg">Sui Chat</h2>
@@ -232,7 +232,7 @@ export default function ChatPanel() {
         {/* Message list - scrollable area */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950 scroll-smooth"
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950 scroll-smooth"
         >
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full gap-2">

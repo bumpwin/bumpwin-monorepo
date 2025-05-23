@@ -1,6 +1,6 @@
 import LayoutWithChat from "@/app/layouts/layout-with-chat";
 
-export default function ChampionsLayout({
+export default function BattleLayout({
   children,
 }: {
   children: React.ReactNode;

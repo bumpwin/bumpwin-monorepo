@@ -1,6 +1,5 @@
 "use client";
 
-import CommunicationPanel from "@/components/CommunicationPanel";
 import LWCChart from "@/components/LWCChart";
 import SwapPanel from "@/components/SwapPanel";
 import type { CoinDetailData } from "@/mock/mockCoinDetail";
@@ -329,8 +328,6 @@ export default function CoinDetailClient({
         )}
       </div>
 
-      {/* Communication panel */}
-      <CommunicationPanel />
     </div>
   );
 }
