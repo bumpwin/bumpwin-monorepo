@@ -47,7 +47,7 @@ export default function RootLayout({
       >
         <Providers>
           <AppBar />
-          <main className="flex-1 h-full">{children}</main>
+          <main className="flex-1">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
