@@ -1,6 +1,6 @@
+import type { ChartCoin, ChartPoint } from "@/app/rounds/types";
 import DominanceRechart from "@/components/DominanceRechart";
 import React from "react";
-import type { ChartCoin, ChartPoint } from "../types";
 
 interface RoundChartProps {
   points: ChartPoint[];

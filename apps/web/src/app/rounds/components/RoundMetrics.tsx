@@ -1,6 +1,6 @@
+import type { RoundMetrics as RoundMetricsType } from "@/app/rounds/types";
 import { motion } from "framer-motion";
 import React from "react";
-import type { RoundMetrics as RoundMetricsType } from "../types";
 
 interface RoundMetricsProps {
   metrics: RoundMetricsType;

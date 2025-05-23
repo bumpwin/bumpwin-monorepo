@@ -1,3 +1,8 @@
+import DominanceRechart from "@/components/DominanceRechart";
+import type {
+  ChartDataPoint,
+  PreparedCoinMeta,
+} from "@/components/DominanceRechart";
 import {
   mockChampionCoinMetadata,
   mockCoinMetadata,
@@ -9,8 +14,6 @@ import { motion } from "framer-motion";
 import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
-import DominanceRechart from "./DominanceRechart";
-import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
 interface ChampionsListProps {
   coins: ChampionCoin[];

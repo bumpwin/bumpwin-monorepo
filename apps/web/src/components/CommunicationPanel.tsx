@@ -1,6 +1,6 @@
 "use client";
 
-import ChatPanel from "./ChatPanel";
+import ChatPanel from "@/components/ChatPanel";
 
 export default function CommunicationPanel() {
   return (

@@ -1,7 +1,7 @@
+import type { CoinMetadata } from "@/app/rounds/types";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React from "react";
-import type { CoinMetadata } from "../types";
 
 interface RoundCoinsProps {
   coins: CoinMetadata[];

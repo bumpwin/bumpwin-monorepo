@@ -1,5 +1,10 @@
 "use client";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import DominanceRechart from "@/components/DominanceRechart";
+import type {
+  ChartDataPoint,
+  PreparedCoinMeta,
+} from "@/components/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,8 +12,6 @@ import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
-import DominanceRechart from "./DominanceRechart";
-import type { ChartDataPoint, PreparedCoinMeta } from "./DominanceRechart";
 
 interface ResultViewProps {
   coin: RoundCoin | undefined;

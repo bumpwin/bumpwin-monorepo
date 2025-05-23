@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { networks } from "@workspace/sui";
 import { useState } from "react";
 import "@mysten/dapp-kit/dist/index.css";
-import { BattleClockProvider } from "./BattleClockProvider";
+import { BattleClockProvider } from "@/app/providers/BattleClockProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());

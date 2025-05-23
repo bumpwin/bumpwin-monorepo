@@ -1,7 +1,7 @@
+import { RoundsACard } from "@/app/fuyu/battle/RoundsACard";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import InfoBar from "@/components/InfoBar";
 import { mockmemes } from "@workspace/mockdata";
-import { RoundsACard } from "./RoundsACard";
 
 export default function RoundsAPage() {
   return (

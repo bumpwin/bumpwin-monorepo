@@ -1,6 +1,6 @@
+import { ChampionDetailPage } from "@/app/champions/[id]/ChampionDetailPage";
 import { mockChampionCoinMetadata } from "@/mock/mockData";
 import { notFound } from "next/navigation";
-import { ChampionDetailPage } from "./ChampionDetailPage";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return params.then(({ id }) => {
