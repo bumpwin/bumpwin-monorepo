@@ -4,6 +4,7 @@ import { ChampionCard } from "@/components/ChampionCard";
 import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -457,12 +458,12 @@ function DashboardSection({
 
               {/* Action/description section */}
               <div className="flex flex-row items-center gap-4 mb-6">
-                <button
-                  type="button"
+                <Link
+                  href="/battle"
                   className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer shrink-0"
                 >
                   Join the Battle
-                </button>
+                </Link>
                 <div className="text-gray-400 text-base whitespace-normal max-w-xs">
                   The battle is heating up! Join now and help your favorite meme
                   coin win the round.

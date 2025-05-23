@@ -2,10 +2,7 @@
   "name": "monorepo-template",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "pnpm run pm:dev",
     "pm:dev": "pnpm -r --parallel --filter web dev",
@@ -31,7 +28,7 @@
     "@workspace/shadcn": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
-    "bumpwin": "^0.202505.17",
+    "bumpwin": "^0.202505.23",
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",

@@ -24,9 +24,9 @@ export const ChampionCard: React.FC<ChampionCardProps> = ({
     <Link href="/champions/1">
       <div className="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-yellow-500/30 bg-gray-900 transition-transform duration-200 hover:scale-[1.03] hover:shadow-3xl group cursor-pointer shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]">
         {/* Champion of Round badge */}
-        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-1 px-3 rounded-lg text-xs uppercase tracking-wider flex items-center shadow-lg">
-          <Trophy className="w-3 h-3 mr-1" />
-          Champion of #{round}
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-bold py-1 px-3 rounded-full text-sm tracking-wide flex items-center shadow-md border border-yellow-300">
+          <Trophy className="w-4 h-4 mr-1.5 text-black" />
+          Round {round}
         </div>
 
         {!imgError ? (
@@ -57,9 +57,8 @@ export const ChampionCard: React.FC<ChampionCardProps> = ({
             <span className="text-2xl font-extrabold text-yellow-300 leading-tight">
               $
               {typeof mcap === "number" && !Number.isNaN(mcap)
-                ? (mcap / 1000000).toFixed(1)
+                ? mcap.toLocaleString()
                 : "0"}
-              M
             </span>
           </div>
         </div>

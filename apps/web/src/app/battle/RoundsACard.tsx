@@ -29,7 +29,7 @@ export const RoundsACard: React.FC<RoundsACardProps> = ({
       className="object-cover"
       sizes="(max-width: 768px) 100vw, 50vw"
     />
-    <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-4 py-2 flex flex-col gap-0.5">
+    <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-4 py-2 flex flex-col gap-0.5 items-start text-left">
       <div className="text-2xl font-extrabold text-white tracking-wide truncate">
         {symbol}
       </div>
