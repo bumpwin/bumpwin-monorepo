@@ -40,13 +40,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-red-500 h-full`}
       >
         <Providers>
           <AppBar />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 h-full">{children}</main>
           {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
