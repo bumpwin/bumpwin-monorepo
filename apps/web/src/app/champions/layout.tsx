@@ -7,7 +7,7 @@ export default function BattleLayout({
 }) {
   return (
     <LayoutWithChat>
-      <div className="flex-1 overflow-y-auto pb-6 pt-4">
+      <div className="flex-1 overflow-y-auto pb-6 pt-4 mb-10">
         <div className="max-w-7xl mx-auto">
           {/* Title Section */}
           <div className="flex flex-col items-center justify-center py-8 px-4 relative overflow-hidden">
@@ -28,7 +28,7 @@ export default function BattleLayout({
               HALL OF CHAMPIONS
             </h1>
 
-            <div className="mt-6 text-center font-bold">
+            <div className="mt-2 text-center font-bold">
               <span
                 className="text-2xl bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-200 bg-clip-text text-transparent tracking-wider"
                 style={{ textShadow: "0 0 10px rgba(253, 224, 71, 0.6)" }}

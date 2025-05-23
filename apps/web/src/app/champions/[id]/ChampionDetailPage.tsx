@@ -101,7 +101,7 @@ export const ChampionDetailPage = ({
     <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
       {/* メイン2カラム */}
       <div className="flex flex-1 px-8 pb-8 gap-8 items-start min-h-[600px]">
-        {/* 左: 詳細/チャート/Stats/About */}
+        {/* 左: 詳細/チャート */}
         <div className="flex-1 flex flex-col gap-6">
           {/* コイン情報カード */}
           <Card className="bg-black/20 border border-[#23262F] hover:border-yellow-400 transition-colors shadow-lg">
@@ -207,16 +207,11 @@ export const ChampionDetailPage = ({
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Swap UI */}
-          <Card className="bg-black/20 border border-[#23262F] shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-white">Swap</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SwapUI coin={roundCoin} />
-            </CardContent>
-          </Card>
+        {/* 右: Swap UI */}
+        <div className="w-[400px] sticky top-8">
+          <SwapUI coin={roundCoin} />
         </div>
       </div>
     </div>
