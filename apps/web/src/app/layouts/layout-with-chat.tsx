@@ -13,13 +13,18 @@ export default function LayoutWithChat({
 
     // Do not modify background color - used for debugging purposes
 
-    <div className="flex min-h-[calc(100vh-4rem)] w-full">
-      <main className="flex-1 min-w-0 h-full bg-green-300 overflow-auto">
-        {children}
-      </main>
-      <aside className="w-96 flex-shrink-0 border-l border-gray-700 bg-green-500 h-full overflow-hidden">
-        <ChatPanel />
-      </aside>
+
+    // In
+
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-1 min-h-0">
+        <main className="flex-1 min-w-0 bg-green-300 overflow-auto">
+          {children}
+        </main>
+        <aside className="w-96 bg-green-500 flex-shrink-0 flex flex-col">
+          {/* <ChatPanel /> */}
+        </aside>
+      </div>
     </div>
   );
 }
