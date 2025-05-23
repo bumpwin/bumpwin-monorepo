@@ -1,14 +1,19 @@
+import { ActiveRoundCard } from "@/app/rounds/components/ActiveRoundCard";
+import { RoundChart } from "@/app/rounds/components/RoundChart";
+import { RoundCoins } from "@/app/rounds/components/RoundCoins";
+import { RoundMetrics } from "@/app/rounds/components/RoundMetrics";
+import { WaitingRoundCard } from "@/app/rounds/components/WaitingRoundCard";
+import type {
+  ChartCoin,
+  ChartPoint,
+  CoinMetadata,
+  Round,
+} from "@/app/rounds/types";
+import { getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
 import { cn } from "@workspace/shadcn/lib/utils";
 import { motion } from "framer-motion";
 import React from "react";
-import type { ChartCoin, ChartPoint, CoinMetadata, Round } from "../types";
-import { getSafeIcon, getSafeSymbol } from "../utils";
-import { ActiveRoundCard } from "./ActiveRoundCard";
-import { RoundChart } from "./RoundChart";
-import { RoundCoins } from "./RoundCoins";
-import { RoundMetrics } from "./RoundMetrics";
-import { WaitingRoundCard } from "./WaitingRoundCard";
 
 interface RoundCardProps {
   round: Round;

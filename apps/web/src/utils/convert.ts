@@ -1,7 +1,7 @@
 import type { ChatMessage } from "@/types/chat";
+import { generateAvatar } from "@/utils/avatar";
 import { formatAddress } from "@mysten/sui/utils";
 import type { ChatHistory } from "@workspace/supabase/src/domain";
-import { generateAvatar } from "./avatar";
 
 // Convert ChatHistory to ChatMessage
 export function convertToMessage(chat: ChatHistory): ChatMessage {

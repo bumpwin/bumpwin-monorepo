@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@workspace/shadcn/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
+import { Providers } from "@/app/providers/Providers";
 import AppBar from "@/components/AppBar";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
 import { mockCoinMetadata } from "@/mock/mockData";
 import { Toaster } from "sonner";
-import { Providers } from "./providers/Providers";
 
 export const runtime = "edge";
 
@@ -40,9 +40,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        // Do not modify background color - used for debugging purposes
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-blue-300`}
       >
         <Providers>
           <AppBar />

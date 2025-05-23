@@ -2,13 +2,13 @@
 
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
+import BattleClock from "@/components/BattleClock";
+import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
+import WordmarkLogo from "@/components/WordmarkLogo";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import BattleClock from "./BattleClock";
-import { SuiWalletConnectButton } from "./SuiWalletConnectButton";
-import WordmarkLogo from "./WordmarkLogo";
 
 export default function AppBar() {
   const pathname = usePathname();
@@ -72,7 +72,7 @@ export default function AppBar() {
     <>
       <header
         id="app-bar"
-        className="sticky top-0 z-50 w-full border-b border-gray-800 bg-black/80 backdrop-blur-sm"
+        className="sticky top-0 z-50 w-full border-b bg-gray-900 backdrop-blur-md shadow-lg shadow-gray-900"
       >
         <div className="w-full px-8">
           <div className="flex h-16 items-center justify-between">

@@ -1,9 +1,9 @@
+import { setupTransaction } from "@/hooks/transactions/utils";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import type { DryRunTransactionBlockResponse } from "@mysten/sui/client";
 import type { Transaction } from "@mysten/sui/transactions";
 import { type Result, err, ok } from "neverthrow";
 import { useCallback, useState } from "react";
-import { setupTransaction } from "./utils";
 
 export const useDryRunTransaction = () => {
   const [isLoading, setIsLoading] = useState(false);

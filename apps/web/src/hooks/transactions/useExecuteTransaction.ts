@@ -1,3 +1,4 @@
+import { setupTransaction } from "@/hooks/transactions/utils";
 import {
   useCurrentAccount,
   useSignAndExecuteTransaction,
@@ -5,7 +6,6 @@ import {
 import type { Transaction } from "@mysten/sui/transactions";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { setupTransaction } from "./utils";
 
 const GAS_BUDGET = 50000000; // 0.05 SUI
 

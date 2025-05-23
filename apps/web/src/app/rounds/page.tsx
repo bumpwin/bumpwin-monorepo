@@ -1,7 +1,11 @@
 "use client";
 
+import { ClaimOutcomeModal } from "@/app/rounds/components/ClaimOutcomeModal";
+import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
+import { ROUNDS } from "@/app/rounds/constants";
+import type { RoundIntent, RoundState } from "@/app/rounds/types";
+import { getChartPoints, getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -9,11 +13,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { ClaimOutcomeModal } from "./components/ClaimOutcomeModal";
-import { CreateCoinModal } from "./components/CreateCoinModal";
-import { ROUNDS } from "./constants";
-import type { RoundIntent, RoundState } from "./types";
-import { getChartPoints, getSafeIcon, getSafeSymbol } from "./utils";
 
 // Define types for our dashboard data
 interface TokenColors {
@@ -219,11 +218,6 @@ export default function RoundsPage() {
             ))}
           </div>
         </main>
-
-        {/* Right side chat panel */}
-        <aside className="hidden lg:block">
-          <CommunicationPanel />
-        </aside>
       </div>
 
       <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />

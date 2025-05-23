@@ -1,14 +1,13 @@
 "use client";
 
+import LWCChart from "@/components/LWCChart";
+import SwapPanel from "@/components/SwapPanel";
 import type { CoinDetailData } from "@/mock/mockCoinDetail";
 import { formatCurrency } from "@/utils/format";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import CommunicationPanel from "./CommunicationPanel";
-import LWCChart from "./LWCChart";
-import SwapPanel from "./SwapPanel";
 
 // LWCChartのデータ型を定義
 interface OHLCData {
@@ -328,9 +327,6 @@ export default function CoinDetailClient({
           </div>
         )}
       </div>
-
-      {/* Communication panel */}
-      <CommunicationPanel />
     </div>
   );
 }

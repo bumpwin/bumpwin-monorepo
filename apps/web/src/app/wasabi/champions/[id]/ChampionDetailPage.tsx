@@ -1,7 +1,6 @@
 "use client";
 
 import { mockprice } from "@/app/client";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import SwapUI from "@/components/SwapUI";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -223,10 +222,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           </Link>
         </div>
       </div>
-      {/* 右側チャット欄 */}
-      <aside className="hidden lg:block w-96">
-        <CommunicationPanel />
-      </aside>
     </div>
   );
 }

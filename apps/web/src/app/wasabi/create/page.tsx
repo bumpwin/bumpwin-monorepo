@@ -1,7 +1,6 @@
 "use client";
 
 import { CollapsibleSection } from "@/components/CollapsibleSection";
-import CommunicationPanel from "@/components/CommunicationPanel";
 import { FormField } from "@/components/FormField";
 import { ImageUpload } from "@/components/ImageUpload";
 import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
@@ -460,11 +459,6 @@ export default function CreateCoinPage() {
             </Card>
           </div>
         </main>
-
-        {/* Communication panel */}
-        <aside className="hidden lg:block">
-          <CommunicationPanel />
-        </aside>
       </div>
     </div>
   );
