@@ -7,10 +7,11 @@ import {
   useCurrentAccount,
   useSuiClient,
 } from "@mysten/dapp-kit";
-import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
+import { AnimatePresence, motion } from "framer-motion";
+import { DollarSign, Info } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface SwapUIProps {
@@ -18,15 +19,18 @@ interface SwapUIProps {
   variant?: "default" | "champion";
 }
 
-const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
-  const [amount, setAmount] = useState(0);
+const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
+  const [amount, setAmount] = useState<number | null>(null);
   const [balance, setBalance] = useState<number>(0);
+  const [potentialWin, setPotentialWin] = useState<number>(0);
+  const [avgPrice, setAvgPrice] = useState<number>(17.6);
+  const [activeSide, setActiveSide] = useState<"buy" | "sell">("buy");
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
   const { createSwapChampTransaction } = useTransactionCreators();
   const { executeTransaction, isExecuting } = useExecuteTransaction();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchBalance = async () => {
       if (account) {
         const bal = await getSuiBalance(suiClient, account.address);
@@ -35,6 +39,15 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
     };
     fetchBalance();
   }, [account, suiClient]);
+
+  useEffect(() => {
+    // Calculate potential win based on amount and current price
+    if (amount) {
+      setPotentialWin(amount * 5.68);
+    } else {
+      setPotentialWin(0);
+    }
+  }, [amount]);
 
   const handleTransaction = async (isBuy: boolean) => {
     if (!amount || amount <= 0) {
@@ -51,17 +64,28 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
     await executeTransaction(tx);
   };
 
+  const handleAmountChange = (value: string) => {
+    if (value === "") {
+      setAmount(null);
+      return;
+    }
+    if (!/^\d+$/.test(value)) return;
+    const numValue = Number.parseInt(value.replace(/^0+(?=\d)/, ""), 10);
+    setAmount(numValue);
+  };
+
   if (!coin) return null;
 
   return (
     <div className="w-full">
-      <div className="bg-black/20 border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
-        <div className="flex items-center gap-3 mb-2">
+      <div className="bg-[#0F111A] border border-[#1E2334] rounded-2xl p-5 w-full max-w-xs mx-auto shadow-xl overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-5">
           <div
-            className={`relative w-12 h-12 rounded-xl border overflow-hidden ${
+            className={`relative w-12 h-12 rounded-xl overflow-hidden ${
               variant === "champion"
-                ? "border-yellow-500/30"
-                : "border-purple-500/30"
+                ? "border border-yellow-400/20 shadow-[0_0_15px_rgba(255,215,0,0.1)]"
+                : "border border-purple-500/20 shadow-[0_0_15px_rgba(149,76,233,0.1)]"
             }`}
           >
             <Image
@@ -73,94 +97,171 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
           </div>
           <div className="flex-1 min-w-0">
             <div
-              className={`font-bold text-lg truncate ${
-                variant === "champion" ? "text-yellow-400" : "text-white"
+              className={`font-bold text-xl truncate ${
+                variant === "champion"
+                  ? "text-yellow-400 drop-shadow-[0_0_5px_rgba(255,215,0,0.2)]"
+                  : "text-white"
               }`}
             >
               {coin.name}
             </div>
           </div>
         </div>
-        <div className="mb-2 text-gray-400 font-medium">Amount</div>
-        <div className="flex items-center gap-2 mb-2">
-          <Input
-            type="text"
-            min={0}
-            value={amount}
-            onChange={(e) => {
-              let val = e.target.value;
-              if (val === "") {
-                setAmount(0);
-                return;
-              }
-              if (!/^\d+$/.test(val)) return;
-              val = val.replace(/^0+(?=\d)/, "");
-              setAmount(Number(val));
-            }}
-            className="w-full bg-[#23262F] text-white rounded-lg px-6 py-6 text-4xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter amount"
-          />
-          <span className="text-2xl font-bold text-gray-400">SUI</span>
-        </div>
-        <div className="flex gap-2 mb-6">
-          {[1, 20].map((v) => (
-            <button
-              type="button"
-              key={v}
-              className="bg-[#23262F] text-gray-300 rounded-lg px-3 py-1 text-sm font-semibold hover:bg-[#2c2f38]"
-              onClick={() => setAmount(amount + v)}
-            >
-              +{v} SUI
-            </button>
-          ))}
+
+        {/* Buy/Sell Toggle */}
+        <div className="flex p-1 mb-6 bg-[#131620] rounded-full">
           <button
             type="button"
-            className="bg-[#23262F] text-gray-300 rounded-lg px-3 py-1 text-sm font-semibold hover:bg-[#2c2f38]"
-            onClick={() => setAmount(balance)}
+            onClick={() => setActiveSide("buy")}
+            className={`flex-1 py-2.5 font-bold text-base transition-all duration-200 rounded-full ${
+              activeSide === "buy"
+                ? "bg-gradient-to-r from-green-500 to-green-400 text-white shadow-[0_2px_8px_rgba(34,197,94,0.25)]"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
           >
-            Max
+            Buy
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSide("sell")}
+            className={`flex-1 py-2.5 font-bold text-base transition-all duration-200 rounded-full ${
+              activeSide === "sell"
+                ? "bg-gradient-to-r from-[#FF2966] to-[#FF3B7B] text-white shadow-[0_2px_8px_rgba(255,41,102,0.25)]"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+          >
+            Sell
           </button>
         </div>
-        <div className="flex gap-2 mb-6">
-          {account ? (
-            <>
+
+        {/* Amount Input */}
+        <div className="mb-4">
+          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">
+            Amount
+          </div>
+          <div className="relative mb-3">
+            <div className="bg-[#131620] rounded-2xl overflow-hidden shadow-inner">
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-4xl font-bold text-gray-500">
+                  $
+                </span>
+                <input
+                  type="text"
+                  value={amount === null ? "" : amount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                  className="w-full bg-transparent text-white pl-12 pr-4 py-5 text-4xl font-bold focus:outline-none"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mb-1">
+            {[1, 20, 100].map((v) => (
               <button
                 type="button"
-                className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
-                onClick={() => handleTransaction(true)}
-                disabled={isExecuting || amount <= 0}
+                key={v}
+                className="flex-1 bg-[#1A1E2E] text-gray-300 rounded-xl py-2.5 text-sm font-medium hover:bg-[#242A3F] transition-colors"
+                onClick={() => setAmount((prev) => (prev || 0) + v)}
               >
-                {isExecuting ? "Processing..." : "Buy"}
+                +${v}
               </button>
-              <button
-                type="button"
-                className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
-                onClick={() => handleTransaction(false)}
-                disabled={isExecuting || amount <= 0}
-              >
-                {isExecuting ? "Processing..." : "Sell"}
-              </button>
-            </>
-          ) : (
-            <>
-              <ConnectButton
-                connectText={
-                  <div className="w-full text-center !text-white">
-                    Login to Trade
+            ))}
+            <button
+              type="button"
+              className="flex-1 bg-[#1A1E2E] text-gray-300 rounded-xl py-2.5 text-sm font-medium hover:bg-[#242A3F] transition-colors"
+              onClick={() => setAmount(balance)}
+            >
+              Max
+            </button>
+          </div>
+        </div>
+
+        {/* Potential Win Section - Animated */}
+        <AnimatePresence>
+          {amount && amount > 0 && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, y: -10 }}
+              animate={{ height: "auto", opacity: 1, y: 0 }}
+              exit={{ height: 0, opacity: 0, y: -10 }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 30,
+                duration: 0.3,
+              }}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-[#1E2334] py-4 mb-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-300 font-medium">To win</span>
+                    <DollarSign className="h-4 w-4 text-[#00E065]" />
                   </div>
-                }
-                className="flex-1 !bg-blue-500 !hover:bg-blue-600 !text-white font-bold py-3 rounded-xl text-lg transition !min-w-0 !h-auto !px-0 !border-none !shadow-none !ring-0"
-              />
-            </>
+                  <div className="text-[#00E065] text-4xl font-bold tracking-tight">
+                    ${potentialWin.toFixed(2)}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs">
+                  <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
+                  <Info className="h-3 w-3 cursor-help" />
+                </div>
+              </div>
+            </motion.div>
           )}
-        </div>
-        <div className="mt-6 text-center text-xs text-gray-500">
-          By trading, you agree to the{" "}
-          <a href="/terms" className="underline">
-            Terms of Use
-          </a>
-          .
-        </div>
+        </AnimatePresence>
+
+        {/* Action Button */}
+        {account ? (
+          <button
+            type="button"
+            className={`w-full py-3.5 font-bold text-base transition-all duration-200 rounded-xl ${
+              activeSide === "buy"
+                ? "bg-gradient-to-r from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]"
+                : "bg-gradient-to-r from-[#FF1A5B] to-[#FF3B7B] hover:from-[#E41652] hover:to-[#E43571] text-white shadow-[0_4px_12px_rgba(255,27,91,0.25)]"
+            } disabled:opacity-50 disabled:shadow-none`}
+            onClick={() => handleTransaction(activeSide === "buy")}
+            disabled={isExecuting || !amount}
+          >
+            {isExecuting ? (
+              <div className="flex items-center justify-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Processing
+              </div>
+            ) : (
+              activeSide === "buy" ? "Buy Now" : "Sell Now"
+            )}
+          </button>
+        ) : (
+          <ConnectButton
+            connectText={
+              <div className="w-full text-center !text-white font-bold">
+                Login to Trade
+              </div>
+            }
+            className="w-full !bg-gradient-to-r !from-blue-600 !to-blue-500 !hover:from-blue-700 !hover:to-blue-600 !text-white !py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !shadow-[0_4px_12px_rgba(0,118,255,0.25)] !ring-0"
+          />
+        )}
       </div>
     </div>
   );
