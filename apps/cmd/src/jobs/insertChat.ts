@@ -2,12 +2,12 @@ import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
+import { config } from "@/config";
+import { supabase } from "@/services/supabase";
+import { logger } from "@/utils/logger";
 import { SupabaseRepository } from "@workspace/supabase";
 import type { InsertChatMessageRequest } from "@workspace/supabase";
 import { type Result, err, ok } from "neverthrow";
-import { config } from "../config";
-import { supabase } from "../services/supabase";
-import { logger } from "../utils/logger";
 
 // 型定義
 type Messages = {
@@ -96,7 +96,12 @@ const insertChatMessage = async (
     return ok(undefined);
   }
 
-  logger.error("Failed to save message:", insertResult.error);
+  logger.error("Failed to save message", {
+    error: {
+      message: insertResult.error.message,
+      code: insertResult.error.code,
+    },
+  });
   return err(ERRORS.DB_INSERT);
 };
 
@@ -129,7 +134,7 @@ export const startChatMessageInsertion = async (): Promise<
 
   logger.info("🚀 Starting chat message insertion polling...");
   logger.info(`Interval: ${config.env.INSERT_INTERVAL_MS}ms`);
-  logger.info(`Messages per minute: 30 (2 seconds per message)`);
+  logger.info("Messages per minute: 30 (2 seconds per message)");
   logger.info(`Total available messages: ${messages.comments.length}`);
 
   let nextEventTime = getNextEventTime();

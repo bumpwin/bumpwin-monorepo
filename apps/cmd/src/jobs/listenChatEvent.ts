@@ -1,4 +1,7 @@
 import process from "node:process";
+import { config } from "@/config";
+import { supabase } from "@/services/supabase";
+import { logger } from "@/utils/logger";
 import type { EventId } from "@mysten/sui/client";
 import { NETWORK_TYPE } from "@workspace/sui";
 import { SupabaseRepository } from "@workspace/supabase";
@@ -8,9 +11,6 @@ import type {
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
 import { EventFetcher } from "bumpwin";
-import { config } from "../config";
-import { supabase } from "../services/supabase";
-import { logger } from "../utils/logger";
 
 const dbRepository = new SupabaseRepository(supabase);
 

@@ -1,34 +1,29 @@
 {
   "name": "cmd",
-  "module": "src/server.ts",
-  "type": "module",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "bun run src/server.ts",
-    "build": "bun build ./src/server.ts --outdir ./dist",
+    "dev": "bun run --watch src/server.ts",
+    "build": "bun build ./src/server.ts --outdir ./dist --target node",
     "start": "bun run dist/server.js",
-    "test": "bun test",
     "lint": "biome check .",
     "format": "biome format . --write"
   },
   "dependencies": {
-    "bumpwin": "^0.202505.17",
-    "@supabase/supabase-js": "^2.49.4",
-    "@workspace/logger": "workspace:*",
-    "@workspace/sui": "workspace:*",
+    "@hono/node-server": "1.14.2",
+    "@mysten/sui": "0.50.0",
+    "@supabase/supabase-js": "2.39.7",
     "@workspace/supabase": "workspace:*",
-    "hono": "^4.7.9",
-    "zod": "^3.24.4",
-    "@hono/node-server": "^1.14.1",
-    "@hono/zod-validator": "^0.5.0",
-    "dotenv": "^16.4.5"
+    "@workspace/sui": "workspace:*",
+    "bumpwin": "workspace:*",
+    "hono": "4.7.10",
+    "neverthrow": "7.2.0",
+    "zod": "3.22.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.2.12",
-    "@types/node": "^20.11.24"
-  },
-  "peerDependencies": {
-    "typescript": "^5.8.3"
+    "@biomejs/biome": "1.5.3",
+    "@types/node": "20.11.24",
+    "bun-types": "1.0.25",
+    "typescript": "5.3.3"
   }
 }

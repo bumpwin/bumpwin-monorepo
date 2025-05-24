@@ -1,9 +1,9 @@
+import app from "@/api";
+import { config } from "@/config";
+import { startChatMessageInsertion } from "@/jobs/insertChat";
+import { startChatEventPolling } from "@/jobs/listenChatEvent";
+import { logger } from "@/utils/logger";
 import { serve } from "@hono/node-server";
-import app from "./api";
-import { config } from "./config";
-import { startChatMessageInsertion } from "./jobs/insertChat";
-import { startChatEventPolling } from "./jobs/listenChatEvent";
-import { logger } from "./utils/logger";
 
 async function startServer() {
   try {
