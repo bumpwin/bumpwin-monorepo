@@ -1,6 +1,3 @@
-import DominanceRechart from "@/components/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-
 interface StatsBarProps {
   compact?: boolean;
 }
@@ -75,45 +72,4 @@ const StatsBar = ({ compact = false }: StatsBarProps) => {
   );
 };
 
-const DominanceChartSection = () => {
-  // DominanceRechart用データ整形
-  const chartPoints = mockDominanceChartData.map((point) => ({
-    timestamp: point.timestamp,
-    ...point.shares.reduce(
-      (acc, share, index) =>
-        Object.assign(acc, {
-          [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]:
-            share,
-        }),
-      {},
-    ),
-  }));
-  const chartCoins = mockCoinMetadata.map((coin) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: coin.color,
-  }));
-
-  return (
-    <div className="w-full mt-4">
-      <DominanceRechart
-        points={chartPoints}
-        coins={chartCoins}
-        height={180}
-        compact
-        hideLegend
-      />
-    </div>
-  );
-};
-
-const InfoBar = ({ compact = false }: StatsBarProps) => {
-  return (
-    <>
-      <StatsBar compact={compact} />
-      {!compact && <DominanceChartSection />}
-    </>
-  );
-};
-
-export default InfoBar;
+export default StatsBar;

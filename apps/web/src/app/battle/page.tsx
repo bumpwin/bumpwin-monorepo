@@ -2,7 +2,9 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
+import DominanceChartSection from "@/components/DominanceChartSection";
 import InfoBar from "@/components/InfoBar";
+import StatsBar from "@/components/StatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
@@ -17,7 +19,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // mockmemesをRoundCoin型に変換する関数
 const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => {
@@ -46,6 +48,7 @@ const defaultCoin: RoundCoin = {
 };
 
 export default function RoundsAPage() {
+  const [isCompact, setIsCompact] = useState(false);
   // 最初のmemeを安全に取得
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
 
@@ -53,6 +56,17 @@ export default function RoundsAPage() {
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
     firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin,
   );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      // 100px以上スクロールしたらコンパクトモードに
+      setIsCompact(scrollPosition > 100);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", selectedCoin.id],
@@ -104,12 +118,21 @@ export default function RoundsAPage() {
       {/* メインコンテンツ */}
       <main className="flex-1 border-r border-gray-700 overflow-y-auto">
         <div className="h-full flex flex-col">
-          {/* 固定部分: InfoBarとタイトル */}
+          {/* タイトル - スクロール可能 */}
           <div className="px-4 pt-4">
             <h1 className="text-4xl font-extrabold text-white mb-6 mt-4 text-center tracking-tight drop-shadow-lg">
-              Battle Round 12
+              Battle Round 7
             </h1>
-            <InfoBar />
+          </div>
+
+          {/* StatsBar - 固定部分 */}
+          <div className="sticky top-0 z-30 bg-black/95 backdrop-blur-sm transition-all duration-300">
+            <StatsBar compact={isCompact} />
+          </div>
+
+          {/* Dominance Chart - スクロール可能な部分 */}
+          <div className="px-4">
+            <DominanceChartSection />
           </div>
 
           {/* Price Chart */}
