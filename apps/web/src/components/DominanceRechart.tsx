@@ -7,6 +7,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceArea,
   ResponsiveContainer,
   Tooltip,
   type TooltipProps,
@@ -156,6 +157,36 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
               stroke: "#8884d8",
               strokeWidth: 1,
               strokeDasharray: "3 3",
+            }}
+          />
+          {/* Daytime (0h-24h)にやや透明な帯を追加 */}
+          <ReferenceArea
+            x1={0}
+            x2={24 * 60}
+            stroke="#fde047"
+            fill="#fde047"
+            fillOpacity={0.05}
+            label={{
+              value: "Daytime",
+              position: "insideTopLeft",
+              fill: "#fde047",
+              fontSize: 14,
+              fontWeight: "bold",
+            }}
+          />
+          {/* 最後の1時間（24h-25h）に半透明の帯を追加 */}
+          <ReferenceArea
+            x1={24 * 60}
+            x2={25 * 60}
+            stroke="#a78bfa"
+            fill="#a78bfa"
+            fillOpacity={0.05}
+            label={{
+              value: "Darknight",
+              position: "insideTopRight",
+              fill: "#a78bfa",
+              fontSize: 14,
+              fontWeight: "bold",
             }}
           />
           {!hideLegend && (
