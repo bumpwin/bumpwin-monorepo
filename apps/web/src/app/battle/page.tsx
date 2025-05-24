@@ -4,6 +4,7 @@ import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
 import DominanceChartSection from "@/components/DominanceChartSection";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
@@ -268,7 +269,7 @@ export default function RoundsAPage() {
 
                     <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 sm:items-center pt-4">
                       <div className="relative group flex flex-col gap-2 pb-4 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/20">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                           <span className="text-2xl">🌞</span>
                           <div className="px-2.5 py-1 text-black font-semibold text-sm bg-yellow-300 rounded-full shadow-sm">
                             Daytime
@@ -287,7 +288,7 @@ export default function RoundsAPage() {
                       </div>
 
                       <div className="relative group flex flex-col gap-2 pt-4 pb-1 sm:py-2 sm:pl-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
                           <span className="text-2xl">🌑</span>
                           <div className="px-2.5 py-1 text-white font-semibold text-sm bg-purple-600 rounded-full shadow-sm">
                             Darknight
@@ -341,7 +342,10 @@ export default function RoundsAPage() {
 
       <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
         <div className="sticky top-0 p-4">
-          <SwapUI coin={selectedCoin} />
+          <div className="flex flex-col items-center gap-8">
+            <BattleRoundPhaseToggle />
+            <SwapUI coin={selectedCoin} />
+          </div>
           <BattleCoinDetailCard coin={selectedCoin} />
         </div>
       </aside>
