@@ -154,7 +154,7 @@ export default function RoundsAPage() {
                     <div className="relative group flex flex-col gap-2 pb-4 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/20">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🌞</span>
-                        <div className="px-2.5 py-1 text-black font-bold text-sm bg-yellow-300 rounded-full shadow-sm">
+                        <div className="px-2.5 py-1 text-black font-semibold text-sm bg-yellow-300 rounded-full shadow-sm">
                           Daytime
                         </div>
                         <span className="text-sm text-yellow-100 font-medium">
@@ -174,7 +174,7 @@ export default function RoundsAPage() {
                     <div className="relative group flex flex-col gap-2 pt-4 pb-1 sm:py-2 sm:pl-2">
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">🌑</span>
-                        <div className="px-2.5 py-1 text-white font-bold text-sm bg-purple-600 rounded-full shadow-sm">
+                        <div className="px-2.5 py-1 text-white font-semibold text-sm bg-purple-600 rounded-full shadow-sm">
                           Darknight
                         </div>
                         <span className="text-sm text-purple-100 font-medium">
