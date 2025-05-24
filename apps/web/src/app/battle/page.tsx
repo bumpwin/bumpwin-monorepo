@@ -3,9 +3,7 @@
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import DominanceChartSection from "@/components/DominanceChartSection";
-import InfoBar from "@/components/InfoBar";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
-import StatsBar from "@/components/StatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
@@ -20,7 +18,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // mockmemesをRoundCoin型に変換する関数
 const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => {
@@ -49,7 +47,6 @@ const defaultCoin: RoundCoin = {
 };
 
 export default function RoundsAPage() {
-  const [isCompact, setIsCompact] = useState(false);
   // 最初のmemeを安全に取得
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
 
@@ -57,17 +54,6 @@ export default function RoundsAPage() {
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
     firstMeme ? memeToRoundCoin(firstMeme) : defaultCoin,
   );
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      // 100px以上スクロールしたらコンパクトモードに
-      setIsCompact(scrollPosition > 100);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", selectedCoin.id],
@@ -119,8 +105,8 @@ export default function RoundsAPage() {
       {/* メインコンテンツ */}
       <main className="flex-1 border-r border-gray-700 overflow-y-auto">
         <div className="h-full flex flex-col">
-          {/* StatsBar - 固定部分 */}
-          <div className="sticky top-0 z-30 transition-all duration-300">
+          {/* SharrowStatsBar - 左カラム上部にsticky固定 */}
+          <div className="sticky top-0 z-20 bg-[#181B27]/95">
             <SharrowStatsBar />
           </div>
 
