@@ -1,7 +1,7 @@
+import { config } from "@/config";
+import { handleError } from "@/utils/errors";
+import { logger } from "@/utils/logger";
 import { Hono } from "hono";
-import { config } from "../config";
-import { handleError } from "../utils/errors";
-import { logger } from "../utils/logger";
 
 const app = new Hono();
 
@@ -31,15 +31,12 @@ app.onError((err, c) => {
     method: c.req.method,
   });
 
-  return c.json(
-    {
-      error: {
-        code: error.code,
-        message: error.message,
-      },
+  return c.json({
+    error: {
+      code: error.code,
+      message: error.message,
     },
-    error.statusCode,
-  );
+  });
 });
 
 // ヘルスチェックエンドポイント

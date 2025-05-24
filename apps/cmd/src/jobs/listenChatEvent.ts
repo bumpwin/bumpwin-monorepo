@@ -111,6 +111,43 @@ const updatePollCursor = async (cursor: EventId | null): Promise<void> => {
 };
 
 /**
+ * Check if an event has already been processed and saved to the database
+ */
+const isEventAlreadyProcessed = async (eventId: string): Promise<boolean> => {
+  try {
+    // Split the eventId into digest and sequence
+    const [digest, sequenceStr] = eventId.split("-");
+    if (!digest || sequenceStr === undefined) {
+      logger.error(`Invalid event ID format: ${eventId}`);
+      return false;
+    }
+
+    const sequence = BigInt(sequenceStr);
+
+    // Check if the message exists in the database using a direct query
+    const { data, error } = await supabase
+      .from("chat_history")
+      .select("id")
+      .eq("tx_digest", digest)
+      .eq("event_sequence", sequence.toString())
+      .limit(1);
+
+    if (error) {
+      // Convert PostgrestError to Error
+      const dbError = new Error(error.message);
+      dbError.name = "PostgrestError";
+      logger.error("Error checking if event exists:", dbError);
+      return false;
+    }
+
+    return data && data.length > 0;
+  } catch (error) {
+    logger.error(`Error checking if event ${eventId} exists:`, error as Error);
+    return false; // Assume not processed in case of error
+  }
+};
+
+/**
  * Process new events, save to DB and log details
  */
 const processEvents = async (
@@ -123,24 +160,61 @@ const processEvents = async (
     `[${new Date().toISOString()}] Processing ${events.length} new event(s)`,
   );
 
+  // First, check all events against the database in a single pass
+  const eventsToProcess = [];
   for (const event of events) {
     const eventId = `${event.digest}-${event.sequence}`;
 
-    // Skip if already processed
-    if (processedEventIds.has(eventId)) continue;
+    // Skip if already processed in this session
+    if (processedEventIds.has(eventId)) {
+      logger.info(
+        `Skipping already processed event in this session: ${eventId}`,
+      );
+      continue;
+    }
 
-    // Log event details
-    logger.info("----------------------------------------");
-    logger.info(`Event: ${eventId}`);
-    logger.info(`Timestamp: ${event.timestamp}`);
-    logger.info(`Sender: ${event.sender}`);
-    logger.info(`Text: "${event.text}"`);
+    // Add to list of events to check against DB
+    eventsToProcess.push({ event, eventId });
+  }
 
-    // Save to database
-    await saveChatMessage(event);
+  if (eventsToProcess.length === 0) {
+    logger.info("No events to process after memory cache check");
+    return;
+  }
 
-    // Mark as processed
-    processedEventIds.add(eventId);
+  // Check all events against the database
+  logger.info(`Checking ${eventsToProcess.length} events against database`);
+
+  for (const { event, eventId } of eventsToProcess) {
+    try {
+      // Check if already in database
+      const alreadyProcessed = await isEventAlreadyProcessed(eventId);
+      if (alreadyProcessed) {
+        logger.info(`Event ${eventId} already exists in database - skipping`);
+        // Mark as processed in memory to avoid future checks
+        processedEventIds.add(eventId);
+        continue;
+      }
+
+      // Log event details
+      logger.info("----------------------------------------");
+      logger.info(`Event: ${eventId}`);
+      logger.info(`Timestamp: ${event.timestamp}`);
+      logger.info(`Sender: ${event.sender}`);
+      logger.info(`Text: "${event.text}"`);
+
+      // Save to database
+      await saveChatMessage(event);
+
+      // Mark as processed in memory
+      processedEventIds.add(eventId);
+
+      // Small delay between processing each event to avoid overwhelming the database
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    } catch (error) {
+      logger.error(`Error processing event ${eventId}:`, error as Error);
+      // Don't add to processedEventIds so we can retry next time
+    }
   }
 };
 
@@ -151,6 +225,11 @@ export const startChatEventPolling = async (pollingIntervalMs: number) => {
   // Keep track of processed event IDs to avoid duplicates
   const processedEventIds = new Set<string>();
 
+  // Flag to prevent concurrent polling executions
+  let isPolling = false;
+  // Flag to determine if we've completed first poll
+  let isFirstPoll = true;
+
   try {
     // Get the initial cursor from the database
     let cursor = await getInitialCursor();
@@ -158,30 +237,78 @@ export const startChatEventPolling = async (pollingIntervalMs: number) => {
     logger.info("🚀 Starting polling for chat events...");
     logger.info(`Network: ${NETWORK_TYPE}, Interval: ${pollingIntervalMs}ms`);
 
-    // Start the polling interval
-    const intervalId = setInterval(async () => {
+    // Define the polling function separately for better control
+    const pollEvents = async () => {
+      // Skip if already polling
+      if (isPolling) {
+        logger.info("Skipping poll cycle - previous cycle still in progress");
+        return;
+      }
+
+      isPolling = true;
+
       try {
+        logger.info(
+          `Starting poll cycle with cursor: ${JSON.stringify(cursor)}`,
+        );
+
         // Fetch new events
         const result = await fetcher.fetch(cursor);
 
-        // Filter only new events
-        const newEvents = result.events.filter((event) => {
-          const eventId = `${event.digest}-${event.sequence}`;
-          return !processedEventIds.has(eventId);
-        });
+        // Check if any events were returned
+        logger.info(`Fetched ${result.events.length} events`);
 
-        // Process new events
-        await processEvents(newEvents, processedEventIds);
+        if (result.events.length > 0) {
+          // On first poll, just save the cursor without processing events
+          // This helps when restarting the server to avoid reprocessing old events
+          if (isFirstPoll) {
+            logger.info(
+              "First poll - updating cursor without processing events",
+            );
+            cursor = result.cursor;
+            await updatePollCursor(cursor);
+            isFirstPoll = false;
+            return;
+          }
 
-        // Update cursor if changed
+          // Filter only new events that haven't been processed in this session
+          const newEvents = result.events.filter((event) => {
+            const eventId = `${event.digest}-${event.sequence}`;
+            return !processedEventIds.has(eventId);
+          });
+
+          // Process the filtered events
+          if (newEvents.length > 0) {
+            logger.info(
+              `Processing ${newEvents.length} new events of ${result.events.length} total`,
+            );
+            await processEvents(newEvents, processedEventIds);
+          } else {
+            logger.info("No new events to process after filtering");
+          }
+        }
+
+        // Always update cursor if changed, even if no events to process
         if (JSON.stringify(cursor) !== JSON.stringify(result.cursor)) {
+          logger.info(
+            `Updating cursor from ${JSON.stringify(cursor)} to ${JSON.stringify(result.cursor)}`,
+          );
           cursor = result.cursor;
           await updatePollCursor(cursor);
         }
       } catch (error) {
-        logger.error("Error in polling loop:", error as Error);
+        logger.error("Error in polling function:", error as Error);
+      } finally {
+        isPolling = false;
       }
-    }, pollingIntervalMs);
+    };
+
+    // Run the initial poll immediately
+    await pollEvents();
+
+    // Then set up the interval
+    logger.info(`Setting up polling interval: ${pollingIntervalMs}ms`);
+    const intervalId = setInterval(pollEvents, pollingIntervalMs);
 
     // Handle graceful shutdown
     process.on("SIGINT", () => {

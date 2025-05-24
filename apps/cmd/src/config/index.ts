@@ -6,9 +6,12 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  PORT: z.string().transform(Number).default("3000"),
-  POLLING_INTERVAL_MS: z.string().transform(Number).default("5000"),
-  INSERT_INTERVAL_MS: z.string().transform(Number).default("1000"),
+  PORT: z.string().transform(Number).default("4000"),
+  LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS: z
+    .string()
+    .transform(Number)
+    .default("5000"),
+  INSERT_CHAT_INTERVAL_MS: z.string().transform(Number).default("2000"),
   SUPABASE_URL: z.string(),
   SUPABASE_ANON_KEY: z.string(),
 });
@@ -24,9 +27,24 @@ export interface Config {
   isTest: boolean;
 }
 
+// コマンドライン引数からポート番号を取得
+const getPortFromArgs = (): string | undefined => {
+  const portIndex = process.argv.indexOf("--port");
+  if (portIndex !== -1 && process.argv[portIndex + 1]) {
+    return process.argv[portIndex + 1];
+  }
+  return undefined;
+};
+
 // 設定の読み込み
-export function loadConfig(): Config {
+export const loadConfig = (): Config => {
   dotenv.config();
+
+  // コマンドライン引数からポート番号を取得
+  const portFromArgs = getPortFromArgs();
+  if (portFromArgs) {
+    process.env.PORT = portFromArgs;
+  }
 
   const env = envSchema.parse(process.env);
 
@@ -36,7 +54,7 @@ export function loadConfig(): Config {
     isProduction: env.NODE_ENV === "production",
     isTest: env.NODE_ENV === "test",
   };
-}
+};
 
 // シングルトンインスタンス
 export const config = loadConfig();

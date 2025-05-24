@@ -1,6 +1,6 @@
 "use client";
 
-import ChatPanel from "@/components/ChatPanel";
+import TwitchStyleChatPanel from "@/components/TwitchStyleChatPanel";
 
 export default function LayoutWithChat({
   children,
@@ -12,7 +12,7 @@ export default function LayoutWithChat({
       <main className="flex-1 overflow-y-auto">{children}</main>
 
       <aside className="w-96 flex flex-col">
-        <ChatPanel />
+        <TwitchStyleChatPanel />
       </aside>
     </div>
   );
