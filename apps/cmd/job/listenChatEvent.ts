@@ -9,7 +9,7 @@ import type {
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
 import { EventFetcher } from "bumpwin";
-import { listenChatEventPollingIntervalMs } from "./config";
+import { loadListenChatEventPollingIntervalMs } from "./config";
 import { supabase } from "./supabaseClient";
 const dbRepository = new SupabaseRepository(supabase);
 const POLLING_INTERVAL_MS = 5000;
@@ -195,7 +195,8 @@ export async function startChatEventPolling(pollingIntervalMs: number) {
 // Start the main process
 async function main() {
   try {
-    await startChatEventPolling(listenChatEventPollingIntervalMs);
+    const pollingInterval = loadListenChatEventPollingIntervalMs();
+    await startChatEventPolling(pollingInterval);
   } catch (error) {
     logger.error("Failed to start polling script:", error);
     process.exit(1);

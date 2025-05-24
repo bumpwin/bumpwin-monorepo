@@ -1,108 +1,177 @@
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import process from "node:process";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
 import type { InsertChatMessageRequest } from "@workspace/supabase";
-import { insertChatIntervalMs } from "./config";
+import { type Result, err, ok } from "neverthrow";
+import { loadPollingConfig } from "./config";
 import { supabase } from "./supabaseClient";
 
-const dbRepository = new SupabaseRepository(supabase);
-const POLLING_INTERVAL_MS = 200;
+// 型定義
+type Messages = {
+  comments: string[];
+};
 
-const MESSAGES = [
-  "TO THE MOON! 🚀",
-  "DIAMOND HANDS 💎",
-  "HODL STRONG! 💪",
-  "WEN LAMBO? 🏎️",
-  "FOMO IN NOW! 📈",
-  "BULLISH AF! 🐂",
-  "PAPER HANDS OUT! 📄",
-  "WAGMI! 🌙",
-  "NGMI! 📉",
-  "APE IN! 🦍",
-  "FUD = BAD! 🚫",
-  "PUMP IT! 📈",
-  "BAG HOLDER? 💼",
-  "MOON SOON! 🌕",
-  "WEN MOON? 🌙",
-];
+type ChatMessage = {
+  txDigest: string;
+  eventSequence: bigint;
+  createdAt: string;
+  senderAddress: string;
+  messageText: string;
+};
 
-function getRandomMessage(): string {
-  const index = Math.floor(Math.random() * MESSAGES.length);
-  return MESSAGES[index] ?? "デフォルトメッセージ";
-}
+type MessageGenerator = {
+  generateMessage: () => string;
+  generateAddress: () => string;
+};
 
-function getRandomAddress(): string {
-  const hex = Array.from({ length: 64 }, () =>
-    Math.floor(Math.random() * 16).toString(16),
-  ).join("");
-  return `0x${hex}`;
-}
+type ErrorType = {
+  code: string;
+  message: string;
+};
 
-/**
- * Save chat message to Supabase
- */
-async function insertChatMessage(
-  message: InsertChatMessageRequest,
-): Promise<void> {
+// エラー定数
+const ERRORS = {
+  FILE_READ: {
+    code: "FILE_READ_ERROR",
+    message: "Failed to read messages file",
+  },
+  JSON_PARSE: {
+    code: "JSON_PARSE_ERROR",
+    message: "Failed to parse messages JSON",
+  },
+  DB_INSERT: {
+    code: "DB_INSERT_ERROR",
+    message: "Failed to insert message into database",
+  },
+} as const;
+
+// メッセージの読み込み
+const loadMessages = (): Result<Messages, ErrorType> => {
   try {
-    const insertResult = await dbRepository.insertChatMessage(message);
-    if (insertResult.isOk()) {
-      logger.info(`Message from ${message.senderAddress} saved to Supabase.`);
-    } else {
-      logger.error("Failed to save message:", insertResult.error);
+    const fileContent = readFileSync(join(__dirname, "messages.json"), "utf-8");
+    const messages = JSON.parse(fileContent) as Messages;
+    return ok(messages);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return err(ERRORS.JSON_PARSE);
     }
-  } catch (error) {
-    logger.error("Error saving message:", error);
+    return err(ERRORS.FILE_READ);
   }
-}
+};
 
-/**
- * Start polling for chat message insertion
- */
-export async function startChatMessageInsertion(insertChatIntervalMs: number) {
-  try {
-    logger.info("🚀 Starting chat message insertion polling...");
-    logger.info(`Interval: ${insertChatIntervalMs}ms`);
+// メッセージ生成器
+const createMessageGenerator = (
+  messages: Messages,
+  config: ReturnType<typeof loadPollingConfig>,
+): MessageGenerator => ({
+  generateMessage: () => {
+    const index = Math.floor(Math.random() * messages.comments.length);
+    return messages.comments[index] ?? config.DEFAULT_MESSAGE;
+  },
 
-    // Start the polling interval
-    const intervalId = setInterval(async () => {
-      try {
-        // TODO: Implement message queue or event source here
-        // For now, this is a placeholder for the actual message insertion logic
-        const message: InsertChatMessageRequest = {
-          txDigest: randomUUID(),
-          eventSequence: BigInt(0),
-          createdAt: new Date().toISOString(),
-          senderAddress: getRandomAddress(),
-          messageText: getRandomMessage(),
-        };
+  generateAddress: () => {
+    const hex = Array.from({ length: config.ADDRESS_LENGTH }, () =>
+      Math.floor(Math.random() * 16).toString(16),
+    ).join("");
+    return `0x${hex}`;
+  },
+});
 
-        await insertChatMessage(message);
-      } catch (error) {
-        logger.error("Error in polling loop:", error);
+// ポアソン分布に従って次のイベントまでの待機時間を計算
+const getNextEventTime = (config: ReturnType<typeof loadPollingConfig>): number => {
+  const meanWaitingTime = (60 * 1000) / config.MESSAGES_PER_MINUTE;
+  return -meanWaitingTime * Math.log(Math.random());
+};
+
+// データベース操作
+const dbRepository = new SupabaseRepository(supabase);
+
+const insertChatMessage = async (
+  message: ChatMessage,
+): Promise<Result<void, ErrorType>> => {
+  const insertResult = await dbRepository.insertChatMessage(message);
+
+  if (insertResult.isOk()) {
+    logger.info(`Message from ${message.senderAddress} saved to Supabase.`);
+    return ok(undefined);
+  }
+
+  logger.error("Failed to save message:", insertResult.error);
+  return err(ERRORS.DB_INSERT);
+};
+
+// メッセージ生成と保存
+const generateAndSaveMessage = async (
+  messageGenerator: MessageGenerator,
+): Promise<Result<void, ErrorType>> => {
+  const message: ChatMessage = {
+    txDigest: randomUUID(),
+    eventSequence: BigInt(0),
+    createdAt: new Date().toISOString(),
+    senderAddress: messageGenerator.generateAddress(),
+    messageText: messageGenerator.generateMessage(),
+  };
+
+  return insertChatMessage(message);
+};
+
+// メイン処理
+export const startChatMessageInsertion = async (): Promise<
+  Result<void, ErrorType>
+> => {
+  const config = loadPollingConfig();
+  const messagesResult = loadMessages();
+  if (messagesResult.isErr()) {
+    return err(messagesResult.error);
+  }
+
+  const messages = messagesResult.value;
+  const messageGenerator = createMessageGenerator(messages, config);
+
+  logger.info("🚀 Starting chat message insertion polling...");
+  logger.info(`Interval: ${config.POLLING_INTERVAL_MS}ms`);
+  logger.info(`Average messages per minute: ${config.MESSAGES_PER_MINUTE}`);
+  logger.info(`Total available messages: ${messages.comments.length}`);
+
+  let nextEventTime = getNextEventTime(config);
+  let lastCheckTime = Date.now();
+
+  const intervalId = setInterval(async () => {
+    const currentTime = Date.now();
+    const elapsedTime = currentTime - lastCheckTime;
+
+    if (elapsedTime >= nextEventTime) {
+      const result = await generateAndSaveMessage(messageGenerator);
+      if (result.isOk()) {
+        nextEventTime = getNextEventTime(config);
+        lastCheckTime = currentTime;
       }
-    }, POLLING_INTERVAL_MS);
+    }
+  }, config.POLLING_INTERVAL_MS);
 
-    // Handle graceful shutdown
-    process.on("SIGINT", () => {
-      clearInterval(intervalId);
-      logger.info("Shutting down chat message insertion polling...");
-      process.exit(0);
-    });
+  // グレースフルシャットダウン
+  process.on("SIGINT", () => {
+    clearInterval(intervalId);
+    logger.info("Shutting down chat message insertion polling...");
+    process.exit(0);
+  });
 
-    // Keep the process running
-    process.stdin.resume();
-  } catch (error) {
-    logger.error("Fatal error starting chat message insertion polling:", error);
-    process.exit(1);
-  }
-}
+  process.stdin.resume();
+  return ok(undefined);
+};
 
-// Run the main function if this file is executed directly
+// 直接実行時のエントリーポイント
 if (require.main === module) {
-  startChatMessageInsertion(insertChatIntervalMs).catch((error) => {
-    logger.error("Failed to start chat message insertion polling:", error);
-    process.exit(1);
+  startChatMessageInsertion().then((result) => {
+    if (result.isErr()) {
+      logger.error(
+        "Failed to start chat message insertion polling:",
+        result.error,
+      );
+      process.exit(1);
+    }
   });
 }
