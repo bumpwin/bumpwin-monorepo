@@ -1,3 +1,4 @@
+import SquareWordmarkLogo from "@/components/SquareWordmarkLogo";
 import WordmarkLogo from "@/components/WordmarkLogo";
 import type { Metadata } from "next";
 
@@ -9,6 +10,10 @@ export const metadata: Metadata = {
 export default function WordmarkPage() {
   return (
     <div className="min-h-screen pt-12 pb-28 bg-background">
+      {/* ページ先頭に縦並びロゴをスクエアな黒背景ボックスで中央寄せ */}
+      <div className="flex justify-center my-8">
+        <SquareWordmarkLogo />
+      </div>
       <div className="max-w-7xl mx-auto px-4">
         {/* 採用デザイン */}
         <div className="mb-16">
