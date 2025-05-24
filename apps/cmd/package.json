@@ -11,14 +11,10 @@
   },
   "dependencies": {
     "@hono/node-server": "1.14.2",
-    "@mysten/sui": "0.50.0",
     "@supabase/supabase-js": "2.39.7",
     "@workspace/supabase": "workspace:*",
     "@workspace/sui": "workspace:*",
-    "bumpwin": "workspace:*",
-    "hono": "4.7.10",
-    "neverthrow": "7.2.0",
-    "zod": "3.22.4"
+    "dotenv": "16.4.5"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
