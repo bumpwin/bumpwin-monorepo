@@ -4,7 +4,6 @@ import { emojiList } from "@/constants/emojiList";
 import { chatApi } from "@/lib/api/chat";
 import type { ChatMessage } from "@/types/chat";
 import { convertToMessage } from "@/utils/convert";
-import { formatTime } from "@/utils/format";
 import { supabase } from "@/utils/supabaseClient";
 import {
   useCurrentAccount,
