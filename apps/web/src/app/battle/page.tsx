@@ -263,6 +263,19 @@ export default function RoundsAPage() {
           {/* Dominance Chart - スクロール可能な部分 */}
           <div className="px-4">
             <DominanceChartSection />
+            {/* Daytime/Darknight帯の説明（バッジ風デザイン・英語説明付き・時間範囲ラベル付き） */}
+            <div className="px-4 mb-4 mt-2 flex gap-4 text-sm items-center">
+              <span className="flex items-center gap-2">
+                <span className="text-xl">🌞</span>
+                <span className="bg-yellow-100 text-black font-bold rounded-full px-3 py-1 tracking-wide shadow-sm border border-yellow-300">Daytime <span className='text-xs text-yellow-700'>(0-24h)</span></span>
+                <span className="text-white">A decision market culls the meme swarm into the Finalist 8.</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-xl">🌑</span>
+                <span className="bg-purple-700 text-white font-bold rounded-full px-3 py-1 tracking-wide shadow-sm">Darknight <span className='text-xs text-purple-200'>(24-25h)</span></span>
+                <span className="text-white">Then comes the kill round: five sealed auctions, 12 minutes each—trader positions are hidden, only one meme survives.</span>
+              </span>
+            </div>
           </div>
 
           {/* Price Chart */}
