@@ -1,12 +1,15 @@
 {
   "name": "cmd",
-  "module": "index.ts",
+  "module": "src/server.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run server/index.ts",
-    "listen-chat": "bun run job/listenChatEvent.ts",
-    "start": "bun run server/index.ts"
+    "dev": "bun run src/server.ts",
+    "build": "bun build ./src/server.ts --outdir ./dist",
+    "start": "bun run dist/server.js",
+    "test": "bun test",
+    "lint": "biome check .",
+    "format": "biome format . --write"
   },
   "dependencies": {
     "bumpwin": "^0.202505.17",
@@ -22,7 +25,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/bun": "^1.2.12"
+    "@types/bun": "^1.2.12",
+    "@types/node": "^20.11.24"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

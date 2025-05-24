@@ -1,6 +1,9 @@
 import { logger } from "@workspace/logger";
 import { Hono } from "hono";
-import { loadInsertChatIntervalMs, loadListenChatEventPollingIntervalMs } from "../job/config";
+import {
+  loadInsertChatIntervalMs,
+  loadListenChatEventPollingIntervalMs,
+} from "../job/config";
 import { startChatMessageInsertion } from "../job/insertChat";
 import { startChatEventPolling } from "../job/listenChatEvent";
 

@@ -2,12 +2,12 @@ import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
-import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
 import type { InsertChatMessageRequest } from "@workspace/supabase";
 import { type Result, err, ok } from "neverthrow";
-import { loadPollingConfig } from "./config";
-import { supabase } from "./supabaseClient";
+import { config } from "../config";
+import { supabase } from "../services/supabase";
+import { logger } from "../utils/logger";
 
 // 型定義
 type Messages = {
@@ -63,17 +63,14 @@ const loadMessages = (): Result<Messages, ErrorType> => {
 };
 
 // メッセージ生成器
-const createMessageGenerator = (
-  messages: Messages,
-  config: ReturnType<typeof loadPollingConfig>,
-): MessageGenerator => ({
+const createMessageGenerator = (messages: Messages): MessageGenerator => ({
   generateMessage: () => {
     const index = Math.floor(Math.random() * messages.comments.length);
-    return messages.comments[index] ?? config.DEFAULT_MESSAGE;
+    return messages.comments[index] ?? "デフォルトメッセージ";
   },
 
   generateAddress: () => {
-    const hex = Array.from({ length: config.ADDRESS_LENGTH }, () =>
+    const hex = Array.from({ length: 64 }, () =>
       Math.floor(Math.random() * 16).toString(16),
     ).join("");
     return `0x${hex}`;
@@ -81,10 +78,8 @@ const createMessageGenerator = (
 });
 
 // ポアソン分布に従って次のイベントまでの待機時間を計算
-const getNextEventTime = (
-  config: ReturnType<typeof loadPollingConfig>,
-): number => {
-  const meanWaitingTime = (60 * 1000) / config.MESSAGES_PER_MINUTE;
+const getNextEventTime = (): number => {
+  const meanWaitingTime = (60 * 1000) / 30; // 30 messages per minute (2秒に1メッセージ)
   return -meanWaitingTime * Math.log(Math.random());
 };
 
@@ -124,21 +119,20 @@ const generateAndSaveMessage = async (
 export const startChatMessageInsertion = async (): Promise<
   Result<void, ErrorType>
 > => {
-  const config = loadPollingConfig();
   const messagesResult = loadMessages();
   if (messagesResult.isErr()) {
     return err(messagesResult.error);
   }
 
   const messages = messagesResult.value;
-  const messageGenerator = createMessageGenerator(messages, config);
+  const messageGenerator = createMessageGenerator(messages);
 
   logger.info("🚀 Starting chat message insertion polling...");
-  logger.info(`Interval: ${config.POLLING_INTERVAL_MS}ms`);
-  logger.info(`Average messages per minute: ${config.MESSAGES_PER_MINUTE}`);
+  logger.info(`Interval: ${config.env.INSERT_INTERVAL_MS}ms`);
+  logger.info(`Messages per minute: 30 (2 seconds per message)`);
   logger.info(`Total available messages: ${messages.comments.length}`);
 
-  let nextEventTime = getNextEventTime(config);
+  let nextEventTime = getNextEventTime();
   let lastCheckTime = Date.now();
 
   const intervalId = setInterval(async () => {
@@ -148,11 +142,11 @@ export const startChatMessageInsertion = async (): Promise<
     if (elapsedTime >= nextEventTime) {
       const result = await generateAndSaveMessage(messageGenerator);
       if (result.isOk()) {
-        nextEventTime = getNextEventTime(config);
+        nextEventTime = getNextEventTime();
         lastCheckTime = currentTime;
       }
     }
-  }, config.POLLING_INTERVAL_MS);
+  }, config.env.INSERT_INTERVAL_MS);
 
   // グレースフルシャットダウン
   process.on("SIGINT", () => {
@@ -164,16 +158,3 @@ export const startChatMessageInsertion = async (): Promise<
   process.stdin.resume();
   return ok(undefined);
 };
-
-// 直接実行時のエントリーポイント
-if (require.main === module) {
-  startChatMessageInsertion().then((result) => {
-    if (result.isErr()) {
-      logger.error(
-        "Failed to start chat message insertion polling:",
-        result.error,
-      );
-      process.exit(1);
-    }
-  });
-}

@@ -18,12 +18,16 @@ try {
       console.error(`- ${err.path.join(".")}: ${err.message}`);
     }
   } else {
-    console.error("Unexpected error during environment variables validation:", error);
+    console.error(
+      "Unexpected error during environment variables validation:",
+      error,
+    );
   }
   process.exit(1);
 }
 
-export const loadListenChatEventPollingIntervalMs = () => config.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS;
+export const loadListenChatEventPollingIntervalMs = () =>
+  config.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS;
 export const loadInsertChatIntervalMs = () => config.INSERT_CHAT_INTERVAL_MS;
 export const loadPollingConfig = () => ({
   POLLING_INTERVAL_MS: config.POLLING_INTERVAL_MS,
