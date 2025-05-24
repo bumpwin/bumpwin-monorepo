@@ -1,50 +1,36 @@
-import { serve } from "@hono/node-server";
-import { zValidator } from "@hono/zod-validator";
 import { logger } from "@workspace/logger";
 import { Hono } from "hono";
-import { z } from "zod";
 import {
-  insertChatIntervalMs,
-  listenChatEventPollingIntervalMs,
+  loadInsertChatIntervalMs,
+  loadListenChatEventPollingIntervalMs,
 } from "../job/config";
 import { startChatMessageInsertion } from "../job/insertChat";
 import { startChatEventPolling } from "../job/listenChatEvent";
 
 const app = new Hono();
 
-app.get("/hello", (c) => c.json({ greeting: "Hello Worker!" }));
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
 
-app.post("/echo", zValidator("json", z.object({ msg: z.string() })), (c) =>
-  c.json({ echoed: c.req.valid("json").msg }),
-);
+const port = 3000;
 
-const server = serve(
-  {
-    fetch: app.fetch,
-    port: 8080,
-  },
-  (info) => {
-    logger.info(`Server is running on port ${info.port}`);
-  },
-);
+logger.info(`🚀 Server is running on port ${port}`);
 
-// Start both polling processes
+// 設定の読み込み
+const pollingInterval = loadListenChatEventPollingIntervalMs();
+const insertInterval = loadInsertChatIntervalMs();
+
+// 両方のポーリングプロセスを開始
 Promise.all([
-  startChatEventPolling(listenChatEventPollingIntervalMs),
-  startChatMessageInsertion(insertChatIntervalMs),
-]).catch((err) => {
-  logger.error("Failed to start polling processes:", err);
+  startChatEventPolling(pollingInterval),
+  startChatMessageInsertion(),
+]).catch((error) => {
+  logger.error("Failed to start polling processes:", error);
   process.exit(1);
 });
 
-process.on("SIGINT", () => {
-  logger.info("Received SIGINT. Shutting down...");
-  server.close();
-  process.exit(0);
-});
-
-process.on("SIGTERM", () => {
-  logger.info("Received SIGTERM. Shutting down...");
-  server.close();
-  process.exit(0);
-});
+export default {
+  port,
+  fetch: app.fetch,
+};

@@ -24,6 +24,15 @@ dev:
     pnpm run dev
 
 server-dev:
+    #!/usr/bin/env bash
+    if [ ! -f "apps/cmd/.env" ]; then
+        echo "Error: apps/cmd/.env file not found"
+        echo "Please create apps/cmd/.env file with required environment variables:"
+        echo "SUPABASE_URL=your_supabase_project_url"
+        echo "SUPABASE_ANON_KEY=your_supabase_anon_key"
+        exit 1
+    fi
+    cat apps/cmd/.env
     pnpm run server:dev
 
 build:
