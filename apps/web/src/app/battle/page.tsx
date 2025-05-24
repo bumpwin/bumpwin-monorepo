@@ -8,6 +8,7 @@ import DominanceChartSection from "@/components/DominanceChartSection";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
+import * as Progress from "@radix-ui/react-progress";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
 import {
@@ -19,7 +20,153 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { useState } from "react";
+import { Progress as ShadcnProgress } from "@workspace/shadcn/components/progress";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+const TOTAL_HOURS = 25;
+const DAYTIME_END = 24;
+
+// データ生成用のヘルパー関数
+const generateTimeData = () => {
+  return Array.from({ length: TOTAL_HOURS + 1 }, (_, i) => ({
+    hour: i,
+    value: 1,
+    isDarknight: i >= DAYTIME_END,
+  }));
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-gray-800 p-2 rounded border border-gray-700">
+        <p className="text-yellow-400 font-bold">{`${label}h`}</p>
+        <p className="text-gray-400">
+          {label >= DAYTIME_END ? "Darknight" : "Daytime"}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Recharts版のプログレスバー
+const RechartsProgressBar = ({ currentHour }: { currentHour: number }) => {
+  const data = generateTimeData();
+
+  return (
+    <div className="w-full space-y-2">
+      <div className="h-24 bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="daytime" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="50%" stopColor="#eab308" />
+                <stop offset="100%" stopColor="#ef4444" />
+              </linearGradient>
+              <linearGradient id="darknight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#7e22ce" />
+                <stop offset="100%" stopColor="#312e81" />
+              </linearGradient>
+            </defs>
+
+            {/* Daytime Area */}
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="none"
+              fill="url(#daytime)"
+              fillOpacity={0.8}
+              isAnimationActive={false}
+            />
+
+            {/* Darknight Area */}
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="none"
+              fill="url(#darknight)"
+              fillOpacity={0.8}
+              isAnimationActive={false}
+              data={data.filter((d) => d.isDarknight)}
+            />
+
+            {/* Current Time Reference Line */}
+            <ReferenceLine
+              x={currentHour}
+              stroke="#eab308"
+              strokeWidth={2}
+              label={{
+                value: `${currentHour}h`,
+                position: "top",
+                fill: "#eab308",
+                fontSize: 12,
+                fontWeight: "bold",
+              }}
+            />
+
+            {/* 24hにカスタムアイコン（🌙）を表示 */}
+            <ReferenceLine
+              x={24}
+              stroke="#a78bfa"
+              strokeWidth={3}
+              label={{
+                value: "🌙",
+                position: "top",
+                fontSize: 28,
+              }}
+            />
+
+            <XAxis
+              dataKey="hour"
+              tickCount={6}
+              tickFormatter={(value) => `${value}h`}
+              tick={{ fill: "#9ca3af", fontSize: 12 }}
+              axisLine={{ stroke: "#374151" }}
+              tickLine={{ stroke: "#374151" }}
+            />
+
+            <YAxis hide={true} domain={[0, 1]} />
+
+            <Tooltip content={<CustomTooltip />} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* 凡例 */}
+      <div className="flex justify-between px-1">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-red-600" />
+          <span className="text-xs text-gray-400">Daytime (0-24h)</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-900 to-indigo-900" />
+          <span className="text-xs text-gray-400">Darknight (24-25h)</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 時間マーカー用の配列を生成
+const generateTimeMarkers = () => {
+  return Array.from({ length: TOTAL_HOURS + 1 }, (_, i) => ({
+    id: `marker-${i}`,
+    position: (i / TOTAL_HOURS) * 100,
+  }));
+};
 
 // mockmemesをRoundCoin型に変換する関数
 const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => {
@@ -100,6 +247,8 @@ export default function RoundsAPage() {
     priceData && priceData.length > 0
       ? (priceData[priceData.length - 1]?.close ?? 0)
       : 0;
+
+  const [currentHour, setCurrentHour] = useState(12);
 
   return (
     <div className="flex h-full">
