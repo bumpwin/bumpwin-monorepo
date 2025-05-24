@@ -102,18 +102,18 @@ export default function RoundsAPage() {
   return (
     <div className="flex h-full">
       {/* メインコンテンツ */}
-      <main className="flex-1 border-r border-gray-700">
+      <main className="flex-1 border-r border-gray-700 overflow-y-auto">
         <div className="h-full flex flex-col">
           {/* 固定部分: InfoBarとタイトル */}
-          <div className="flex-none px-4 pt-4">
+          <div className="px-4 pt-4">
             <h1 className="text-4xl font-extrabold text-white mb-6 mt-4 text-center tracking-tight drop-shadow-lg">
               Battle Round 12
             </h1>
             <InfoBar />
           </div>
 
-          {/* 固定部分: Price Chart */}
-          <div className="flex-none px-4">
+          {/* Price Chart */}
+          <div className="px-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium text-white">
@@ -137,9 +137,14 @@ export default function RoundsAPage() {
             </Card>
           </div>
 
-          {/* スクロール可能部分: meme gallery */}
-          <div className="flex-1 overflow-y-auto px-4 pb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {/* meme gallery */}
+          <div className="px-4 pb-6">
+            <div
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              }}
+            >
               {mockmemes.map((meme, i) => (
                 <button
                   key={meme.symbol}
@@ -149,7 +154,7 @@ export default function RoundsAPage() {
                       setSelectedCoin(memeToRoundCoin(meme));
                   }}
                   tabIndex={0}
-                  className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
+                  className="w-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
                   aria-pressed={selectedCoin.symbol === meme.symbol}
                   type="button"
                 >
@@ -168,9 +173,35 @@ export default function RoundsAPage() {
       </main>
 
       {/* Swap UI */}
-      <aside className="w-[400px] flex-shrink-0 border-l border-gray-700 overflow-y-auto">
+      <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
         <div className="sticky top-0 p-4">
           <SwapUI coin={selectedCoin} />
+
+          {/* Coin Details */}
+          <Card className="w-full bg-black/20 backdrop-blur-sm border-none mt-4">
+            <CardHeader>
+              <div className="flex flex-col items-center gap-4">
+                <img
+                  src={selectedCoin.iconUrl}
+                  alt={selectedCoin.symbol}
+                  className="w-full h-auto max-h-[400px] object-contain"
+                />
+                <div className="text-center">
+                  <CardTitle className="text-2xl font-bold text-white">
+                    {selectedCoin.symbol}
+                  </CardTitle>
+                  <p className="text-lg text-gray-400 mt-1">
+                    {selectedCoin.name}
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                {selectedCoin.description}
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </aside>
     </div>
