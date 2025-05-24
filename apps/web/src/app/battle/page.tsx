@@ -126,14 +126,10 @@ export default function RoundsAPage() {
           {/* DominanceChart Section - Premium Redesign - Cleaner & Brighter */}
           <div className="px-4 py-2">
             <div className="relative">
-              {/* Remove dark gradient overlays */}
-
               {/* Chart with Premium Frame - Brighter */}
-              <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-md">
-                {/* Remove blurry glow accent */}
-
+              <div className="relative rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm border-none shadow-md">
                 {/* Header Bar - Cleaner */}
-                <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20 bg-gray-900/50">
+                <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20">
                   <h2 className="text-lg font-bold tracking-tight text-white">
                     Market Dominance
                   </h2>
@@ -149,7 +145,7 @@ export default function RoundsAPage() {
                 </div>
 
                 {/* Timeline Phases - Clean & Bright */}
-                <div className="relative z-20 px-6 pt-1 pb-4 bg-gray-900/50">
+                <div className="relative z-20 px-6 pt-1 pb-4">
                   {/* Visual Timeline Bar - Brighter */}
                   <div className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-yellow-400 to-purple-600 opacity-30 rounded-full overflow-hidden" />
 
