@@ -4,6 +4,7 @@ import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import DominanceChartSection from "@/components/DominanceChartSection";
 import InfoBar from "@/components/InfoBar";
+import SharrowStatsBar from "@/components/SharrowStatsBar";
 import StatsBar from "@/components/StatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -118,16 +119,9 @@ export default function RoundsAPage() {
       {/* メインコンテンツ */}
       <main className="flex-1 border-r border-gray-700 overflow-y-auto">
         <div className="h-full flex flex-col">
-          {/* タイトル - スクロール可能 */}
-          <div className="px-4 pt-4">
-            <h1 className="text-4xl font-extrabold text-white mb-6 mt-4 text-center tracking-tight drop-shadow-lg">
-              Battle Round 7
-            </h1>
-          </div>
-
           {/* StatsBar - 固定部分 */}
           <div className="sticky top-0 z-30 transition-all duration-300">
-            <StatsBar compact={isCompact} />
+            <SharrowStatsBar />
           </div>
 
           {/* Dominance Chart - スクロール可能な部分 */}
