@@ -4,6 +4,7 @@ import {
   CandlestickSeries,
   ColorType,
   type IChartApi,
+  type PriceLineOptions,
   createChart,
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
@@ -21,6 +22,7 @@ export interface LWCChartProps {
   currentPrice?: number;
   height?: number;
   className?: string;
+  priceLines?: Partial<PriceLineOptions>[];
 }
 
 export function LWCChart({
@@ -28,6 +30,7 @@ export function LWCChart({
   currentPrice = 0.000026,
   height = 400,
   className = "",
+  priceLines = [],
 }: LWCChartProps) {
   const container = useRef<HTMLDivElement>(null);
 
@@ -70,15 +73,33 @@ export function LWCChart({
     candlestickSeries.setData(data || defaultOhlcData);
 
     // 現在価格のラインを追加
-    if (currentPrice > 0) {
+    if (currentPrice > 0 && data && data.length > 0) {
+      const basePrice = data?.[0]?.close ?? 0;
+      const percentage = ((currentPrice - basePrice) / basePrice) * 100;
       candlestickSeries.createPriceLine({
         price: currentPrice,
         color: "#4CAF50",
         lineWidth: 1,
         lineStyle: 2, // dashed
         axisLabelVisible: true,
-        title: "Current Price",
+        title: `Current Price | Market Cap: $${currentPrice.toLocaleString()} | Chance: ${percentage.toFixed(0)}%`,
       });
+    }
+
+    // 追加の価格ラインを追加
+    for (const line of priceLines) {
+      if (line.price !== undefined && data && data.length > 0) {
+        const basePrice = data?.[0]?.close ?? 0;
+        const percentage = ((line.price - basePrice) / basePrice) * 100;
+        candlestickSeries.createPriceLine({
+          price: line.price,
+          color: line.color ?? "#22c55e",
+          lineWidth: line.lineWidth ?? 1,
+          lineStyle: line.lineStyle ?? 2,
+          axisLabelVisible: line.axisLabelVisible ?? true,
+          title: `${line.title || "Price"} | Market Cap: $${line.price.toLocaleString()} | Chance: ${percentage.toFixed(0)}%`,
+        });
+      }
     }
 
     chart.timeScale().fitContent();
@@ -94,7 +115,7 @@ export function LWCChart({
       window.removeEventListener("resize", resize);
       chart.remove();
     };
-  }, [data, currentPrice, height]);
+  }, [data, currentPrice, height, priceLines]);
 
   return (
     <div

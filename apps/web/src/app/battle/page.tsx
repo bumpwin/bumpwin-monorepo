@@ -2,7 +2,10 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
-import InfoBar from "@/components/InfoBar";
+import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import { ChartTitle } from "@/components/ChartTitle";
+import DominanceChartSection from "@/components/DominanceChartSection";
+import SharrowStatsBar from "@/components/SharrowStatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +14,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@workspace/shadcn/components/card";
 import {
   LWCChart,
@@ -102,23 +104,26 @@ export default function RoundsAPage() {
   return (
     <div className="flex h-full">
       {/* メインコンテンツ */}
-      <main className="flex-1 border-r border-gray-700">
+      <main className="flex-1 border-r border-gray-700 overflow-y-auto">
         <div className="h-full flex flex-col">
-          {/* 固定部分: InfoBarとタイトル */}
-          <div className="flex-none px-4 pt-4">
-            <h1 className="text-4xl font-extrabold text-white mb-6 mt-4 text-center tracking-tight drop-shadow-lg">
-              Battle Round 12
-            </h1>
-            <InfoBar />
+          {/* SharrowStatsBar - 左カラム上部にsticky固定 */}
+          <div className="sticky top-0 z-20 bg-[#181B27]/95">
+            <SharrowStatsBar />
           </div>
 
-          {/* 固定部分: Price Chart */}
-          <div className="flex-none px-4">
+          {/* Dominance Chart - スクロール可能な部分 */}
+          <div className="px-4">
+            <DominanceChartSection />
+          </div>
+
+          {/* Price Chart */}
+          <div className="px-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-white">
-                  Price Chart of ${selectedCoin.symbol}
-                </CardTitle>
+                <ChartTitle
+                  coin={selectedCoin}
+                  percentage={selectedCoin.symbol === "YAKIU" ? "0.9%" : "13%"}
+                />
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
@@ -131,15 +136,32 @@ export default function RoundsAPage() {
                     currentPrice={currentPrice}
                     height={200}
                     className="mt-3"
+                    priceLines={[
+                      {
+                        price:
+                          currentPrice *
+                          (selectedCoin.symbol === "YAKIU" ? 1.009 : 1.13),
+                        color: "#22c55e",
+                        lineWidth: 1,
+                        lineStyle: 2,
+                        axisLabelVisible: true,
+                        title: selectedCoin.symbol === "YAKIU" ? "0.9%" : "13%",
+                      },
+                    ]}
                   />
                 )}
               </CardContent>
             </Card>
           </div>
 
-          {/* スクロール可能部分: meme gallery */}
-          <div className="flex-1 overflow-y-auto px-4 pb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {/* meme gallery */}
+          <div className="px-4 pb-6">
+            <div
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              }}
+            >
               {mockmemes.map((meme, i) => (
                 <button
                   key={meme.symbol}
@@ -149,7 +171,7 @@ export default function RoundsAPage() {
                       setSelectedCoin(memeToRoundCoin(meme));
                   }}
                   tabIndex={0}
-                  className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
+                  className="w-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
                   aria-pressed={selectedCoin.symbol === meme.symbol}
                   type="button"
                 >
@@ -168,9 +190,10 @@ export default function RoundsAPage() {
       </main>
 
       {/* Swap UI */}
-      <aside className="w-[400px] flex-shrink-0 border-l border-gray-700 overflow-y-auto">
+      <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
         <div className="sticky top-0 p-4">
           <SwapUI coin={selectedCoin} />
+          <BattleCoinDetailCard coin={selectedCoin} />
         </div>
       </aside>
     </div>

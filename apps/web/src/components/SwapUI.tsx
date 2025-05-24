@@ -15,9 +15,10 @@ import { toast } from "sonner";
 
 interface SwapUIProps {
   coin?: RoundCoin;
+  variant?: "default" | "champion";
 }
 
-const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
+const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState<number>(0);
   const account = useCurrentAccount();
@@ -55,15 +56,26 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin }) => {
   return (
     <div className="bg-black/20 border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
       <div className="flex items-center gap-3 mb-2">
-        <Image
-          src={coin.iconUrl}
-          alt={coin.name}
-          width={48}
-          height={48}
-          className="rounded-xl"
-        />
+        <div
+          className={`relative w-12 h-12 rounded-xl border overflow-hidden ${
+            variant === "champion"
+              ? "border-yellow-500/30"
+              : "border-purple-500/30"
+          }`}
+        >
+          <Image
+            src={coin.iconUrl}
+            alt={coin.name}
+            fill
+            className="object-cover"
+          />
+        </div>
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-lg text-white truncate">
+          <div
+            className={`font-bold text-lg truncate ${
+              variant === "champion" ? "text-yellow-400" : "text-white"
+            }`}
+          >
             {coin.name}
           </div>
         </div>

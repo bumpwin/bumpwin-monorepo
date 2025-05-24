@@ -1,6 +1,8 @@
 "use client";
 
 import { mockprice } from "@/app/client";
+import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import { ChartTitle } from "@/components/ChartTitle";
 import SwapUI from "@/components/SwapUI";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -8,30 +10,11 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@workspace/shadcn/components/card";
 import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-
-// Format market cap to K/M/B format
-const formatMarketCap = (value: number | undefined): string => {
-  if (!value) return "$0.0";
-  if (value >= 1e9) {
-    return `$${(value / 1e9).toFixed(1)}B`;
-  }
-  if (value >= 1e6) {
-    return `$${(value / 1e6).toFixed(1)}M`;
-  }
-  if (value >= 1e3) {
-    return `$${(value / 1e3).toFixed(1)}K`;
-  }
-  return `$${value.toFixed(1)}`;
-};
 
 export const ChampionDetailPage = ({
   coin,
@@ -103,100 +86,10 @@ export const ChampionDetailPage = ({
       <div className="flex flex-1 px-8 pb-8 gap-8 items-start min-h-[600px]">
         {/* 左: 詳細/チャート */}
         <div className="flex-1 flex flex-col gap-6">
-          {/* コイン情報カード */}
-          <Card className="bg-black/20 border border-[#23262F] hover:border-yellow-400 transition-colors shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="relative">
-                  <div className="relative w-24 h-24">
-                    <Image
-                      src={coin.iconUrl}
-                      alt={coin.name}
-                      width={96}
-                      height={96}
-                      className="rounded-full w-full h-full object-cover"
-                    />
-                    <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-yellow-200 to-yellow-600 text-black border-2 border-white">
-                      #{coin.round}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-bold text-white">
-                          {coin.name}
-                        </h3>
-                        <span className="text-sm text-gray-400">
-                          ({coin.symbol})
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {coin.description.substring(0, 100)}...
-                      </p>
-                    </div>
-                    <Link
-                      href="/champions"
-                      className="text-sm text-gray-400 hover:text-white flex items-center gap-1"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>Back to Champions</span>
-                    </Link>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400">Market Cap:</span>
-                      <span className="text-white font-medium">
-                        {formatMarketCap(coin.marketCap)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-400">Created by:</span>
-                      <span className="text-white font-medium">BUMP.WIN</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 mt-3">
-                    {coin.websiteLink && (
-                      <a
-                        href={coin.websiteLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Globe className="w-5 h-5" />
-                      </a>
-                    )}
-                    {coin.telegramLink && (
-                      <a
-                        href={coin.telegramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Send className="w-5 h-5" />
-                      </a>
-                    )}
-                    {coin.twitterLink && (
-                      <a
-                        href={coin.twitterLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Twitter className="w-5 h-5" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* チャート */}
           <Card className="bg-black/20 border border-[#23262F] shadow-lg">
             <CardHeader>
-              <CardTitle className="text-white">Price Chart</CardTitle>
+              <ChartTitle coin={roundCoin} />
             </CardHeader>
             <CardContent>
               <div className="h-[400px]">
@@ -211,7 +104,8 @@ export const ChampionDetailPage = ({
 
         {/* 右: Swap UI */}
         <div className="w-[400px] sticky top-8">
-          <SwapUI coin={roundCoin} />
+          <SwapUI coin={roundCoin} variant="champion" />
+          <BattleCoinDetailCard coin={roundCoin} />
         </div>
       </div>
     </div>
