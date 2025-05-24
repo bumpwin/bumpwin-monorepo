@@ -13,11 +13,10 @@ export const BattleRoundPhaseToggle = () => {
           onClick={() =>
             setPhase(phase === "daytime" ? "darknight" : "daytime")
           }
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors border-2 border-red-500"
         >
-          <span className="text-2xl">{phase === "daytime" ? "🌞" : "🌑"}</span>
           <span className="text-sm font-medium text-white">
-            {phase === "daytime" ? "Daytime" : "Darknight"}
+            skip to {phase === "daytime" ? "Darknight" : "Daytime"} for demo
           </span>
         </button>
       </div>
