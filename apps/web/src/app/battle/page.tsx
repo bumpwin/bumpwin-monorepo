@@ -126,7 +126,7 @@ export default function RoundsAPage() {
           </div>
 
           {/* StatsBar - 固定部分 */}
-          <div className="sticky top-0 z-30 bg-black/95 backdrop-blur-sm transition-all duration-300">
+          <div className="sticky top-0 z-30 transition-all duration-300">
             <StatsBar compact={isCompact} />
           </div>
 
