@@ -9,7 +9,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@workspace/shadcn/components/card";
 import {
   LWCChart,

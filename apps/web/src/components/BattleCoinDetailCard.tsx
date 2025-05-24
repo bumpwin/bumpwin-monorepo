@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/shadcn/components/card";
+import Image from "next/image";
 
 interface BattleCoinDetailCardProps {
   coin: RoundCoin;
@@ -19,11 +20,14 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
     <Card className="w-full max-w-[400px] bg-black/20 backdrop-blur-sm border-none mt-4">
       <CardHeader className="pb-3">
         <div className="flex flex-col items-center gap-3">
-          <img
-            src={coin.iconUrl}
-            alt={coin.symbol}
-            className="w-full h-auto max-h-[240px] object-contain"
-          />
+          <div className="relative w-full h-[240px]">
+            <Image
+              src={coin.iconUrl}
+              alt={coin.symbol}
+              fill
+              className="object-contain"
+            />
+          </div>
           <div className="text-center">
             <CardTitle className="text-2xl font-bold text-white">
               {coin.symbol}

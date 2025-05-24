@@ -10,29 +10,11 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@workspace/shadcn/components/card";
 import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-
-// Format market cap to K/M/B format
-const formatMarketCap = (value: number | undefined): string => {
-  if (!value) return "$0.0";
-  if (value >= 1e9) {
-    return `$${(value / 1e9).toFixed(1)}B`;
-  }
-  if (value >= 1e6) {
-    return `$${(value / 1e6).toFixed(1)}M`;
-  }
-  if (value >= 1e3) {
-    return `$${(value / 1e3).toFixed(1)}K`;
-  }
-  return `$${value.toFixed(1)}`;
-};
 
 export const ChampionDetailPage = ({
   coin,

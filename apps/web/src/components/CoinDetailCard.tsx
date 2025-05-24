@@ -1,12 +1,7 @@
 "use client";
 
 import type { Coin } from "@/types";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/shadcn/components/card";
+import { Card, CardContent } from "@workspace/shadcn/components/card";
 import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 

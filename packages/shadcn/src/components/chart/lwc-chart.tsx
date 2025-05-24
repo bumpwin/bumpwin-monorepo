@@ -74,7 +74,7 @@ export function LWCChart({
 
     // 現在価格のラインを追加
     if (currentPrice > 0 && data && data.length > 0) {
-      const basePrice = data[0].close;
+      const basePrice = data?.[0]?.close ?? 0;
       const percentage = ((currentPrice - basePrice) / basePrice) * 100;
       candlestickSeries.createPriceLine({
         price: currentPrice,
@@ -89,7 +89,7 @@ export function LWCChart({
     // 追加の価格ラインを追加
     for (const line of priceLines) {
       if (line.price !== undefined && data && data.length > 0) {
-        const basePrice = data[0].close;
+        const basePrice = data?.[0]?.close ?? 0;
         const percentage = ((line.price - basePrice) / basePrice) * 100;
         candlestickSeries.createPriceLine({
           price: line.price,
