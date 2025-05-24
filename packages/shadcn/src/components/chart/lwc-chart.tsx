@@ -73,27 +73,31 @@ export function LWCChart({
     candlestickSeries.setData(data || defaultOhlcData);
 
     // 現在価格のラインを追加
-    if (currentPrice > 0) {
+    if (currentPrice > 0 && data && data.length > 0) {
+      const basePrice = data[0].close;
+      const percentage = ((currentPrice - basePrice) / basePrice) * 100;
       candlestickSeries.createPriceLine({
         price: currentPrice,
         color: "#4CAF50",
         lineWidth: 1,
         lineStyle: 2, // dashed
         axisLabelVisible: true,
-        title: "Current Price",
+        title: `Current Price | Market Cap: $${currentPrice.toLocaleString()} | Chance: ${percentage.toFixed(0)}%`,
       });
     }
 
     // 追加の価格ラインを追加
     for (const line of priceLines) {
-      if (line.price !== undefined) {
+      if (line.price !== undefined && data && data.length > 0) {
+        const basePrice = data[0].close;
+        const percentage = ((line.price - basePrice) / basePrice) * 100;
         candlestickSeries.createPriceLine({
           price: line.price,
           color: line.color ?? "#22c55e",
           lineWidth: line.lineWidth ?? 1,
           lineStyle: line.lineStyle ?? 2,
           axisLabelVisible: line.axisLabelVisible ?? true,
-          title: line.title,
+          title: `${line.title || "Price"} | Market Cap: $${line.price.toLocaleString()} | Chance: ${percentage.toFixed(0)}%`,
         });
       }
     }

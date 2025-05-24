@@ -17,8 +17,10 @@ export const ChartTitle = ({ coin, percentage = "13%" }: ChartTitleProps) => {
         className="w-8 h-8 rounded-lg object-cover"
       />
       <span>{coin.symbol} ({coin.name})</span>
-      <span className="text-green-500">Market Cap: ${coin.marketCap.toLocaleString()}</span>
-      <span className="text-green-500">{percentage}</span>
+      <span className="mx-2 h-5 border-l border-gray-500 opacity-60" />
+      <span className="text-green-400">Market Cap: ${coin.marketCap.toLocaleString()}</span>
+      <span className="mx-2 h-5 border-l border-gray-500 opacity-60" />
+      <span className="text-green-400">Chance: {percentage}</span>
     </CardTitle>
   );
 };

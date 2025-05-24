@@ -24,13 +24,13 @@ const SharrowStatsBar = ({
         🏁 <span>Round</span> <span className="font-bold">{round}</span>
       </span>
       <span className="flex items-center gap-1">
-        🪙 <span>Mcap</span> <span className="font-bold">{marketCap}</span>
+        🪙 <span>Total MCap</span> <span className="font-bold">{marketCap}</span>
       </span>
       <span className="flex items-center gap-1">
         📊 <span>Vol.</span> <span className="font-bold">{volume}</span>
       </span>
       <span className="flex items-center gap-1">
-        🧩 <span>memes</span> <span className="font-bold">{memeCount}</span>
+        🍬 <span>memes</span> <span className="font-bold">{memeCount}</span>
       </span>
       <span className="flex items-center gap-1">
         👤 <span>traders</span> <span className="font-bold">{traderCount}</span>
