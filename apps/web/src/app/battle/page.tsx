@@ -274,64 +274,65 @@ export default function RoundsAPage() {
 
                 {/* Header Bar */}
                 <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20">
-                  <h2 className="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">Market Dominance</h2>
+                  <h2 className="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                    Market Dominance
+                  </h2>
                   <div className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse"></span>
-                    <span className="text-xs text-white/70 font-medium">LIVE</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse" />
+                    <span className="text-xs text-white/70 font-medium">
+                      LIVE
+                    </span>
                   </div>
                 </div>
 
-                {/* The Chart */}
-                <div className="relative z-0">
+                {/* The Chart - Enhanced Visibility */}
+                <div className="relative z-0 pb-2">
+                  {/* グラフ内のラベルを削除 - RechartのラベルだけにしてWコントロールを避ける */}
                   <DominanceChartSection />
                 </div>
 
-                {/* Timeline Phases - Elegant Version */}
-                <div className="relative z-20 px-6 pt-1 pb-4">
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 sm:items-center">
-                    {/* Phase Divider Line */}
-                    <div className="hidden sm:block absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                {/* Timeline Phases - Redesigned for Cleanliness */}
+                <div className="relative z-20 px-6 pt-1 pb-4 bg-black/30 backdrop-blur-sm rounded-b-lg">
+                  {/* Visual Timeline Bar */}
+                  <div className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-yellow-400/30 to-purple-600/50 rounded-full overflow-hidden" />
 
-                    {/* Daytime Phase */}
-                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 pb-2 pt-1 sm:pb-0">
+                  <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 sm:items-center pt-4">
+                    {/* Daytime Phase - Cleaner Badge */}
+                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pb-3 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/10">
                       <div className="flex items-center">
-                        <div className="relative flex items-center justify-center">
-                          <div className="absolute inset-0 bg-yellow-400/20 rounded-full blur-md group-hover:bg-yellow-400/30 transition-all duration-500" />
+                        <div className="flex items-center justify-center">
                           <span className="text-2xl relative z-10">🌞</span>
-                          <div className="absolute right-0 h-0.5 w-8 bg-gradient-to-r from-yellow-400/80 to-transparent hidden sm:block" />
                         </div>
-                        <div className="ml-3 flex flex-col">
-                          <div className="relative inline-flex items-center">
-                            <div className="absolute inset-0 bg-gradient-to-r from-yellow-100 to-yellow-300 opacity-90 rounded-full -z-10 group-hover:from-yellow-200 group-hover:to-yellow-400 transition-all duration-300" />
-                            <span className="px-3 py-0.5 text-black font-bold tracking-wide text-sm">
-                              Daytime <span className="text-xs text-yellow-800/80 font-medium">(0-24h)</span>
-                            </span>
+                        <div className="ml-2.5">
+                          <div className="flex items-center gap-2">
+                            <div className="px-2.5 py-1 text-black font-bold text-sm bg-yellow-300 rounded-md shadow-sm">
+                              Daytime
+                            </div>
+                            <span className="text-xs text-yellow-200 font-medium">(0-24h)</span>
                           </div>
                         </div>
                       </div>
-                      <p className="text-white/90 text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide group-hover:text-white transition-colors duration-300">
+                      <p className="text-white text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide">
                         A decision market culls the meme swarm into the Finalist 8.
                       </p>
                     </div>
 
-                    {/* Darknight Phase */}
-                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 pt-3 sm:pt-0">
+                    {/* Darknight Phase - Cleaner Badge */}
+                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pt-3 pb-1 sm:py-2 sm:pl-2">
                       <div className="flex items-center">
-                        <div className="relative flex items-center justify-center">
-                          <div className="absolute inset-0 bg-purple-700/30 rounded-full blur-md group-hover:bg-purple-600/40 transition-all duration-500" />
+                        <div className="flex items-center justify-center">
                           <span className="text-2xl relative z-10">🌑</span>
-                          <div className="absolute right-0 h-0.5 w-8 bg-gradient-to-r from-purple-500/80 to-transparent hidden sm:block" />
                         </div>
-                        <div className="ml-3 flex flex-col">
-                          <div className="relative inline-flex items-center">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-purple-900 opacity-90 rounded-full -z-10 group-hover:from-purple-600 group-hover:to-purple-800 transition-all duration-300" />
-                            <span className="px-3 py-0.5 text-white font-bold tracking-wide text-sm">
-                              Darknight <span className="text-xs text-purple-200/90 font-medium">(24-25h)</span>
-                            </span>
+                        <div className="ml-2.5">
+                          <div className="flex items-center gap-2">
+                            <div className="px-2.5 py-1 text-white font-bold text-sm bg-purple-700 rounded-md shadow-sm">
+                              Darknight
+                            </div>
+                            <span className="text-xs text-purple-200 font-medium">(24-25h)</span>
                           </div>
                         </div>
                       </div>
-                      <p className="text-white/90 text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide group-hover:text-white transition-colors duration-300">
+                      <p className="text-white text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide">
                         Then comes the kill round: five sealed auctions, 12 minutes each—trader positions are hidden, only one meme survives.
                       </p>
                     </div>
