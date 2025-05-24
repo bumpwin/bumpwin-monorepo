@@ -7,7 +7,7 @@ export default function BattleLayout({
 }) {
   return (
     <LayoutWithChat>
-      <div className="flex-1 overflow-y-auto pb-6 pt-4 mb-10">
+      <div className="flex-1 overflow-y-auto pb-20 pt-4 mb-10">
         <div className="max-w-7xl mx-auto">
           {/* Title Section */}
           <div className="flex flex-col items-center justify-center py-8 px-4 relative overflow-hidden">
@@ -15,7 +15,7 @@ export default function BattleLayout({
             <div className="absolute inset-0 bg-gradient-radial from-yellow-500/20 to-transparent opacity-60 blur-2xl" />
 
             <h1
-              className="text-5xl font-extrabold text-center mb-14 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]"
+              className="text-5xl font-extrabold text-center mb-8 tracking-tight z-10 relative drop-shadow-[0_2px_10px_rgba(255,215,0,0.3)]"
               style={{
                 background:
                   "linear-gradient(90deg, #FFD700 0%, #FFEB80 50%, #FFC700 100%)",

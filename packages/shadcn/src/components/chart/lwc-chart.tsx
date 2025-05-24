@@ -4,6 +4,7 @@ import {
   CandlestickSeries,
   ColorType,
   type IChartApi,
+  type PriceLineOptions,
   createChart,
 } from "lightweight-charts";
 import { useEffect, useRef } from "react";
@@ -21,6 +22,7 @@ export interface LWCChartProps {
   currentPrice?: number;
   height?: number;
   className?: string;
+  priceLines?: Partial<PriceLineOptions>[];
 }
 
 export function LWCChart({
@@ -28,6 +30,7 @@ export function LWCChart({
   currentPrice = 0.000026,
   height = 400,
   className = "",
+  priceLines = [],
 }: LWCChartProps) {
   const container = useRef<HTMLDivElement>(null);
 
@@ -81,6 +84,20 @@ export function LWCChart({
       });
     }
 
+    // 追加の価格ラインを追加
+    for (const line of priceLines) {
+      if (line.price !== undefined) {
+        candlestickSeries.createPriceLine({
+          price: line.price,
+          color: line.color ?? "#22c55e",
+          lineWidth: line.lineWidth ?? 1,
+          lineStyle: line.lineStyle ?? 2,
+          axisLabelVisible: line.axisLabelVisible ?? true,
+          title: line.title,
+        });
+      }
+    }
+
     chart.timeScale().fitContent();
 
     const resize = () => {
@@ -94,7 +111,7 @@ export function LWCChart({
       window.removeEventListener("resize", resize);
       chart.remove();
     };
-  }, [data, currentPrice, height]);
+  }, [data, currentPrice, height, priceLines]);
 
   return (
     <div

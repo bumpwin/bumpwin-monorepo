@@ -2,6 +2,8 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
+import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import { ChartTitle } from "@/components/ChartTitle";
 import DominanceChartSection from "@/components/DominanceChartSection";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
 import SwapUI from "@/components/SwapUI";
@@ -119,9 +121,10 @@ export default function RoundsAPage() {
           <div className="px-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-white">
-                  Price Chart of ${selectedCoin.symbol}
-                </CardTitle>
+                <ChartTitle
+                  coin={selectedCoin}
+                  percentage={selectedCoin.symbol === "YAKIU" ? "0.9%" : "13%"}
+                />
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
@@ -134,6 +137,18 @@ export default function RoundsAPage() {
                     currentPrice={currentPrice}
                     height={200}
                     className="mt-3"
+                    priceLines={[
+                      {
+                        price:
+                          currentPrice *
+                          (selectedCoin.symbol === "YAKIU" ? 1.009 : 1.13),
+                        color: "#22c55e",
+                        lineWidth: 1,
+                        lineStyle: 2,
+                        axisLabelVisible: true,
+                        title: selectedCoin.symbol === "YAKIU" ? "0.9%" : "13%",
+                      },
+                    ]}
                   />
                 )}
               </CardContent>
@@ -179,32 +194,7 @@ export default function RoundsAPage() {
       <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
         <div className="sticky top-0 p-4">
           <SwapUI coin={selectedCoin} />
-
-          {/* Coin Details */}
-          <Card className="w-full bg-black/20 backdrop-blur-sm border-none mt-4">
-            <CardHeader>
-              <div className="flex flex-col items-center gap-4">
-                <img
-                  src={selectedCoin.iconUrl}
-                  alt={selectedCoin.symbol}
-                  className="w-full h-auto max-h-[400px] object-contain"
-                />
-                <div className="text-center">
-                  <CardTitle className="text-2xl font-bold text-white">
-                    {selectedCoin.symbol}
-                  </CardTitle>
-                  <p className="text-lg text-gray-400 mt-1">
-                    {selectedCoin.name}
-                  </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-300 whitespace-pre-wrap">
-                {selectedCoin.description}
-              </p>
-            </CardContent>
-          </Card>
+          <BattleCoinDetailCard coin={selectedCoin} />
         </div>
       </aside>
     </div>

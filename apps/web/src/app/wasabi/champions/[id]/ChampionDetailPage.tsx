@@ -1,6 +1,7 @@
 "use client";
 
 import { mockprice } from "@/app/client";
+import { ChartTitle } from "@/components/ChartTitle";
 import SwapUI from "@/components/SwapUI";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
@@ -87,9 +88,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           <div className="md:col-span-2 flex flex-col gap-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-medium text-white">
-                  Price Chart
-                </CardTitle>
+                <ChartTitle coin={roundCoin} />
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
