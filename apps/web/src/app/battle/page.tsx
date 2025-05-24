@@ -35,6 +35,16 @@ const DEFAULT_COIN: RoundCoin = {
   description: "Default coin",
 };
 
+const PERCENTAGE = {
+  YAKIU: "0.9%",
+  DEFAULT: "13%",
+} as const;
+
+const PRICE_MULTIPLIER = {
+  YAKIU: 1.009,
+  DEFAULT: 1.13,
+} as const;
+
 // Types
 type PriceDataItem = {
   timestamp: number;
@@ -42,6 +52,11 @@ type PriceDataItem = {
   high: number;
   low: number;
   close: number;
+};
+
+type LayoutProps = {
+  children: React.ReactNode;
+  className?: string;
 };
 
 // Utility functions
@@ -79,7 +94,16 @@ const formatPriceData = (data: PriceDataItem[]) => {
   });
 };
 
-// Components
+// Layout Components
+const ScrollableContainer = ({ children, className = "" }: LayoutProps) => (
+  <div className={`h-full overflow-y-auto ${className}`}>{children}</div>
+);
+
+const FixedContainer = ({ children, className = "" }: LayoutProps) => (
+  <div className={`flex-shrink-0 ${className}`}>{children}</div>
+);
+
+// Feature Components
 const PriceChart = ({
   coin,
   priceData,
@@ -93,8 +117,10 @@ const PriceChart = ({
     priceData && priceData.length > 0
       ? (priceData[priceData.length - 1]?.close ?? 0)
       : 0;
-  const percentage = coin.symbol === "YAKIU" ? "0.9%" : "13%";
-  const priceMultiplier = coin.symbol === "YAKIU" ? 1.009 : 1.13;
+  const percentage =
+    coin.symbol === "YAKIU" ? PERCENTAGE.YAKIU : PERCENTAGE.DEFAULT;
+  const priceMultiplier =
+    coin.symbol === "YAKIU" ? PRICE_MULTIPLIER.YAKIU : PRICE_MULTIPLIER.DEFAULT;
 
   return (
     <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
@@ -159,7 +185,7 @@ const MemeGallery = ({
             imageUrl={meme.iconUrl}
             symbol={meme.symbol}
             name={meme.name}
-            percent={i % 2 === 0 ? "0.9%" : "13%"}
+            percent={i % 2 === 0 ? PERCENTAGE.YAKIU : PERCENTAGE.DEFAULT}
             rank={i + 1}
           />
         </button>
@@ -211,13 +237,13 @@ export default function RoundsAPage() {
 
   return (
     <div className="flex h-full">
-      <main className="flex-1 border-r border-gray-700 overflow-y-auto">
-        <div className="h-full flex flex-col">
-          <div className="sticky top-0 z-20 bg-[#181B27]/95">
-            <SharrowStatsBar />
-          </div>
+      <main className="flex-1 border-r border-gray-700">
+        {!selectedId ? (
+          <ScrollableContainer>
+            <div className="sticky top-0 z-20 bg-[#181B27]/95">
+              <SharrowStatsBar />
+            </div>
 
-          {!selectedId && (
             <div className="px-4 py-2">
               <div className="relative">
                 <div className="relative rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm border-none shadow-md">
@@ -281,23 +307,36 @@ export default function RoundsAPage() {
                 </div>
               </div>
             </div>
-          )}
 
-          {selectedId && (
-            <div className="px-4">
-              <PriceChart
-                coin={selectedCoin}
-                priceData={priceData}
-                isLoading={isPriceLoading}
+            <MemeGallery
+              onSelect={handleCoinSelect}
+              selectedSymbol={selectedCoin.symbol}
+            />
+          </ScrollableContainer>
+        ) : (
+          <div className="h-full flex flex-col">
+            <FixedContainer>
+              <div className="sticky top-0 z-20 bg-[#181B27]/95">
+                <SharrowStatsBar />
+              </div>
+
+              <div className="px-4">
+                <PriceChart
+                  coin={selectedCoin}
+                  priceData={priceData}
+                  isLoading={isPriceLoading}
+                />
+              </div>
+            </FixedContainer>
+
+            <ScrollableContainer className="flex-1">
+              <MemeGallery
+                onSelect={handleCoinSelect}
+                selectedSymbol={selectedCoin.symbol}
               />
-            </div>
-          )}
-
-          <MemeGallery
-            onSelect={handleCoinSelect}
-            selectedSymbol={selectedCoin.symbol}
-          />
-        </div>
+            </ScrollableContainer>
+          </div>
+        )}
       </main>
 
       <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
