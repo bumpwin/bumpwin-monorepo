@@ -2,13 +2,13 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
+import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { ChartTitle } from "@/components/ChartTitle";
 import DominanceChartSection from "@/components/DominanceChartSection";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
-import * as Progress from "@radix-ui/react-progress";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
 import {
@@ -20,153 +20,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { Progress as ShadcnProgress } from "@workspace/shadcn/components/progress";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Area,
-  AreaChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-const TOTAL_HOURS = 25;
-const DAYTIME_END = 24;
-
-// データ生成用のヘルパー関数
-const generateTimeData = () => {
-  return Array.from({ length: TOTAL_HOURS + 1 }, (_, i) => ({
-    hour: i,
-    value: 1,
-    isDarknight: i >= DAYTIME_END,
-  }));
-};
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-gray-800 p-2 rounded border border-gray-700">
-        <p className="text-yellow-400 font-bold">{`${label}h`}</p>
-        <p className="text-gray-400">
-          {label >= DAYTIME_END ? "Darknight" : "Daytime"}
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
-// Recharts版のプログレスバー
-const RechartsProgressBar = ({ currentHour }: { currentHour: number }) => {
-  const data = generateTimeData();
-
-  return (
-    <div className="w-full space-y-2">
-      <div className="h-24 bg-gray-800 rounded-lg p-4 border border-gray-700">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id="daytime" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" />
-                <stop offset="50%" stopColor="#eab308" />
-                <stop offset="100%" stopColor="#ef4444" />
-              </linearGradient>
-              <linearGradient id="darknight" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#7e22ce" />
-                <stop offset="100%" stopColor="#312e81" />
-              </linearGradient>
-            </defs>
-
-            {/* Daytime Area */}
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="none"
-              fill="url(#daytime)"
-              fillOpacity={0.8}
-              isAnimationActive={false}
-            />
-
-            {/* Darknight Area */}
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="none"
-              fill="url(#darknight)"
-              fillOpacity={0.8}
-              isAnimationActive={false}
-              data={data.filter((d) => d.isDarknight)}
-            />
-
-            {/* Current Time Reference Line */}
-            <ReferenceLine
-              x={currentHour}
-              stroke="#eab308"
-              strokeWidth={2}
-              label={{
-                value: `${currentHour}h`,
-                position: "top",
-                fill: "#eab308",
-                fontSize: 12,
-                fontWeight: "bold",
-              }}
-            />
-
-            {/* 24hにカスタムアイコン（🌙）を表示 */}
-            <ReferenceLine
-              x={24}
-              stroke="#a78bfa"
-              strokeWidth={3}
-              label={{
-                value: "🌙",
-                position: "top",
-                fontSize: 28,
-              }}
-            />
-
-            <XAxis
-              dataKey="hour"
-              tickCount={6}
-              tickFormatter={(value) => `${value}h`}
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
-              axisLine={{ stroke: "#374151" }}
-              tickLine={{ stroke: "#374151" }}
-            />
-
-            <YAxis hide={true} domain={[0, 1]} />
-
-            <Tooltip content={<CustomTooltip />} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* 凡例 */}
-      <div className="flex justify-between px-1">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-red-600" />
-          <span className="text-xs text-gray-400">Daytime (0-24h)</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-900 to-indigo-900" />
-          <span className="text-xs text-gray-400">Darknight (24-25h)</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// 時間マーカー用の配列を生成
-const generateTimeMarkers = () => {
-  return Array.from({ length: TOTAL_HOURS + 1 }, (_, i) => ({
-    id: `marker-${i}`,
-    position: (i / TOTAL_HOURS) * 100,
-  }));
-};
+import { useState } from "react";
 
 // mockmemesをRoundCoin型に変換する関数
 const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => {
@@ -195,6 +49,17 @@ const defaultCoin: RoundCoin = {
 };
 
 export default function RoundsAPage() {
+  // Battle Clock Provider から残り時間を取得
+  const { remainingTime } = useBattleClock();
+
+  // 残り時間を hh:mm:ss 形式に変換する関数
+  const formatRemainingTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
   // 最初のmemeを安全に取得
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
 
@@ -248,8 +113,6 @@ export default function RoundsAPage() {
       ? (priceData[priceData.length - 1]?.close ?? 0)
       : 0;
 
-  const [currentHour, setCurrentHour] = useState(12);
-
   return (
     <div className="flex h-full">
       {/* メインコンテンツ */}
@@ -260,80 +123,72 @@ export default function RoundsAPage() {
             <SharrowStatsBar />
           </div>
 
-          {/* DominanceChart Section - Premium Redesign */}
+          {/* DominanceChart Section - Premium Redesign - Cleaner & Brighter */}
           <div className="px-4 py-2">
             <div className="relative">
-              {/* Overlay Gradient Effects */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none z-10" />
-              <div className="absolute -inset-x-4 -top-6 h-12 bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-none z-10" />
+              {/* Remove dark gradient overlays */}
 
-              {/* Chart with Premium Frame */}
-              <div className="relative rounded-xl overflow-hidden backdrop-blur-sm border border-white/5 shadow-xl">
-                {/* Glowing Accent */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500/20 via-purple-500/20 to-blue-500/20 blur-2xl opacity-50" />
+              {/* Chart with Premium Frame - Brighter */}
+              <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-md">
+                {/* Remove blurry glow accent */}
 
-                {/* Header Bar */}
-                <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20">
-                  <h2 className="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                {/* Header Bar - Cleaner */}
+                <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20 bg-gray-900/50">
+                  <h2 className="text-lg font-bold tracking-tight text-white">
                     Market Dominance
                   </h2>
                   <div className="flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                    <span className="text-xs text-white/70 font-medium">
-                      LIVE
-                    </span>
+                    <span className="text-xs text-white font-medium">LIVE</span>
                   </div>
                 </div>
 
-                {/* The Chart - Enhanced Visibility */}
+                {/* The Chart - Clean View */}
                 <div className="relative z-0 pb-2">
-                  {/* グラフ内のラベルを削除 - RechartのラベルだけにしてWコントロールを避ける */}
                   <DominanceChartSection />
                 </div>
 
-                {/* Timeline Phases - Redesigned for Cleanliness */}
-                <div className="relative z-20 px-6 pt-1 pb-4 bg-black/30 backdrop-blur-sm rounded-b-lg">
-                  {/* Visual Timeline Bar */}
-                  <div className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-yellow-400/30 to-purple-600/50 rounded-full overflow-hidden" />
+                {/* Timeline Phases - Clean & Bright */}
+                <div className="relative z-20 px-6 pt-1 pb-4 bg-gray-900/50">
+                  {/* Visual Timeline Bar - Brighter */}
+                  <div className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-yellow-400 to-purple-600 opacity-30 rounded-full overflow-hidden" />
 
                   <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 sm:items-center pt-4">
-                    {/* Daytime Phase - Cleaner Badge */}
-                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pb-3 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/10">
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center">
-                          <span className="text-2xl relative z-10">🌞</span>
+                    {/* Daytime Phase - Brighter */}
+                    <div className="relative group flex flex-col gap-2 pb-4 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/20">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🌞</span>
+                        <div className="px-2.5 py-1 text-black font-bold text-sm bg-yellow-300 rounded-full shadow-sm">
+                          Daytime
                         </div>
-                        <div className="ml-2.5">
-                          <div className="flex items-center gap-2">
-                            <div className="px-2.5 py-1 text-black font-bold text-sm bg-yellow-300 rounded-md shadow-sm">
-                              Daytime
-                            </div>
-                            <span className="text-xs text-yellow-200 font-medium">(0-24h)</span>
-                          </div>
-                        </div>
+                        <span className="text-sm text-yellow-100 font-medium">
+                          (0-24h)
+                        </span>
                       </div>
-                      <p className="text-white text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide">
-                        A decision market culls the meme swarm into the Finalist 8.
+                      <p className="text-gray-200 text-sm max-w-xl leading-relaxed font-medium">
+                        A decision market culls the meme swarm into the Finalist
+                        8. Time left:
+                        <span className="ml-2 font-bold text-orange-500">
+                          {formatRemainingTime(remainingTime)}
+                        </span>
                       </p>
                     </div>
 
-                    {/* Darknight Phase - Cleaner Badge */}
-                    <div className="relative group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pt-3 pb-1 sm:py-2 sm:pl-2">
-                      <div className="flex items-center">
-                        <div className="flex items-center justify-center">
-                          <span className="text-2xl relative z-10">🌑</span>
+                    {/* Darknight Phase - Brighter */}
+                    <div className="relative group flex flex-col gap-2 pt-4 pb-1 sm:py-2 sm:pl-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">🌑</span>
+                        <div className="px-2.5 py-1 text-white font-bold text-sm bg-purple-600 rounded-full shadow-sm">
+                          Darknight
                         </div>
-                        <div className="ml-2.5">
-                          <div className="flex items-center gap-2">
-                            <div className="px-2.5 py-1 text-white font-bold text-sm bg-purple-700 rounded-md shadow-sm">
-                              Darknight
-                            </div>
-                            <span className="text-xs text-purple-200 font-medium">(24-25h)</span>
-                          </div>
-                        </div>
+                        <span className="text-sm text-purple-100 font-medium">
+                          (24-25h)
+                        </span>
                       </div>
-                      <p className="text-white text-sm sm:ml-2 max-w-xl leading-relaxed font-medium tracking-wide">
-                        Then comes the kill round: five sealed auctions, 12 minutes each—trader positions are hidden, only one meme survives.
+                      <p className="text-gray-200 text-sm max-w-xl leading-relaxed font-medium">
+                        Then comes the kill round: five sealed auctions, 12
+                        minutes each—trader positions are hidden, only one meme
+                        survives.
                       </p>
                     </div>
                   </div>
