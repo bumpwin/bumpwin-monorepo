@@ -79,7 +79,7 @@ const createMessageGenerator = (messages: Messages): MessageGenerator => ({
 
 // ポアソン分布に従って次のイベントまでの待機時間を計算
 const getNextEventTime = (): number => {
-  const meanWaitingTime = (60 * 1000) / 30; // 30 messages per minute (2秒に1メッセージ)
+  const meanWaitingTime = config.env.INSERT_CHAT_INTERVAL_MS; // 設定された間隔を使用
   return -meanWaitingTime * Math.log(Math.random());
 };
 
@@ -133,8 +133,12 @@ export const startChatMessageInsertion = async (): Promise<
   const messageGenerator = createMessageGenerator(messages);
 
   logger.info("🚀 Starting chat message insertion polling...");
-  logger.info(`Interval: ${config.env.INSERT_INTERVAL_MS}ms`);
-  logger.info("Messages per minute: 30 (2 seconds per message)");
+  logger.info(`Message interval: ${config.env.INSERT_CHAT_INTERVAL_MS}ms`);
+  logger.info(
+    `Messages per minute: ${Math.floor(
+      60000 / config.env.INSERT_CHAT_INTERVAL_MS,
+    )} (${config.env.INSERT_CHAT_INTERVAL_MS}ms per message)`,
+  );
   logger.info(`Total available messages: ${messages.comments.length}`);
 
   let nextEventTime = getNextEventTime();
@@ -151,7 +155,7 @@ export const startChatMessageInsertion = async (): Promise<
         lastCheckTime = currentTime;
       }
     }
-  }, config.env.INSERT_INTERVAL_MS);
+  }, config.env.INSERT_CHAT_INTERVAL_MS);
 
   // グレースフルシャットダウン
   process.on("SIGINT", () => {

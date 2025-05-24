@@ -23,7 +23,7 @@ async function startServer() {
 
     // バックグラウンドジョブの開始
     await Promise.all([
-      startChatEventPolling(config.env.POLLING_INTERVAL_MS),
+      startChatEventPolling(config.env.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS),
       startChatMessageInsertion(),
     ]);
   } catch (error) {

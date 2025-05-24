@@ -7,8 +7,11 @@ const envSchema = z.object({
     .enum(["development", "production", "test"])
     .default("development"),
   PORT: z.string().transform(Number).default("4000"),
-  POLLING_INTERVAL_MS: z.string().transform(Number).default("5000"),
-  INSERT_INTERVAL_MS: z.string().transform(Number).default("1000"),
+  LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS: z
+    .string()
+    .transform(Number)
+    .default("5000"),
+  INSERT_CHAT_INTERVAL_MS: z.string().transform(Number).default("2000"),
   SUPABASE_URL: z.string(),
   SUPABASE_ANON_KEY: z.string(),
 });
