@@ -23,7 +23,7 @@ const fetcher = new EventFetcher({
 /**
  * Get the initial cursor from Supabase
  */
-async function getInitialCursor(): Promise<EventId | null> {
+const getInitialCursor = async (): Promise<EventId | null> => {
   try {
     const cursorResult = await dbRepository.getPollCursor();
     if (!cursorResult.isOk()) {
@@ -46,15 +46,15 @@ async function getInitialCursor(): Promise<EventId | null> {
     logger.info(`Initial cursor loaded from Supabase: ${pollCursor.cursor}`);
     return cursor;
   } catch (error) {
-    logger.error("Error fetching initial poll cursor:", error);
+    logger.error("Error fetching initial poll cursor:", error as Error);
     throw error;
   }
-}
+};
 
 /**
  * Save chat message to Supabase
  */
-async function saveChatMessage(event: any): Promise<void> {
+const saveChatMessage = async (event: any): Promise<void> => {
   try {
     const chatMessageRequest: InsertChatMessageRequest = {
       txDigest: event.digest,
@@ -73,18 +73,21 @@ async function saveChatMessage(event: any): Promise<void> {
     } else {
       logger.error(
         `Failed to save message (Digest: ${event.digest}):`,
-        insertResult.error,
+        insertResult.error as unknown as Error,
       );
     }
   } catch (error) {
-    logger.error(`Error saving message (Digest: ${event.digest}):`, error);
+    logger.error(
+      `Error saving message (Digest: ${event.digest}):`,
+      error as Error,
+    );
   }
-}
+};
 
 /**
  * Update poll cursor in Supabase
  */
-async function updatePollCursor(cursor: EventId | null): Promise<void> {
+const updatePollCursor = async (cursor: EventId | null): Promise<void> => {
   try {
     const updateCursorRequest: UpdatePollCursorRequest = {
       cursor: cursor ? JSON.stringify(cursor) : null,
@@ -97,20 +100,23 @@ async function updatePollCursor(cursor: EventId | null): Promise<void> {
         `Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`,
       );
     } else {
-      logger.error("Failed to update poll cursor:", updateResult.error);
+      logger.error(
+        "Failed to update poll cursor:",
+        updateResult.error as unknown as Error,
+      );
     }
   } catch (error) {
-    logger.error("Error updating poll cursor:", error);
+    logger.error("Error updating poll cursor:", error as Error);
   }
-}
+};
 
 /**
  * Process new events, save to DB and log details
  */
-async function processEvents(
+const processEvents = async (
   events: any[],
   processedEventIds: Set<string>,
-): Promise<void> {
+): Promise<void> => {
   if (events.length === 0) return;
 
   logger.info(
@@ -136,12 +142,12 @@ async function processEvents(
     // Mark as processed
     processedEventIds.add(eventId);
   }
-}
+};
 
 /**
  * Start polling for chat events
  */
-export async function startChatEventPolling(pollingIntervalMs: number) {
+export const startChatEventPolling = async (pollingIntervalMs: number) => {
   // Keep track of processed event IDs to avoid duplicates
   const processedEventIds = new Set<string>();
 
@@ -173,7 +179,7 @@ export async function startChatEventPolling(pollingIntervalMs: number) {
           await updatePollCursor(cursor);
         }
       } catch (error) {
-        logger.error("Error in polling loop:", error);
+        logger.error("Error in polling loop:", error as Error);
       }
     }, pollingIntervalMs);
 
@@ -187,7 +193,7 @@ export async function startChatEventPolling(pollingIntervalMs: number) {
     // Keep the process running
     process.stdin.resume();
   } catch (error) {
-    logger.error("Fatal error starting polling script:", error);
+    logger.error("Fatal error starting polling script:", error as Error);
     process.exit(1);
   }
-}
+};
