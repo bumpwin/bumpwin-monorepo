@@ -318,9 +318,6 @@ export default function TwitchStyleChatPanel() {
                   className="py-1 group hover:bg-[#18181b]/30 px-1 rounded"
                 >
                   <div className="text-sm break-words">
-                    <span className="text-[#adadb8] text-xs mr-1">
-                      {formatTime(msg.timestamp)}
-                    </span>
                     <span className="break-words">
                       <span>{getEmojiFromUserId(msg.userId)} </span>
                       <span
@@ -329,10 +326,10 @@ export default function TwitchStyleChatPanel() {
                           color: getColorFromUserId(msg.userId),
                         }}
                       >
-                        {formatAddress(msg.userId)}:
-                      </span>{" "}
-                      <span className="text-white">
-                        {renderWithEmoji(msg.message)}
+                        {formatAddress(msg.userId)}
+                      </span>
+                      <span className="text-gray-200">
+                        : {renderWithEmoji(msg.message)}
                       </span>
                     </span>
                   </div>
@@ -354,7 +351,7 @@ export default function TwitchStyleChatPanel() {
                 !account
                   ? "Please connect your wallet"
                   : message.trim() === ""
-                    ? "Send a message"
+                    ? "Send a message for 0.000001 SUI"
                     : "Type your message"
               }
               className="bg-[#0e0e10] border border-[#2a2a2d] hover:border-[#9147ff] focus:border-[#9147ff] pl-4 pr-14 py-3 w-full text-white rounded-md shadow-inner transition-colors"
