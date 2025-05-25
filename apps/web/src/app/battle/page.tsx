@@ -3,12 +3,14 @@
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { useBattleRoundPhase } from "@/app/providers/BattleRoundPhaseProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
 import { MarketDominanceCard } from "@/components/MarketDominanceCard";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
-import SwapUI from "@/components/SwapUI";
+import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
+import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
@@ -193,6 +195,7 @@ export default function RoundsAPage() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
   const { remainingTime } = useBattleClock();
+  const { phase } = useBattleRoundPhase();
 
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
@@ -231,7 +234,7 @@ export default function RoundsAPage() {
 
   return (
     <div className="flex h-full">
-      <main className="flex-1 border-r border-gray-700 h-full overflow-hidden">
+      <main className="flex-1 h-full overflow-hidden">
         {!selectedId ? (
           <ScrollableContainer>
             <div className="sticky top-0 z-20 bg-[#181B27]/95">
@@ -273,12 +276,16 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[360px] flex-shrink-0 border-l border-gray-700 h-full overflow-hidden">
+      <aside className="w-[360px] flex-shrink-0 h-full overflow-hidden">
         <ScrollableContainer>
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">
               <BattleRoundPhaseToggle />
-              <SwapUI coin={selectedCoin} />
+              {phase === "daytime" ? (
+                <DaytimeSwapUI coin={selectedCoin} />
+              ) : (
+                <DarknightSwapUI coin={selectedCoin} />
+              )}
             </div>
             <BattleCoinDetailCard coin={selectedCoin} />
           </div>
