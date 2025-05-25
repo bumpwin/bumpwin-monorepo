@@ -1,6 +1,6 @@
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import DominanceRechart from "@/components/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import {
   DropdownMenu,

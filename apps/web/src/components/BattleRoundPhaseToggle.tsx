@@ -1,6 +1,6 @@
 "use client";
 
-import { useBattleRoundPhase } from "@/app/providers/BattleRoundPhaseProvider";
+import { useBattleRoundPhase } from "@/providers/BattleRoundPhaseProvider";
 
 export const BattleRoundPhaseToggle = () => {
   const { phase, setPhase } = useBattleRoundPhase();

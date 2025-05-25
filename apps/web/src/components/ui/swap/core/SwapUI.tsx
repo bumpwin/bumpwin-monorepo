@@ -1,8 +1,8 @@
 "use client";
 
-import { useBattleRoundPhase } from "@/app/providers/BattleRoundPhaseProvider";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
+import { useBattleRoundPhase } from "@/providers/BattleRoundPhaseProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 
 interface SwapUIProps {

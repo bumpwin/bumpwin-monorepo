@@ -1,6 +1,6 @@
 "use client";
 
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { useBattleClock } from "@/providers/BattleClockProvider";
 import type React from "react";
 import {
   CartesianGrid,

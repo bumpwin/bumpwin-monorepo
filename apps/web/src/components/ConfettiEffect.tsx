@@ -1,6 +1,6 @@
 "use client";
 
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { useBattleClock } from "@/providers/BattleClockProvider";
 import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 
