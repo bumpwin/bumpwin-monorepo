@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { DollarSign, Info } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface SwapUIProps {
@@ -20,7 +21,10 @@ interface SwapUIProps {
 }
 
 const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
-  const [amount, setAmount] = useState<number | null>(null);
+  const { register, setValue, watch } = useForm<{ amount: number | null }>({
+    defaultValues: { amount: null },
+  });
+  const amount = watch("amount");
   const [balance, setBalance] = useState<number>(0);
   const [potentialWin, setPotentialWin] = useState<number>(0);
   const [avgPrice, setAvgPrice] = useState<number>(17.6);
@@ -66,12 +70,12 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
 
   const handleAmountChange = (value: string) => {
     if (value === "") {
-      setAmount(null);
+      setValue("amount", null);
       return;
     }
     if (!/^\d+$/.test(value)) return;
     const numValue = Number.parseInt(value.replace(/^0+(?=\d)/, ""), 10);
-    setAmount(numValue);
+    setValue("amount", numValue);
   };
 
   if (!coin) return null;
@@ -136,19 +140,25 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
 
         {/* Amount Input */}
         <div className="mb-4">
-          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">Amount</div>
+          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">
+            Amount
+          </div>
           <div className="relative mb-3">
-            <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner">
+            <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-gray-200">
               <div className="flex items-baseline justify-end min-h-[56px] px-3 py-2">
                 <input
                   type="text"
+                  {...register("amount", {
+                    valueAsNumber: true,
+                    validate: (v) => v === null || v >= 0,
+                  })}
                   value={amount === null ? "" : amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
-                  className="bg-transparent border-none outline-none text-[#00E065] text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500"
-                  style={{ width: `${String(amount ?? '').length + 1}ch` }}
+                  className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500"
+                  style={{ width: `${String(amount ?? "").length + 1}ch` }}
                   placeholder="0"
                 />
-                <span className="ml-2 text-[#00E065] text-xl font-bold select-none">SUI</span>
+                <span className="ml-2 text-xl font-bold select-none">SUI</span>
               </div>
             </div>
           </div>
@@ -161,8 +171,10 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
               <button
                 type="button"
                 key={label}
-                className="w-auto px-2 bg-transparent text-gray-400 border border-gray-800 rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-gray-300 transition-colors shadow-none"
-                onClick={() => setAmount((prev) => Number(((prev || 0) + value).toFixed(2)))}
+                className="w-auto px-2 bg-transparent text-gray-200 border border-gray-400 rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-gray-300 transition-colors shadow-none"
+                onClick={() =>
+                  setValue("amount", Number(((amount ?? 0) + value).toFixed(2)))
+                }
               >
                 {label}
               </button>
@@ -170,7 +182,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             <button
               type="button"
               className="w-auto px-2 bg-transparent text-gray-400 border border-gray-800 rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-gray-300 transition-colors shadow-none"
-              onClick={() => setAmount(balance)}
+              onClick={() => setValue("amount", balance)}
             >
               Max
             </button>
@@ -188,7 +200,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                 type: "spring",
                 stiffness: 500,
                 damping: 30,
-                duration: 0.3
+                duration: 0.3,
               }}
               className="overflow-hidden"
             >
@@ -198,8 +210,12 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                     <span className="text-gray-300 font-medium">To win 🌻</span>
                   </div>
                   <div className="flex items-baseline justify-end px-3">
-                    <span className="text-[#00E065] text-4xl font-bold">{potentialWin.toFixed(2)}</span>
-                    <span className="ml-2 text-[#00E065] text-xl font-bold select-none">SUI</span>
+                    <span className="text-[#00E065] text-4xl font-bold">
+                      {potentialWin.toFixed(2)}
+                    </span>
+                    <span className="ml-2 text-[#00E065] text-xl font-bold select-none">
+                      SUI
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs">
@@ -248,8 +264,10 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                 </svg>
                 Processing
               </div>
+            ) : activeSide === "buy" ? (
+              "Buy Now"
             ) : (
-              activeSide === "buy" ? "Buy Now" : "Sell Now"
+              "Sell Now"
             )}
           </button>
         ) : (
