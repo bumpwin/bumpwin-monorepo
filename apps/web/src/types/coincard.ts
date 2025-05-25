@@ -9,7 +9,7 @@ export interface CoinCardProps {
   address: string;
   symbol: string;
   name: string;
-  createdAt: Date;
+  createdAt?: Date;
   isFavorite: boolean;
   logoUrl: string;
   description: string;
