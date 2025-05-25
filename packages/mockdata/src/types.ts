@@ -10,14 +10,24 @@ export interface MemeMetadata {
   iconUrl: string;
 }
 
-export interface RoundData {
-  id: string;
-  round: number;
-  memeIds: MEME_ID[];
-  startTime: number;
-  endTime: number;
-  status: "active" | "completed" | "upcoming";
-}
+type RoundData =
+  | {
+      id: string;
+      round: number;
+      memeIds: MEME_ID[];
+      championMemeId: MEME_ID;
+      startTime: number;
+      endTime: number;
+      status: "completed";
+    }
+  | {
+      id: string;
+      round: number;
+      memeIds: MEME_ID[];
+      startTime: number;
+      endTime: number;
+      status: "active" | "upcoming";
+    };
 
 export interface MemeMarketData {
   share: number;

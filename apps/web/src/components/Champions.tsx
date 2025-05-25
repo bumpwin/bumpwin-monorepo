@@ -8,7 +8,7 @@ import {
   mockCoinMetadata,
   mockDominanceChartData,
 } from "@/mock/mockData";
-import type { ChampionCoin } from "@/types/champion";
+import type { CoinCardProps } from "@/types/coincard";
 import type { DominanceChartData } from "@/types/dominance";
 import { motion } from "framer-motion";
 import { Globe, Send, Twitter } from "lucide-react";
@@ -16,7 +16,7 @@ import Image from "next/image";
 import type React from "react";
 
 interface ChampionsListProps {
-  coins: ChampionCoin[];
+  coins: CoinCardProps[];
   dominanceData: DominanceChartData;
 }
 
@@ -59,10 +59,10 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
     <div className="flex flex-col gap-4">
       {coins.map((coin) => {
         const metadata = mockChampionCoinMetadata.find(
-          (m) => m.id.toString() === coin.id,
+          (m) => m.id.toString() === coin.address,
         );
         return (
-          <div key={coin.id} className="relative">
+          <div key={coin.address} className="relative">
             <div className="block group cursor-pointer">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -80,7 +80,7 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
                             <div className="absolute inset-0 rounded-full overflow-hidden">
                               <Image
-                                src={coin.iconUrl}
+                                src={coin.logoUrl}
                                 alt={coin.name}
                                 width={112}
                                 height={112}

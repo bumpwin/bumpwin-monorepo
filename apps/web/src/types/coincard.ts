@@ -29,4 +29,10 @@ export interface CoinCardProps {
   role?: string;
   /** ハイライト表示するかどうか */
   isHighlighted?: boolean;
+  /** シェア */
+  share?: number;
+  /** ソーシャルリンク */
+  telegramLink?: string;
+  websiteLink?: string;
+  twitterLink?: string;
 }
