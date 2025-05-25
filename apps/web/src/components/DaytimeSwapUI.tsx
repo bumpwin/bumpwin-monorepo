@@ -150,10 +150,25 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
 
         {/* Amount Input */}
         <div className="mb-4">
-          <div className="text-gray-400 font-medium text-sm ml-1">Amount</div>
+          <div className="text-gray-400 font-medium text-sm ml-1">You pay</div>
           <div className="relative mb-3">
             <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-white">
-              <div className="flex items-baseline justify-end px-3">
+              <div className="flex items-baseline px-3">
+                {activeSide === "sell" && (
+                  <div className="flex items-center gap-2 mr-1 min-w-0 flex-shrink-0">
+                    <div className="w-7 h-7 relative overflow-hidden rounded-lg">
+                      <Image
+                        src={coin.iconUrl}
+                        alt={coin.symbol}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
+                    <span className="font-bold text-lg text-white select-none truncate">
+                      {coin.symbol}
+                    </span>
+                  </div>
+                )}
                 <input
                   type="text"
                   {...register("amount", {
@@ -163,12 +178,16 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                   })}
                   value={amount === null ? "" : amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
-                  className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500"
+                  className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500 flex-1"
                   style={{ width: `${String(amount ?? "").length + 1}ch` }}
                   placeholder="0"
                   autoComplete="off"
                 />
-                <span className="ml-2 text-xl font-bold select-none">SUI</span>
+                <span
+                  className={`ml-2 text-xl font-bold select-none${activeSide === "sell" ? " invisible" : ""}`}
+                >
+                  SUI
+                </span>
               </div>
             </div>
           </div>
@@ -236,7 +255,9 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
               <div className="border-t border-[#2D3244] py-4 mb-4">
                 <div className="flex justify-between items-center cursor-not-allowed">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-400 font-medium">To win 🌻</span>
+                    <span className="text-gray-400 font-medium">
+                      {activeSide === "buy" ? "To win 🌻" : "To receive"}
+                    </span>
                   </div>
                   <div className="flex items-baseline justify-end px-3">
                     <span className="text-[#00E065] text-4xl font-bold">

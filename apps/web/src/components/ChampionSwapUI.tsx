@@ -141,19 +141,15 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
           <div className="relative mb-3">
             <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-white">
               <div className="flex items-baseline px-3">
-                <div className="flex items-center gap-1 mr-1 min-w-0 flex-shrink-0">
-                  <div
-                    className="w-7 h-7 relative overflow-hidden"
-                    style={{ borderRadius: 0 }}
-                  >
+                <div className="flex items-center gap-2 mr-1 min-w-0 flex-shrink-0">
+                  <div className="w-7 h-7 relative overflow-hidden rounded-lg">
                     <Image
                       src={
                         activeSide === "buy" ? "/images/SUI.png" : coin.iconUrl
                       }
                       alt={activeSide === "buy" ? "SUI" : coin.symbol}
                       fill
-                      className="object-cover"
-                      style={{ borderRadius: 0 }}
+                      className="object-cover rounded-lg"
                     />
                   </div>
                   <span className="font-bold text-lg text-white select-none truncate">
