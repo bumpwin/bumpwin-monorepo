@@ -136,40 +136,40 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
 
         {/* Amount Input */}
         <div className="mb-4">
-          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">
-            Amount
-          </div>
+          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">Amount</div>
           <div className="relative mb-3">
-            <div className="bg-[#131620] rounded-2xl overflow-hidden shadow-inner">
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-4xl font-bold text-gray-500">
-                  $
-                </span>
+            <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner">
+              <div className="flex items-baseline justify-end min-h-[56px] px-3 py-2">
                 <input
                   type="text"
                   value={amount === null ? "" : amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
-                  className="w-full bg-transparent text-white pl-12 pr-4 py-5 text-4xl font-bold focus:outline-none"
+                  className="bg-transparent border-none outline-none text-[#00E065] text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500"
+                  style={{ width: `${String(amount ?? '').length + 1}ch` }}
                   placeholder="0"
                 />
+                <span className="ml-2 text-[#00E065] text-xl font-bold select-none">SUI</span>
               </div>
             </div>
           </div>
-
-          <div className="flex gap-2 mb-1">
-            {[1, 20, 100].map((v) => (
+          <div className="flex justify-end gap-1.5 mb-1">
+            {[
+              { label: "+0.1", value: 0.1 },
+              { label: "+1", value: 1 },
+              { label: "+10", value: 10 },
+            ].map(({ label, value }) => (
               <button
                 type="button"
-                key={v}
-                className="flex-1 bg-[#1A1E2E] text-gray-300 rounded-xl py-2.5 text-sm font-medium hover:bg-[#242A3F] transition-colors"
-                onClick={() => setAmount((prev) => (prev || 0) + v)}
+                key={label}
+                className="w-auto px-2 bg-transparent text-gray-400 border border-gray-800 rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-gray-300 transition-colors shadow-none"
+                onClick={() => setAmount((prev) => Number(((prev || 0) + value).toFixed(2)))}
               >
-                +${v}
+                {label}
               </button>
             ))}
             <button
               type="button"
-              className="flex-1 bg-[#1A1E2E] text-gray-300 rounded-xl py-2.5 text-sm font-medium hover:bg-[#242A3F] transition-colors"
+              className="w-auto px-2 bg-transparent text-gray-400 border border-gray-800 rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-gray-300 transition-colors shadow-none"
               onClick={() => setAmount(balance)}
             >
               Max
@@ -188,18 +188,18 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                 type: "spring",
                 stiffness: 500,
                 damping: 30,
-                duration: 0.3,
+                duration: 0.3
               }}
               className="overflow-hidden"
             >
               <div className="border-t border-[#1E2334] py-4 mb-4">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-300 font-medium">To win</span>
-                    <DollarSign className="h-4 w-4 text-[#00E065]" />
+                    <span className="text-gray-300 font-medium">To win 🌻</span>
                   </div>
-                  <div className="text-[#00E065] text-4xl font-bold tracking-tight">
-                    ${potentialWin.toFixed(2)}
+                  <div className="flex items-baseline justify-end px-3">
+                    <span className="text-[#00E065] text-4xl font-bold">{potentialWin.toFixed(2)}</span>
+                    <span className="ml-2 text-[#00E065] text-xl font-bold select-none">SUI</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs">
