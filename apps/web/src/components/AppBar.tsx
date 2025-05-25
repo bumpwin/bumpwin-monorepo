@@ -1,6 +1,5 @@
 "use client";
 
-import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
 import BattleClock from "@/components/BattleClock";
 import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
 import WordmarkLogo from "@/components/WordmarkLogo";
@@ -8,13 +7,12 @@ import { useBattleClock } from "@/providers/BattleClockProvider";
 import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function AppBar() {
   const pathname = usePathname();
   const router = useRouter();
   const roundsClickRef = useRef(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const {
     isChallengePeriod,
     remainingTime,
@@ -22,7 +20,6 @@ export default function AppBar() {
     challengeTime,
     setIsChallengePeriod,
     phase,
-    currentRound,
   } = useBattleClock();
 
   const navLinks = [
@@ -60,16 +57,9 @@ export default function AppBar() {
 
   const handleCreateCoinClick = () => {
     if (pathname === "/rounds") {
-      setShowCreateModal(true);
+      router.push("/rounds?intent=create-coin");
     } else {
       router.push("/rounds?intent=create-coin");
-    }
-  };
-
-  const handleCloseCreateModal = () => {
-    setShowCreateModal(false);
-    if (pathname === "/rounds") {
-      router.push("/rounds");
     }
   };
 
