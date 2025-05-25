@@ -16,7 +16,7 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
   return phase === "daytime" ? (
     <DaytimeSwapUI coin={coin} variant={variant} />
   ) : (
-    <DarknightSwapUI coin={coin} />
+    <DarknightSwapUI />
   );
 };
 

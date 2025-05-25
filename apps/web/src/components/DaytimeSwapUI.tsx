@@ -12,7 +12,7 @@ import {
 import { CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { getSuiBalance } from "@workspace/sui";
 import { AnimatePresence, motion } from "framer-motion";
-import { DollarSign, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +35,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   const amount = watch("amount");
   const [balance, setBalance] = useState<number>(0);
   const [potentialWin, setPotentialWin] = useState<number>(0);
-  const [avgPrice, setAvgPrice] = useState<number>(17.6);
+  const [avgPrice] = useState<number>(17.6);
   const [activeSide, setActiveSide] = useState<"buy" | "sell">("buy");
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
