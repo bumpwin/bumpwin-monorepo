@@ -1,6 +1,12 @@
 "use client";
 
 import { DarkCard } from "@/components/ui/dark-card";
+import { ActionButton } from "@/components/ui/swap/elements/action-button";
+import { AmountInput } from "@/components/ui/swap/elements/amount-input";
+import { CoinHeader } from "@/components/ui/swap/elements/coin-header";
+import { PotentialWinDisplay } from "@/components/ui/swap/elements/potential-win-display";
+import { ToggleButton } from "@/components/ui/swap/elements/toggle-button";
+import type { ToggleSide } from "@/components/ui/swap/elements/types";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -10,12 +16,6 @@ import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ActionButton } from "../elements/action-button";
-import { AmountInput } from "../elements/amount-input";
-import { CoinHeader } from "../elements/coin-header";
-import { PotentialWinDisplay } from "../elements/potential-win-display";
-import { ToggleButton } from "../elements/toggle-button";
-import type { ToggleSide } from "../elements/types";
 
 interface SwapUIProps {
   coin?: RoundCoin;
@@ -96,7 +96,9 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
         {/* Buy/Switch Toggle */}
         <ToggleButton
           activeSide={activeSide}
-          onChange={(side: ToggleSide) => setActiveSide(side as "buy" | "switch")}
+          onChange={(side: ToggleSide) =>
+            setActiveSide(side as "buy" | "switch")
+          }
           secondaryOption="switch"
           secondaryColor="violet"
           componentType="darknight"

@@ -1,7 +1,10 @@
 import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
+import type {
+  ComponentType,
+  ToggleSide,
+} from "@/components/ui/swap/elements/types";
 import type { RoundCoin } from "@/types/roundcoin";
 import type { UseFormRegisterReturn } from "react-hook-form";
-import type { ComponentType, ToggleSide } from "./types";
 
 interface AmountInputProps {
   amount: number | null;

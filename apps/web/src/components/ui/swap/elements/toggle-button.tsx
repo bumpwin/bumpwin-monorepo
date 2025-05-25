@@ -1,4 +1,7 @@
-import type { ComponentType, ToggleSide } from "./types";
+import type {
+  ComponentType,
+  ToggleSide,
+} from "@/components/ui/swap/elements/types";
 
 interface ToggleButtonProps {
   activeSide: ToggleSide;
