@@ -52,14 +52,11 @@ export const PotentialWinDisplay = ({
     .with({ componentType: "champion", activeSide: "buy" }, () => false)
     .otherwise(() => true);
 
-  // Determine the label text based on activeSide and componentType
-  const labelText = match({ componentType, activeSide })
-    .with({ componentType: "champion", activeSide: "buy" }, () => "To receive")
-    .with({ activeSide: "buy" }, () => "To win 🌻")
-    .otherwise(() => "To receive");
-
   // Special case for Daytime
   const isDaytime = componentType === "daytime";
+
+  const labelText =
+    isDaytime && activeSide === "buy" ? "To win 🌻" : "To receive";
 
   // Text color for amounts in Daytime
   const amountTextColor =
