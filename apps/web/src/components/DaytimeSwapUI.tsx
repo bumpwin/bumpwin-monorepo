@@ -1,5 +1,6 @@
 "use client";
 
+import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
 import { DarkCard } from "@/components/ui/dark-card";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
@@ -155,19 +156,11 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-white">
               <div className="flex items-baseline px-3">
                 {activeSide === "sell" && (
-                  <div className="flex items-center gap-2 mr-1 min-w-0 flex-shrink-0">
-                    <div className="w-7 h-7 relative overflow-hidden rounded-lg">
-                      <Image
-                        src={coin.iconUrl}
-                        alt={coin.symbol}
-                        fill
-                        className="object-cover rounded-lg"
-                      />
-                    </div>
-                    <span className="font-bold text-lg text-white select-none truncate">
-                      {coin.symbol}
-                    </span>
-                  </div>
+                  <CoinIconSymbol
+                    coin={coin}
+                    size="sm"
+                    className="mr-1 min-w-0 flex-shrink-0"
+                  />
                 )}
                 <input
                   type="text"
@@ -253,17 +246,27 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
               className="overflow-hidden"
             >
               <div className="border-t border-[#2D3244] py-4 mb-4">
-                <div className="flex justify-between items-center cursor-not-allowed">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400 font-medium">
-                      {activeSide === "buy" ? "To win 🌻" : "To receive"}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-end px-3">
-                    <span className="text-[#00E065] text-4xl font-bold">
+                <div className="text-gray-400 font-medium text-sm mb-2 cursor-not-allowed">
+                  {activeSide === "buy" ? "To win 🌻" : "To receive"}
+                </div>
+                <div className="flex items-baseline px-3 cursor-not-allowed">
+                  <CoinIconSymbol
+                    coin={
+                      activeSide === "sell"
+                        ? ({
+                            iconUrl: "/images/SUI.png",
+                            symbol: "SUI",
+                          } as RoundCoin)
+                        : coin
+                    }
+                    size="sm"
+                    className="mr-1 min-w-0 flex-shrink-0"
+                  />
+                  <div className="flex items-baseline justify-end flex-1">
+                    <span className="text-white text-4xl font-bold">
                       {potentialWin.toFixed(2)}
                     </span>
-                    <span className="ml-2 text-[#00E065] text-xl font-bold select-none">
+                    <span className="ml-2 text-white text-xl font-bold select-none">
                       SUI
                     </span>
                   </div>

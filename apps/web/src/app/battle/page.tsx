@@ -234,7 +234,7 @@ export default function RoundsAPage() {
 
   return (
     <div className="flex h-full">
-      <main className="flex-1 border-r border-gray-700 h-full overflow-hidden">
+      <main className="flex-1 h-full overflow-hidden">
         {!selectedId ? (
           <ScrollableContainer>
             <div className="sticky top-0 z-20 bg-[#181B27]/95">
@@ -276,7 +276,7 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[360px] flex-shrink-0 border-l border-gray-700 h-full overflow-hidden">
+      <aside className="w-[360px] flex-shrink-0 h-full overflow-hidden">
         <ScrollableContainer>
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">

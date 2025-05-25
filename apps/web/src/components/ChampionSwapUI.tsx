@@ -1,5 +1,6 @@
 "use client";
 
+import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
 import { DarkCard } from "@/components/ui/dark-card";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
@@ -141,21 +142,13 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
           <div className="relative mb-3">
             <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-white">
               <div className="flex items-baseline px-3">
-                <div className="flex items-center gap-2 mr-1 min-w-0 flex-shrink-0">
-                  <div className="w-7 h-7 relative overflow-hidden rounded-lg">
-                    <Image
-                      src={
-                        activeSide === "buy" ? "/images/SUI.png" : coin.iconUrl
-                      }
-                      alt={activeSide === "buy" ? "SUI" : coin.symbol}
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
-                  <span className="font-bold text-lg text-white select-none truncate">
-                    {activeSide === "buy" ? "SUI" : coin.symbol}
-                  </span>
-                </div>
+                {activeSide === "sell" && (
+                  <CoinIconSymbol
+                    coin={coin}
+                    size="sm"
+                    className="mr-1 min-w-0 flex-shrink-0"
+                  />
+                )}
                 <input
                   type="text"
                   {...register("amount", {
@@ -171,7 +164,7 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
                   autoComplete="off"
                 />
                 <span
-                  className={`ml-2 text-xl font-bold select-none${activeSide === "buy" ? "" : " invisible"}`}
+                  className={`ml-2 text-xl font-bold select-none${activeSide === "sell" ? " invisible" : ""}`}
                 >
                   SUI
                 </span>
@@ -241,45 +234,34 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
             >
               <div className="border-t border-[#2D3244] py-4 mb-4">
                 <div className="text-gray-400 font-medium text-sm mb-2 cursor-not-allowed">
-                  To receive
+                  {activeSide === "buy" ? "To win 🌻" : "To receive"}
                 </div>
                 <div className="flex items-baseline px-3 cursor-not-allowed">
-                  <div className="flex items-center gap-1 mr-1 min-w-0 flex-shrink-0">
-                    <div
-                      className="w-7 h-7 relative overflow-hidden"
-                      style={{ borderRadius: 0 }}
-                    >
-                      <Image
-                        src={
-                          activeSide === "sell"
-                            ? "/images/SUI.png"
-                            : coin.iconUrl
-                        }
-                        alt={activeSide === "sell" ? "SUI" : coin.symbol}
-                        fill
-                        className="object-cover"
-                        style={{ borderRadius: 0 }}
-                      />
-                    </div>
-                    <span className="font-bold text-lg text-white select-none truncate">
-                      {activeSide === "sell" ? "SUI" : coin.symbol}
-                    </span>
-                  </div>
+                  <CoinIconSymbol
+                    coin={
+                      activeSide === "sell"
+                        ? ({
+                            iconUrl: "/images/SUI.png",
+                            symbol: "SUI",
+                          } as RoundCoin)
+                        : coin
+                    }
+                    size="sm"
+                    className="mr-1 min-w-0 flex-shrink-0"
+                  />
                   <div className="flex items-baseline justify-end flex-1">
                     <span className="text-white text-4xl font-bold">
                       {potentialWin.toFixed(2)}
                     </span>
-                    <span
-                      className={`ml-2 text-white text-xl font-bold select-none${activeSide === "sell" ? "" : " invisible"}`}
-                    >
+                    <span className="ml-2 text-white text-xl font-bold select-none">
                       SUI
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs cursor-not-allowed">
-                  <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
-                  <Info className="h-3 w-3 cursor-not-allowed" />
-                </div>
+              </div>
+              <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs cursor-not-allowed">
+                <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
+                <Info className="h-3 w-3 cursor-not-allowed" />
               </div>
             </motion.div>
           )}
