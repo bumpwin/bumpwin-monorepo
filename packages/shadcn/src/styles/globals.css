@@ -127,3 +127,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* --- Custom Scrollbar Styles: Project-wide, shadcn color scheme --- */
+* {
+  scrollbar-width: thin; /* Firefox: subtle, modern look */
+  scrollbar-color: var(--border) var(--background); /* Firefox: shadcn color variables */
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+  background: var(--background); /* Track background */
+  border-radius: var(--radius-md);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border); /* Thumb color: shadcn border */
+  border-radius: var(--radius-lg); /* Rounded for modern feel */
+  min-height: 40px;
+  border: 2px solid var(--background); /* Padding between thumb and track */
+  transition: background 0.2s;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--primary); /* Highlight on hover */
+}
+
+/* Dark mode: use shadcn dark variables */
+.dark *::-webkit-scrollbar {
+  background: var(--background);
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border: 2px solid var(--background);
+}
+.dark *::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
