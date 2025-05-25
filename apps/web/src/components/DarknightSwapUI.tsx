@@ -1,20 +1,17 @@
 "use client";
 
-import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
+import { ActionButton } from "@/components/ui/action-button";
+import { AmountInput } from "@/components/ui/amount-input";
+import { CoinHeader } from "@/components/ui/coin-header";
 import { DarkCard } from "@/components/ui/dark-card";
+import { PotentialWinDisplay } from "@/components/ui/potential-win-display";
+import { ToggleButton } from "@/components/ui/toggle-button";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
-import {
-  ConnectButton,
-  useCurrentAccount,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { getSuiBalance } from "@workspace/sui";
-import { AnimatePresence, motion } from "framer-motion";
-import { Info } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -92,246 +89,54 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   return (
     <DarkCard className="w-full bg-gradient-to-b from-[#0F1225] to-[#1A1E32] border border-[#2A2F45] shadow-[0_8px_32px_rgba(124,58,237,0.15)] before:absolute before:inset-0 before:rounded-xl before:shadow-[0_0_30px_rgba(124,58,237,0.1)] before:pointer-events-none relative">
       <CardHeader className="">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div
-            className={`relative w-12 h-12 rounded-xl overflow-hidden ${
-              variant === "champion"
-                ? "border border-yellow-400/20 shadow-[0_0_15px_rgba(255,215,0,0.1)]"
-                : "border border-purple-500/20 shadow-[0_0_15px_rgba(149,76,233,0.1)]"
-            }`}
-          >
-            <Image
-              src={coin.iconUrl}
-              alt={coin.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div
-              className={`font-bold text-xl truncate ${
-                variant === "champion"
-                  ? "text-yellow-400 drop-shadow-[0_0_5px_rgba(255,215,0,0.2)]"
-                  : "text-white"
-              }`}
-            >
-              {coin.name}
-            </div>
-          </div>
-        </div>
+        <CoinHeader coin={coin} variant={variant} />
       </CardHeader>
       <CardContent>
         {/* Buy/Switch Toggle */}
-        <div className="flex p-1 mb-3 bg-[#131620] rounded-full">
-          <button
-            type="button"
-            onClick={() => setActiveSide("buy")}
-            className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
-              activeSide === "buy"
-                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
-                : "text-gray-400 hover:bg-green-500/20 hover:text-green-400"
-            }`}
-          >
-            Buy
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSide("switch")}
-            className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
-              activeSide === "switch"
-                ? "bg-violet-500/20 text-violet-300 hover:bg-violet-500/30"
-                : "text-gray-400 hover:bg-violet-500/20 hover:text-violet-300"
-            }`}
-          >
-            Switch
-          </button>
-        </div>
+        <ToggleButton
+          activeSide={activeSide}
+          onChange={(side) => setActiveSide(side as "buy" | "switch")}
+          secondaryOption="switch"
+          secondaryColor="violet"
+          componentType="darknight"
+        />
 
         {/* Amount Input */}
-        <div className="mb-4">
-          <div className="text-gray-400 font-medium text-sm ml-1">You pay</div>
-          <div className="relative mb-3">
-            <div className="bg-[#16192C] rounded-2xl overflow-hidden shadow-inner text-white">
-              <div className="flex items-baseline px-3">
-                {activeSide === "switch" && (
-                  <CoinIconSymbol
-                    coin={coin}
-                    size="sm"
-                    className="mr-1 min-w-0 flex-shrink-0"
-                  />
-                )}
-                <input
-                  type="text"
-                  {...register("amount", {
-                    valueAsNumber: true,
-                    min: { value: 0, message: "0以上を入力してください" },
-                    validate: (v) => v === null || !Number.isNaN(v),
-                  })}
-                  value={amount === null ? "" : amount}
-                  onChange={(e) => handleAmountChange(e.target.value)}
-                  className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500 flex-1"
-                  style={{ width: `${String(amount ?? "").length + 1}ch` }}
-                  placeholder="0"
-                  autoComplete="off"
-                />
-                <span
-                  className={`ml-2 text-xl font-bold select-none${activeSide === "switch" ? " invisible" : ""}`}
-                >
-                  SUI
-                </span>
-              </div>
-            </div>
-          </div>
-          {errors.amount && (
-            <span className="text-red-500 text-xs">
-              {errors.amount.message}
-            </span>
-          )}
-          <div className="flex justify-end gap-1.5 mb-1">
-            {activeSide === "buy"
-              ? [
-                  { label: "+0.1", value: 0.1 },
-                  { label: "+1", value: 1 },
-                  { label: "+10", value: 10 },
-                ].map(({ label, value }) => (
-                  <button
-                    type="button"
-                    key={label}
-                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
-                    onClick={() =>
-                      setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))
-                    }
-                  >
-                    {label}
-                  </button>
-                ))
-              : [
-                  { label: "25%", value: balance * 0.25 },
-                  { label: "50%", value: balance * 0.5 },
-                ].map(({ label, value }) => (
-                  <button
-                    type="button"
-                    key={label}
-                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
-                    onClick={() => setAmountValue(Number(value.toFixed(2)))}
-                  >
-                    {label}
-                  </button>
-                ))}
-            <button
-              type="button"
-              className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
-              onClick={() => setAmountValue(balance)}
-            >
-              Max
-            </button>
-          </div>
-        </div>
+        <AmountInput
+          amount={amount}
+          activeSide={activeSide}
+          register={register("amount", {
+            valueAsNumber: true,
+            min: { value: 0, message: "0以上を入力してください" },
+            validate: (v) => v === null || !Number.isNaN(v),
+          })}
+          onAmountChange={handleAmountChange}
+          setAmountValue={setAmountValue}
+          balance={balance}
+          coin={coin}
+          error={errors.amount?.message}
+          componentType="darknight"
+        />
 
-        {/* Potential Win Section - Animated */}
-        <AnimatePresence>
-          {amount && amount > 0 && (
-            <motion.div
-              initial={{ height: 0, opacity: 0, y: -10 }}
-              animate={{ height: "auto", opacity: 1, y: 0 }}
-              exit={{ height: 0, opacity: 0, y: -10 }}
-              transition={{
-                type: "spring",
-                stiffness: 500,
-                damping: 30,
-                duration: 0.3,
-              }}
-              className="overflow-hidden"
-            >
-              <div className="border-t border-[#2D3244] py-4 mb-4">
-                <div className="text-gray-400 font-medium text-sm mb-2 cursor-not-allowed">
-                  {activeSide === "buy" ? "To win 🌻" : "To receive"}
-                </div>
-                <div className="flex items-baseline px-3 cursor-not-allowed">
-                  <CoinIconSymbol
-                    coin={
-                      activeSide === "buy"
-                        ? coin
-                        : ({
-                            iconUrl: "/images/SUI.png",
-                            symbol: "SUI",
-                          } as RoundCoin)
-                    }
-                    size="sm"
-                    className="mr-1 min-w-0 flex-shrink-0"
-                  />
-                  <div className="flex items-baseline justify-end flex-1">
-                    <span className="text-white text-4xl font-bold">
-                      {potentialWin.toFixed(2)}
-                    </span>
-                    <span className="ml-2 text-white text-xl font-bold select-none">
-                      SUI
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs cursor-not-allowed">
-                <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
-                <Info className="h-3 w-3 cursor-not-allowed" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Potential Win Section */}
+        <PotentialWinDisplay
+          amount={amount}
+          potentialWin={potentialWin}
+          activeSide={activeSide}
+          coin={coin}
+          avgPrice={avgPrice}
+          componentType="darknight"
+        />
 
         {/* Action Button */}
-        {account ? (
-          <button
-            type="button"
-            className={`w-full py-3.5 font-bold text-base transition-all duration-200 rounded-xl ${
-              activeSide === "buy"
-                ? "bg-[#3C41FF] text-white shadow-md"
-                : "bg-[#3C41FF] text-white shadow-md"
-            } disabled:opacity-50 disabled:shadow-none`}
-            onClick={() => handleTransaction(activeSide === "buy")}
-            disabled={isExecuting || !amount}
-          >
-            {isExecuting ? (
-              <div className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Sealing Transaction
-              </div>
-            ) : activeSide === "buy" ? (
-              "Buy (Sealed)"
-            ) : (
-              "Switch (Sealed)"
-            )}
-          </button>
-        ) : (
-          <ConnectButton
-            connectText={
-              <div className="w-full text-center !text-white font-bold">
-                Login to Trade
-              </div>
-            }
-            className="w-full !bg-[#3C41FF] !text-white !py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !shadow-md !ring-0"
-          />
-        )}
+        <ActionButton
+          activeSide={activeSide}
+          isExecuting={isExecuting}
+          isConnected={!!account}
+          disabled={!amount}
+          onClick={() => handleTransaction(activeSide === "buy")}
+          variant="darknight"
+        />
       </CardContent>
     </DarkCard>
   );
