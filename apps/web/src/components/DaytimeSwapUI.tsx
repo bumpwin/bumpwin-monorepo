@@ -1,5 +1,6 @@
 "use client";
 
+import { DarkCard } from "@/components/ui/dark-card";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -8,12 +9,7 @@ import {
   useCurrentAccount,
   useSuiClient,
 } from "@mysten/dapp-kit";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/shadcn/components/card";
+import { CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { getSuiBalance } from "@workspace/sui";
 import { AnimatePresence, motion } from "framer-motion";
 import { DollarSign, Info } from "lucide-react";
@@ -94,7 +90,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   if (!coin) return null;
 
   return (
-    <Card className="w-full bg-black/20 backdrop-blur-sm border-none">
+    <DarkCard className="w-full">
       <CardHeader className="">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -134,7 +130,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
               activeSide === "buy"
                 ? "bg-gradient-to-r from-green-600 to-green-500 text-white shadow-[0_2px_8px_rgba(34,197,94,0.25)]"
-                : "text-gray-400 hover:text-gray-300"
+                : "text-gray-200 hover:text-gray-300"
             }`}
           >
             Buy
@@ -145,7 +141,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
               activeSide === "sell"
                 ? "bg-gradient-to-r from-[#E41652] to-[#E43571] text-white shadow-[0_2px_8px_rgba(255,41,102,0.25)]"
-                : "text-gray-400 hover:text-gray-300"
+                : "text-gray-200 hover:text-gray-300"
             }`}
           >
             Sell
@@ -154,12 +150,10 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
 
         {/* Amount Input */}
         <div className="mb-4">
-          <div className="text-gray-400 font-medium text-sm mb-2 ml-1">
-            Amount
-          </div>
+          <div className="text-gray-400 font-medium text-sm ml-1">Amount</div>
           <div className="relative mb-3">
             <div className="bg-transparent rounded-2xl overflow-hidden shadow-inner text-white">
-              <div className="flex items-baseline justify-end min-h-[56px] px-3">
+              <div className="flex items-baseline justify-end px-3">
                 <input
                   type="text"
                   {...register("amount", {
@@ -172,6 +166,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                   className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500"
                   style={{ width: `${String(amount ?? "").length + 1}ch` }}
                   placeholder="0"
+                  autoComplete="off"
                 />
                 <span className="ml-2 text-xl font-bold select-none">SUI</span>
               </div>
@@ -183,25 +178,39 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             </span>
           )}
           <div className="flex justify-end gap-1.5 mb-1">
-            {[
-              { label: "+0.1", value: 0.1 },
-              { label: "+1", value: 1 },
-              { label: "+10", value: 10 },
-            ].map(({ label, value }) => (
-              <button
-                type="button"
-                key={label}
-                className="w-auto px-2 bg-transparent text-gray-400 border border-[#23262F] rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
-                onClick={() =>
-                  setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))
-                }
-              >
-                {label}
-              </button>
-            ))}
+            {activeSide === "buy"
+              ? [
+                  { label: "+0.1", value: 0.1 },
+                  { label: "+1", value: 1 },
+                  { label: "+10", value: 10 },
+                ].map(({ label, value }) => (
+                  <button
+                    type="button"
+                    key={label}
+                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+                    onClick={() =>
+                      setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))
+                    }
+                  >
+                    {label}
+                  </button>
+                ))
+              : [
+                  { label: "25%", value: balance * 0.25 },
+                  { label: "50%", value: balance * 0.5 },
+                ].map(({ label, value }) => (
+                  <button
+                    type="button"
+                    key={label}
+                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+                    onClick={() => setAmountValue(Number(value.toFixed(2)))}
+                  >
+                    {label}
+                  </button>
+                ))}
             <button
               type="button"
-              className="w-auto px-2 bg-transparent text-gray-500 border border-[#23262F] rounded-xl py-1 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+              className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
               onClick={() => setAmountValue(balance)}
             >
               Max
@@ -224,7 +233,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
               }}
               className="overflow-hidden"
             >
-              <div className="border-t border-[#23262F] py-4 mb-4">
+              <div className="border-t border-[#2D3244] py-4 mb-4">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400 font-medium">To win 🌻</span>
@@ -301,7 +310,7 @@ const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           />
         )}
       </CardContent>
-    </Card>
+    </DarkCard>
   );
 };
 

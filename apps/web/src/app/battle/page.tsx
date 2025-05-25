@@ -342,7 +342,7 @@ export default function RoundsAPage() {
 
       <aside className="w-[360px] flex-shrink-0 border-l border-gray-700">
         <div className="sticky top-0 p-4">
-          <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-2">
             <BattleRoundPhaseToggle />
             <SwapUI coin={selectedCoin} />
           </div>
