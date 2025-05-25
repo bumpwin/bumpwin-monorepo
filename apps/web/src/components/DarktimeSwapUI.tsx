@@ -23,7 +23,7 @@ interface SwapUIProps {
   variant?: "default" | "champion";
 }
 
-const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
+const SwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   const {
     register,
     setValue,
@@ -53,6 +53,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   }, [account, suiClient]);
 
   useEffect(() => {
+    // Calculate potential win based on amount and current price
     if (amount) {
       setPotentialWin(amount * 5.68);
     } else {
@@ -89,10 +90,10 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   if (!coin) return null;
 
   return (
-    <DarkCard className="w-full bg-gradient-to-b from-[#0F1225] to-[#1A1E32] border border-[#2A2F45]">
-      <CardHeader className="">
+    <div className="w-full max-w-sm mx-auto">
+      <div className="bg-gradient-to-b from-[#0F1225] to-[#1A1E32] rounded-2xl p-5 shadow-xl border border-[#2A2F45]">
         {/* Header */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-5">
           <div
             className={`relative w-12 h-12 rounded-xl overflow-hidden ${
               variant === "champion"
@@ -119,10 +120,9 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             </div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+
         {/* Buy/Switch Toggle */}
-        <div className="flex p-1 mb-3 bg-[#131620] rounded-full">
+        <div className="flex p-1 mb-3 bg-[#16192C] rounded-full">
           <button
             type="button"
             onClick={() => setActiveSide("buy")}
@@ -139,8 +139,8 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             onClick={() => setActiveSide("switch")}
             className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
               activeSide === "switch"
-                ? "bg-violet-500/20 text-violet-300 hover:bg-violet-500/30"
-                : "text-gray-400 hover:bg-violet-500/20 hover:text-violet-300"
+                ? "bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
+                : "text-gray-400 hover:bg-purple-500/20 hover:text-purple-400"
             }`}
           >
             Switch
@@ -205,7 +205,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                   <button
                     type="button"
                     key={label}
-                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+                    className="w-auto px-3 bg-[#20243A] text-gray-300 border-none rounded-xl py-1.5 text-sm font-medium hover:bg-[#282D45] hover:text-white transition-colors shadow-none"
                     onClick={() =>
                       setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))
                     }
@@ -220,7 +220,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                   <button
                     type="button"
                     key={label}
-                    className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+                    className="w-auto px-3 bg-[#20243A] text-gray-300 border-none rounded-xl py-1.5 text-sm font-medium hover:bg-[#282D45] hover:text-white transition-colors shadow-none"
                     onClick={() => setAmountValue(Number(value.toFixed(2)))}
                   >
                     {label}
@@ -228,7 +228,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                 ))}
             <button
               type="button"
-              className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+              className="w-auto px-3 bg-[#20243A] text-gray-300 border-none rounded-xl py-1.5 text-sm font-medium hover:bg-[#282D45] hover:text-white transition-colors shadow-none"
               onClick={() => setAmountValue(balance)}
             >
               Max
@@ -282,8 +282,8 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
             type="button"
             className={`w-full py-3.5 font-bold text-base transition-all duration-200 rounded-xl ${
               activeSide === "buy"
-                ? "bg-[#3C41FF] text-white shadow-md"
-                : "bg-[#3C41FF] text-white shadow-md"
+                ? "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]"
+                : "bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white shadow-[0_4px_12px_rgba(149,76,233,0.25)]"
             } disabled:opacity-50 disabled:shadow-none`}
             onClick={() => handleTransaction(activeSide === "buy")}
             disabled={isExecuting || !amount}
@@ -326,12 +326,12 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
                 Login to Trade
               </div>
             }
-            className="w-full !bg-[#3C41FF] !text-white !py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !shadow-md !ring-0"
+            className="w-full !bg-gradient-to-r !from-blue-600 !to-blue-500 !hover:from-blue-700 !hover:to-blue-600 !text-white !py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !shadow-[0_4px_12px_rgba(0,118,255,0.25)] !ring-0"
           />
         )}
-      </CardContent>
-    </DarkCard>
+      </div>
+    </div>
   );
 };
 
-export default DarknightSwapUI;
+export default SwapUI;

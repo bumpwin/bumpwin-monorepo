@@ -3,12 +3,14 @@
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
+import { useBattleRoundPhase } from "@/app/providers/BattleRoundPhaseProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
+import DarknightSwapUI from "@/components/DarknightSwapUI";
+import DaytimeSwapUI from "@/components/DaytimeSwapUI";
 import { MarketDominanceCard } from "@/components/MarketDominanceCard";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
-import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
@@ -193,6 +195,7 @@ export default function RoundsAPage() {
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
   const { remainingTime } = useBattleClock();
+  const { phase } = useBattleRoundPhase();
 
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
@@ -278,7 +281,11 @@ export default function RoundsAPage() {
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">
               <BattleRoundPhaseToggle />
-              <SwapUI coin={selectedCoin} />
+              {phase === "daytime" ? (
+                <DaytimeSwapUI coin={selectedCoin} />
+              ) : (
+                <DarknightSwapUI coin={selectedCoin} />
+              )}
             </div>
             <BattleCoinDetailCard coin={selectedCoin} />
           </div>
