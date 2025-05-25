@@ -1,4 +1,4 @@
-import LayoutWithChat from "@/app/layouts/layout-with-chat";
+import LayoutWithChat from "@/layouts/layout-with-chat";
 
 export default function BattleLayout({
   children,

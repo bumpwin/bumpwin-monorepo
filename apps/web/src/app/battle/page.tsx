@@ -276,7 +276,7 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[360px] flex-shrink-0 h-full overflow-hidden">
+      <aside className="w-[400px] flex-shrink-0 h-full overflow-hidden">
         <ScrollableContainer>
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">
