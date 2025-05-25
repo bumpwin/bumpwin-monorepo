@@ -1,1 +1,2 @@
-export * from "./mockmemes";
+export * from "./mememetadata";
+export * from "./types";

@@ -12,7 +12,8 @@ import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
+import { mockMemeMetadata } from "@workspace/mockdata";
+import type { MemeMetadata } from "@workspace/mockdata";
 import {
   Card,
   CardContent,
@@ -26,6 +27,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 // Constants
+const DEFAULT_MEME: MemeMetadata = {
+  id: "0x0000000000000000000000000000000000000000000000000000000000000000" as `0x${string}`,
+  symbol: "YAKIU",
+  name: "Yakiu",
+  iconUrl: "/images/mockmemes/YAKIU.png",
+  description: "Default coin",
+};
+
 const DEFAULT_COIN: RoundCoin = {
   id: "default",
   symbol: "YAKIU",
@@ -62,7 +71,7 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => ({
+const memeToRoundCoin = (meme: MemeMetadata): RoundCoin => ({
   id: meme.symbol,
   symbol: meme.symbol,
   name: meme.name,
@@ -154,7 +163,7 @@ const MemeGallery = ({
   onSelect,
   selectedSymbol,
 }: {
-  onSelect: (meme: MockCoinMetaData) => void;
+  onSelect: (meme: MemeMetadata) => void;
   selectedSymbol: string;
 }) => (
   <div className="px-4 pb-6">
@@ -164,7 +173,7 @@ const MemeGallery = ({
         gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
       }}
     >
-      {mockmemes.map((meme, i) => (
+      {mockMemeMetadata.map((meme, i) => (
         <button
           key={meme.symbol}
           onClick={() => onSelect(meme)}
@@ -195,20 +204,20 @@ export default function RoundsAPage() {
   const selectedId = searchParams.get("selected");
   const { phase, remainingTime } = useBattleClock();
 
-  const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
+  const firstMeme = mockMemeMetadata.length > 0 ? mockMemeMetadata[0] : null;
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
     selectedId
       ? memeToRoundCoin(
-          mockmemes.find((m) => m.symbol === selectedId) ||
+          mockMemeMetadata.find((m) => m.symbol === selectedId) ||
             firstMeme ||
-            DEFAULT_COIN,
+            DEFAULT_MEME,
         )
       : firstMeme
         ? memeToRoundCoin(firstMeme)
         : DEFAULT_COIN,
   );
 
-  const handleCoinSelect = (meme: MockCoinMetaData) => {
+  const handleCoinSelect = (meme: MemeMetadata) => {
     const newCoin = memeToRoundCoin(meme);
     setSelectedCoin(newCoin);
     router.push(`?selected=${meme.symbol}`);

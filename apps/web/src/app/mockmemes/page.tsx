@@ -1,5 +1,5 @@
 import { LoserCard } from "@/app/losers/LoserCard";
-import { mockmemes } from "@workspace/mockdata";
+import { mockMemeMetadata } from "@workspace/mockdata";
 
 export default function MockmemesPage() {
   return (
@@ -9,7 +9,7 @@ export default function MockmemesPage() {
           Mockmemes Gallery
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-          {mockmemes.map((meme, i) => (
+          {mockMemeMetadata.map((meme, i) => (
             <LoserCard
               key={meme.symbol}
               imageUrl={meme.iconUrl}
