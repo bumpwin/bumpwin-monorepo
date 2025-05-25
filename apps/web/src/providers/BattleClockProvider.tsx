@@ -3,6 +3,7 @@
 import {
   type ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -16,6 +17,11 @@ interface BattleClockContextType {
   currentRound: number;
   setIsChallengePeriod: (value: boolean) => void;
   setRemainingTime: (value: number) => void;
+  phase: "daytime" | "darknight";
+  advanceTime: (hours: number) => void;
+  resetTime: () => void;
+  skipToDarkNight: () => void;
+  resetDemoOffset: () => void;
 }
 
 const BattleClockContext = createContext<BattleClockContextType | undefined>(
@@ -37,42 +43,48 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
   const [isChallengePeriod, setIsChallengePeriod] = useState(false);
   const [remainingTime, setRemainingTime] = useState(totalTime);
   const [currentRound, setCurrentRound] = useState(0);
+  const [phase, setPhase] = useState<"daytime" | "darknight">("daytime");
+  const [timeOffset, setTimeOffset] = useState(0);
+  const [demoOffset, setDemoOffset] = useState(0);
+
+  const calculateTimeAndRound = useCallback(() => {
+    const now = new Date().getTime() + timeOffset + demoOffset; // 両方のオフセットを加算
+    const timeSinceReference = now - REFERENCE_DATE;
+
+    // 基準時刻からの経過周期数（Round）を計算
+    const completedCycles = Math.floor(timeSinceReference / CYCLE_DURATION_MS);
+    const currentRoundNumber = completedCycles + 1;
+
+    // 現在の周期内での経過時間
+    const timeInCurrentCycle = timeSinceReference % CYCLE_DURATION_MS;
+
+    // チャレンジ期間かどうかを判定
+    const challengePeriodDuration = challengeTime * 1000;
+    const isInChallengePeriod = timeInCurrentCycle < challengePeriodDuration;
+
+    // 残り時間の計算
+    let remaining: number;
+    if (isInChallengePeriod) {
+      remaining = Math.floor(
+        (challengePeriodDuration - timeInCurrentCycle) / 1000,
+      );
+    } else {
+      const nextCycleStart =
+        REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS;
+      remaining = Math.floor((nextCycleStart - now) / 1000);
+    }
+
+    // フェーズの判定
+    const isDarknight =
+      timeInCurrentCycle >= CYCLE_DURATION_MS - challengePeriodDuration;
+    setPhase(isDarknight ? "darknight" : "daytime");
+
+    setCurrentRound(currentRoundNumber);
+    setIsChallengePeriod(isInChallengePeriod);
+    setRemainingTime(remaining);
+  }, [challengeTime, timeOffset, demoOffset]);
 
   useEffect(() => {
-    const calculateTimeAndRound = () => {
-      const now = new Date().getTime();
-      const timeSinceReference = now - REFERENCE_DATE;
-
-      // 基準時刻からの経過周期数（Round）を計算
-      const completedCycles = Math.floor(
-        timeSinceReference / CYCLE_DURATION_MS,
-      );
-      const currentRoundNumber = completedCycles + 1; // 1から始まるRound番号
-
-      // 現在の周期内での経過時間
-      const timeInCurrentCycle = timeSinceReference % CYCLE_DURATION_MS;
-
-      // チャレンジ期間かどうかを判定
-      const challengePeriodDuration = challengeTime * 1000; // ミリ秒に変換
-      const isInChallengePeriod = timeInCurrentCycle < challengePeriodDuration;
-
-      // 残り時間の計算
-      let remaining: number;
-      if (isInChallengePeriod) {
-        remaining = Math.floor(
-          (challengePeriodDuration - timeInCurrentCycle) / 1000,
-        );
-      } else {
-        const nextCycleStart =
-          REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS;
-        remaining = Math.floor((nextCycleStart - now) / 1000);
-      }
-
-      setCurrentRound(currentRoundNumber);
-      setIsChallengePeriod(isInChallengePeriod);
-      setRemainingTime(remaining);
-    };
-
     // 初回計算
     calculateTimeAndRound();
 
@@ -80,7 +92,41 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
     const intervalId = setInterval(calculateTimeAndRound, 1000);
 
     return () => clearInterval(intervalId);
-  }, [challengeTime]);
+  }, [calculateTimeAndRound]);
+
+  // 時間を進める関数（通常の時間操作用）
+  const advanceTime = useCallback((hours: number) => {
+    setTimeOffset((prev) => prev + hours * 60 * 60 * 1000);
+  }, []);
+
+  // 時間をリセットする関数（通常の時間操作用）
+  const resetTime = useCallback(() => {
+    setTimeOffset(0);
+  }, []);
+
+  // darknightの開始5秒前にスキップする関数（デモ用）
+  const skipToDarkNight = useCallback(() => {
+    const now = new Date().getTime() + timeOffset;
+    const timeSinceReference = now - REFERENCE_DATE;
+    const completedCycles = Math.floor(timeSinceReference / CYCLE_DURATION_MS);
+
+    // 次のdarknight開始時刻を計算（現在の周期の終了5秒前）
+    const nextDarknightStart =
+      REFERENCE_DATE +
+      (completedCycles + 1) * CYCLE_DURATION_MS -
+      challengeTime * 1000 -
+      5000;
+
+    // 必要なデモオフセットを計算
+    const requiredDemoOffset =
+      nextDarknightStart - (new Date().getTime() + timeOffset);
+    setDemoOffset(requiredDemoOffset);
+  }, [challengeTime, timeOffset]);
+
+  // デモオフセットをリセットする関数
+  const resetDemoOffset = useCallback(() => {
+    setDemoOffset(0);
+  }, []);
 
   return (
     <BattleClockContext.Provider
@@ -92,6 +138,11 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
         currentRound,
         setIsChallengePeriod,
         setRemainingTime,
+        phase,
+        advanceTime,
+        resetTime,
+        skipToDarkNight,
+        resetDemoOffset,
       }}
     >
       {children}

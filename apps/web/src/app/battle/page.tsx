@@ -10,7 +10,6 @@ import SharrowStatsBar from "@/components/SharrowStatsBar";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import { useBattleRoundPhase } from "@/providers/BattleRoundPhaseProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
@@ -194,8 +193,7 @@ export default function RoundsAPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("selected");
-  const { remainingTime } = useBattleClock();
-  const { phase } = useBattleRoundPhase();
+  const { phase, remainingTime } = useBattleClock();
 
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(

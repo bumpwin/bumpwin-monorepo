@@ -1,18 +1,20 @@
 "use client";
 
-import { useBattleRoundPhase } from "@/providers/BattleRoundPhaseProvider";
+import { useBattleClock } from "@/providers/BattleClockProvider";
 
 export const BattleRoundPhaseToggle = () => {
-  const { phase, setPhase } = useBattleRoundPhase();
+  const { phase, skipToDarkNight, resetDemoOffset } = useBattleClock();
+
+  const handleSkipToDaytime = () => {
+    resetDemoOffset();
+  };
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-center mb-4">
         <button
           type="button"
-          onClick={() =>
-            setPhase(phase === "daytime" ? "darknight" : "daytime")
-          }
+          onClick={phase === "daytime" ? skipToDarkNight : handleSkipToDaytime}
           className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/60 transition-colors border-2 border-red-500"
         >
           <span className="text-sm font-medium text-white">
