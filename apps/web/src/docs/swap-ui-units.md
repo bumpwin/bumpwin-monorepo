@@ -90,7 +90,7 @@ const amountTextColor = isDaytimeBuy ? "text-[#00E065]" : "text-white";
       {potentialWin.toFixed(2)}
     </span>
     <span className={`ml-2 ${amountTextColor} text-xl font-bold select-none`}>
-      {displayCoin.symbol}
+      SUI
     </span>
   </div>
 </div>
