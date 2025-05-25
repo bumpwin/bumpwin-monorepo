@@ -62,7 +62,8 @@ export const PotentialWinDisplay = ({
   const isDaytime = componentType === "daytime";
 
   // Text color for amounts in Daytime
-  const amountTextColor = isDaytime ? "text-[#00E065]" : "text-white";
+  const amountTextColor =
+    isDaytime && activeSide === "buy" ? "text-[#00E065]" : "text-white";
 
   return (
     <AnimatePresence>
