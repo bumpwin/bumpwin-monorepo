@@ -1,11 +1,6 @@
 "use client";
 
-import { ActionButton } from "@/components/ui/action-button";
-import { AmountInput } from "@/components/ui/amount-input";
-import { CoinHeader } from "@/components/ui/coin-header";
 import { DarkCard } from "@/components/ui/dark-card";
-import { PotentialWinDisplay } from "@/components/ui/potential-win-display";
-import { ToggleButton } from "@/components/ui/toggle-button";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -15,6 +10,12 @@ import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { ActionButton } from "../elements/action-button";
+import { AmountInput } from "../elements/amount-input";
+import { CoinHeader } from "../elements/coin-header";
+import { PotentialWinDisplay } from "../elements/potential-win-display";
+import { ToggleButton } from "../elements/toggle-button";
+import type { ToggleSide } from "../elements/types";
 
 interface SwapUIProps {
   coin?: RoundCoin;
@@ -96,7 +97,7 @@ const DaytimeSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
         {/* Buy/Sell Toggle */}
         <ToggleButton
           activeSide={activeSide}
-          onChange={(side) => setActiveSide(side as "buy" | "sell")}
+          onChange={(side: ToggleSide) => setActiveSide(side as "buy" | "sell")}
           secondaryOption="sell"
           secondaryColor="red"
           componentType="daytime"

@@ -6,7 +6,7 @@ import DominanceRechart from "@/components/DominanceRechart";
 // import { mockDominanceData } from "@/mock/mockDominanceData";
 import type { CoinMeta } from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
-import SwapUI from "@/components/SwapUI";
+import SwapUI from "@/components/ui/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import {

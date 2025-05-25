@@ -2,7 +2,7 @@
 
 import { mockprice } from "@/app/client";
 import { ChartTitle } from "@/components/ChartTitle";
-import SwapUI from "@/components/SwapUI";
+import SwapUI from "@/components/ui/swap/core/SwapUI";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {

@@ -2,8 +2,8 @@
 
 import { mockprice } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
-import ChampionSwapUI from "@/components/ChampionSwapUI";
 import { ChartTitle } from "@/components/ChartTitle";
+import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import {

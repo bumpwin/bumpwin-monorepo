@@ -1,7 +1,4 @@
-import type { ReactNode } from "react";
-import type { ComponentType } from "./amount-input";
-
-export type ToggleSide = "buy" | "sell" | "switch";
+import type { ComponentType, ToggleSide } from "./types";
 
 interface ToggleButtonProps {
   activeSide: ToggleSide;

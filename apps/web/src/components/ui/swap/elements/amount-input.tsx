@@ -1,10 +1,7 @@
 import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
 import type { RoundCoin } from "@/types/roundcoin";
 import type { UseFormRegisterReturn } from "react-hook-form";
-import type { ToggleSide } from "./swap/elements/types";
-
-// 各UIタイプとtoggle状態に応じたUnit表示を管理するための型
-export type ComponentType = "daytime" | "darknight" | "champion";
+import type { ComponentType, ToggleSide } from "./types";
 
 interface AmountInputProps {
   amount: number | null;

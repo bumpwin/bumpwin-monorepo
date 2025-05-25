@@ -1,11 +1,6 @@
 "use client";
 
-import { ActionButton } from "@/components/ui/action-button";
-import { AmountInput } from "@/components/ui/amount-input";
-import { CoinHeader } from "@/components/ui/coin-header";
 import { DarkCard } from "@/components/ui/dark-card";
-import { PotentialWinDisplay } from "@/components/ui/potential-win-display";
-import { ToggleButton } from "@/components/ui/toggle-button";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -15,13 +10,18 @@ import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { ActionButton } from "../elements/action-button";
+import { AmountInput } from "../elements/amount-input";
+import { CoinHeader } from "../elements/coin-header";
+import { PotentialWinDisplay } from "../elements/potential-win-display";
+import { ToggleButton } from "../elements/toggle-button";
+import type { ToggleSide } from "../elements/types";
 
 interface SwapUIProps {
   coin?: RoundCoin;
-  variant?: "default" | "champion";
 }
 
-const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
+const ChampionSwapUI = ({ coin }: SwapUIProps) => {
   const {
     register,
     setValue,
@@ -34,7 +34,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   const [balance, setBalance] = useState<number>(0);
   const [potentialWin, setPotentialWin] = useState<number>(0);
   const [avgPrice] = useState<number>(17.6);
-  const [activeSide, setActiveSide] = useState<"buy" | "switch">("buy");
+  const [activeSide, setActiveSide] = useState<"buy" | "sell">("buy");
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
   const { createSwapChampTransaction } = useTransactionCreators();
@@ -51,6 +51,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   }, [account, suiClient]);
 
   useEffect(() => {
+    // Calculate potential win based on amount and current price
     if (amount) {
       setPotentialWin(amount * 5.68);
     } else {
@@ -87,18 +88,18 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   if (!coin) return null;
 
   return (
-    <DarkCard className="w-full bg-gradient-to-b from-[#0F1225] to-[#1A1E32] border border-[#2A2F45] shadow-[0_8px_32px_rgba(124,58,237,0.15)] before:absolute before:inset-0 before:rounded-xl before:shadow-[0_0_30px_rgba(124,58,237,0.1)] before:pointer-events-none relative">
+    <DarkCard className="w-full">
       <CardHeader className="">
-        <CoinHeader coin={coin} variant={variant} />
+        <CoinHeader coin={coin} variant="champion" />
       </CardHeader>
       <CardContent>
-        {/* Buy/Switch Toggle */}
+        {/* Buy/Sell Toggle */}
         <ToggleButton
           activeSide={activeSide}
-          onChange={(side) => setActiveSide(side as "buy" | "switch")}
-          secondaryOption="switch"
-          secondaryColor="violet"
-          componentType="darknight"
+          onChange={(side: ToggleSide) => setActiveSide(side as "buy" | "sell")}
+          secondaryOption="sell"
+          secondaryColor="red"
+          componentType="champion"
         />
 
         {/* Amount Input */}
@@ -115,7 +116,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           balance={balance}
           coin={coin}
           error={errors.amount?.message}
-          componentType="darknight"
+          componentType="champion"
         />
 
         {/* Potential Win Section */}
@@ -125,7 +126,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           activeSide={activeSide}
           coin={coin}
           avgPrice={avgPrice}
-          componentType="darknight"
+          componentType="champion"
         />
 
         {/* Action Button */}
@@ -135,11 +136,11 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           isConnected={!!account}
           disabled={!amount}
           onClick={() => handleTransaction(activeSide === "buy")}
-          variant="darknight"
+          variant="champion"
         />
       </CardContent>
     </DarkCard>
   );
 };
 
-export default DarknightSwapUI;
+export default ChampionSwapUI;

@@ -1,6 +1,6 @@
 import { ConnectButton } from "@mysten/dapp-kit";
 import type { ReactNode } from "react";
-import type { ToggleSide } from "./swap/elements/types";
+import type { ToggleSide } from "./types";
 
 interface ActionButtonProps {
   activeSide: ToggleSide;

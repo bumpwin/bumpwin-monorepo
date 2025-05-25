@@ -2,7 +2,7 @@ import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
-import type { ComponentType, ToggleSide } from "./swap/elements/types";
+import type { ComponentType, ToggleSide } from "./types";
 
 interface PotentialWinDisplayProps {
   amount: number | null;
