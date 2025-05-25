@@ -7,21 +7,24 @@ type WordmarkLogoProps = {
   textSize?: string;
   dotMarginRight?: string;
   shadowColor?: string;
+  containerClass?: string;
 };
 
 export default function WordmarkLogo({
   marginLeft = "-3px",
-  textSize = "1.1em",
-  dotMarginRight = "-24px",
+  textSize = "1.12em",
+  dotMarginRight = "-5px",
   shadowColor = "#9400D3",
+  containerClass = "",
 }: WordmarkLogoProps) {
   const bumpShadow = `6px 6px 0 ${shadowColor}, -6px -6px 0 ${shadowColor}, 6px -6px 0 ${shadowColor}, -6px 6px 0 ${shadowColor}`;
   return (
     <h1
-      className="text-6xl font-satoshi font-extrabold italic [transform:scaleX(0.8)] group"
+      className={`text-6xl font-satoshi font-extrabold italic [transform:scaleX(0.8)] group ${containerClass}`}
       style={{
         position: "relative",
         display: "inline-block",
+        width: "max-content", // Prevent overflow without changing the layout
       }}
     >
       <style jsx>{`
@@ -44,7 +47,7 @@ export default function WordmarkLogo({
           className="text-[#FED201] relative top-[4px]"
           style={{ marginLeft, fontSize: textSize }}
         >
-          <span style={{ marginRight: dotMarginRight }}>. </span>
+          <span style={{ marginRight: dotMarginRight }}>.</span>
           <span>WIN</span>
         </span>
       </div>

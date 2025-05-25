@@ -21,17 +21,22 @@ export default function AppBar() {
     totalTime,
     challengeTime,
     setIsChallengePeriod,
+    phase,
+    currentRound,
   } = useBattleClock();
+
+  const navLinks = [
+    { href: "/battle", label: "Battle" },
+    { href: "/champions", label: "Champions" },
+    { href: "/losers", label: "Losers" },
+  ];
 
   // プログレスバーの進行度を計算
   const progress = ((totalTime - remainingTime) / totalTime) * 100;
   const challengePoint = ((totalTime - challengeTime) / totalTime) * 100;
 
   const isActive = (path: string) => {
-    if (path === "/" && pathname === "/") {
-      return true;
-    }
-    // ルートパス以外は前方一致で判定
+    if (path === "/" && pathname === "/") return true;
     return path !== "/" && pathname.startsWith(path);
   };
 
@@ -69,139 +74,103 @@ export default function AppBar() {
   };
 
   return (
-    <>
-      <header
-        id="app-bar"
-        className="sticky top-0 z-50 w-full border-b bg-gray-900 backdrop-blur-md shadow-lg shadow-gray-900"
-      >
-        <div className="w-full px-8">
-          <div className="flex h-16 items-center justify-between">
-            {/* 左側グループ */}
-            <div className="flex items-center gap-0">
-              <Link
-                href="/"
-                className="flex items-center w-auto shrink-0 mr-[-6.5rem]"
-              >
-                <div className="scale-50 origin-left inline-flex translate-y-[-2px]">
-                  <WordmarkLogo />
-                </div>
-              </Link>
-              <nav className="hidden md:flex items-center">
-                <Link
-                  href="/battle"
-                  className={cn(
-                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors cursor-pointer",
-                    isActive("/battle")
-                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
-                  )}
-                >
-                  Battle
-                </Link>
-                <Link
-                  href="/champions"
-                  className={cn(
-                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
-                    isActive("/champions")
-                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
-                  )}
-                >
-                  Champions
-                </Link>
-                <Link
-                  href="/losers"
-                  className={cn(
-                    "px-6 py-2 rounded-lg text-xl font-bold transition-colors",
-                    isActive("/losers")
-                      ? "bg-[#ff5e00]/20 text-[#ff5e00] shadow-md"
-                      : "text-gray-100 hover:bg-gray-700/60 hover:text-white",
-                  )}
-                >
-                  Losers
-                </Link>
-                {/* Round 表示 - チャレンジ期間中は赤く点滅 */}
-                {/* <div className="ml-12">
-                  <span
-                    className={cn(
-                      "font-bold text-2xl tracking-wide transition-colors",
-                      isChallengePeriod
-                        ? "text-red-500 animate-pulse"
-                        : "text-orange-500",
-                    )}
-                  >
-                    Round {currentRound}
-                  </span>
-                </div> */}
-              </nav>
+    <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/95 backdrop-blur-md shadow-lg shadow-gray-900/50">
+      <div className="flex h-16 items-center">
+        {/* 左寄せセクション */}
+        <div className="flex items-center pl-4 gap-6 flex-1">
+          <Link href="/battle">
+            <div className="scale-[0.45] max-w-[200px] flex items-center mb-2 mr-2">
+              <WordmarkLogo />
             </div>
-
-            {/* 中央のカウントダウン */}
-            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center py-1">
-              <BattleClock
-                totalSeconds={remainingTime}
-                challengeSeconds={challengeTime}
-                onChallengeStatusChange={setIsChallengePeriod}
-              />
-            </div>
-
-            {/* 右側グループ */}
-            <div className="flex items-center justify-end gap-4">
-              {/* Claim outcome ボタン */}
-              <Link href="/rounds?intent=claim-outcome">
-                <button
-                  type="button"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-transparent bg-black transition-all duration-150 cursor-pointer
-                    bg-black
-                    bg-clip-padding
-                    text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text
-                    hover:border-yellow-400"
-                >
-                  Claim outcome
-                </button>
-              </Link>
-
-              {/* Create Coin ボタン（Loginと同じ豪華さ・サイズ） */}
-              <button
-                type="button"
-                onClick={handleCreateCoinClick}
-                className="rounded-full px-5 py-1 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer"
-              >
-                Create Coin
-              </button>
-
-              {/* ウォレット接続ボタン（豪華なConnectボタン） */}
-              <div className="h-12 flex items-center">
-                <SuiWalletConnectButton />
-              </div>
-            </div>
-          </div>
-
-          {/* プログレスバー */}
-          <div className="w-full h-0.5 bg-gray-800 relative">
-            {/* チャレンジポイントのマーカー */}
-            <div
-              className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"
-              style={{ left: `${challengePoint}%` }}
-            />
-
-            {/* プログレスバー - 左から右へ進行、色はカウントダウンに連動 */}
-            <div
+          </Link>
+          {navLinks.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
               className={cn(
-                "h-full transition-all duration-100 ease-linear",
-                isChallengePeriod ? "bg-red-500" : "bg-orange-500",
+                "text-xl text-gray-300 font-semibold transition-all duration-200 flex items-center justify-center",
+                "hover:text-orange-400 w-24",
+                "hover:drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]",
+                isActive(href) &&
+                  "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]",
               )}
-              style={{ width: `${progress}%` }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
+        {/* 中央寄せセクション */}
+        <div className="flex items-center justify-center flex-1">
+          <div className="flex items-center justify-center h-full">
+            <BattleClock
+              totalSeconds={remainingTime}
+              challengeSeconds={challengeTime}
+              onChallengeStatusChange={setIsChallengePeriod}
             />
           </div>
         </div>
-      </header>
 
-      {/* Create Coin Modal */}
-      <CreateCoinModal
-        isOpen={showCreateModal}
-        onClose={handleCloseCreateModal}
-      />
-    </>
+        {/* 右寄せセクション */}
+        <div className="flex items-center justify-end gap-3 pr-4 flex-1">
+          {/* Claim outcome ボタン */}
+          <Link
+            href="/rounds?intent=claim-outcome"
+            className="flex items-center"
+          >
+            <button
+              type="button"
+              className="rounded-full px-4 py-1.5 text-sm font-medium
+                text-amber-400 hover:text-amber-300
+                hover:bg-amber-900/30 hover:border hover:border-amber-400/40
+                transition-all duration-200"
+            >
+              Claim outcome
+            </button>
+          </Link>
+
+          {/* Create Coin ボタン */}
+          <button
+            type="button"
+            onClick={handleCreateCoinClick}
+            className="rounded-full px-4 py-1.5 text-sm font-medium
+              bg-gradient-to-r from-indigo-600 to-violet-600
+              text-white border border-indigo-400/50
+              hover:from-violet-600 hover:to-indigo-600 hover:border-indigo-300/70
+              shadow-lg shadow-indigo-900/30 transition-all duration-200
+              hover:scale-105"
+          >
+            Create Coin
+          </button>
+
+          {/* ウォレット接続ボタン */}
+          <div className="h-10 flex items-center">
+            <SuiWalletConnectButton />
+          </div>
+        </div>
+      </div>
+
+      {/* プログレスバー */}
+      <div className="w-full h-0.5 bg-gray-800/50 relative">
+        {/* チャレンジポイントのマーカー */}
+        <div
+          className="absolute top-[-1px] bottom-[-1px] w-1 bg-red-500 z-10 rounded-full"
+          style={{ left: `${challengePoint}%` }}
+        />
+
+        {/* プログレスバー - 左から右へ進行、色はカウントダウンに連動 */}
+        <div
+          className={cn(
+            "h-full transition-all duration-100 ease-linear",
+            isChallengePeriod
+              ? "bg-red-500"
+              : phase === "daytime"
+                ? "bg-yellow-500"
+                : "bg-purple-500",
+          )}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </header>
   );
 }

@@ -75,7 +75,7 @@ export function SuiWalletConnectButton() {
               style={{
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                fontWeight: 800,
+                fontWeight: 700,
                 opacity: 1,
                 color: "transparent",
               }}
