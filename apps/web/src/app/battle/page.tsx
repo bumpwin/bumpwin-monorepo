@@ -2,8 +2,6 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
-import { useBattleClock } from "@/app/providers/BattleClockProvider";
-import { useBattleRoundPhase } from "@/app/providers/BattleRoundPhaseProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
@@ -11,6 +9,8 @@ import { MarketDominanceCard } from "@/components/MarketDominanceCard";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
+import { useBattleClock } from "@/providers/BattleClockProvider";
+import { useBattleRoundPhase } from "@/providers/BattleRoundPhaseProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
@@ -276,7 +276,7 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[360px] flex-shrink-0 h-full overflow-hidden">
+      <aside className="w-[400px] flex-shrink-0 h-full overflow-hidden">
         <ScrollableContainer>
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">
