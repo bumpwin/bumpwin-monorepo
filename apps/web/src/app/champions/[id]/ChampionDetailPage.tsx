@@ -2,9 +2,9 @@
 
 import { mockprice } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import ChampionSwapUI from "@/components/ChampionSwapUI";
 import { ChartTitle } from "@/components/ChartTitle";
-import SwapUI from "@/components/SwapUI";
-import type { Coin } from "@/types";
+import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -16,15 +16,17 @@ import {
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
 
-export const ChampionDetailPage = ({
-  coin,
-  id,
-}: { coin: Coin; id: string }) => {
+interface ChampionDetailPageProps {
+  coin: RoundCoin;
+  id: string;
+}
+
+export const ChampionDetailPage = ({ coin }: ChampionDetailPageProps) => {
   const { data: priceData } = useQuery({
-    queryKey: ["mockprice", id],
+    queryKey: ["mockprice", coin.id],
     queryFn: async () => {
       const res = await mockprice({
-        query: { seed: id, freq: "day", count: "30" },
+        query: { seed: coin.id, freq: "day", count: "30" },
       });
       const json = await res.json();
 
@@ -64,22 +66,6 @@ export const ChampionDetailPage = ({
       ? (priceData[priceData.length - 1]?.close ?? 0)
       : 0;
 
-  // champion coin を RoundCoin 型にマッピング
-  const roundCoin = {
-    id: coin.id.toString(),
-    symbol: coin.symbol,
-    name: coin.name,
-    iconUrl: coin.iconUrl,
-    round: coin.round,
-    share: coin.share ?? 0,
-    marketCap: coin.marketCap ?? 0,
-    description: coin.description,
-    telegramLink: coin.telegramLink,
-    websiteLink: coin.websiteLink,
-    twitterLink: coin.twitterLink,
-    color: coin.color,
-  };
-
   return (
     <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
       {/* メイン2カラム */}
@@ -89,7 +75,7 @@ export const ChampionDetailPage = ({
           {/* チャート */}
           <Card className="bg-black/20 border border-[#23262F] shadow-lg">
             <CardHeader>
-              <ChartTitle coin={roundCoin} />
+              <ChartTitle coin={coin} />
             </CardHeader>
             <CardContent>
               <div className="h-[400px]">
@@ -104,8 +90,8 @@ export const ChampionDetailPage = ({
 
         {/* 右: Swap UI */}
         <div className="w-[400px] sticky top-8">
-          <SwapUI coin={roundCoin} variant="champion" />
-          <BattleCoinDetailCard coin={roundCoin} />
+          <ChampionSwapUI coin={coin} />
+          <BattleCoinDetailCard coin={coin} />
         </div>
       </div>
     </div>

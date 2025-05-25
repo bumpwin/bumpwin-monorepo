@@ -4,8 +4,9 @@ import { RoundsACard } from "@/app/battle/RoundsACard";
 import { mockprice } from "@/app/client";
 import { useBattleClock } from "@/app/providers/BattleClockProvider";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
+import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
-import DominanceChartSection from "@/components/DominanceChartSection";
+import { MarketDominanceCard } from "@/components/MarketDominanceCard";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
 import SwapUI from "@/components/SwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -70,13 +71,6 @@ const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => ({
   marketCap: 180000,
   description: meme.description,
 });
-
-const formatRemainingTime = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-};
 
 const formatPriceData = (data: PriceDataItem[]) => {
   return data.map((item) => {
@@ -237,75 +231,15 @@ export default function RoundsAPage() {
 
   return (
     <div className="flex h-full">
-      <main className="flex-1 border-r border-gray-700">
+      <main className="flex-1 border-r border-gray-700 h-full overflow-hidden">
         {!selectedId ? (
           <ScrollableContainer>
             <div className="sticky top-0 z-20 bg-[#181B27]/95">
               <SharrowStatsBar />
             </div>
 
-            <div className="px-4 py-2">
-              <div className="relative">
-                <div className="relative rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm border-none shadow-md">
-                  <div className="relative px-4 pt-4 pb-2 flex items-center justify-between z-20">
-                    <h2 className="text-lg font-bold tracking-tight text-white">
-                      Market Dominance
-                    </h2>
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                      <span className="text-xs text-white font-medium">
-                        LIVE
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="relative z-0 pb-2">
-                    <DominanceChartSection />
-                  </div>
-
-                  <div className="relative z-20 px-6 pt-1 pb-4">
-                    <div className="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-yellow-400 to-purple-600 opacity-30 rounded-full overflow-hidden" />
-
-                    <div className="flex flex-col sm:flex-row gap-5 sm:gap-6 sm:items-center pt-4">
-                      <div className="relative group flex flex-col gap-2 pb-4 pt-1 sm:py-2 sm:pr-4 sm:border-r border-white/20">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">🌞</span>
-                          <div className="px-2.5 py-1 text-black font-semibold text-sm bg-yellow-300 rounded-full shadow-sm">
-                            Daytime
-                          </div>
-                          <span className="text-sm text-yellow-100 font-medium">
-                            (0-24h)
-                          </span>
-                        </div>
-                        <p className="text-gray-200 text-sm max-w-xl leading-relaxed font-medium">
-                          A decision market culls the meme swarm into the
-                          Finalist 8. Time left:
-                          <span className="ml-2 font-bold text-orange-500">
-                            {formatRemainingTime(remainingTime)}
-                          </span>
-                        </p>
-                      </div>
-
-                      <div className="relative group flex flex-col gap-2 pt-4 pb-1 sm:py-2 sm:pl-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">🌑</span>
-                          <div className="px-2.5 py-1 text-white font-semibold text-sm bg-purple-600 rounded-full shadow-sm">
-                            Darknight
-                          </div>
-                          <span className="text-sm text-purple-100 font-medium">
-                            (24-25h)
-                          </span>
-                        </div>
-                        <p className="text-gray-200 text-sm max-w-xl leading-relaxed font-medium">
-                          Then comes the kill round: five sealed auctions, 12
-                          minutes each—trader positions are hidden, only one
-                          meme survives.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="px-4">
+              <MarketDominanceCard remainingTime={remainingTime} />
             </div>
 
             <MemeGallery
@@ -314,7 +248,7 @@ export default function RoundsAPage() {
             />
           </ScrollableContainer>
         ) : (
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col overflow-hidden">
             <FixedContainer>
               <div className="sticky top-0 z-20 bg-[#181B27]/95">
                 <SharrowStatsBar />
@@ -339,11 +273,16 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[320px] flex-shrink-0 border-l border-gray-700">
-        <div className="sticky top-0 p-4">
-          <SwapUI coin={selectedCoin} />
-          <BattleCoinDetailCard coin={selectedCoin} />
-        </div>
+      <aside className="w-[360px] flex-shrink-0 border-l border-gray-700 h-full overflow-hidden">
+        <ScrollableContainer>
+          <div className="p-4">
+            <div className="flex flex-col items-center gap-2">
+              <BattleRoundPhaseToggle />
+              <SwapUI coin={selectedCoin} />
+            </div>
+            <BattleCoinDetailCard coin={selectedCoin} />
+          </div>
+        </ScrollableContainer>
       </aside>
     </div>
   );

@@ -178,7 +178,7 @@ export default function AppBar() {
           </div>
 
           {/* プログレスバー */}
-          <div className="w-full h-1 bg-gray-800 relative">
+          <div className="w-full h-0.5 bg-gray-800 relative">
             {/* チャレンジポイントのマーカー */}
             <div
               className="absolute top-0 bottom-0 w-1 bg-red-500 z-10 rounded-full"

@@ -1,8 +1,8 @@
 "use client";
 
+import { DarkCard } from "@/components/ui/dark-card";
 import type { RoundCoin } from "@/types/roundcoin";
 import {
-  Card,
   CardContent,
   CardHeader,
   CardTitle,
@@ -17,7 +17,7 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
   coin,
 }) => {
   return (
-    <Card className="w-full max-w-[400px] bg-black/20 backdrop-blur-sm border-none mt-4">
+    <DarkCard className="w-full mt-4">
       <CardHeader className="pb-3">
         <div className="flex flex-col items-center gap-3">
           <div className="relative w-full h-[240px]">
@@ -41,7 +41,7 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
           {coin.description}
         </p>
       </CardContent>
-    </Card>
+    </DarkCard>
   );
 };
 
