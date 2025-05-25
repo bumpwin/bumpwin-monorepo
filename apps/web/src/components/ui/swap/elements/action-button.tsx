@@ -1,6 +1,8 @@
 import type { ToggleSide } from "@/components/ui/swap/elements/types";
 import { ConnectButton } from "@mysten/dapp-kit";
 import type { ReactNode } from "react";
+import { match } from "ts-pattern";
+import { P } from "ts-pattern";
 
 interface ActionButtonProps {
   activeSide: ToggleSide;
@@ -21,22 +23,29 @@ export const ActionButton = ({
 }: ActionButtonProps) => {
   // Define button styles based on variant and activeSide
   const getButtonStyle = () => {
-    if (variant === "champion") {
-      if (activeSide === "buy") {
-        return "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]";
-      }
-      return "bg-gradient-to-r from-[#E41652] to-[#E43571] hover:from-[#D4124E] hover:to-[#D43170] text-white shadow-[0_4px_12px_rgba(255,27,91,0.25)]";
-    }
-
-    if (variant === "darknight") {
-      return "bg-[#3C41FF] text-white shadow-md";
-    }
-
-    // Default style
-    if (activeSide === "buy") {
-      return "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]";
-    }
-    return "bg-gradient-to-r from-[#E41652] to-[#E43571] hover:from-[#D4124E] hover:to-[#D43170] text-white shadow-[0_4px_12px_rgba(255,27,91,0.25)]";
+    return match({ variant, activeSide })
+      .with(
+        { variant: "champion", activeSide: "buy" },
+        () =>
+          "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]",
+      )
+      .with(
+        { variant: "champion", activeSide: P.union("sell", "switch") },
+        () =>
+          "bg-gradient-to-r from-[#E41652] to-[#E43571] hover:from-[#D4124E] hover:to-[#D43170] text-white shadow-[0_4px_12px_rgba(255,27,91,0.25)]",
+      )
+      .with({ variant: "darknight" }, () => "bg-[#3C41FF] text-white shadow-md")
+      .with(
+        { variant: "default", activeSide: "buy" },
+        () =>
+          "bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.25)]",
+      )
+      .with(
+        { variant: "default", activeSide: P.union("sell", "switch") },
+        () =>
+          "bg-gradient-to-r from-[#E41652] to-[#E43571] hover:from-[#D4124E] hover:to-[#D43170] text-white shadow-[0_4px_12px_rgba(255,27,91,0.25)]",
+      )
+      .exhaustive();
   };
 
   // Get button text based on state and activeSide
@@ -70,15 +79,12 @@ export const ActionButton = ({
       );
     }
 
-    if (activeSide === "buy") {
-      return variant === "darknight" ? "Buy (Sealed)" : "Buy Now";
-    }
-
-    if (activeSide === "sell") {
-      return "Sell Now";
-    }
-
-    return "Switch (Sealed)";
+    return match({ variant, activeSide })
+      .with({ variant: "darknight", activeSide: "buy" }, () => "Buy (Sealed)")
+      .with({ activeSide: "buy" }, () => "Buy Now")
+      .with({ activeSide: "sell" }, () => "Sell Now")
+      .with({ activeSide: "switch" }, () => "Switch (Sealed)")
+      .exhaustive();
   };
 
   // If not connected, show connect button instead

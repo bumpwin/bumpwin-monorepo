@@ -6,6 +6,7 @@ import type {
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
+import { match } from "ts-pattern";
 
 interface PotentialWinDisplayProps {
   amount: number | null;
@@ -31,56 +32,31 @@ export const PotentialWinDisplay = ({
   const suiCoin = { iconUrl: "/images/SUI.png", symbol: "SUI" } as RoundCoin;
 
   // Determine which coin to show based on componentType and activeSide
-  const displayCoin = (() => {
-    if (componentType === "daytime") {
-      return suiCoin; // 仕様: Daytime常にSUI
-    }
-
-    if (componentType === "darknight") {
-      if (activeSide === "buy") {
-        return coin ?? suiCoin; // Dark .buy .receive 無印 (コイン表示)
-      }
-      return suiCoin; // その他の場合はSUI
-    }
-
-    if (componentType === "champion") {
-      if (activeSide === "buy") {
-        return coin ?? suiCoin; // champ .buy .receive 無印 (コイン表示)
-      }
-      return suiCoin; // champ.sell .receve SUI
-    }
-
-    return coin ?? suiCoin;
-  })();
+  const displayCoin = match({ componentType, activeSide })
+    .with({ componentType: "daytime" }, () => suiCoin)
+    .with(
+      { componentType: "darknight", activeSide: "buy" },
+      () => coin ?? suiCoin,
+    )
+    .with(
+      { componentType: "champion", activeSide: "buy" },
+      () => coin ?? suiCoin,
+    )
+    .otherwise(() => suiCoin);
 
   // Determine if we should show the unit symbol based on componentType and activeSide
-  const showUnitSymbol = (() => {
-    if (componentType === "daytime") {
-      return true; // 仕様: Daytime常にSUI表示
-    }
-
-    if (componentType === "darknight") {
-      return false; // 仕様: dark .buy/switch .receive すべて無印
-    }
-
-    if (componentType === "champion") {
-      if (activeSide === "sell") {
-        return true; // 仕様: champ.sell .receve SUI
-      }
-      return false; // 仕様: champ .buy .receive 無印
-    }
-
-    return true;
-  })();
+  const showUnitSymbol = match({ componentType, activeSide })
+    .with({ componentType: "daytime" }, () => true)
+    .with({ componentType: "darknight" }, () => false)
+    .with({ componentType: "champion", activeSide: "sell" }, () => true)
+    .with({ componentType: "champion", activeSide: "buy" }, () => false)
+    .otherwise(() => true);
 
   // Determine the label text based on activeSide and componentType
-  const labelText = (() => {
-    if (componentType === "champion" && activeSide === "buy") {
-      return "To receive";
-    }
-
-    return activeSide === "buy" ? "To win 🌻" : "To receive";
-  })();
+  const labelText = match({ componentType, activeSide })
+    .with({ componentType: "champion", activeSide: "buy" }, () => "To receive")
+    .with({ activeSide: "buy" }, () => "To win 🌻")
+    .otherwise(() => "To receive");
 
   // Special case for Daytime
   const isDaytime = componentType === "daytime";

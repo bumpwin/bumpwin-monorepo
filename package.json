@@ -32,6 +32,7 @@
     "hono": "^4.7.10",
     "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
+    "ts-pattern": "^5.7.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "wrangler": "^4.16.1",

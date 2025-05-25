@@ -5,6 +5,7 @@ import type {
 } from "@/components/ui/swap/elements/types";
 import type { RoundCoin } from "@/types/roundcoin";
 import type { UseFormRegisterReturn } from "react-hook-form";
+import { match } from "ts-pattern";
 
 interface AmountInputProps {
   amount: number | null;
@@ -30,26 +31,18 @@ export const AmountInput = ({
   componentType,
 }: AmountInputProps) => {
   // Determine if we're showing a coin icon based on activeSide and componentType
-  const showCoinIcon = (() => {
-    if (componentType === "daytime" && activeSide === "sell") return true;
-    if (componentType === "darknight" && activeSide === "switch") return true;
-    if (componentType === "champion" && activeSide === "sell") return true;
-    return false;
-  })();
+  const showCoinIcon = match({ componentType, activeSide })
+    .with({ componentType: "daytime", activeSide: "sell" }, () => true)
+    .with({ componentType: "darknight", activeSide: "switch" }, () => true)
+    .with({ componentType: "champion", activeSide: "sell" }, () => true)
+    .otherwise(() => false);
 
   // Determine if we're showing the SUI label (unit) based on componentType and activeSide
-  const showSuiLabel = (() => {
-    if (componentType === "daytime") {
-      return activeSide === "buy"; // 仕様: Daytime .buy .pay SUI, Daytime .sell .pay 無印
-    }
-    if (componentType === "darknight") {
-      return activeSide === "buy"; // 仕様: Dark .buy .pay SUI, dark .switch .pay 無印
-    }
-    if (componentType === "champion") {
-      return activeSide === "buy"; // 仕様: champ.buy .pay SUI, champ .sell .pay 無印
-    }
-    return false;
-  })();
+  const showSuiLabel = match({ componentType, activeSide })
+    .with({ componentType: "daytime", activeSide: "buy" }, () => true)
+    .with({ componentType: "darknight", activeSide: "buy" }, () => true)
+    .with({ componentType: "champion", activeSide: "buy" }, () => true)
+    .otherwise(() => false);
 
   // Determine background color based on componentType
   const getBackgroundColor = () => {
