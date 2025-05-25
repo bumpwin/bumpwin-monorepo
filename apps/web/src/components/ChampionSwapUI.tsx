@@ -116,8 +116,8 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
             onClick={() => setActiveSide("buy")}
             className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
               activeSide === "buy"
-                ? "bg-gradient-to-r from-green-600 to-green-500 text-white shadow-[0_2px_8px_rgba(34,197,94,0.25)]"
-                : "text-gray-200 hover:text-gray-300"
+                ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                : "text-gray-400 hover:bg-green-500/20 hover:text-green-400"
             }`}
           >
             Buy
@@ -127,8 +127,8 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
             onClick={() => setActiveSide("sell")}
             className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
               activeSide === "sell"
-                ? "bg-gradient-to-r from-[#E41652] to-[#E43571] text-white shadow-[0_2px_8px_rgba(255,41,102,0.25)]"
-                : "text-gray-200 hover:text-gray-300"
+                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                : "text-gray-400 hover:bg-red-500/20 hover:text-red-400"
             }`}
           >
             Sell
@@ -244,10 +244,10 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
               className="overflow-hidden"
             >
               <div className="border-t border-[#2D3244] py-4 mb-4">
-                <div className="text-gray-400 font-medium text-sm mb-2">
+                <div className="text-gray-400 font-medium text-sm mb-2 cursor-not-allowed">
                   To receive
                 </div>
-                <div className="flex items-baseline px-3">
+                <div className="flex items-baseline px-3 cursor-not-allowed">
                   <div className="flex items-center gap-1 mr-1 min-w-0 flex-shrink-0">
                     <div
                       className="w-7 h-7 relative overflow-hidden"
@@ -280,9 +280,9 @@ const ChampionSwapUI = ({ coin }: SwapUIProps) => {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs">
+                <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs cursor-not-allowed">
                   <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
-                  <Info className="h-3 w-3 cursor-help" />
+                  <Info className="h-3 w-3 cursor-not-allowed" />
                 </div>
               </div>
             </motion.div>
