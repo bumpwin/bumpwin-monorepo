@@ -90,7 +90,7 @@ export const PotentialWinDisplay = ({
                 <span
                   className={`ml-2 ${amountTextColor} text-xl font-bold select-none`}
                 >
-                  {displayCoin.symbol}
+                  SUI
                 </span>
               </div>
             </div>
@@ -113,7 +113,7 @@ export const PotentialWinDisplay = ({
                   <span
                     className={`ml-2 text-white text-xl font-bold select-none${!showUnitSymbol ? " invisible" : ""}`}
                   >
-                    {displayCoin.symbol}
+                    SUI
                   </span>
                 </div>
               </div>
