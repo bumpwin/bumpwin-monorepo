@@ -17,7 +17,7 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
   coin,
 }) => {
   return (
-    <Card className="w-full max-w-[400px] bg-black/20 backdrop-blur-sm border-none mt-4">
+    <Card className="w-full bg-black/20 backdrop-blur-sm border-none mt-4">
       <CardHeader className="pb-3">
         <div className="flex flex-col items-center gap-3">
           <div className="relative w-full h-[240px]">
