@@ -10,10 +10,9 @@ import SharrowStatsBar from "@/components/SharrowStatsBar";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import { useQuery } from "@tanstack/react-query";
 import { mockMemeMetadata } from "@workspace/mockdata";
-import type { MemeMetadata } from "@workspace/mockdata";
 import {
   Card,
   CardContent,
@@ -23,6 +22,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
+import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -35,14 +35,14 @@ const DEFAULT_MEME: MemeMetadata = {
   description: "Default coin",
 };
 
-const DEFAULT_COIN: RoundCoin = {
+const DEFAULT_COIN: BattleCoin = {
   id: "default",
   symbol: "YAKIU",
   name: "Yakiu",
   iconUrl: "/images/mockmemes/YAKIU.png",
   round: 12,
-  share: 0,
   marketCap: 180000,
+  price: 0.0018,
   description: "Default coin",
 };
 
@@ -71,14 +71,14 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToRoundCoin = (meme: MemeMetadata): RoundCoin => ({
+const memeToBattleCoin = (meme: MemeMetadata): BattleCoin => ({
   id: meme.symbol,
   symbol: meme.symbol,
   name: meme.name,
   iconUrl: meme.iconUrl,
   round: 12,
-  share: 0,
   marketCap: 180000,
+  price: 0.0018,
   description: meme.description,
 });
 
@@ -113,7 +113,7 @@ const PriceChart = ({
   priceData,
   isLoading,
 }: {
-  coin: RoundCoin;
+  coin: BattleCoin;
   priceData: OHLCData[] | undefined;
   isLoading: boolean;
 }) => {
@@ -205,20 +205,20 @@ export default function RoundsAPage() {
   const { phase, remainingTime } = useBattleClock();
 
   const firstMeme = mockMemeMetadata.length > 0 ? mockMemeMetadata[0] : null;
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
+  const [selectedCoin, setSelectedCoin] = useState<BattleCoin>(
     selectedId
-      ? memeToRoundCoin(
+      ? memeToBattleCoin(
           mockMemeMetadata.find((m) => m.symbol === selectedId) ||
             firstMeme ||
             DEFAULT_MEME,
         )
       : firstMeme
-        ? memeToRoundCoin(firstMeme)
+        ? memeToBattleCoin(firstMeme)
         : DEFAULT_COIN,
   );
 
   const handleCoinSelect = (meme: MemeMetadata) => {
-    const newCoin = memeToRoundCoin(meme);
+    const newCoin = memeToBattleCoin(meme);
     setSelectedCoin(newCoin);
     router.push(`?selected=${meme.symbol}`);
   };
@@ -289,7 +289,18 @@ export default function RoundsAPage() {
             <div className="flex flex-col items-center gap-2">
               <BattleRoundPhaseToggle />
               {phase === "daytime" ? (
-                <DaytimeSwapUI coin={selectedCoin} />
+                <DaytimeSwapUI
+                  coin={{
+                    ...selectedCoin,
+                    id: Number(selectedCoin.id) || 0,
+                    icon: selectedCoin.iconUrl,
+                    color:
+                      "color" in selectedCoin &&
+                      typeof selectedCoin.color === "string"
+                        ? selectedCoin.color
+                        : "#888",
+                  }}
+                />
               ) : (
                 <DarknightSwapUI coin={selectedCoin} />
               )}

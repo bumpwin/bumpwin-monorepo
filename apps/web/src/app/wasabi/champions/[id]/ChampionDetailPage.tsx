@@ -72,6 +72,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
     round: coin.round,
     share: coin.share ?? 0,
     marketCap: coin.marketCap ?? 0,
+    price: currentPrice,
     description: coin.description,
     telegramLink: coin.telegramLink,
     websiteLink: coin.websiteLink,

@@ -3,7 +3,7 @@ import type {
   ComponentType,
   ToggleSide,
 } from "@/components/ui/swap/elements/types";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { match } from "ts-pattern";
 
@@ -14,7 +14,7 @@ interface AmountInputProps {
   onAmountChange: (value: string) => void;
   setAmountValue: (val: number | null) => void;
   balance: number;
-  coin?: RoundCoin;
+  coin?: BattleCoin;
   error?: string;
   componentType: ComponentType;
 }
@@ -62,11 +62,9 @@ export const AmountInput = ({
         >
           <div className="flex items-baseline px-3">
             {showCoinIcon && coin && (
-              <CoinIconSymbol
-                coin={coin}
-                size="sm"
-                className="mr-1 min-w-0 flex-shrink-0"
-              />
+              <div className="mr-1 min-w-0 flex-shrink-0">
+                <CoinIconSymbol coin={coin} size={24} />
+              </div>
             )}
             <input
               type="text"

@@ -31,8 +31,10 @@ export interface CoinCardProps {
   isHighlighted?: boolean;
   /** シェア */
   share?: number;
-  /** ソーシャルリンク */
+  /** Telegramリンク */
   telegramLink?: string;
+  /** ウェブサイトリンク */
   websiteLink?: string;
+  /** Twitterリンク */
   twitterLink?: string;
 }

@@ -1,20 +1,12 @@
 "use client";
-import DominanceRechart from "@/components/DominanceRechart";
-import type {
-  ChartDataPoint,
-  PreparedCoinMeta,
-} from "@/components/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinCardProps } from "@/types/coincard";
 import { AnimatePresence, motion } from "framer-motion";
-import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 interface ResultViewProps {
-  coin: RoundCoin | undefined;
+  coin: CoinCardProps | undefined;
   forceVisible?: boolean;
 }
 
@@ -23,27 +15,6 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
   const [visible, setVisible] = useState(forceVisible);
   const prevTimeRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const router = useRouter();
-
-  // Transform mockDominanceChartData to DominanceRechart format
-  const chartPoints: ChartDataPoint[] = mockDominanceChartData.map((point) => ({
-    timestamp: point.timestamp,
-    ...point.shares.reduce(
-      (acc, share, index) => {
-        const symbol =
-          mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
-        acc[symbol] = share;
-        return acc;
-      },
-      {} as Record<string, number>,
-    ),
-  }));
-
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: coin.color,
-  }));
 
   useEffect(() => {
     if (forceVisible) {
@@ -87,13 +58,6 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
     }
   };
 
-  const handleViewMore = () => {
-    if (!forceVisible) {
-      setVisible(false);
-    }
-    router.push("/champions");
-  };
-
   return (
     <AnimatePresence>
       {visible && (
@@ -135,7 +99,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
                       <div className="absolute inset-0 rounded-full overflow-hidden">
                         <Image
-                          src={coin.iconUrl}
+                          src={coin.logoUrl}
                           alt={coin.name}
                           width={128}
                           height={128}
@@ -168,95 +132,8 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                     {coin.marketCap.toLocaleString()}
                   </div>
                 </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex gap-2">
-                    {coin.telegramLink && (
-                      <a
-                        href={coin.telegramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Telegram"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Send className="w-5 h-5" />
-                      </a>
-                    )}
-                    {coin.websiteLink && (
-                      <a
-                        href={coin.websiteLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Website"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Globe className="w-5 h-5" />
-                      </a>
-                    )}
-                    {coin.twitterLink && (
-                      <a
-                        href={coin.twitterLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Twitter"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <Twitter className="w-5 h-5" />
-                      </a>
-                    )}
-                  </div>
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        router.push(`/trade/${coin.symbol.toLowerCase()}`)
-                      }
-                      className="bg-blue-400 text-white font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-blue-300 transition"
-                    >
-                      Trade
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {}}
-                      className="bg-yellow-400 text-[#23262F] font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-yellow-300 transition"
-                    >
-                      Claim ${coin.symbol}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {}}
-                      className="bg-red-400 text-white font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-red-300 transition"
-                    >
-                      Claim $LOSER
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: Chart */}
-              <div className="w-[500px]">
-                <div className="h-[300px]">
-                  <DominanceRechart
-                    points={chartPoints}
-                    coins={chartCoins}
-                    height={300}
-                    compact={false}
-                    hideLegend={false}
-                    showAllTime={true}
-                  />
-                </div>
               </div>
             </div>
-
-            {!forceVisible && (
-              <button
-                type="button"
-                onClick={handleViewMore}
-                className="absolute right-8 bottom-8 bg-yellow-400 text-[#23262F] font-bold rounded-xl px-8 py-3 text-lg shadow-lg hover:bg-yellow-300 transition"
-                style={{ zIndex: 3100 }}
-              >
-                View More
-              </button>
-            )}
           </motion.div>
         </motion.div>
       )}

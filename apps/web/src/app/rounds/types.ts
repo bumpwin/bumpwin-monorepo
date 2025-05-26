@@ -33,9 +33,6 @@ export interface CoinMetadata {
   icon: string;
   color: string;
   description: string;
-  telegramLink: string;
-  websiteLink: string;
-  twitterLink: string;
 }
 
 export interface ChartPoint {

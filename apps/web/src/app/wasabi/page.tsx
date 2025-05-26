@@ -7,7 +7,9 @@ export default function WasabiPage() {
       <ResultView
         coin={{
           ...mockLastChampionCoinMetadata,
-          id: mockLastChampionCoinMetadata.id.toString(),
+          logoUrl: mockLastChampionCoinMetadata.iconUrl,
+          address: mockLastChampionCoinMetadata.id.toString(),
+          isFavorite: false,
         }}
         forceVisible={true}
       />

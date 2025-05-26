@@ -4,7 +4,7 @@ import { mockprice } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { ChartTitle } from "@/components/ChartTitle";
 import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -17,7 +17,7 @@ import {
 } from "@workspace/shadcn/components/chart/lwc-chart";
 
 interface ChampionDetailPageProps {
-  coin: RoundCoin;
+  coin: BattleCoin;
   id: string;
 }
 

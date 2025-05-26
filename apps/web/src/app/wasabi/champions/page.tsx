@@ -21,9 +21,6 @@ export default function ChampionsPage() {
       symbol: coin.symbol,
       logoUrl: coin.iconUrl,
       description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
       share: 0.35, // Mock data
       marketCap: 1000000, // Mock data
       isFavorite: false,
@@ -83,7 +80,9 @@ export default function ChampionsPage() {
             <ResultView
               coin={{
                 ...mockLastChampionCoinMetadata,
-                id: mockLastChampionCoinMetadata.id.toString(),
+                logoUrl: mockLastChampionCoinMetadata.iconUrl,
+                address: mockLastChampionCoinMetadata.id.toString(),
+                isFavorite: false,
               }}
               forceVisible={true}
             />

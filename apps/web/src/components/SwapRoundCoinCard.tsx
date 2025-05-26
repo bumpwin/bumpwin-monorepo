@@ -1,7 +1,6 @@
 "use client";
 
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import type { RoundCoin } from "@/types/roundcoin";
 import {
   ConnectButton,
   useCurrentAccount,
@@ -12,8 +11,20 @@ import { getSuiBalance } from "@workspace/sui";
 import Image from "next/image";
 import React, { useState } from "react";
 
+interface CoinWithMarketData {
+  id: number;
+  symbol: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  price: number;
+  marketCap: number;
+  share?: number;
+}
+
 interface SwapRoundCoinCardProps {
-  coin?: RoundCoin;
+  coin?: CoinWithMarketData;
 }
 
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
@@ -34,18 +45,8 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
         typeof latestShares[maxShareIndex] === "number"
       ) {
         return {
-          id: defaultCoin.id.toString(),
-          symbol: defaultCoin.symbol,
-          name: defaultCoin.name,
-          iconUrl: defaultCoin.icon,
-          round: 1,
+          ...defaultCoin,
           share: latestShares[maxShareIndex],
-          marketCap: 0,
-          description: defaultCoin.description,
-          telegramLink: defaultCoin.telegramLink,
-          websiteLink: defaultCoin.websiteLink,
-          twitterLink: defaultCoin.twitterLink,
-          color: defaultCoin.color,
         };
       }
     }
@@ -74,7 +75,7 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
     <div className="bg-[#181A20] border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
       <div className="flex items-center gap-3 mb-2">
         <Image
-          src={coin.iconUrl}
+          src={coin.icon}
           alt={coin.name}
           width={48}
           height={48}

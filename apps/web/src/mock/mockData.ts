@@ -7,9 +7,8 @@ export const mockCoinMetadata = [
     color: "#FF69B4",
     description:
       "SMUG is a meme coin with attitude. Its smug face has become an iconic symbol in the crypto community.",
-    telegramLink: "https://t.me/smugcoin",
-    websiteLink: "https://smugcoin.com",
-    twitterLink: "https://twitter.com/smugcoin",
+    price: 0.0001,
+    marketCap: 100000,
   },
   {
     id: 1,
@@ -19,9 +18,8 @@ export const mockCoinMetadata = [
     color: "#3CB043",
     description:
       "YAKIU brings a unique perspective to the meme coin world with its distinctive character and strong community.",
-    telegramLink: "https://t.me/yakiucoin",
-    websiteLink: "https://www.yakiu.vip",
-    twitterLink: "https://twitter.com/yakiucoin",
+    price: 0.00008,
+    marketCap: 40000,
   },
   {
     id: 2,
@@ -31,9 +29,8 @@ export const mockCoinMetadata = [
     color: "#FFD700",
     description:
       "CHEDER is a meme coin with a cheesy twist. Its golden color represents wealth and prosperity in the crypto space.",
-    telegramLink: "https://t.me/chedercoin",
-    websiteLink: "https://www.chedercoin.com",
-    twitterLink: "https://twitter.com/chedercoin",
+    price: 0.00005,
+    marketCap: 17000,
   },
 ];
 
@@ -46,12 +43,9 @@ export const mockLastChampionCoinMetadata = {
   color: "#FF69B4",
   description:
     "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-  telegramLink: "https://t.me/dogecoin",
-  websiteLink: "https://dogecoin.com",
-  twitterLink: "https://twitter.com/dogecoin",
   createdBy: "BUMP.WIN",
   marketCap: 100000,
-  share: 68,
+  price: 0.00012,
 };
 
 export const mockChampionCoinMetadata = [
@@ -64,12 +58,9 @@ export const mockChampionCoinMetadata = [
     color: "#FF69B4",
     description:
       "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    telegramLink: "https://t.me/dogecoin",
-    websiteLink: "https://dogecoin.com",
-    twitterLink: "https://twitter.com/dogecoin",
     createdBy: "BUMP.WIN",
     marketCap: 100000,
-    share: 40,
+    price: 0.0001,
   },
   {
     id: "1",
@@ -80,12 +71,9 @@ export const mockChampionCoinMetadata = [
     color: "#3CB043",
     description:
       "Pepe is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    telegramLink: "https://t.me/pepecoineth",
-    websiteLink: "https://www.pepe.vip",
-    twitterLink: "https://twitter.com/pepecoineth",
     createdBy: "BUMP.WIN",
     marketCap: 40000,
-    share: 30,
+    price: 0.00008,
   },
   {
     id: "2",
@@ -96,12 +84,9 @@ export const mockChampionCoinMetadata = [
     color: "#FFD700",
     description:
       "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    telegramLink: "https://t.me/wifcoin",
-    websiteLink: "https://www.wifcoin.com",
-    twitterLink: "https://twitter.com/wifcoin",
     createdBy: "BUMP.WIN",
     marketCap: 17000,
-    share: 30,
+    price: 0.00005,
   },
 ];
 

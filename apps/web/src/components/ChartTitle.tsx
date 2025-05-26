@@ -1,11 +1,11 @@
 "use client";
 
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import { CardTitle } from "@workspace/shadcn/components/card";
 import Image from "next/image";
 
 interface ChartTitleProps {
-  coin: RoundCoin;
+  coin: BattleCoin;
   percentage?: string;
 }
 

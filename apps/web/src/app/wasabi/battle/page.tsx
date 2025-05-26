@@ -8,16 +8,18 @@ import type { CoinMeta } from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import type { RoundCoin } from "@/types/roundcoin";
+import { memeToBattleCoin } from "@/types/battle";
+import type { CoinCardProps } from "@/types/coincard";
 import {
   prepareCoinsMetadata,
   prepareMultiCoinChartData,
 } from "@/utils/chartDataPreparation";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(
+  const [selectedCoin, setSelectedCoin] = useState<MemeMetadata | undefined>(
     undefined,
   );
 
@@ -27,6 +29,28 @@ export default function Home() {
     mockDominanceChartData,
     relevantCoins,
   );
+
+  const handleCoinSelect = (coin: CoinCardProps | undefined) => {
+    if (!coin) {
+      setSelectedCoin(undefined);
+      return;
+    }
+    // Find the corresponding MemeMetadata from mockCoinMetadata
+    const memeMetadata = mockCoinMetadata.find(
+      (m) => m.id.toString() === coin.address,
+    );
+    if (memeMetadata) {
+      setSelectedCoin({
+        id: `0x${memeMetadata.id.toString(16).padStart(40, "0")}`,
+        name: memeMetadata.name,
+        symbol: memeMetadata.symbol,
+        description: memeMetadata.description,
+        iconUrl: memeMetadata.icon,
+      });
+    } else {
+      setSelectedCoin(undefined);
+    }
+  };
 
   // 単一コイン用のデータ
   // const firstCoinFromMeta = relevantCoins[0];
@@ -90,13 +114,17 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row gap-6 items-start w-full">
               <div className="flex-1 min-w-0 flex flex-col justify-start">
                 <RoundCoinTable
-                  onSelectCoin={setSelectedCoin}
+                  onSelectCoin={handleCoinSelect}
                   selectedCoinId={selectedCoin?.id}
                 />
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
                 <div className="w-full self-start mt-12">
-                  <SwapUI coin={selectedCoin} />
+                  <SwapUI
+                    coin={
+                      selectedCoin ? memeToBattleCoin(selectedCoin) : undefined
+                    }
+                  />
                 </div>
               </div>
             </div>

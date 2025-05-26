@@ -9,7 +9,7 @@ import { ToggleButton } from "@/components/ui/swap/elements/toggle-button";
 import type { ToggleSide } from "@/components/ui/swap/elements/types";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { getSuiBalance } from "@workspace/sui";
@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface SwapUIProps {
-  coin?: RoundCoin;
+  coin?: BattleCoin;
 }
 
 const ChampionSwapUI = ({ coin }: SwapUIProps) => {

@@ -11,7 +11,6 @@ import {
 import type { CoinCardProps } from "@/types/coincard";
 import type { DominanceChartData } from "@/types/dominance";
 import { motion } from "framer-motion";
-import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 
@@ -122,41 +121,6 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
                             {metadata?.createdBy || "Unknown"}
                           </span>
                         </div>
-                      </div>
-                      <div className="flex gap-3 mt-3">
-                        {coin.websiteLink && (
-                          <a
-                            href={coin.websiteLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Globe className="w-5 h-5" />
-                          </a>
-                        )}
-                        {coin.telegramLink && (
-                          <a
-                            href={coin.telegramLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Send className="w-5 h-5" />
-                          </a>
-                        )}
-                        {coin.twitterLink && (
-                          <a
-                            href={coin.twitterLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Twitter className="w-5 h-5" />
-                          </a>
-                        )}
                       </div>
                     </div>
                   </div>

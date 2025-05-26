@@ -1,7 +1,7 @@
 "use client";
 
 import { DarkCard } from "@/components/ui/dark-card";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { BattleCoin } from "@/types/battle";
 import {
   CardContent,
   CardHeader,
@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 
 interface BattleCoinDetailCardProps {
-  coin: RoundCoin;
+  coin: BattleCoin;
 }
 
 const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
@@ -37,9 +37,18 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-300 whitespace-pre-wrap">
-          {coin.description}
-        </p>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-gray-400">Market Cap</span>
+            <span className="text-white">
+              ${coin.marketCap.toLocaleString()}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Price</span>
+            <span className="text-white">${coin.price.toFixed(6)}</span>
+          </div>
+        </div>
       </CardContent>
     </DarkCard>
   );
