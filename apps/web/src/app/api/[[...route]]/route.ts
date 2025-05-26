@@ -1,5 +1,3 @@
-import { app as chatApp } from "@/app/api/[[...route]]/chat";
-import { app as mockpriceApp } from "@/app/api/[[...route]]/mockprice";
 import { createApp } from "@workspace/api";
 import { handle } from "hono/vercel";
 
@@ -10,11 +8,9 @@ const app = createApp({
   basePath: "/api",
   corsOrigin: process.env.NEXT_PUBLIC_URL || "*",
   enableDocs: true,
-  additionalApis: [
-    { path: "/chat", api: chatApp },
-    { path: "/mockprice", api: mockpriceApp },
-  ],
 });
+
+export type AppType = typeof app;
 
 export const GET = handle(app);
 export const POST = handle(app);

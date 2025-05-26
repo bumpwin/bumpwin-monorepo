@@ -1,15 +1,22 @@
 import {
+  getCompletedRounds,
   getCurrentRound,
+  getUpcomingRounds,
   mockMemeMarketData,
   mockMemeMetadata,
   mockRoundData,
 } from "@workspace/mockdata";
 import { Hono } from "hono";
 
-export const battlesApi = new Hono();
+export const battleroundsApi = new Hono();
+
+// Get all rounds
+battleroundsApi.get("/", (c) => {
+  return c.json(Object.values(mockRoundData));
+});
 
 // Get current battle round with meme data
-battlesApi.get("/current", (c) => {
+battleroundsApi.get("/current", (c) => {
   const currentRound = getCurrentRound();
   if (!currentRound) {
     return c.json({ error: "No active battle round" }, 404);
@@ -29,13 +36,18 @@ battlesApi.get("/current", (c) => {
   });
 });
 
-// Get all rounds
-battlesApi.get("/rounds", (c) => {
-  return c.json(Object.values(mockRoundData));
+// Get completed rounds
+battleroundsApi.get("/completed", (c) => {
+  return c.json(getCompletedRounds());
+});
+
+// Get upcoming rounds
+battleroundsApi.get("/upcoming", (c) => {
+  return c.json(getUpcomingRounds());
 });
 
 // Get specific round
-battlesApi.get("/rounds/:id", (c) => {
+battleroundsApi.get("/:id", (c) => {
   const roundId = c.req.param("id");
   const round = mockRoundData[roundId];
 

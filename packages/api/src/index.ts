@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { battlesApi } from "./battles";
+import { battleroundsApi } from "./battlerounds";
 import { championsApi } from "./champions";
-import { roundsApi } from "./rounds";
+import { chatApi } from "./chat";
+import { mockpriceApi } from "./mockprice";
 
 interface CreateAppOptions {
   basePath?: string;
@@ -30,15 +31,16 @@ export const createApp = (options: CreateAppOptions = {}) => {
 
   // Mount additional APIs first (like chat, mockprice)
   if (options.additionalApis) {
-    options.additionalApis.forEach(({ path, api }) => {
+    for (const { path, api } of options.additionalApis) {
       app.route(path, api);
-    });
+    }
   }
 
   // Mount API routes
-  app.route("/battles", battlesApi);
+  app.route("/battlerounds", battleroundsApi);
   app.route("/champions", championsApi);
-  app.route("/rounds", roundsApi);
+  app.route("/chat", chatApi);
+  app.route("/mockprice", mockpriceApi);
 
   // Add health check
   app.get("/health", (c) => {
@@ -50,18 +52,21 @@ export const createApp = (options: CreateAppOptions = {}) => {
     app.get("/docs", (c) => {
       return c.json({
         endpoints: {
-          battles: {
-            "/battles/current": "Get current battle round with meme data",
-            "/battles/rounds": "Get all rounds",
-            "/battles/rounds/:id": "Get specific round by ID",
+          battlerounds: {
+            "/battlerounds": "Get all rounds",
+            "/battlerounds/current": "Get current battle round with meme data",
+            "/battlerounds/completed": "Get completed rounds",
+            "/battlerounds/upcoming": "Get upcoming rounds",
+            "/battlerounds/:id": "Get specific round by ID",
           },
           champions: {
             "/champions": "Get all champions",
           },
-          rounds: {
-            "/rounds": "Get all rounds",
-            "/rounds/completed": "Get completed rounds",
-            "/rounds/upcoming": "Get upcoming rounds",
+          chat: {
+            "/chat": "Get latest chat messages",
+          },
+          mockprice: {
+            "/mockprice": "Get mock price data",
           },
         },
       });
@@ -72,6 +77,7 @@ export const createApp = (options: CreateAppOptions = {}) => {
 };
 
 // Re-export individual APIs for direct use if needed
-export { battlesApi } from "./battles";
+export { battleroundsApi } from "./battlerounds";
 export { championsApi } from "./champions";
-export { roundsApi } from "./rounds";
+export { chatApi } from "./chat";
+export { mockpriceApi } from "./mockprice";

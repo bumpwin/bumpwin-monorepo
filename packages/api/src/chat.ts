@@ -10,17 +10,6 @@ import { type Result, err, ok } from "neverthrow";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// if (!supabaseUrl || !supabaseAnonKey) {
-//   throw new Error("Required environment variables are not defined");
-// }
-
-// const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey);
-
-// const supabaseRepository = new SupabaseRepository(supabase);
-
 let supabaseRepo: SupabaseRepository | null = null;
 
 const getRepo = (): Result<SupabaseRepository, ApiError> => {
@@ -79,7 +68,7 @@ const parseLimit = (
  * @error
  *   - 500: Internal Server Error - Database or unexpected errors
  */
-export const app = new Hono().get("/", async (c) => {
+export const chatApi = new Hono().get("/", async (c) => {
   const repoResult = getRepo();
   if (repoResult.isErr()) {
     logger.error("Failed to get repository", { error: repoResult.error });

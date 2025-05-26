@@ -64,7 +64,7 @@ const generateMockPriceData = (
   return data;
 };
 
-export const app = new Hono().get(
+export const mockpriceApi = new Hono().get(
   "/",
   zValidator("query", querySchema),
   (c) => {

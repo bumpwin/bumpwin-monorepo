@@ -7,7 +7,6 @@ import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints, getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";

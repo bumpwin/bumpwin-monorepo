@@ -21,7 +21,6 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import type { MemeMarketData, MemeMetadata, RoundData } from "@workspace/types";
 import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -202,13 +201,13 @@ export default function RoundsAPage() {
   const { data: battleData, isLoading: isBattleLoading } = useQuery({
     queryKey: ["battle", "current"],
     queryFn: async () => {
-      const res = await fetch("/api/battles/current");
+      const res = await fetch("/api/battlerounds/current");
       if (!res.ok) throw new Error("Failed to fetch battle data");
       return res.json();
     },
   });
 
-  const memes = battleData?.memes?.map((m: any) => m.metadata) || [];
+  const memes = battleData?.memes?.map((m: { metadata: MemeMetadata }) => m.metadata) || [];
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme

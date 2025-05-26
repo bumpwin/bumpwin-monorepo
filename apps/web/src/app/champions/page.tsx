@@ -2,6 +2,7 @@
 
 import { ChampionCard } from "@/components/ChampionCard";
 import { useQuery } from "@tanstack/react-query";
+import type { MemeMarketData, MemeMetadata } from "@workspace/types";
 import React from "react";
 
 export default function ChampionsPage() {
@@ -49,16 +50,18 @@ export default function ChampionsPage() {
     <>
       {/* Champions Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mt-10">
-        {champions?.map((champion: any) => (
-          <ChampionCard
-            key={champion.meme?.id}
-            imageUrl={champion.meme?.iconUrl}
-            symbol={champion.meme?.symbol}
-            name={champion.meme?.name}
-            mcap={champion.meme?.marketCap || 0}
-            round={champion.round?.round}
-          />
-        ))}
+        {champions?.map((champion: { meme: MemeMetadata & MemeMarketData | null; round: { round: number } }) => 
+          champion.meme ? (
+            <ChampionCard
+              key={champion.meme.id}
+              imageUrl={champion.meme.iconUrl}
+              symbol={champion.meme.symbol}
+              name={champion.meme.name}
+              mcap={champion.meme.marketCap || 0}
+              round={champion.round?.round}
+            />
+          ) : null
+        )}
       </div>
     </>
   );
