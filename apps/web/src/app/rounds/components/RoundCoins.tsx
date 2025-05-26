@@ -1,10 +1,10 @@
-import type { CoinMetadata } from "@/app/rounds/types";
+import type { MemeMetadata } from "@workspace/types";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React from "react";
 
 interface RoundCoinsProps {
-  coins: CoinMetadata[];
+  coins: MemeMetadata[];
 }
 
 export function RoundCoins({ coins }: RoundCoinsProps) {
@@ -13,7 +13,7 @@ export function RoundCoins({ coins }: RoundCoinsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
       {coins.slice(0, 4).map((coin, j) => {
-        if (!coin || !coin.icon) return null;
+        if (!coin || !coin.iconUrl) return null;
 
         return (
           <motion.div
@@ -24,7 +24,7 @@ export function RoundCoins({ coins }: RoundCoinsProps) {
             className="bg-black/30 backdrop-blur-sm border border-gray-700/50 rounded-lg p-2 flex items-center gap-2 hover:bg-black/40 transition-colors"
           >
             <Image
-              src={coin.icon}
+              src={coin.iconUrl}
               alt={coin.symbol}
               width={28}
               height={28}

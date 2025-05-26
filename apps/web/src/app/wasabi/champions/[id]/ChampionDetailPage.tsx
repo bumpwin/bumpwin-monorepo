@@ -3,7 +3,6 @@
 import { mockprice } from "@/app/client";
 import { ChartTitle } from "@/components/ChartTitle";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
-import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -14,11 +13,18 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
-import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
+import type { MemeMetadata } from "@workspace/types";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
+export function ChampionDetailPage({
+  coin,
+  id,
+}: {
+  coin: MemeMetadata & { round: number };
+  id: string;
+}) {
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", id],
     queryFn: async () => {
@@ -58,26 +64,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
   });
 
   const fallbackData: OHLCData[] = [];
-  const currentPrice =
-    priceData && priceData.length > 0
-      ? (priceData[priceData.length - 1]?.close ?? 0)
-      : 0;
-
-  // champion coin を RoundCoin 型にマッピング
-  const roundCoin = {
-    id: coin.id.toString(),
-    symbol: coin.symbol,
-    name: coin.name,
-    iconUrl: coin.iconUrl,
-    round: coin.round,
-    share: coin.share ?? 0,
-    marketCap: coin.marketCap ?? 0,
-    description: coin.description,
-    telegramLink: coin.telegramLink,
-    websiteLink: coin.websiteLink,
-    twitterLink: coin.twitterLink,
-    color: coin.color,
-  };
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] bg-gradient-to-br from-gray-900 to-gray-800">
@@ -87,7 +73,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           <div className="md:col-span-2 flex flex-col gap-4">
             <Card className="w-full bg-black/20 backdrop-blur-sm border-none">
               <CardHeader className="pb-2">
-                <ChartTitle coin={roundCoin} />
+                <ChartTitle coin={coin} />
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
@@ -97,7 +83,11 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                 ) : (
                   <LWCChart
                     data={priceData || fallbackData}
-                    currentPrice={currentPrice}
+                    currentPrice={
+                      priceData && priceData.length > 0
+                        ? (priceData[priceData.length - 1]?.close ?? 0)
+                        : 0
+                    }
                     height={400}
                     className="mt-3"
                   />
@@ -108,7 +98,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
           {/* コイン詳細パネル（右1/3） */}
           <div className="flex flex-col gap-6">
             <div>
-              <SwapUI coin={roundCoin} />
+              <SwapUI coin={coin} />
             </div>
             {/* コイン画像・名前・シンボル */}
             <div className="flex flex-col items-center gap-2">
@@ -155,42 +145,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   AWWMk...kjR4
                 </span>
               </div>
-            </div>
-            {/* 外部リンク */}
-            <div className="flex gap-3">
-              {coin.telegramLink && (
-                <a
-                  href={coin.telegramLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Telegram"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Send size={28} />
-                </a>
-              )}
-              {coin.websiteLink && (
-                <a
-                  href={coin.websiteLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Website"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Globe size={28} />
-                </a>
-              )}
-              {coin.twitterLink && (
-                <a
-                  href={coin.twitterLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Twitter"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Twitter size={28} />
-                </a>
-              )}
             </div>
             {/* トップホルダーリスト（ダミー） */}
             <div>

@@ -1,18 +1,19 @@
 import { DEFAULT_ICON } from "@/app/rounds/constants";
-import type { ChartCoin, ChartPoint, CoinMetadata } from "@/app/rounds/types";
+import type { ChartCoin, ChartPoint } from "@/app/rounds/types";
+import type { MemeMetadata } from "@workspace/types";
 
 export function getSafeIcon(
-  coinMetadata: CoinMetadata[] | undefined,
+  coinMetadata: MemeMetadata[] | undefined,
   index: number,
 ): string {
   if (!coinMetadata || !coinMetadata[index]) {
     return DEFAULT_ICON;
   }
-  return coinMetadata[index].icon || DEFAULT_ICON;
+  return coinMetadata[index].iconUrl || DEFAULT_ICON;
 }
 
 export function getSafeSymbol(
-  coinMetadata: CoinMetadata[] | undefined,
+  coinMetadata: MemeMetadata[] | undefined,
   index: number,
 ): string {
   if (!coinMetadata || !coinMetadata[index]) {
@@ -28,7 +29,7 @@ interface DominanceDataPoint {
 
 export function getChartPoints(
   mockDominanceChartData: DominanceDataPoint[] | undefined,
-  mockCoinMetadata: CoinMetadata[] | undefined,
+  mockCoinMetadata: MemeMetadata[] | undefined,
   roundIndex: number,
 ): ChartPoint[] {
   if (!mockDominanceChartData || !mockDominanceChartData.length) {
@@ -62,10 +63,10 @@ export function getChartPoints(
   }));
 }
 
-export function getChartCoins(mockCoinMetadata: CoinMetadata[]): ChartCoin[] {
-  return mockCoinMetadata.map((coin) => ({
+export function getChartCoins(mockCoinMetadata: MemeMetadata[]): ChartCoin[] {
+  return mockCoinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
-    color: coin.color,
+    color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
   }));
 }

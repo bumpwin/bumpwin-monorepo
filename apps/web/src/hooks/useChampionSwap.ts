@@ -14,7 +14,7 @@ export const useChampionSwap = () => {
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
-  const executeSwap = async () => {
+  const executeSwap = async (championId?: string) => {
     if (!account) {
       toast.error("Please connect your wallet first");
       return;
@@ -48,7 +48,7 @@ export const useChampionSwap = () => {
               description: `Digest: ${result.digest.slice(0, 8)}...`,
             });
             // Navigate to champion detail page after successful transaction
-            window.location.href = "/champions/1";
+            window.location.href = `/champions/${championId || "1"}`;
           },
           onError: (error) => {
             toast.error("Transaction failed", {

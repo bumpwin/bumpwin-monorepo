@@ -9,7 +9,7 @@ export interface CoinCardProps {
   address: string;
   symbol: string;
   name: string;
-  createdAt: Date;
+  createdAt?: Date;
   isFavorite: boolean;
   logoUrl: string;
   description: string;
@@ -29,4 +29,12 @@ export interface CoinCardProps {
   role?: string;
   /** ハイライト表示するかどうか */
   isHighlighted?: boolean;
+  /** 価格 */
+  price?: number;
+  /** Telegramリンク */
+  telegramLink?: string;
+  /** ウェブサイトリンク */
+  websiteLink?: string;
+  /** Twitterリンク */
+  twitterLink?: string;
 }

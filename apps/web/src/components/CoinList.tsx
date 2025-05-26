@@ -1,8 +1,8 @@
 "use client";
 
 import { CoinCard } from "@/components/CoinCard";
-import { mockCoins } from "@/mock/mockCoins";
 import type { CoinCardProps } from "@/types/coincard";
+import { mockMemeMetadata } from "@workspace/mockdata";
 import { Button } from "@workspace/shadcn/components/button";
 import {
   DropdownMenu,
@@ -17,7 +17,18 @@ import { useState } from "react";
 type SortType = "marketCap" | "new";
 
 export function CoinList() {
-  const [coins, setCoins] = useState<CoinCardProps[]>(mockCoins);
+  const [coins, setCoins] = useState<CoinCardProps[]>(
+    mockMemeMetadata.map((meme) => ({
+      address: meme.id,
+      symbol: meme.symbol,
+      name: meme.name,
+      logoUrl: meme.iconUrl,
+      description: meme.description,
+      marketCap: 45000, // デフォルト値
+      isFavorite: false,
+      onToggleFavorite: undefined,
+    })),
+  );
   const [sortType, setSortType] = useState<SortType>("marketCap");
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -60,9 +71,7 @@ export function CoinList() {
       case "marketCap":
         return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
       case "new":
-        return [...filtered].sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-        );
+        return filtered; // createdAt は使用しないので、そのまま返す
       default:
         return filtered;
     }

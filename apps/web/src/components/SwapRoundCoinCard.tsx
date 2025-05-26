@@ -1,7 +1,6 @@
 "use client";
 
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import type { RoundCoin } from "@/types/roundcoin";
 import {
   ConnectButton,
   useCurrentAccount,
@@ -9,11 +8,12 @@ import {
 } from "@mysten/dapp-kit";
 import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import React, { useState } from "react";
 
 interface SwapRoundCoinCardProps {
-  coin?: RoundCoin;
+  coin?: MemeMetadata;
 }
 
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
@@ -34,18 +34,8 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
         typeof latestShares[maxShareIndex] === "number"
       ) {
         return {
-          id: defaultCoin.id.toString(),
-          symbol: defaultCoin.symbol,
-          name: defaultCoin.name,
-          iconUrl: defaultCoin.icon,
-          round: 1,
+          ...defaultCoin,
           share: latestShares[maxShareIndex],
-          marketCap: 0,
-          description: defaultCoin.description,
-          telegramLink: defaultCoin.telegramLink,
-          websiteLink: defaultCoin.websiteLink,
-          twitterLink: defaultCoin.twitterLink,
-          color: defaultCoin.color,
         };
       }
     }

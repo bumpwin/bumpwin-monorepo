@@ -3,7 +3,7 @@ import type {
   ComponentType,
   ToggleSide,
 } from "@/components/ui/swap/elements/types";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { MemeMetadata } from "@workspace/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { match } from "ts-pattern";
@@ -12,7 +12,7 @@ interface PotentialWinDisplayProps {
   amount: number | null;
   potentialWin: number;
   activeSide: ToggleSide;
-  coin?: RoundCoin;
+  coin?: MemeMetadata;
   avgPrice: number;
   componentType: ComponentType;
 }
@@ -29,7 +29,13 @@ export const PotentialWinDisplay = ({
   if (!amount || amount <= 0) return null;
 
   // Default SUI coin if needed
-  const suiCoin = { iconUrl: "/images/SUI.png", symbol: "SUI" } as RoundCoin;
+  const suiCoin: MemeMetadata = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000001",
+    symbol: "SUI",
+    name: "Sui",
+    iconUrl: "/images/SUI.png",
+    description: "Sui token",
+  };
 
   // Determine which coin to show based on componentType and activeSide
   const displayCoin = match({ componentType, activeSide })
@@ -101,11 +107,9 @@ export const PotentialWinDisplay = ({
                 {labelText}
               </div>
               <div className="flex items-baseline px-3 cursor-not-allowed">
-                <CoinIconSymbol
-                  coin={displayCoin}
-                  size="sm"
-                  className="mr-1 min-w-0 flex-shrink-0"
-                />
+                <div className="mr-1 min-w-0 flex-shrink-0">
+                  <CoinIconSymbol coin={displayCoin} size={24} />
+                </div>
                 <div className="flex items-baseline justify-end flex-1">
                   <span className="text-white text-4xl font-bold">
                     {potentialWin.toFixed(2)}

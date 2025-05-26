@@ -1,35 +1,25 @@
-import type { RoundCoin } from "@/types/roundcoin";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 
 interface CoinIconSymbolProps {
-  coin?: RoundCoin;
-  size?: "sm" | "md";
-  className?: string;
+  coin?: MemeMetadata;
+  size?: number;
 }
 
-export const CoinIconSymbol = ({
-  coin,
-  size = "md",
-  className = "",
-}: CoinIconSymbolProps) => {
+export const CoinIconSymbol = ({ coin, size = 24 }: CoinIconSymbolProps) => {
   if (!coin) return null;
 
-  const iconSize = size === "sm" ? "w-7 h-7" : "w-12 h-12";
-  const textSize = size === "sm" ? "text-lg" : "text-xl";
-
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <div className={`${iconSize} relative overflow-hidden rounded-md`}>
+    <div className="flex items-center gap-2">
+      <div className="relative" style={{ width: size, height: size }}>
         <Image
           src={coin.iconUrl}
           alt={coin.symbol}
           fill
-          className="object-cover rounded-md"
+          className="rounded-lg object-cover"
         />
       </div>
-      <span className={`font-bold ${textSize} text-white select-none truncate`}>
-        {coin.symbol}
-      </span>
+      <span className="text-white font-medium">{coin.symbol}</span>
     </div>
   );
 };
