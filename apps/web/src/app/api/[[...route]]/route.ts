@@ -1,16 +1,17 @@
 import { createApp } from "@workspace/api";
+import { Hono } from "hono";
 import { handle } from "hono/vercel";
 
+// Use edge runtime as recommended by official documentation
 export const runtime = "edge";
-export const dynamic = "force-dynamic";
 
-const app = createApp({
-  basePath: "/api",
-  corsOrigin: process.env.NEXT_PUBLIC_URL || "*",
-  enableDocs: true,
-});
+const app = new Hono().basePath("/api");
 
-export type AppType = typeof app;
+// Mount the API routes
+const apiApp = createApp();
+app.route("/", apiApp);
+
+export type AppType = typeof apiApp;
 
 export const GET = handle(app);
 export const POST = handle(app);

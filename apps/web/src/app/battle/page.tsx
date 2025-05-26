@@ -1,7 +1,7 @@
 "use client";
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
-import { mockprice } from "@/app/client";
+import { getCurrentBattleRound, mockprice } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
@@ -201,13 +201,19 @@ export default function RoundsAPage() {
   const { data: battleData, isLoading: isBattleLoading } = useQuery({
     queryKey: ["battle", "current"],
     queryFn: async () => {
-      const res = await fetch("/api/battlerounds/current");
-      if (!res.ok) throw new Error("Failed to fetch battle data");
-      return res.json();
+      const res = await getCurrentBattleRound();
+      const json = await res.json();
+
+      if ("error" in json) {
+        throw new Error(json.error as string);
+      }
+
+      return json;
     },
   });
 
-  const memes = battleData?.memes?.map((m: { metadata: MemeMetadata }) => m.metadata) || [];
+  const memes =
+    battleData?.memes?.map((m: { metadata: MemeMetadata }) => m.metadata) || [];
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme
