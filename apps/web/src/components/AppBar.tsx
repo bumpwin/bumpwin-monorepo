@@ -68,7 +68,7 @@ export default function AppBar() {
       <div className="flex h-16 items-center">
         {/* 左寄せセクション */}
         <div className="flex items-center pl-4 gap-6 flex-1">
-          <Link href="/battle">
+          <Link href="/about">
             <div className="scale-[0.45] max-w-[200px] flex items-center mb-2 mr-2">
               <WordmarkLogo />
             </div>
