@@ -1,0 +1,37 @@
+---
+description: Monorepo structure and organization rules
+globs: "**/package.json,**/tsconfig.json,pnpm-workspace.yaml"
+alwaysApply: false
+---
+
+# Monorepo Structure Rules
+
+## Package Organization
+- Keep packages focused on a single responsibility
+- Use clear, descriptive package names
+- Follow the workspace structure: apps/, packages/
+- Maintain clean package boundaries
+
+## Dependencies
+- Use workspace protocol for internal dependencies: "workspace:*"
+- Keep shared dependencies in the root package.json when possible
+- Avoid circular dependencies between packages
+- Document why external dependencies are needed
+
+## TypeScript Configuration
+- All packages extend from root tsconfig.base.json
+- Each package defines its own paths for @ alias
+- Use project references for build optimization
+- Keep TypeScript configs minimal and inherit common settings
+
+## Build and Development
+- Each package should have standard scripts: dev, build, check
+- Use turbo or similar for parallel builds if needed
+- Ensure all packages can be built independently
+- Test cross-package imports regularly
+
+## Documentation
+- Each package should have its own README.md
+- Document package purpose and public API
+- Include usage examples for shared packages
+- Keep documentation close to the code

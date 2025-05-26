@@ -1,0 +1,16 @@
+---
+description: General rules for the monorepo
+globs:
+alwaysApply: true
+---
+
+# General Development Rules
+
+- Use pnpm as the package manager exclusively
+- Use Biome for linting and formatting (NOT ESLint)
+- Write comments in English with clarity and purpose
+- Follow TypeScript strict mode practices
+- Keep dependencies minimal and well-maintained
+- Use workspace protocol for cross-package imports
+- Run `pnpm check` before committing changes
+- Test Cloudflare Pages compatibility with `pnpm pages:build`
