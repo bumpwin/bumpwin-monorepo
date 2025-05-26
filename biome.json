@@ -23,7 +23,19 @@
       "dist/",
       "build/",
       ".wrangler/",
-      ".vercel/"
-    ]
+      ".vercel/",
+      "**/*.d.ts",
+      "**/*.d.mts",
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs"
+    ],
+    "include": ["**/*.ts", "**/*.tsx", "**/*.json", "**/*.jsonc"]
+  },
+  "json": {
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
   }
 }

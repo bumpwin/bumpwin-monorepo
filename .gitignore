@@ -74,6 +74,19 @@ web_modules/
 
 *.tsbuildinfo
 
+# TypeScript build outputs
+*.d.ts
+*.d.ts.map
+*.js.map
+# Keep source .d.ts files
+!src/**/*.d.ts
+# Exclude all .js files in packages (they should be built)
+packages/**/*.js
+packages/**/*.d.ts
+packages/**/*.d.ts.map
+# Keep components.json
+!components.json
+
 # Optional npm cache directory
 
 .npm
