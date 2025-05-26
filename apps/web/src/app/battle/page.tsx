@@ -12,7 +12,7 @@ import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import { type MockCoinMetaData, mockmemes } from "@workspace/mockdata";
+import { mockmemes } from "@workspace/mockdata";
 import {
   Card,
   CardContent,
@@ -22,6 +22,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
+import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -62,8 +63,8 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToRoundCoin = (meme: MockCoinMetaData): RoundCoin => ({
-  id: meme.symbol,
+const memeToRoundCoin = (meme: MemeMetadata): RoundCoin => ({
+  id: meme.id,
   symbol: meme.symbol,
   name: meme.name,
   iconUrl: meme.iconUrl,
@@ -154,7 +155,7 @@ const MemeGallery = ({
   onSelect,
   selectedSymbol,
 }: {
-  onSelect: (meme: MockCoinMetaData) => void;
+  onSelect: (meme: MemeMetadata) => void;
   selectedSymbol: string;
 }) => (
   <div className="px-4 pb-6">
@@ -196,19 +197,15 @@ export default function RoundsAPage() {
   const { phase, remainingTime } = useBattleClock();
 
   const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
+  const selectedMeme = selectedId
+    ? mockmemes.find((m) => m.symbol === selectedId) || firstMeme
+    : firstMeme;
+
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
-    selectedId
-      ? memeToRoundCoin(
-          mockmemes.find((m) => m.symbol === selectedId) ||
-            firstMeme ||
-            DEFAULT_COIN,
-        )
-      : firstMeme
-        ? memeToRoundCoin(firstMeme)
-        : DEFAULT_COIN,
+    selectedMeme ? memeToRoundCoin(selectedMeme) : DEFAULT_COIN,
   );
 
-  const handleCoinSelect = (meme: MockCoinMetaData) => {
+  const handleCoinSelect = (meme: MemeMetadata) => {
     const newCoin = memeToRoundCoin(meme);
     setSelectedCoin(newCoin);
     router.push(`?selected=${meme.symbol}`);

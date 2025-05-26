@@ -9,6 +9,10 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint src/",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@workspace/types": "workspace:*"
   }
 }
