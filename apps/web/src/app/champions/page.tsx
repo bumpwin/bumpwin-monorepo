@@ -30,6 +30,7 @@ export default function ChampionsPage() {
         {championCoins.map((champion) => (
           <ChampionCard
             key={champion.address}
+            id={champion.address}
             imageUrl={champion.logoUrl}
             symbol={champion.symbol}
             name={champion.name}

@@ -779,6 +779,12 @@ function DashboardSection({
               <div className="p-6 flex items-center justify-center h-full">
                 <div className="w-full aspect-[3/4] max-w-[320px]">
                   <ChampionCard
+                    id={
+                      Number.parseInt(
+                        data.id.replace("#", ""),
+                        10,
+                      ).toString() || "1"
+                    }
                     imageUrl={
                       data.winner.image || "/images/mockmemes/ANTS.webp"
                     }

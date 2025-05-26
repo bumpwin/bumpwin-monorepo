@@ -116,6 +116,10 @@ export function RoundCard({
               <div className="w-[320px]">
                 {round.state === "ended" && (
                   <ChampionCard
+                    id={
+                      mockCoinMetadata[round.round % mockCoinMetadata.length]
+                        ?.id ?? "1"
+                    }
                     imageUrl={getSafeIcon(
                       mockCoinMetadata,
                       round.round % mockCoinMetadata.length,
