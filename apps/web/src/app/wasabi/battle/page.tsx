@@ -8,25 +8,49 @@ import type { CoinMeta } from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinCardProps } from "@/types/coincard";
 import {
   prepareCoinsMetadata,
   prepareMultiCoinChartData,
 } from "@/utils/chartDataPreparation";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(
+  const [selectedCoin, setSelectedCoin] = useState<MemeMetadata | undefined>(
     undefined,
   );
 
   // データ準備ロジックをユーティリティ関数で実装
-  const relevantCoins = prepareCoinsMetadata(mockCoinMetadata as CoinMeta[]);
+  // Add color field to match CoinMeta interface
+  const coinMetaWithColors: CoinMeta[] = mockCoinMetadata.map(
+    (coin, index) => ({
+      id: Number(coin.id) || index,
+      symbol: coin.symbol,
+      name: coin.name,
+      color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
+    }),
+  );
+  const relevantCoins = prepareCoinsMetadata(coinMetaWithColors);
   const rechartPoints = prepareMultiCoinChartData(
     mockDominanceChartData,
     relevantCoins,
   );
+
+  const handleCoinSelect = (coin: CoinCardProps | undefined) => {
+    if (!coin) {
+      setSelectedCoin(undefined);
+      return;
+    }
+    // Find the corresponding MemeMetadata from mockCoinMetadata
+    const memeMetadata = mockCoinMetadata.find((m) => m.id === coin.address);
+    if (memeMetadata) {
+      setSelectedCoin(memeMetadata);
+    } else {
+      setSelectedCoin(undefined);
+    }
+  };
 
   // 単一コイン用のデータ
   // const firstCoinFromMeta = relevantCoins[0];
@@ -90,7 +114,7 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row gap-6 items-start w-full">
               <div className="flex-1 min-w-0 flex flex-col justify-start">
                 <RoundCoinTable
-                  onSelectCoin={setSelectedCoin}
+                  onSelectCoin={handleCoinSelect}
                   selectedCoinId={selectedCoin?.id}
                 />
               </div>

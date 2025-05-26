@@ -26,17 +26,8 @@ export interface Round {
   champion?: ChampionData;
 }
 
-export interface CoinMetadata {
-  id: number;
-  symbol: string;
-  name: string;
-  icon: string;
-  color: string;
-  description: string;
-  telegramLink: string;
-  websiteLink: string;
-  twitterLink: string;
-}
+// CoinMetadata type has been replaced by MemeMetadata from @workspace/types
+// Import MemeMetadata when you need coin metadata
 
 export interface ChartPoint {
   timestamp: string | number;

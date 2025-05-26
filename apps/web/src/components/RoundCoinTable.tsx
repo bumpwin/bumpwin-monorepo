@@ -1,7 +1,7 @@
 import DominanceRechart from "@/components/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinCardProps } from "@/types/coincard";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/shadcn/components/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 interface RoundCoinTableProps {
-  onSelectCoin?: (coin: RoundCoin | undefined) => void;
+  onSelectCoin?: (coin: CoinCardProps | undefined) => void;
   selectedCoinId?: string;
 }
 
@@ -50,7 +50,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
   }, [sortType]);
 
   // 現在時刻のシェアを計算
-  const currentShares = useMemo(() => {
+  const currentShares: CoinCardProps[] = useMemo(() => {
     // 現在時刻に最も近いデータを取得
     const currentData = mockDominanceChartData.reduce((prev, curr) => {
       return Math.abs(curr.timestamp - currentMinute) <
@@ -61,31 +61,30 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
 
     if (!currentData) return [];
 
-    const shares = mockCoinMetadata.map((coin, index) => ({
-      id: coin.id.toString(),
+    const shares: CoinCardProps[] = mockCoinMetadata.map((coin, index) => ({
+      address: coin.id.toString(),
       symbol: coin.symbol,
       name: coin.name,
-      iconUrl: coin.icon,
+      logoUrl: coin.iconUrl,
       round: 1,
-      share: currentData.shares?.[index] ?? 0,
+      price: currentData.shares?.[index] ?? 0,
       marketCap: Math.floor(Math.random() * 1000000),
       description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      color: coin.color,
+      isFavorite: false,
     }));
 
     if (sortType === "marketcap") {
-      return shares.sort((a, b) => b.share - a.share);
+      return shares.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     }
     // tradedat: randomOrder順で並べる
-    return randomOrder.map((i) => shares[i]).filter(Boolean);
+    return randomOrder
+      .map((i) => shares[i])
+      .filter((c): c is CoinCardProps => !!c);
   }, [currentMinute, sortType, randomOrder]);
 
-  const handleSelect = (coin: RoundCoin) => {
+  const handleSelect = (coin: CoinCardProps) => {
     if (onSelectCoin) {
-      if (selectedCoinId === coin.id) {
+      if (selectedCoinId === coin.address) {
         onSelectCoin(undefined);
       } else {
         onSelectCoin(coin);
@@ -124,7 +123,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
               (coin) =>
                 coin && [
                   <motion.tr
-                    key={coin.id}
+                    key={coin.address}
                     layout
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -134,7 +133,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                       duration: 0.18,
                       ease: "easeInOut",
                     }}
-                    className={`bg-[#181A20] rounded-lg shadow-sm cursor-pointer transition border-2 ${selectedCoinId === coin.id ? "border-blue-500" : "border-transparent"}`}
+                    className={`bg-[#181A20] rounded-lg shadow-sm cursor-pointer transition border-2 ${selectedCoinId === coin.address ? "border-blue-500" : "border-transparent"}`}
                     style={{ borderColor: undefined }}
                     onClick={() => handleSelect(coin)}
                     onKeyDown={(e) => {
@@ -148,7 +147,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2 font-bold text-lg text-white">
                           <Image
-                            src={coin.iconUrl}
+                            src={coin.logoUrl}
                             alt={coin.name}
                             width={64}
                             height={64}
@@ -167,7 +166,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                     </td>
                     <td className="px-4 py-4 align-middle text-center">
                       <span className="text-2xl font-bold text-white">
-                        {Math.round(coin.share)}%
+                        {Math.round(coin.price ?? 0)}%
                       </span>
                     </td>
                     <td className="px-4 py-4 align-middle">
@@ -187,8 +186,8 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                       </div>
                     </td>
                   </motion.tr>,
-                  selectedCoinId && selectedCoinId === coin.id && (
-                    <tr key={`${coin.id}-chart`}>
+                  selectedCoinId && selectedCoinId === coin.address && (
+                    <tr key={`${coin.address}-chart`}>
                       <td colSpan={3} className="p-0 bg-transparent">
                         <div
                           className="overflow-hidden transition-all duration-300 flex flex-row items-start gap-6"
@@ -201,54 +200,29 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                             <div className="text-gray-300 text-sm mb-2">
                               {coin.description}
                             </div>
-                            <div className="flex gap-3 mt-2">
-                              {coin.telegramLink && (
-                                <a
-                                  href={coin.telegramLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Telegram"
-                                  className="text-gray-400"
-                                >
-                                  <Send className="w-[18px] h-[18px]" />
-                                </a>
-                              )}
-                              {coin.websiteLink && (
-                                <a
-                                  href={coin.websiteLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Website"
-                                  className="text-gray-400"
-                                >
-                                  <Globe className="w-[18px] h-[18px]" />
-                                </a>
-                              )}
-                              {coin.twitterLink && (
-                                <a
-                                  href={coin.twitterLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Twitter"
-                                  className="text-gray-400"
-                                >
-                                  <Twitter className="w-[18px] h-[18px]" />
-                                </a>
-                              )}
-                            </div>
                           </div>
                           <div className="flex-1">
                             <DominanceRechart
-                              points={mockDominanceChartData.map((data) => ({
-                                timestamp: data.timestamp,
-                                [coin.symbol]:
-                                  data.shares?.[Number(coin.id)] ?? 0,
-                              }))}
+                              points={mockDominanceChartData.map((data) => {
+                                const idx = Number(coin.address);
+                                const sharesArr = (data.shares ??
+                                  []) as number[];
+                                return {
+                                  timestamp: data.timestamp,
+                                  [coin.symbol]:
+                                    sharesArr[
+                                      typeof idx === "number" &&
+                                      !Number.isNaN(idx)
+                                        ? idx
+                                        : 0
+                                    ] ?? 0,
+                                };
+                              })}
                               coins={[
                                 {
                                   symbol: coin.symbol,
                                   name: coin.name,
-                                  color: coin.color,
+                                  color: "#FFD700",
                                 },
                               ]}
                               height={220}

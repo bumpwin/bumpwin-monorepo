@@ -4,19 +4,19 @@ import type {
   PreparedCoinMeta,
 } from "@/components/DominanceRechart";
 import {
+  getMemeMarketData,
   mockChampionCoinMetadata,
   mockCoinMetadata,
   mockDominanceChartData,
 } from "@/mock/mockData";
-import type { ChampionCoin } from "@/types/champion";
+import type { CoinCardProps } from "@/types/coincard";
 import type { DominanceChartData } from "@/types/dominance";
 import { motion } from "framer-motion";
-import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 
 interface ChampionsListProps {
-  coins: ChampionCoin[];
+  coins: CoinCardProps[];
   dominanceData: DominanceChartData;
 }
 
@@ -49,20 +49,22 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
     ),
   }));
 
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: coin.color,
-  }));
+  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map(
+    (coin, index) => ({
+      symbol: coin.symbol.toLowerCase(),
+      name: coin.name,
+      color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
+    }),
+  );
 
   return (
     <div className="flex flex-col gap-4">
       {coins.map((coin) => {
         const metadata = mockChampionCoinMetadata.find(
-          (m) => m.id.toString() === coin.id,
+          (m) => m.id.toString() === coin.address,
         );
         return (
-          <div key={coin.id} className="relative">
+          <div key={coin.address} className="relative">
             <div className="block group cursor-pointer">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -80,7 +82,7 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
                             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
                             <div className="absolute inset-0 rounded-full overflow-hidden">
                               <Image
-                                src={coin.iconUrl}
+                                src={coin.logoUrl}
                                 alt={coin.name}
                                 width={112}
                                 height={112}
@@ -112,51 +114,13 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
                           <span className="text-gray-400">Market Cap:</span>
                           <span className="text-white font-medium">
                             {formatMarketCap(
-                              metadata?.marketCap || coin.marketCap,
+                              metadata
+                                ? (getMemeMarketData(metadata.id)?.marketCap ??
+                                    coin.marketCap)
+                                : coin.marketCap,
                             )}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400">Created by:</span>
-                          <span className="text-white font-medium">
-                            {metadata?.createdBy || "Unknown"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex gap-3 mt-3">
-                        {coin.websiteLink && (
-                          <a
-                            href={coin.websiteLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Globe className="w-5 h-5" />
-                          </a>
-                        )}
-                        {coin.telegramLink && (
-                          <a
-                            href={coin.telegramLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Send className="w-5 h-5" />
-                          </a>
-                        )}
-                        {coin.twitterLink && (
-                          <a
-                            href={coin.twitterLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-white transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Twitter className="w-5 h-5" />
-                          </a>
-                        )}
                       </div>
                     </div>
                   </div>

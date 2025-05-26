@@ -1,26 +1,26 @@
 "use client";
 
 import { ChampionCard } from "@/components/ChampionCard";
-import { mockChampionCoinMetadata } from "@/mock/mockData";
-import type { ChampionCoin } from "@/types/champion";
+import { getMemeMarketData, mockChampionCoinMetadata } from "@/mock/mockData";
+import type { CoinCardProps } from "@/types/coincard";
 import React from "react";
 
 export default function ChampionsPage() {
-  // Transform mockChampionCoinMetadata to ChampionCoin type
-  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map(
-    (coin) => ({
-      id: coin.id.toString(),
-      round: coin.round,
-      name: coin.name,
-      symbol: coin.symbol,
-      iconUrl: coin.iconUrl,
-      description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      share: coin.share, // use real share if needed
-      marketCap: coin.marketCap, // use real marketCap
-    }),
+  // Transform mockChampionCoinMetadata to CoinCardProps type
+  const championCoins: CoinCardProps[] = mockChampionCoinMetadata.map(
+    (coin) => {
+      const marketData = getMemeMarketData(coin.id);
+      return {
+        address: coin.id.toString(),
+        round: coin.round ?? 1,
+        name: coin.name,
+        symbol: coin.symbol,
+        logoUrl: coin.iconUrl,
+        description: coin.description,
+        marketCap: marketData?.marketCap ?? 0,
+        isFavorite: false,
+      };
+    },
   );
 
   return (
@@ -29,12 +29,13 @@ export default function ChampionsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mt-10">
         {championCoins.map((champion) => (
           <ChampionCard
-            key={champion.id}
-            imageUrl={champion.iconUrl}
+            key={champion.address}
+            id={champion.address}
+            imageUrl={champion.logoUrl}
             symbol={champion.symbol}
             name={champion.name}
-            mcap={champion.marketCap}
-            round={champion.round}
+            mcap={champion.marketCap ?? 0}
+            round={champion.round ?? 1}
           />
         ))}
       </div>
