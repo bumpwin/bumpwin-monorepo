@@ -184,10 +184,11 @@ export default function RoundsPage() {
     };
   });
 
-  // Token colors - matching to the colors used in the application
+  // Token colors - generate colors based on index
   const tokenColors: TokenColors = mockCoinMetadata.reduce(
-    (acc: TokenColors, coin) => {
-      acc[coin.symbol.toUpperCase()] = coin.color;
+    (acc: TokenColors, coin, index) => {
+      acc[coin.symbol.toUpperCase()] =
+        `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`;
       return acc;
     },
     {},

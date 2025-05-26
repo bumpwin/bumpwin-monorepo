@@ -56,9 +56,9 @@ export default function RootLayout({
             <ResultView
               coin={{
                 ...mockCoinMetadata[0],
-                logoUrl: mockCoinMetadata[0].icon,
+                logoUrl: mockCoinMetadata[0].iconUrl,
                 round: 1,
-                share: 25,
+                price: 25,
                 marketCap: 100000,
                 address: mockCoinMetadata[0].id.toString(),
                 isFavorite: false,

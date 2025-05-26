@@ -12,24 +12,13 @@ import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreat
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { getSuiBalance } from "@workspace/sui";
+import type { MemeMetadata } from "@workspace/types";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-interface CoinWithMarketData {
-  id: number;
-  symbol: string;
-  name: string;
-  icon: string;
-  color: string;
-  description: string;
-  price: number;
-  marketCap: number;
-  share?: number;
-}
-
 interface SwapUIProps {
-  coin?: CoinWithMarketData;
+  coin?: MemeMetadata;
   variant?: "default" | "champion";
 }
 
@@ -102,10 +91,7 @@ const DaytimeSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   return (
     <DarkCard className="w-full">
       <CardHeader className="">
-        <CoinHeader
-          coin={{ ...coin, id: String(coin.id), iconUrl: coin.icon, round: 1 }}
-          variant={variant}
-        />
+        <CoinHeader coin={coin} variant={variant} />
       </CardHeader>
       <CardContent>
         {/* Buy/Sell Toggle */}
@@ -129,7 +115,7 @@ const DaytimeSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           onAmountChange={handleAmountChange}
           setAmountValue={setAmountValue}
           balance={balance}
-          coin={{ ...coin, id: String(coin.id), iconUrl: coin.icon, round: 1 }}
+          coin={coin}
           error={errors.amount?.message}
           componentType="daytime"
         />
@@ -139,7 +125,7 @@ const DaytimeSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           amount={amount}
           potentialWin={potentialWin}
           activeSide={activeSide}
-          coin={{ ...coin, id: String(coin.id), iconUrl: coin.icon, round: 1 }}
+          coin={coin}
           avgPrice={avgPrice}
           componentType="daytime"
         />

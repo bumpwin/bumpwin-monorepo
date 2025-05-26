@@ -4,7 +4,6 @@ import { mockprice } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { ChartTitle } from "@/components/ChartTitle";
 import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
-import type { BattleCoin } from "@/types/battle";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -15,9 +14,10 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
+import type { MemeMetadata } from "@workspace/types";
 
 interface ChampionDetailPageProps {
-  coin: BattleCoin;
+  coin: MemeMetadata & { round: number };
   id: string;
 }
 

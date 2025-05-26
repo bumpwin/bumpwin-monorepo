@@ -1,21 +1,24 @@
 "use client";
 
 import { DarkCard } from "@/components/ui/dark-card";
-import type { BattleCoin } from "@/types/battle";
+import { getMemeMarketData } from "@/mock/mockData";
 import {
   CardContent,
   CardHeader,
   CardTitle,
 } from "@workspace/shadcn/components/card";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 
 interface BattleCoinDetailCardProps {
-  coin: BattleCoin;
+  coin: MemeMetadata & { round?: number };
 }
 
 const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
   coin,
 }) => {
+  const marketData = getMemeMarketData(coin.id);
+
   return (
     <DarkCard className="w-full mt-4">
       <CardHeader className="pb-3">
@@ -41,12 +44,14 @@ const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
           <div className="flex justify-between">
             <span className="text-gray-400">Market Cap</span>
             <span className="text-white">
-              ${coin.marketCap.toLocaleString()}
+              ${marketData?.marketCap.toLocaleString() || "0"}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Price</span>
-            <span className="text-white">${coin.price.toFixed(6)}</span>
+            <span className="text-white">
+              ${marketData?.price.toFixed(6) || "0.000000"}
+            </span>
           </div>
         </div>
       </CardContent>

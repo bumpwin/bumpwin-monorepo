@@ -10,7 +10,6 @@ import SharrowStatsBar from "@/components/SharrowStatsBar";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { BattleCoin } from "@/types/battle";
 import { useQuery } from "@tanstack/react-query";
 import { mockMemeMetadata } from "@workspace/mockdata";
 import {
@@ -32,17 +31,6 @@ const DEFAULT_MEME: MemeMetadata = {
   symbol: "YAKIU",
   name: "Yakiu",
   iconUrl: "/images/mockmemes/YAKIU.png",
-  description: "Default coin",
-};
-
-const DEFAULT_COIN: BattleCoin = {
-  id: "default",
-  symbol: "YAKIU",
-  name: "Yakiu",
-  iconUrl: "/images/mockmemes/YAKIU.png",
-  round: 12,
-  marketCap: 180000,
-  price: 0.0018,
   description: "Default coin",
 };
 
@@ -71,17 +59,6 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToBattleCoin = (meme: MemeMetadata): BattleCoin => ({
-  id: meme.symbol,
-  symbol: meme.symbol,
-  name: meme.name,
-  iconUrl: meme.iconUrl,
-  round: 12,
-  marketCap: 180000,
-  price: 0.0018,
-  description: meme.description,
-});
-
 const formatPriceData = (data: PriceDataItem[]) => {
   return data.map((item) => {
     const date = new Date(item.timestamp);
@@ -113,7 +90,7 @@ const PriceChart = ({
   priceData,
   isLoading,
 }: {
-  coin: BattleCoin;
+  coin: MemeMetadata & { round?: number };
   priceData: OHLCData[] | undefined;
   isLoading: boolean;
 }) => {
@@ -205,21 +182,16 @@ export default function RoundsAPage() {
   const { phase, remainingTime } = useBattleClock();
 
   const firstMeme = mockMemeMetadata.length > 0 ? mockMemeMetadata[0] : null;
-  const [selectedCoin, setSelectedCoin] = useState<BattleCoin>(
+  const [selectedCoin, setSelectedCoin] = useState<MemeMetadata>(
     selectedId
-      ? memeToBattleCoin(
-          mockMemeMetadata.find((m) => m.symbol === selectedId) ||
-            firstMeme ||
-            DEFAULT_MEME,
-        )
-      : firstMeme
-        ? memeToBattleCoin(firstMeme)
-        : DEFAULT_COIN,
+      ? mockMemeMetadata.find((m) => m.symbol === selectedId) ||
+          firstMeme ||
+          DEFAULT_MEME
+      : firstMeme || DEFAULT_MEME,
   );
 
   const handleCoinSelect = (meme: MemeMetadata) => {
-    const newCoin = memeToBattleCoin(meme);
-    setSelectedCoin(newCoin);
+    setSelectedCoin(meme);
     router.push(`?selected=${meme.symbol}`);
   };
 
@@ -289,18 +261,7 @@ export default function RoundsAPage() {
             <div className="flex flex-col items-center gap-2">
               <BattleRoundPhaseToggle />
               {phase === "daytime" ? (
-                <DaytimeSwapUI
-                  coin={{
-                    ...selectedCoin,
-                    id: Number(selectedCoin.id) || 0,
-                    icon: selectedCoin.iconUrl,
-                    color:
-                      "color" in selectedCoin &&
-                      typeof selectedCoin.color === "string"
-                        ? selectedCoin.color
-                        : "#888",
-                  }}
-                />
+                <DaytimeSwapUI coin={selectedCoin} />
               ) : (
                 <DarknightSwapUI coin={selectedCoin} />
               )}

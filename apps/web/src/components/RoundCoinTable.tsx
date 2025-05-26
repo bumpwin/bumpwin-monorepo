@@ -65,16 +65,16 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
       address: coin.id.toString(),
       symbol: coin.symbol,
       name: coin.name,
-      logoUrl: coin.icon,
+      logoUrl: coin.iconUrl,
       round: 1,
-      share: currentData.shares?.[index] ?? 0,
+      price: currentData.shares?.[index] ?? 0,
       marketCap: Math.floor(Math.random() * 1000000),
       description: coin.description,
       isFavorite: false,
     }));
 
     if (sortType === "marketcap") {
-      return shares.sort((a, b) => (b.share ?? 0) - (a.share ?? 0));
+      return shares.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     }
     // tradedat: randomOrder順で並べる
     return randomOrder
@@ -166,7 +166,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({
                     </td>
                     <td className="px-4 py-4 align-middle text-center">
                       <span className="text-2xl font-bold text-white">
-                        {Math.round(coin.share ?? 0)}%
+                        {Math.round(coin.price ?? 0)}%
                       </span>
                     </td>
                     <td className="px-4 py-4 align-middle">

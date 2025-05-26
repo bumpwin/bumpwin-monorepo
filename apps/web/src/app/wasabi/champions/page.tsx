@@ -3,6 +3,7 @@
 import { ChampionsList } from "@/components/Champions";
 import { ResultView } from "@/components/ResultView";
 import {
+  getMemeMarketData,
   mockChampionCoinMetadata,
   mockDominanceChartData,
   mockLastChampionCoinMetadata,
@@ -15,13 +16,13 @@ export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to CoinCardProps type
   const championCoins: CoinCardProps[] = mockChampionCoinMetadata.map(
     (coin) => ({
-      address: coin.id.toString(),
+      address: coin.id,
       round: coin.round ?? 1,
       name: coin.name,
       symbol: coin.symbol,
       logoUrl: coin.iconUrl,
       description: coin.description,
-      share: 0.35, // Mock data
+      price: 0.35, // Mock data
       marketCap: 1000000, // Mock data
       isFavorite: false,
     }),
@@ -82,6 +83,9 @@ export default function ChampionsPage() {
                 ...mockLastChampionCoinMetadata,
                 logoUrl: mockLastChampionCoinMetadata.iconUrl,
                 address: mockLastChampionCoinMetadata.id.toString(),
+                marketCap:
+                  getMemeMarketData(mockLastChampionCoinMetadata.id)
+                    ?.marketCap ?? 0,
                 isFavorite: false,
               }}
               forceVisible={true}

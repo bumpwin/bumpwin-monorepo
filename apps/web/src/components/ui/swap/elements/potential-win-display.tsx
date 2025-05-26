@@ -3,7 +3,7 @@ import type {
   ComponentType,
   ToggleSide,
 } from "@/components/ui/swap/elements/types";
-import type { BattleCoin } from "@/types/battle";
+import type { MemeMetadata } from "@workspace/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { match } from "ts-pattern";
@@ -12,7 +12,7 @@ interface PotentialWinDisplayProps {
   amount: number | null;
   potentialWin: number;
   activeSide: ToggleSide;
-  coin?: BattleCoin;
+  coin?: MemeMetadata;
   avgPrice: number;
   componentType: ComponentType;
 }
@@ -29,14 +29,11 @@ export const PotentialWinDisplay = ({
   if (!amount || amount <= 0) return null;
 
   // Default SUI coin if needed
-  const suiCoin: BattleCoin = {
-    id: "sui",
+  const suiCoin: MemeMetadata = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000001",
     symbol: "SUI",
     name: "Sui",
     iconUrl: "/images/SUI.png",
-    round: 0,
-    marketCap: 0,
-    price: 0,
     description: "Sui token",
   };
 

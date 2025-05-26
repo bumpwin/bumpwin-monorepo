@@ -3,7 +3,7 @@ import type {
   ComponentType,
   ToggleSide,
 } from "@/components/ui/swap/elements/types";
-import type { BattleCoin } from "@/types/battle";
+import type { MemeMetadata } from "@workspace/types";
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { match } from "ts-pattern";
 
@@ -14,7 +14,7 @@ interface AmountInputProps {
   onAmountChange: (value: string) => void;
   setAmountValue: (val: number | null) => void;
   balance: number;
-  coin?: BattleCoin;
+  coin?: MemeMetadata;
   error?: string;
   componentType: ComponentType;
 }

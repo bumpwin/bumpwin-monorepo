@@ -125,7 +125,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                 <div className="flex gap-8 text-white text-xl font-bold">
                   <div>
                     <span className="text-yellow-300">Received Share:</span>{" "}
-                    {coin.share}%
+                    {coin.price}%
                   </div>
                   <div>
                     <span className="text-yellow-300">Market Cap:</span> $

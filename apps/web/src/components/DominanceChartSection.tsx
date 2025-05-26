@@ -14,10 +14,10 @@ const DominanceChartSection = () => {
       {},
     ),
   }));
-  const chartCoins = mockCoinMetadata.map((coin) => ({
+  const chartCoins = mockCoinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
-    color: coin.color,
+    color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
   }));
 
   return (

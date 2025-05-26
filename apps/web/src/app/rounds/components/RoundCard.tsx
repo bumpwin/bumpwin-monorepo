@@ -3,15 +3,11 @@ import { RoundChart } from "@/app/rounds/components/RoundChart";
 import { RoundCoins } from "@/app/rounds/components/RoundCoins";
 import { RoundMetrics } from "@/app/rounds/components/RoundMetrics";
 import { WaitingRoundCard } from "@/app/rounds/components/WaitingRoundCard";
-import type {
-  ChartCoin,
-  ChartPoint,
-  CoinMetadata,
-  Round,
-} from "@/app/rounds/types";
+import type { ChartCoin, ChartPoint, Round } from "@/app/rounds/types";
 import { getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
 import { cn } from "@workspace/shadcn/lib/utils";
+import type { MemeMetadata } from "@workspace/types";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -20,7 +16,7 @@ interface RoundCardProps {
   index: number;
   chartPoints: ChartPoint[];
   chartCoins: ChartCoin[];
-  mockCoinMetadata: CoinMetadata[];
+  mockCoinMetadata: MemeMetadata[];
   onCreateClick: () => void;
 }
 

@@ -1,23 +1,26 @@
 "use client";
 
 import { ChampionCard } from "@/components/ChampionCard";
-import { mockChampionCoinMetadata } from "@/mock/mockData";
+import { getMemeMarketData, mockChampionCoinMetadata } from "@/mock/mockData";
 import type { CoinCardProps } from "@/types/coincard";
 import React from "react";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to CoinCardProps type
   const championCoins: CoinCardProps[] = mockChampionCoinMetadata.map(
-    (coin) => ({
-      address: coin.id.toString(),
-      round: coin.round ?? 1,
-      name: coin.name,
-      symbol: coin.symbol,
-      logoUrl: coin.iconUrl,
-      description: coin.description,
-      marketCap: coin.marketCap ?? 0,
-      isFavorite: false,
-    }),
+    (coin) => {
+      const marketData = getMemeMarketData(coin.id);
+      return {
+        address: coin.id.toString(),
+        round: coin.round ?? 1,
+        name: coin.name,
+        symbol: coin.symbol,
+        logoUrl: coin.iconUrl,
+        description: coin.description,
+        marketCap: marketData?.marketCap ?? 0,
+        isFavorite: false,
+      };
+    },
   );
 
   return (

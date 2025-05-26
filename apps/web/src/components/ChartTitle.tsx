@@ -1,11 +1,11 @@
 "use client";
 
-import type { BattleCoin } from "@/types/battle";
 import { CardTitle } from "@workspace/shadcn/components/card";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 
 interface ChartTitleProps {
-  coin: BattleCoin;
+  coin: MemeMetadata;
   percentage?: string;
 }
 
@@ -22,10 +22,6 @@ export const ChartTitle = ({ coin, percentage = "13%" }: ChartTitleProps) => {
       </div>
       <span>
         {coin.symbol} ({coin.name})
-      </span>
-      <span className="mx-2 h-5 border-l border-gray-500 opacity-60" />
-      <span className="text-green-400">
-        Market Cap: ${coin.marketCap.toLocaleString()}
       </span>
       <span className="mx-2 h-5 border-l border-gray-500 opacity-60" />
       <span className="text-green-400">Chance: {percentage}</span>

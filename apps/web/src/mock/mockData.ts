@@ -1,92 +1,70 @@
-export const mockCoinMetadata = [
+import type { MemeMarketData, MemeMetadata } from "@workspace/types";
+
+export const mockCoinMetadata: MemeMetadata[] = [
   {
-    id: 0,
+    id: "0x0000000000000000000000000000000000000000000000000000000000000000",
     symbol: "SMUG",
     name: "SMUG",
-    icon: "/images/mockmemes/SMUG.webp",
-    color: "#FF69B4",
+    iconUrl: "/images/mockmemes/SMUG.webp",
     description:
       "SMUG is a meme coin with attitude. Its smug face has become an iconic symbol in the crypto community.",
-    price: 0.0001,
-    marketCap: 100000,
   },
   {
-    id: 1,
+    id: "0x0000000000000000000000000000000000000000000000000000000000000001",
     symbol: "YAKIU",
     name: "YAKIU",
-    icon: "/images/mockmemes/YAKIU.png",
-    color: "#3CB043",
+    iconUrl: "/images/mockmemes/YAKIU.png",
     description:
       "YAKIU brings a unique perspective to the meme coin world with its distinctive character and strong community.",
-    price: 0.00008,
-    marketCap: 40000,
   },
   {
-    id: 2,
+    id: "0x0000000000000000000000000000000000000000000000000000000000000002",
     symbol: "CHEDER",
     name: "CHEDER",
-    icon: "/images/mockmemes/CHEDER.png",
-    color: "#FFD700",
+    iconUrl: "/images/mockmemes/CHEDER.png",
     description:
       "CHEDER is a meme coin with a cheesy twist. Its golden color represents wealth and prosperity in the crypto space.",
-    price: 0.00005,
-    marketCap: 17000,
   },
 ];
 
-export const mockLastChampionCoinMetadata = {
-  id: 0,
+export const mockLastChampionCoinMetadata: MemeMetadata & { round: number } = {
+  id: "0x0000000000000000000000000000000000000000000000000000000000000003",
   round: 4,
   symbol: "JELL",
   name: "JELL",
   iconUrl: "/images/mockmemes/JELL.png",
-  color: "#FF69B4",
   description:
     "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-  createdBy: "BUMP.WIN",
-  marketCap: 100000,
-  price: 0.00012,
 };
 
-export const mockChampionCoinMetadata = [
+// Champion coins with round information
+export const mockChampionCoinMetadata: (MemeMetadata & { round: number })[] = [
   {
-    id: "0",
+    id: "0x0000000000000000000000000000000000000000000000000000000000000004",
     round: 1,
     symbol: "SMUG",
     name: "SMUG",
     iconUrl: "/images/mockmemes/SMUG.webp",
-    color: "#FF69B4",
     description:
       "Dogecoin is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    createdBy: "BUMP.WIN",
-    marketCap: 100000,
-    price: 0.0001,
   },
   {
-    id: "1",
+    id: "0x0000000000000000000000000000000000000000000000000000000000000005",
     round: 2,
     symbol: "YAKIU",
     name: "YAKIU",
     iconUrl: "/images/mockmemes/YAKIU.png",
-    color: "#3CB043",
     description:
       "Pepe is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    createdBy: "BUMP.WIN",
-    marketCap: 40000,
-    price: 0.00008,
   },
   {
-    id: "2",
+    id: "0x0000000000000000000000000000000000000000000000000000000000000006",
     round: 3,
     symbol: "CHEDER",
     name: "CHEDER",
     iconUrl: "/images/mockmemes/CHEDER.png",
-    color: "#FFD700",
     description:
       "WIF is a digital currency that allows you to send money online quickly and cheaply. It's easy to use and has a low transaction fee.",
-    createdBy: "BUMP.WIN",
-    marketCap: 17000,
-    price: 0.00005,
   },
 ];
 
@@ -237,3 +215,47 @@ export const mockDominanceChartData = [
   { timestamp: 1430, shares: [22.58, 9.59, 38.26, 29.57] },
   { timestamp: 1440, shares: [23.58, 10.59, 37.26, 28.57] },
 ];
+
+// Market data mapped by meme ID (share field removed - use price instead)
+export const mockMarketData: Record<string, Omit<MemeMarketData, "share">> = {
+  "0x0000000000000000000000000000000000000000000000000000000000000000": {
+    marketCap: 100000,
+    price: 0.35,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000001": {
+    marketCap: 40000,
+    price: 0.28,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000002": {
+    marketCap: 17000,
+    price: 0.22,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000003": {
+    marketCap: 100000,
+    price: 0.15,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000004": {
+    marketCap: 100000,
+    price: 0.35,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000005": {
+    marketCap: 40000,
+    price: 0.28,
+  },
+  "0x0000000000000000000000000000000000000000000000000000000000000006": {
+    marketCap: 17000,
+    price: 0.22,
+  },
+};
+
+// Helper function to get market data by meme ID
+export function getMemeMarketData(memeId: string): MemeMarketData | undefined {
+  const data = mockMarketData[memeId];
+  if (!data) return undefined;
+
+  // Return with share field for compatibility (share = price)
+  return {
+    ...data,
+    share: data.price,
+  };
+}

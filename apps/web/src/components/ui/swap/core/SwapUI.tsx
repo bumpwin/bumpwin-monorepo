@@ -1,6 +1,6 @@
 "use client";
 
-import type { BattleCoin } from "@/types/battle";
+import type { MemeMetadata } from "@workspace/types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AmountInput } from "../elements/amount-input";
@@ -9,7 +9,7 @@ import { PotentialWinDisplay } from "../elements/potential-win-display";
 import type { ComponentType, ToggleSide } from "../elements/types";
 
 interface SwapUIProps {
-  coin?: BattleCoin;
+  coin?: MemeMetadata & { round?: number };
   className?: string;
   componentType?: ComponentType;
 }

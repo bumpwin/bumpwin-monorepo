@@ -1,8 +1,8 @@
-import type { BattleCoin } from "@/types/battle";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 
 interface CoinIconSymbolProps {
-  coin?: BattleCoin;
+  coin?: MemeMetadata;
   size?: number;
 }
 

@@ -8,23 +8,12 @@ import {
 } from "@mysten/dapp-kit";
 import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
+import type { MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import React, { useState } from "react";
 
-interface CoinWithMarketData {
-  id: number;
-  symbol: string;
-  name: string;
-  icon: string;
-  color: string;
-  description: string;
-  price: number;
-  marketCap: number;
-  share?: number;
-}
-
 interface SwapRoundCoinCardProps {
-  coin?: CoinWithMarketData;
+  coin?: MemeMetadata;
 }
 
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
@@ -75,7 +64,7 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
     <div className="bg-[#181A20] border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
       <div className="flex items-center gap-3 mb-2">
         <Image
-          src={coin.icon}
+          src={coin.iconUrl}
           alt={coin.name}
           width={48}
           height={48}

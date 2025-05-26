@@ -8,7 +8,6 @@ import type { CoinMeta } from "@/components/DominanceRechart";
 import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
-import { memeToBattleCoin } from "@/types/battle";
 import type { CoinCardProps } from "@/types/coincard";
 import {
   prepareCoinsMetadata,
@@ -24,7 +23,16 @@ export default function Home() {
   );
 
   // データ準備ロジックをユーティリティ関数で実装
-  const relevantCoins = prepareCoinsMetadata(mockCoinMetadata as CoinMeta[]);
+  // Add color field to match CoinMeta interface
+  const coinMetaWithColors: CoinMeta[] = mockCoinMetadata.map(
+    (coin, index) => ({
+      id: Number(coin.id) || index,
+      symbol: coin.symbol,
+      name: coin.name,
+      color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
+    }),
+  );
+  const relevantCoins = prepareCoinsMetadata(coinMetaWithColors);
   const rechartPoints = prepareMultiCoinChartData(
     mockDominanceChartData,
     relevantCoins,
@@ -36,17 +44,9 @@ export default function Home() {
       return;
     }
     // Find the corresponding MemeMetadata from mockCoinMetadata
-    const memeMetadata = mockCoinMetadata.find(
-      (m) => m.id.toString() === coin.address,
-    );
+    const memeMetadata = mockCoinMetadata.find((m) => m.id === coin.address);
     if (memeMetadata) {
-      setSelectedCoin({
-        id: `0x${memeMetadata.id.toString(16).padStart(40, "0")}`,
-        name: memeMetadata.name,
-        symbol: memeMetadata.symbol,
-        description: memeMetadata.description,
-        iconUrl: memeMetadata.icon,
-      });
+      setSelectedCoin(memeMetadata);
     } else {
       setSelectedCoin(undefined);
     }
@@ -120,11 +120,7 @@ export default function Home() {
               </div>
               <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
                 <div className="w-full self-start mt-12">
-                  <SwapUI
-                    coin={
-                      selectedCoin ? memeToBattleCoin(selectedCoin) : undefined
-                    }
-                  />
+                  <SwapUI coin={selectedCoin} />
                 </div>
               </div>
             </div>

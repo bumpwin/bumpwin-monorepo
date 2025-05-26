@@ -29,8 +29,8 @@ export interface CoinCardProps {
   role?: string;
   /** ハイライト表示するかどうか */
   isHighlighted?: boolean;
-  /** シェア */
-  share?: number;
+  /** 価格 */
+  price?: number;
   /** Telegramリンク */
   telegramLink?: string;
   /** ウェブサイトリンク */

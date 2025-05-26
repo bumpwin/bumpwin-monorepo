@@ -4,6 +4,7 @@ import type {
   PreparedCoinMeta,
 } from "@/components/DominanceRechart";
 import {
+  getMemeMarketData,
   mockChampionCoinMetadata,
   mockCoinMetadata,
   mockDominanceChartData,
@@ -48,11 +49,13 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
     ),
   }));
 
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: coin.color,
-  }));
+  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map(
+    (coin, index) => ({
+      symbol: coin.symbol.toLowerCase(),
+      name: coin.name,
+      color: `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`,
+    }),
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -111,14 +114,11 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
                           <span className="text-gray-400">Market Cap:</span>
                           <span className="text-white font-medium">
                             {formatMarketCap(
-                              metadata?.marketCap || coin.marketCap,
+                              metadata
+                                ? (getMemeMarketData(metadata.id)?.marketCap ??
+                                    coin.marketCap)
+                                : coin.marketCap,
                             )}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400">Created by:</span>
-                          <span className="text-white font-medium">
-                            {metadata?.createdBy || "Unknown"}
                           </span>
                         </div>
                       </div>
