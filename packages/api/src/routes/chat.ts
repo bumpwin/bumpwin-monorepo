@@ -6,21 +6,6 @@ import { createApiError } from "@workspace/supabase/src/error";
 import { Hono } from "hono";
 import { type Result, err, ok } from "neverthrow";
 
-// Edge Runtime configuration
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
-
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// if (!supabaseUrl || !supabaseAnonKey) {
-//   throw new Error("Required environment variables are not defined");
-// }
-
-// const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey);
-
-// const supabaseRepository = new SupabaseRepository(supabase);
-
 let supabaseRepo: SupabaseRepository | null = null;
 
 const getRepo = (): Result<SupabaseRepository, ApiError> => {
@@ -63,23 +48,7 @@ const parseLimit = (
   return ok(limit);
 };
 
-/**
- * Get latest chat messages
- * @route GET /api/chat
- * @auth Not Required
- * @param {number} limit - Query parameter for the number of messages to retrieve
- *   - Format: /api/chat?limit=20
- *   - Default: 10
- * @returns {Array} Array of chat message objects
- *   - txDigest {string} Transaction digest
- *   - eventSequence {string} Event sequence
- *   - createdAt {string} Creation timestamp
- *   - senderAddress {string} Sender's address
- *   - messageText {string} Message content
- * @error
- *   - 500: Internal Server Error - Database or unexpected errors
- */
-export const app = new Hono().get("/", async (c) => {
+export const chatRoute = new Hono().get("/", async (c) => {
   const repoResult = getRepo();
   if (repoResult.isErr()) {
     logger.error("Failed to get repository", { error: repoResult.error });

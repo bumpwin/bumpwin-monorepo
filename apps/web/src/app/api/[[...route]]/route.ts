@@ -1,25 +1,16 @@
-import { app as chatApp } from "@/app/api/[[...route]]/chat";
-import { app as mockpriceApp } from "@/app/api/[[...route]]/mockprice";
-import { Hono } from "hono";
+import { createApp } from "@workspace/api";
+import type { AppType as BaseAppType } from "@workspace/api";
 import { handle } from "hono/vercel";
 
 // Edge Runtime configuration
 export const runtime = "edge";
 
-// basePath は API ルートのベースパスを指定します
-const app = new Hono().basePath("/api");
+// Create API instance with basePath
+const app = createApp().basePath("/api");
 
-// ルートの追加と変数の保持
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const mockpriceRoute = app.route("/mockprice", mockpriceApp);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const chatRoute = app.route("/chat", chatApp);
+// Export the base app type for client usage
+export type AppType = BaseAppType;
 
-// 型定義用
-export type AppType = typeof app;
-export type MockpriceRouteType = typeof mockpriceRoute;
-export type ChatRouteType = typeof chatRoute;
-
-// Next.jsのルート関数のみをエクスポート
+// Next.js route handlers
 export const GET = handle(app);
 export const POST = handle(app);
