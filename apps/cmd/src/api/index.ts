@@ -2,6 +2,9 @@ import { config } from "@/config";
 import { handleError } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import { Hono } from "hono";
+import battles from "./battles";
+import champions from "./champions";
+import rounds from "./rounds";
 
 const app = new Hono();
 
@@ -55,5 +58,10 @@ app.get("/", (c) => {
     version: "1.0.0",
   });
 });
+
+// Mount sub-routes
+app.route("/battles", battles);
+app.route("/champions", champions);
+app.route("/rounds", rounds);
 
 export default app;

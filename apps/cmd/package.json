@@ -14,6 +14,8 @@
     "@supabase/supabase-js": "2.39.7",
     "@workspace/supabase": "workspace:*",
     "@workspace/sui": "workspace:*",
+    "@workspace/mockdata": "workspace:*",
+    "@workspace/types": "workspace:*",
     "dotenv": "16.4.5"
   },
   "devDependencies": {

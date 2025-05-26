@@ -12,7 +12,6 @@ import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import { mockmemes } from "@workspace/mockdata";
 import {
   Card,
   CardContent,
@@ -22,6 +21,7 @@ import {
   LWCChart,
   type OHLCData,
 } from "@workspace/shadcn/components/chart/lwc-chart";
+import type { MemeMarketData, MemeMetadata, RoundData } from "@workspace/types";
 import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -152,9 +152,11 @@ const PriceChart = ({
 };
 
 const MemeGallery = ({
+  memes,
   onSelect,
   selectedSymbol,
 }: {
+  memes: MemeMetadata[];
   onSelect: (meme: MemeMetadata) => void;
   selectedSymbol: string;
 }) => (
@@ -165,7 +167,7 @@ const MemeGallery = ({
         gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
       }}
     >
-      {mockmemes.map((meme, i) => (
+      {memes.map((meme, i) => (
         <button
           key={meme.symbol}
           onClick={() => onSelect(meme)}
@@ -196,9 +198,20 @@ export default function RoundsAPage() {
   const selectedId = searchParams.get("selected");
   const { phase, remainingTime } = useBattleClock();
 
-  const firstMeme = mockmemes.length > 0 ? mockmemes[0] : null;
+  // Fetch current battle data
+  const { data: battleData, isLoading: isBattleLoading } = useQuery({
+    queryKey: ["battle", "current"],
+    queryFn: async () => {
+      const res = await fetch("/api/battles/current");
+      if (!res.ok) throw new Error("Failed to fetch battle data");
+      return res.json();
+    },
+  });
+
+  const memes = battleData?.memes?.map((m: any) => m.metadata) || [];
+  const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
-    ? mockmemes.find((m) => m.symbol === selectedId) || firstMeme
+    ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme
     : firstMeme;
 
   const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
@@ -227,6 +240,14 @@ export default function RoundsAPage() {
     },
   });
 
+  if (isBattleLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full">
       <main className="flex-1 h-full overflow-hidden">
@@ -241,6 +262,7 @@ export default function RoundsAPage() {
             </div>
 
             <MemeGallery
+              memes={memes}
               onSelect={handleCoinSelect}
               selectedSymbol={selectedCoin.symbol}
             />
@@ -263,6 +285,7 @@ export default function RoundsAPage() {
 
             <ScrollableContainer className="flex-1">
               <MemeGallery
+                memes={memes}
                 onSelect={handleCoinSelect}
                 selectedSymbol={selectedCoin.symbol}
               />

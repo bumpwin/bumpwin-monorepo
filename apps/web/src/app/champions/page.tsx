@@ -1,40 +1,62 @@
 "use client";
 
 import { ChampionCard } from "@/components/ChampionCard";
-import { mockChampionCoinMetadata } from "@/mock/mockData";
-import type { ChampionCoin } from "@/types/champion";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 export default function ChampionsPage() {
-  // Transform mockChampionCoinMetadata to ChampionCoin type
-  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map(
-    (coin) => ({
-      id: coin.id.toString(),
-      round: coin.round,
-      name: coin.name,
-      symbol: coin.symbol,
-      iconUrl: coin.iconUrl,
-      description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      share: coin.share, // use real share if needed
-      marketCap: coin.marketCap, // use real marketCap
-    }),
-  );
+  // Fetch champions from API
+  const {
+    data: champions,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["champions"],
+    queryFn: async () => {
+      const res = await fetch("/api/champions");
+      if (!res.ok) throw new Error("Failed to fetch champions");
+      const data = await res.json();
+      console.log("Champions data:", data);
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-500">Error: {(error as Error).message}</div>
+      </div>
+    );
+  }
+
+  if (!champions || champions.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-500">No champions found</div>
+      </div>
+    );
+  }
 
   return (
     <>
       {/* Champions Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mt-10">
-        {championCoins.map((champion) => (
+        {champions?.map((champion: any) => (
           <ChampionCard
-            key={champion.id}
-            imageUrl={champion.iconUrl}
-            symbol={champion.symbol}
-            name={champion.name}
-            mcap={champion.marketCap}
-            round={champion.round}
+            key={champion.meme?.id}
+            imageUrl={champion.meme?.iconUrl}
+            symbol={champion.meme?.symbol}
+            name={champion.meme?.name}
+            mcap={champion.meme?.marketCap || 0}
+            round={champion.round?.round}
           />
         ))}
       </div>
