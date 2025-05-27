@@ -32,7 +32,7 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
 const parseLimit = (
   limitParam: string | undefined,
 ): Result<number, ApiError> => {
-  if (!limitParam) return ok(20); // Default to 20 messages
+  if (!limitParam) return ok(40); // Default to 40 messages
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
@@ -53,8 +53,8 @@ const parseLimit = (
  * @route GET /api/chat
  * @auth Not Required
  * @param {number} limit - Query parameter for the number of messages to retrieve
- *   - Format: /api/chat?limit=20
- *   - Default: 20
+ *   - Format: /api/chat?limit=40
+ *   - Default: 40
  * @returns {Array} Array of chat message objects
  *   - txDigest {string} Transaction digest
  *   - eventSequence {string} Event sequence

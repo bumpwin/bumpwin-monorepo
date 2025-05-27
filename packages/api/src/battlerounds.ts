@@ -6,6 +6,7 @@ import {
   mockMemeMetadata,
   mockRoundData,
 } from "@workspace/mockdata";
+import type { MEME_ID } from "@workspace/types";
 import { Hono } from "hono";
 
 export const battleroundsApi = new Hono()
@@ -23,8 +24,8 @@ export const battleroundsApi = new Hono()
     // Include meme metadata and market data for current round
     const memes = currentRound.memeIds
       .map((id) => ({
-        metadata: mockMemeMetadata[id],
-        marketData: mockMemeMarketData[id],
+        metadata: mockMemeMetadata[id as MEME_ID],
+        marketData: mockMemeMarketData[id as MEME_ID],
       }))
       .filter((m) => m.metadata);
 
