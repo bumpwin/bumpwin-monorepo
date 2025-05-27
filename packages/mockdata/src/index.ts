@@ -1,13 +1,12 @@
 // Export all mock data
-export * from "./mockMemes";
 export * from "./memeIds";
 export * from "./memeMetadata";
 export * from "./marketData";
 export * from "./rounds";
 export * from "./utils";
-export * from "./mememetadata";
 export * from "./types";
-export * from "./mockMemeMarketData";
+export { mockMemeMarketData } from "./mockMemeMarketData";
+export { mockmemes, mockMemeMetadata } from "./mockMemes";
 
 import type { MEME_ID, RoundData } from "@workspace/types";
 import { getMemeMetadataById } from "./memeMetadata";
