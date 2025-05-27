@@ -184,10 +184,11 @@ export default function RoundsPage() {
     };
   });
 
-  // Token colors - matching to the colors used in the application
+  // Token colors - generate colors based on index
   const tokenColors: TokenColors = mockCoinMetadata.reduce(
-    (acc: TokenColors, coin) => {
-      acc[coin.symbol.toUpperCase()] = coin.color;
+    (acc: TokenColors, coin, index) => {
+      acc[coin.symbol.toUpperCase()] =
+        `hsl(${(index * 360) / mockCoinMetadata.length}, 70%, 50%)`;
       return acc;
     },
     {},
@@ -778,6 +779,12 @@ function DashboardSection({
               <div className="p-6 flex items-center justify-center h-full">
                 <div className="w-full aspect-[3/4] max-w-[320px]">
                   <ChampionCard
+                    id={
+                      Number.parseInt(
+                        data.id.replace("#", ""),
+                        10,
+                      ).toString() || "1"
+                    }
                     imageUrl={
                       data.winner.image || "/images/mockmemes/ANTS.webp"
                     }

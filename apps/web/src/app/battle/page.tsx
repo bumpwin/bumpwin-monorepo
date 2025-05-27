@@ -10,7 +10,6 @@ import SharrowStatsBar from "@/components/SharrowStatsBar";
 import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
@@ -26,14 +25,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 // Constants
-const DEFAULT_COIN: RoundCoin = {
-  id: "default",
+const DEFAULT_MEME: MemeMetadata = {
+  id: "0x0000000000000000000000000000000000000000000000000000000000000000" as `0x${string}`,
   symbol: "YAKIU",
   name: "Yakiu",
   iconUrl: "/images/mockmemes/YAKIU.png",
-  round: 12,
-  share: 0,
-  marketCap: 180000,
   description: "Default coin",
 };
 
@@ -104,7 +100,7 @@ const PriceChart = ({
   priceData,
   isLoading,
 }: {
-  coin: RoundCoin;
+  coin: MemeMetadata & { round?: number };
   priceData: OHLCData[] | undefined;
   isLoading: boolean;
 }) => {

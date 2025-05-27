@@ -3,29 +3,28 @@
 import { ChampionsList } from "@/components/Champions";
 import { ResultView } from "@/components/ResultView";
 import {
+  getMemeMarketData,
   mockChampionCoinMetadata,
   mockDominanceChartData,
   mockLastChampionCoinMetadata,
 } from "@/mock/mockData";
-import type { ChampionCoin } from "@/types/champion";
+import type { CoinCardProps } from "@/types/coincard";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
 import React from "react";
 
 export default function ChampionsPage() {
-  // Transform mockChampionCoinMetadata to ChampionCoin type
-  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map(
+  // Transform mockChampionCoinMetadata to CoinCardProps type
+  const championCoins: CoinCardProps[] = mockChampionCoinMetadata.map(
     (coin) => ({
-      id: coin.id.toString(),
-      round: coin.round,
+      address: coin.id,
+      round: coin.round ?? 1,
       name: coin.name,
       symbol: coin.symbol,
-      iconUrl: coin.iconUrl,
+      logoUrl: coin.iconUrl,
       description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      share: 0.35, // Mock data
+      price: 0.35, // Mock data
       marketCap: 1000000, // Mock data
+      isFavorite: false,
     }),
   );
 
@@ -45,7 +44,7 @@ export default function ChampionsPage() {
       return dominancePoint;
     }),
     coins: championCoins.map((coin) => ({
-      id: coin.id,
+      id: coin.address,
       name: coin.name,
       color: "#FFD700", // Mock color
     })),
@@ -82,7 +81,12 @@ export default function ChampionsPage() {
             <ResultView
               coin={{
                 ...mockLastChampionCoinMetadata,
-                id: mockLastChampionCoinMetadata.id.toString(),
+                logoUrl: mockLastChampionCoinMetadata.iconUrl,
+                address: mockLastChampionCoinMetadata.id.toString(),
+                marketCap:
+                  getMemeMarketData(mockLastChampionCoinMetadata.id)
+                    ?.marketCap ?? 0,
+                isFavorite: false,
               }}
               forceVisible={true}
             />

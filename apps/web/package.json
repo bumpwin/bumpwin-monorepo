@@ -6,11 +6,14 @@
     "NEXT_ON_PAGES_PACKAGE_MANAGER": "pnpm"
   },
   "scripts": {
-    "dev": "NEXT_DEV_TURBOPACK=1 NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECK=1 bunx next dev",
+    "dev": "NEXT_DEV_TURBOPACK=1 NEXT_DISABLE_TYPECHECK=1 bunx next dev",
     "_dev": "pnpm run next dev",
     "build": "NEXT_DISABLE_ESLINT=1 pnpm run next build",
     "start": "pnpm run next start",
-    "lint": "pnpm run next lint",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "format": "biome format . --write",
+    "typecheck": "tsc --noEmit",
     "pages:build": "pnpm dlx @cloudflare/next-on-pages@1",
     "pages:preview": "wrangler pages dev .vercel/output/static",
     "pages:deploy": "wrangler pages deploy .vercel/output/static",
@@ -19,11 +22,11 @@
     "next": "next"
   },
   "dependencies": {
+    "@workspace/types": "workspace:*",
     "@mysten/dapp-kit": "^0.16.4",
     "@tanstack/react-query": "^5.74.4",
     "@workspace/api": "workspace:*",
     "@workspace/mockdata": "workspace:*",
-    "@workspace/types": "workspace:*",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",
     "gsap": "^3.13.0",
@@ -41,14 +44,11 @@
     "sonner": "^2.0.3"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.0.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.15.21",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "15.3.1",
     "tailwindcss": "^4.0.0",
     "vercel": "^41.7.0"
   }

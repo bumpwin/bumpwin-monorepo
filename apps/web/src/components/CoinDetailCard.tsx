@@ -1,8 +1,7 @@
 "use client";
 
-import type { Coin } from "@/types";
 import { Card, CardContent } from "@workspace/shadcn/components/card";
-import { Globe, Send, Twitter } from "lucide-react";
+import type { MemeMarketData, MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 
 // Format market cap to K/M/B format
@@ -21,7 +20,7 @@ const formatMarketCap = (value: number | undefined): string => {
 };
 
 interface CoinDetailCardProps {
-  coin: Coin;
+  coin: MemeMetadata & Partial<MemeMarketData> & { round: number };
   variant?: "default" | "champion";
 }
 
@@ -84,42 +83,6 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
                   {formatMarketCap(coin.marketCap)}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">Created by:</span>
-                <span className="text-white font-medium">BUMP.WIN</span>
-              </div>
-            </div>
-            <div className="flex gap-3 mt-3">
-              {coin.websiteLink && (
-                <a
-                  href={coin.websiteLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <Globe className="w-5 h-5" />
-                </a>
-              )}
-              {coin.telegramLink && (
-                <a
-                  href={coin.telegramLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <Send className="w-5 h-5" />
-                </a>
-              )}
-              {coin.twitterLink && (
-                <a
-                  href={coin.twitterLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <Twitter className="w-5 h-5" />
-                </a>
-              )}
             </div>
           </div>
         </div>
