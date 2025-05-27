@@ -23,7 +23,6 @@ import { toast } from "sonner";
 
 export function SuiWalletConnectButton() {
   // Using _balance to indicate we know it's not currently used but keeping it for future use
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_balance, setBalance] = useState<string | null>(null);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();

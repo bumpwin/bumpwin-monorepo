@@ -1,6 +1,6 @@
 "use client";
 
-import { mockprice } from "@/app/client";
+import { api } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { ChartTitle } from "@/components/ChartTitle";
 import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
@@ -25,7 +25,7 @@ export const ChampionDetailPage = ({ coin }: ChampionDetailPageProps) => {
   const { data: priceData } = useQuery({
     queryKey: ["mockprice", coin.id],
     queryFn: async () => {
-      const res = await mockprice({
+      const res = await api.mockprice.$get({
         query: { seed: coin.id, freq: "day", count: "30" },
       });
       const json = await res.json();

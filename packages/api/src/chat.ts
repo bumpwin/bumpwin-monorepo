@@ -73,7 +73,7 @@ export const chatApi = new Hono().get("/", async (c) => {
         error: repoResult.error.message,
         details: repoResult.error.details,
       },
-      repoResult.error.code || 500,
+      (repoResult.error.code || 500) as unknown as 500,
     );
   }
 
@@ -85,7 +85,7 @@ export const chatApi = new Hono().get("/", async (c) => {
         error: limitResult.error.message,
         details: limitResult.error.details,
       },
-      limitResult.error.code || 400,
+      (limitResult.error.code || 400) as unknown as 400,
     );
   }
 
@@ -110,7 +110,7 @@ export const chatApi = new Hono().get("/", async (c) => {
           code: error.code,
           details: error.details,
         },
-        error.code || 500,
+        (error.code || 500) as unknown as 500,
       );
     },
   );

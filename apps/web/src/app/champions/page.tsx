@@ -1,6 +1,6 @@
 "use client";
 
-import { getChampions } from "@/app/client";
+import { api } from "@/app/client";
 import { ChampionCard } from "@/components/ChampionCard";
 import { useQuery } from "@tanstack/react-query";
 import type { MemeMarketData, MemeMetadata } from "@workspace/types";
@@ -15,7 +15,7 @@ export default function ChampionsPage() {
   } = useQuery({
     queryKey: ["champions"],
     queryFn: async () => {
-      const res = await getChampions();
+      const res = await api.champions.$get();
       const data = await res.json();
       console.log("Champions data:", data);
       return data;
@@ -50,21 +50,17 @@ export default function ChampionsPage() {
     <>
       {/* Champions Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mt-10">
-        {champions?.map(
-          (champion: {
-            meme: (MemeMetadata & MemeMarketData) | null;
-            round: { round: number };
-          }) =>
-            champion.meme ? (
-              <ChampionCard
-                key={champion.meme.id}
-                imageUrl={champion.meme.iconUrl}
-                symbol={champion.meme.symbol}
-                name={champion.meme.name}
-                mcap={champion.meme.marketCap || 0}
-                round={champion.round?.round}
-              />
-            ) : null,
+        {champions?.map((champion: any) =>
+          champion.meme ? (
+            <ChampionCard
+              key={champion.meme.id}
+              imageUrl={champion.meme.iconUrl}
+              symbol={champion.meme.symbol}
+              name={champion.meme.name}
+              mcap={champion.meme.marketCap || 0}
+              round={champion.round?.round}
+            />
+          ) : null,
         )}
       </div>
     </>

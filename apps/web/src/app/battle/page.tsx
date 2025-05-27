@@ -1,7 +1,7 @@
 "use client";
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
-import { getCurrentBattleRound, mockprice } from "@/app/client";
+import { api } from "@/app/client";
 import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/ChartTitle";
@@ -201,7 +201,7 @@ export default function RoundsAPage() {
   const { data: battleData, isLoading: isBattleLoading } = useQuery({
     queryKey: ["battle", "current"],
     queryFn: async () => {
-      const res = await getCurrentBattleRound();
+      const res = await api.battlerounds.current.$get();
       const json = await res.json();
 
       if ("error" in json) {
@@ -213,7 +213,9 @@ export default function RoundsAPage() {
   });
 
   const memes =
-    battleData?.memes?.map((m: { metadata: MemeMetadata }) => m.metadata) || [];
+    battleData?.memes
+      ?.filter((m: any) => m.metadata)
+      .map((m: any) => m.metadata) || [];
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme
@@ -232,7 +234,7 @@ export default function RoundsAPage() {
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", selectedCoin.id],
     queryFn: async () => {
-      const res = await mockprice({
+      const res = await api.mockprice.$get({
         query: { seed: selectedCoin.id, freq: "day", count: "30" },
       });
       const json = await res.json();
