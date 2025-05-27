@@ -31,12 +31,28 @@ export const PotentialWinDisplay = ({
   // Default SUI coin if needed
   const suiCoin = { iconUrl: "/images/SUI.png", symbol: "SUI" } as RoundCoin;
 
+  // RACC coin for darknight mode
+  const raccCoin = {
+    iconUrl: "/images/mockmemes/RACC.webp",
+    symbol: "RACC",
+    name: "Raccoon Moon",
+    id: "0x0000000000000000000000000000000000000000000000000000000000000009",
+    round: 0,
+    share: 0,
+    marketCap: 0,
+    description: "",
+  } as RoundCoin;
+
   // Determine which coin to show based on componentType and activeSide
   const displayCoin = match({ componentType, activeSide })
     .with({ componentType: "daytime" }, () => suiCoin)
     .with(
       { componentType: "darknight", activeSide: "buy" },
       () => coin ?? suiCoin,
+    )
+    .with(
+      { componentType: "darknight", activeSide: "switch" },
+      () => raccCoin, // Show RACC when darknight sell/switch
     )
     .with(
       { componentType: "champion", activeSide: "buy" },
@@ -113,7 +129,7 @@ export const PotentialWinDisplay = ({
                   <span
                     className={`ml-2 text-white text-xl font-bold select-none${!showUnitSymbol ? " invisible" : ""}`}
                   >
-                    SUI
+                    {displayCoin.symbol === "RACC" ? "RACC" : "SUI"}
                   </span>
                 </div>
               </div>

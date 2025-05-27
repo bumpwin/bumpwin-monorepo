@@ -23,7 +23,7 @@ import {
 } from "@workspace/shadcn/components/chart/lwc-chart";
 import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Constants
 const DEFAULT_COIN: RoundCoin = {
@@ -212,10 +212,44 @@ export default function RoundsAPage() {
     },
   });
 
-  const memes =
+  const allMemes =
     battleData?.memes
       ?.filter((m: any) => m.metadata)
       .map((m: any) => m.metadata) || [];
+
+  // Store darknight memes selection to prevent re-shuffling
+  const darknightMemesRef = useRef<MemeMetadata[]>([]);
+  const lastPhaseRef = useRef<string>("");
+
+  // Only recalculate when phase changes TO darknight
+  useEffect(() => {
+    if (
+      phase === "darknight" &&
+      lastPhaseRef.current !== "darknight" &&
+      allMemes.length > 8
+    ) {
+      const raccMeme = allMemes.find((m: MemeMetadata) => m.symbol === "RACC");
+      const otherMemes = allMemes.filter(
+        (m: MemeMetadata) => m.symbol !== "RACC",
+      );
+
+      // Shuffle and pick 7 random memes
+      const shuffled = [...otherMemes].sort(() => Math.random() - 0.5);
+      const selectedMemes = shuffled.slice(0, 7);
+
+      // Always include RACC if it exists
+      darknightMemesRef.current = raccMeme
+        ? [raccMeme, ...selectedMemes]
+        : selectedMemes.slice(0, 8);
+    }
+    lastPhaseRef.current = phase;
+  }, [phase, allMemes]);
+
+  // Use stored selection for darknight, otherwise show all memes
+  const memes =
+    phase === "darknight" && darknightMemesRef.current.length > 0
+      ? darknightMemesRef.current
+      : allMemes;
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme

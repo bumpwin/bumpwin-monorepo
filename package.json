@@ -2,12 +2,16 @@
   "name": "monorepo-template",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "pnpm run pm:dev",
-    "pm:dev": "pnpm -r --parallel --filter web dev",
+    "b": "pnpm run build",
+    "build": "pnpm run pages:build",
     "server:dev": "pnpm -r --filter cmd dev",
-    "build": "pnpm run pm:build",
+    "_build": "pnpm run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
     "format": "biome format . --write",
     "lint": "biome check . --write",
