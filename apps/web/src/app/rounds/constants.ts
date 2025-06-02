@@ -18,8 +18,8 @@ export const ROUNDS = [
   },
   {
     round: 3,
-    status: "Current Battle",
-    state: "active",
+    status: "Completed",
+    state: "ended",
     metrics: {
       mcap: "$120.00K",
       volume: "$40K",
@@ -30,6 +30,12 @@ export const ROUNDS = [
     topShare: 38,
     startTime: "05/24 00:00",
     endTime: "05/25 01:00",
+    champion: {
+      id: "3",
+      symbol: "JELL",
+      name: "Jelloo Protocol",
+      icon: "/images/mockmemes/JELL.png",
+    },
   },
   {
     round: 2,
@@ -48,8 +54,8 @@ export const ROUNDS = [
     champion: {
       id: "2",
       symbol: "YAKIU",
-      name: "YAKIU",
-      icon: "/images/mockmemes/YAKIU.webp",
+      name: "Yakiumin",
+      icon: "/images/mockmemes/YAKIU.png",
     },
   },
   {
@@ -69,7 +75,7 @@ export const ROUNDS = [
     champion: {
       id: "1",
       symbol: "SMUG",
-      name: "SMUG",
+      name: "Smug Inu",
       icon: "/images/mockmemes/SMUG.webp",
     },
   },
@@ -90,8 +96,8 @@ export const ROUNDS = [
     champion: {
       id: "3",
       symbol: "CHEDER",
-      name: "CHEDER",
-      icon: "/images/mockmemes/CHEDER.webp",
+      name: "Cheder King",
+      icon: "/images/mockmemes/CHEDER.png",
     },
   },
 ];

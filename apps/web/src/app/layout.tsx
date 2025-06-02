@@ -6,8 +6,8 @@ import AppBar from "@/components/AppBar";
 import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
-import { mockCoinMetadata } from "@/mock/mockData";
 import { Providers } from "@/providers/Providers";
+import { getMemeMetadataById, getRoundByNumber } from "@workspace/mockdata";
 import { Toaster } from "sonner";
 
 export const runtime = "edge";
@@ -52,18 +52,28 @@ export default function RootLayout({
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
           {/* <ChallengeOverlay /> */}
-          {mockCoinMetadata[0] && (
-            <ResultView
-              coin={{
-                ...mockCoinMetadata[0],
-                id: mockCoinMetadata[0].id.toString(),
-                iconUrl: mockCoinMetadata[0].icon,
-                round: 1,
-                share: 25,
-                marketCap: 100000,
-              }}
-            />
-          )}
+          {(() => {
+            const round3 = getRoundByNumber(3);
+            const jellMeme =
+              round3 && round3.status === "completed" && round3.championMemeId
+                ? getMemeMetadataById(round3.championMemeId)
+                : undefined;
+
+            return jellMeme ? (
+              <ResultView
+                coin={{
+                  id: jellMeme.id,
+                  symbol: jellMeme.symbol,
+                  name: jellMeme.name,
+                  iconUrl: jellMeme.iconUrl,
+                  description: jellMeme.description,
+                  round: 3,
+                  share: 25,
+                  marketCap: 1000000,
+                }}
+              />
+            ) : null;
+          })()}
         </Providers>
       </body>
     </html>

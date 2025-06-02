@@ -1,6 +1,13 @@
+
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 PROJECT_NAME := "monorepo-template-web"
+
+
+alias i := install
+alias d := dev
+alias b := build
+
 
 install:
     echo "Installing dependencies for all packages..."

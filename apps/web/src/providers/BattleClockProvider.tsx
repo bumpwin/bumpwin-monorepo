@@ -33,6 +33,7 @@ interface BattleClockContextType {
   advanceTime: (hours: number) => void;
   resetTime: () => void;
   skipToDarkNight: () => void;
+  skipToSunrise: () => void;
   resetDemoOffset: () => void;
 }
 
@@ -137,6 +138,17 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
     setDemoOffset(0);
   }, []);
 
+  const skipToSunrise = useCallback(() => {
+    const now = new Date().getTime() + timeOffset;
+    const timeSinceReference = now - REFERENCE_DATE;
+    const completedCycles = Math.floor(timeSinceReference / CYCLE_DURATION_MS);
+    const nextSunriseStart =
+      REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS - 5000; // 5 seconds before daytime
+    const requiredDemoOffset =
+      nextSunriseStart - (new Date().getTime() + timeOffset);
+    setDemoOffset(requiredDemoOffset);
+  }, [timeOffset]);
+
   return (
     <BattleClockContext.Provider
       value={{
@@ -151,6 +163,7 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
         advanceTime,
         resetTime,
         skipToDarkNight,
+        skipToSunrise,
         resetDemoOffset,
       }}
     >

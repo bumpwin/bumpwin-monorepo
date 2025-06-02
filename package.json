@@ -7,9 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm run pm:dev",
+    "d": "pnpm run dev",
     "b": "pnpm run build",
-    "build": "pnpm run pages:build",
+    "preview": "pnpm run pages:preview",
+    "dev": "pnpm run pm:dev",
+    "build": "pnpm run pm:build",
+    "pm:dev": "pnpm -r --parallel --filter web dev",
     "server:dev": "pnpm -r --filter cmd dev",
     "_build": "pnpm run pm:build",
     "pm:build": "pnpm -r --parallel --filter web build",
