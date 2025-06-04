@@ -13,6 +13,13 @@
     "./src/movecall": "./src/movecall.ts",
     "./src/utils": "./src/utils.ts"
   },
+  "dependencies": {
+    "effect": "^3.16.3",
+    "@effect/schema": "^0.85.2",
+    "@effect/platform": "^0.85.2",
+    "@mysten/sui": "latest",
+    "@workspace/logger": "workspace:*"
+  },
   "scripts": {
     "clean": "echo 'No build artifacts to clean'",
     "typecheck": "tsc --noEmit",

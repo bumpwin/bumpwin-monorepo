@@ -64,7 +64,11 @@
       "@hono/node-server": "^1.14.3",
       "@supabase/supabase-js": "^2.49.10",
       "@mysten/sui": "^1.30.2",
-      "bumpwin": "^0.202505.25"
+      "bumpwin": "^0.202505.25",
+      "effect": "^3.16.3",
+      "@effect/platform": "^0.84.6",
+      "@effect/platform-node": "^0.85.2",
+      "@effect/schema": "^0.75.5"
     }
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"

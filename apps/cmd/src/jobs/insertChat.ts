@@ -1,65 +1,61 @@
 import { randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 import { config } from "@/config";
 import { supabase } from "@/services/supabase";
 import { logger } from "@/utils/logger";
+import { FileSystem } from "@effect/platform";
+import { NodeFileSystem } from "@effect/platform-node";
 import { SupabaseRepository } from "@workspace/supabase";
-import { type Result, err, ok } from "neverthrow";
+import { Effect, Schema } from "effect";
 
 // 型定義
-type Messages = {
-  comments: string[];
-};
+interface Messages {
+  readonly comments: readonly string[];
+}
 
-type ChatMessage = {
-  txDigest: string;
-  eventSequence: bigint;
-  createdAt: string;
-  senderAddress: string;
-  messageText: string;
-};
+interface ChatMessage {
+  readonly txDigest: string;
+  readonly eventSequence: bigint;
+  readonly createdAt: string;
+  readonly senderAddress: string;
+  readonly messageText: string;
+}
 
-type MessageGenerator = {
-  generateMessage: () => string;
-  generateAddress: () => string;
-};
+interface MessageGenerator {
+  readonly generateMessage: () => string;
+  readonly generateAddress: () => string;
+}
 
-type ErrorType = {
-  code: string;
-  message: string;
-};
+// Effect Error types using Schema.TaggedError (Effect v3 syntax)
+class FileReadError extends Schema.TaggedError<FileReadError>()("FileReadError", {
+  cause: Schema.Unknown,
+}) {}
 
-// エラー定数
-const ERRORS = {
-  FILE_READ: {
-    code: "FILE_READ_ERROR",
-    message: "Failed to read messages file",
-  },
-  JSON_PARSE: {
-    code: "JSON_PARSE_ERROR",
-    message: "Failed to parse messages JSON",
-  },
-  DB_INSERT: {
-    code: "DB_INSERT_ERROR",
-    message: "Failed to insert message into database",
-  },
-} as const;
+class JsonParseError extends Schema.TaggedError<JsonParseError>()("JsonParseError", {
+  cause: Schema.Unknown,
+}) {}
 
-// メッセージの読み込み
-const loadMessages = (): Result<Messages, ErrorType> => {
-  try {
-    const fileContent = readFileSync(join(__dirname, "messages.json"), "utf-8");
-    const messages = JSON.parse(fileContent) as Messages;
-    return ok(messages);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return err(ERRORS.JSON_PARSE);
-    }
-    return err(ERRORS.FILE_READ);
-  }
-};
+class DbInsertError extends Schema.TaggedError<DbInsertError>()("DbInsertError", {
+  cause: Schema.Unknown,
+}) {}
+
+// メッセージの読み込み (Effect version)
+const loadMessages = Effect.gen(function* () {
+  const fs = yield* FileSystem.FileSystem;
+
+  const filePath = join(__dirname, "messages.json");
+
+  const fileContent = yield* fs
+    .readFileString(filePath)
+    .pipe(Effect.mapError((cause) => new FileReadError({ cause })));
+
+  const messages = yield* Effect.try(() => JSON.parse(fileContent) as Messages).pipe(
+    Effect.mapError((cause) => new JsonParseError({ cause })),
+  );
+
+  return messages;
+});
 
 // メッセージ生成器
 const createMessageGenerator = (messages: Messages): MessageGenerator => ({
@@ -82,68 +78,76 @@ const getNextEventTime = (): number => {
   return -meanWaitingTime * Math.log(Math.random());
 };
 
-// データベース操作
+// データベース操作 (Effect version)
 const dbRepository = new SupabaseRepository(supabase);
 
-const insertChatMessage = async (message: ChatMessage): Promise<Result<void, ErrorType>> => {
-  const insertResult = await dbRepository.insertChatMessage(message);
+const insertChatMessage = (message: ChatMessage) =>
+  Effect.gen(function* () {
+    const insertResult = yield* Effect.tryPromise(() =>
+      dbRepository.insertChatMessage(message),
+    ).pipe(Effect.mapError((cause) => new DbInsertError({ cause })));
 
-  if (insertResult.isOk()) {
-    logger.info(`Message from ${message.senderAddress} saved to Supabase.`);
-    return ok(undefined);
-  }
+    // Handle neverthrow Result in Effect way
+    if ("isOk" in insertResult && insertResult.isOk()) {
+      yield* Effect.log(`Message from ${message.senderAddress} saved to Supabase.`);
+      return;
+    }
+    if ("error" in insertResult) {
+      yield* Effect.logError(`Failed to save message: ${insertResult.error.message}`);
+      yield* Effect.fail(new DbInsertError({ cause: insertResult.error }));
+    }
+    // If it's not a neverthrow Result, assume success
+    yield* Effect.log(`Message from ${message.senderAddress} saved to Supabase.`);
+  });
 
-  logger.error(`Failed to save message: ${insertResult.error.message}`);
-  return err(ERRORS.DB_INSERT);
-};
+// メッセージ生成と保存 (Effect version)
+const generateAndSaveMessage = (messageGenerator: MessageGenerator) =>
+  Effect.gen(function* () {
+    const message: ChatMessage = {
+      txDigest: randomUUID(),
+      eventSequence: BigInt(0),
+      createdAt: new Date().toISOString(),
+      senderAddress: messageGenerator.generateAddress(),
+      messageText: messageGenerator.generateMessage(),
+    };
 
-// メッセージ生成と保存
-const generateAndSaveMessage = async (
-  messageGenerator: MessageGenerator,
-): Promise<Result<void, ErrorType>> => {
-  const message: ChatMessage = {
-    txDigest: randomUUID(),
-    eventSequence: BigInt(0),
-    createdAt: new Date().toISOString(),
-    senderAddress: messageGenerator.generateAddress(),
-    messageText: messageGenerator.generateMessage(),
-  };
+    yield* insertChatMessage(message);
+  });
 
-  return insertChatMessage(message);
-};
+// メイン処理 (Effect version)
+export const startChatMessageInsertion = Effect.gen(function* () {
+  const messages = yield* loadMessages.pipe(Effect.provide(NodeFileSystem.layer));
 
-// メイン処理
-export const startChatMessageInsertion = async (): Promise<Result<void, ErrorType>> => {
-  const messagesResult = loadMessages();
-  if (messagesResult.isErr()) {
-    return err(messagesResult.error);
-  }
-
-  const messages = messagesResult.value;
   const messageGenerator = createMessageGenerator(messages);
 
-  logger.info("🚀 Starting chat message insertion polling...");
-  logger.info(`Message interval: ${config.env.INSERT_CHAT_INTERVAL_MS}ms`);
-  logger.info(
+  yield* Effect.log("🚀 Starting chat message insertion polling...");
+  yield* Effect.log(`Message interval: ${config.env.INSERT_CHAT_INTERVAL_MS}ms`);
+  yield* Effect.log(
     `Messages per minute: ${Math.floor(
       60000 / config.env.INSERT_CHAT_INTERVAL_MS,
     )} (${config.env.INSERT_CHAT_INTERVAL_MS}ms per message)`,
   );
-  logger.info(`Total available messages: ${messages.comments.length}`);
+  yield* Effect.log(`Total available messages: ${messages.comments.length}`);
 
   let nextEventTime = getNextEventTime();
   let lastCheckTime = Date.now();
 
-  const intervalId = setInterval(async () => {
+  const intervalId = setInterval(() => {
     const currentTime = Date.now();
     const elapsedTime = currentTime - lastCheckTime;
 
     if (elapsedTime >= nextEventTime) {
-      const result = await generateAndSaveMessage(messageGenerator);
-      if (result.isOk()) {
-        nextEventTime = getNextEventTime();
-        lastCheckTime = currentTime;
-      }
+      Effect.runPromise(
+        generateAndSaveMessage(messageGenerator).pipe(
+          Effect.catchAll((error) => Effect.logError(`Failed to generate message: ${error._tag}`)),
+          Effect.tap(() =>
+            Effect.sync(() => {
+              nextEventTime = getNextEventTime();
+              lastCheckTime = currentTime;
+            }),
+          ),
+        ),
+      );
     }
   }, config.env.INSERT_CHAT_INTERVAL_MS);
 
@@ -155,5 +159,18 @@ export const startChatMessageInsertion = async (): Promise<Result<void, ErrorTyp
   });
 
   process.stdin.resume();
-  return ok(undefined);
+});
+
+// Legacy Promise wrapper for compatibility
+export const startChatMessageInsertionAsync = async () => {
+  return Effect.runPromise(
+    startChatMessageInsertion.pipe(
+      Effect.provide(NodeFileSystem.layer),
+      Effect.catchAll((error) =>
+        Effect.logError(`Chat insertion failed: ${error._tag}`).pipe(
+          Effect.andThen(Effect.fail(error)),
+        ),
+      ),
+    ),
+  );
 };
