@@ -30,8 +30,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "BUMP.WIN - Meme Coin Battle Royale",
-  description:
-    "Stake & win before time runs out! The ultimate meme coin battle platform.",
+  description: "Stake & win before time runs out! The ultimate meme coin battle platform.",
 };
 
 export default function RootLayout({
@@ -43,7 +42,7 @@ export default function RootLayout({
     <html lang="en" className="dark h-full">
       <body
         // Do not modify background color - used for debugging purposes
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full bg-blue-300`}
+        className={`${geistSans.variable} ${geistMono.variable} h-full bg-blue-300 antialiased`}
       >
         <Providers>
           <AppBar />

@@ -1,9 +1,6 @@
 "use client";
 import DominanceRechart from "@/components/DominanceRechart";
-import type {
-  ChartDataPoint,
-  PreparedCoinMeta,
-} from "@/components/DominanceRechart";
+import type { ChartDataPoint, PreparedCoinMeta } from "@/components/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
@@ -11,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ResultViewProps {
   coin: RoundCoin | undefined;
@@ -30,8 +27,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
     timestamp: point.timestamp,
     ...point.shares.reduce(
       (acc, share, index) => {
-        const symbol =
-          mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
+        const symbol = mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
         acc[symbol] = share;
         return acc;
       },
@@ -109,7 +105,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col items-center gap-8 bg-[#23262F] rounded-3xl p-12 shadow-2xl relative w-full"
+            className="relative flex w-full flex-col items-center gap-8 rounded-3xl bg-[#23262F] p-12 shadow-2xl"
             style={{
               minWidth: forceVisible ? "auto" : 480,
               maxWidth: forceVisible ? "none" : 600,
@@ -119,7 +115,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl font-bold focus:outline-none"
+                className="absolute top-4 right-4 font-bold text-3xl text-gray-400 hover:text-white focus:outline-none"
                 aria-label="Close"
                 style={{ zIndex: 3100 }}
               >
@@ -127,41 +123,40 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
               </button>
             )}
             {/* Top: Coin Info */}
-            <div className="flex flex-col items-center gap-6 w-full">
+            <div className="flex w-full flex-col items-center gap-6">
               <div className="relative">
-                <div className="relative w-32 h-32">
+                <div className="relative h-32 w-32">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-900 p-[4px] shadow-[0_0_24px_4px_rgba(255,215,0,0.25)]">
                     <div className="absolute inset-0 rounded-full bg-white p-[2px]">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
-                      <div className="absolute inset-0 rounded-full overflow-hidden">
+                      <div className="absolute inset-0 overflow-hidden rounded-full">
                         <Image
                           src={coin.iconUrl}
                           alt={coin.name}
                           width={128}
                           height={128}
-                          className="rounded-full w-full h-full object-cover border-0"
+                          className="h-full w-full rounded-full border-0 object-cover"
                         />
-                        <div className="absolute left-2 top-2 w-2/3 h-1/4 bg-white/60 rounded-full blur-md rotate-[-20deg]" />
+                        <div className="absolute top-2 left-2 h-1/4 w-2/3 rotate-[-20deg] rounded-full bg-white/60 blur-md" />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="text-4xl font-extrabold text-yellow-400 flex items-center gap-4">
+              <div className="flex items-center gap-4 font-extrabold text-4xl text-yellow-400">
                 {coin.name}
                 <span className="text-2xl text-gray-400">({coin.symbol})</span>
               </div>
             </div>
 
             {/* Bottom: Metadata and Chart */}
-            <div className="w-full flex justify-between items-start gap-8">
+            <div className="flex w-full items-start justify-between gap-8">
               {/* Left: Metadata */}
-              <div className="flex-1 flex flex-col gap-6">
+              <div className="flex flex-1 flex-col gap-6">
                 <div className="text-lg text-white">{coin.description}</div>
-                <div className="flex gap-8 text-white text-xl font-bold">
+                <div className="flex gap-8 font-bold text-white text-xl">
                   <div>
-                    <span className="text-yellow-300">Received Share:</span>{" "}
-                    {coin.share}%
+                    <span className="text-yellow-300">Received Share:</span> {coin.share}%
                   </div>
                   <div>
                     <span className="text-yellow-300">Market Cap:</span> $
@@ -176,9 +171,9 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Telegram"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 transition-colors hover:text-white"
                       >
-                        <Send className="w-5 h-5" />
+                        <Send className="h-5 w-5" />
                       </a>
                     )}
                     {coin.websiteLink && (
@@ -187,9 +182,9 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Website"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 transition-colors hover:text-white"
                       >
-                        <Globe className="w-5 h-5" />
+                        <Globe className="h-5 w-5" />
                       </a>
                     )}
                     {coin.twitterLink && (
@@ -198,33 +193,31 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Twitter"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 transition-colors hover:text-white"
                       >
-                        <Twitter className="w-5 h-5" />
+                        <Twitter className="h-5 w-5" />
                       </a>
                     )}
                   </div>
                   <div className="flex gap-4">
                     <button
                       type="button"
-                      onClick={() =>
-                        router.push(`/trade/${coin.symbol.toLowerCase()}`)
-                      }
-                      className="bg-blue-400 text-white font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-blue-300 transition"
+                      onClick={() => router.push(`/trade/${coin.symbol.toLowerCase()}`)}
+                      className="rounded-lg bg-blue-400 px-4 py-2 font-bold text-sm text-white shadow-lg transition hover:bg-blue-300"
                     >
                       Trade
                     </button>
                     <button
                       type="button"
                       onClick={() => {}}
-                      className="bg-yellow-400 text-[#23262F] font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-yellow-300 transition"
+                      className="rounded-lg bg-yellow-400 px-4 py-2 font-bold text-[#23262F] text-sm shadow-lg transition hover:bg-yellow-300"
                     >
                       Claim ${coin.symbol}
                     </button>
                     <button
                       type="button"
                       onClick={() => {}}
-                      className="bg-red-400 text-white font-bold rounded-lg px-4 py-2 text-sm shadow-lg hover:bg-red-300 transition"
+                      className="rounded-lg bg-red-400 px-4 py-2 font-bold text-sm text-white shadow-lg transition hover:bg-red-300"
                     >
                       Claim $LOSER
                     </button>
@@ -251,7 +244,7 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
               <button
                 type="button"
                 onClick={handleViewMore}
-                className="absolute right-8 bottom-8 bg-yellow-400 text-[#23262F] font-bold rounded-xl px-8 py-3 text-lg shadow-lg hover:bg-yellow-300 transition"
+                className="absolute right-8 bottom-8 rounded-xl bg-yellow-400 px-8 py-3 font-bold text-[#23262F] text-lg shadow-lg transition hover:bg-yellow-300"
                 style={{ zIndex: 3100 }}
               >
                 View More

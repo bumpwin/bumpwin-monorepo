@@ -69,11 +69,7 @@ interface CoinDetailClientProps {
   round_id: string;
 }
 
-export default function CoinDetailClient({
-  coinData,
-  chartData,
-  round_id,
-}: CoinDetailClientProps) {
+export default function CoinDetailClient({ coinData, chartData, round_id }: CoinDetailClientProps) {
   const [activeTab, setActiveTab] = useState<TabType>("transactions");
   const [showMyTransactions, setShowMyTransactions] = useState(false);
 
@@ -91,9 +87,9 @@ export default function CoinDetailClient({
       {/* Main content */}
       <div className="flex-1 overflow-auto p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="relative w-12 h-12 rounded-full overflow-hidden bg-slate-800">
+            <div className="relative h-12 w-12 overflow-hidden rounded-full bg-slate-800">
               <Image
                 src={coinData.logoUrl}
                 alt={coinData.name}
@@ -103,9 +99,9 @@ export default function CoinDetailClient({
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{coinData.name}</h1>
-              <div className="flex items-center gap-3 text-sm text-slate-400">
-                <span className="px-2 py-0.5 bg-slate-800 rounded text-xs font-mono">
+              <h1 className="font-bold text-2xl">{coinData.name}</h1>
+              <div className="flex items-center gap-3 text-slate-400 text-sm">
+                <span className="rounded bg-slate-800 px-2 py-0.5 font-mono text-xs">
                   {coinData.symbol}
                 </span>
                 <span>Round {round_id}</span>
@@ -115,9 +111,7 @@ export default function CoinDetailClient({
           </div>
 
           <div className="text-right">
-            <div className="text-2xl font-bold">
-              ${coinData.price.toFixed(6)}
-            </div>
+            <div className="font-bold text-2xl">${coinData.price.toFixed(6)}</div>
             <div className={`text-sm ${priceChangeColor}`}>
               {coinData.priceChangePercentage24h >= 0 ? "+" : ""}
               {coinData.priceChangePercentage24h.toFixed(2)}% (24h)
@@ -126,35 +120,27 @@ export default function CoinDetailClient({
         </div>
 
         {/* Price stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <div className="text-sm text-slate-400 mb-1">Market Cap</div>
-            <div className="text-lg font-semibold">
-              {formatCurrency(coinData.marketCap)}
-            </div>
+        <div className="mb-6 grid grid-cols-4 gap-4">
+          <div className="rounded-lg bg-slate-800 p-4">
+            <div className="mb-1 text-slate-400 text-sm">Market Cap</div>
+            <div className="font-semibold text-lg">{formatCurrency(coinData.marketCap)}</div>
           </div>
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <div className="text-sm text-slate-400 mb-1">24h Volume</div>
-            <div className="text-lg font-semibold">
-              {formatCurrency(coinData.volume24h)}
-            </div>
+          <div className="rounded-lg bg-slate-800 p-4">
+            <div className="mb-1 text-slate-400 text-sm">24h Volume</div>
+            <div className="font-semibold text-lg">{formatCurrency(coinData.volume24h)}</div>
           </div>
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <div className="text-sm text-slate-400 mb-1">24h High</div>
-            <div className="text-lg font-semibold">
-              ${coinData.high24h.toFixed(6)}
-            </div>
+          <div className="rounded-lg bg-slate-800 p-4">
+            <div className="mb-1 text-slate-400 text-sm">24h High</div>
+            <div className="font-semibold text-lg">${coinData.high24h.toFixed(6)}</div>
           </div>
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <div className="text-sm text-slate-400 mb-1">24h Low</div>
-            <div className="text-lg font-semibold">
-              ${coinData.low24h.toFixed(6)}
-            </div>
+          <div className="rounded-lg bg-slate-800 p-4">
+            <div className="mb-1 text-slate-400 text-sm">24h Low</div>
+            <div className="font-semibold text-lg">${coinData.low24h.toFixed(6)}</div>
           </div>
         </div>
 
         {/* Chart and swap container */}
-        <div className="flex gap-6 h-[500px]">
+        <div className="flex h-[500px] gap-6">
           {/* Chart */}
           <div className="flex-1">
             <LWCChart data={chartData} currentPrice={coinData.price} />
@@ -167,24 +153,24 @@ export default function CoinDetailClient({
         </div>
 
         {/* About section */}
-        <div className="mt-6 bg-slate-800 p-4 rounded-lg mb-6">
-          <h2 className="text-lg font-semibold mb-2">About {coinData.name}</h2>
+        <div className="mt-6 mb-6 rounded-lg bg-slate-800 p-4">
+          <h2 className="mb-2 font-semibold text-lg">About {coinData.name}</h2>
           <p className="text-slate-300">{coinData.description}</p>
         </div>
 
         {/* Tab navigation */}
         <div className="mb-4">
-          <div className="bg-slate-800 rounded-full p-1 flex w-fit">
+          <div className="flex w-fit rounded-full bg-slate-800 p-1">
             <button
               type="button"
-              className={`px-6 py-2 rounded-full text-sm ${activeTab === "transactions" ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white"}`}
+              className={`rounded-full px-6 py-2 text-sm ${activeTab === "transactions" ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white"}`}
               onClick={() => setActiveTab("transactions")}
             >
               Transactions
             </button>
             <button
               type="button"
-              className={`px-6 py-2 rounded-full text-sm ${activeTab === "holders" ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white"}`}
+              className={`rounded-full px-6 py-2 text-sm ${activeTab === "holders" ? "bg-blue-500 text-white" : "text-slate-300 hover:text-white"}`}
               onClick={() => setActiveTab("holders")}
             >
               Holders
@@ -194,24 +180,24 @@ export default function CoinDetailClient({
 
         {/* Tab content */}
         {activeTab === "transactions" && (
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Recent Transactions</h2>
+          <div className="rounded-lg bg-slate-800 p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-semibold text-lg">Recent Transactions</h2>
               <div className="flex items-center">
-                <label className="flex items-center text-sm text-slate-300 mr-6">
+                <label className="mr-6 flex items-center text-slate-300 text-sm">
                   <input
                     type="checkbox"
-                    className="mr-2 h-4 w-4 rounded border-gray-600 text-blue-500 focus:ring-blue-500 bg-slate-700"
+                    className="mr-2 h-4 w-4 rounded border-gray-600 bg-slate-700 text-blue-500 focus:ring-blue-500"
                     checked={showMyTransactions}
                     onChange={(e) => setShowMyTransactions(e.target.checked)}
                   />
                   My transactions
                 </label>
-                <label className="flex items-center text-sm text-slate-300">
+                <label className="flex items-center text-slate-300 text-sm">
                   <span className="mr-2">Size greater than</span>
                   <input
                     type="text"
-                    className="w-16 h-8 bg-slate-700 border-slate-600 rounded px-2 text-white text-xs"
+                    className="h-8 w-16 rounded border-slate-600 bg-slate-700 px-2 text-white text-xs"
                     placeholder="0.0"
                   />
                   <span className="ml-2">SOL</span>
@@ -222,45 +208,31 @@ export default function CoinDetailClient({
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Account
-                    </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Type
-                    </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
+                  <tr className="border-slate-700 border-b">
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Account</th>
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Type</th>
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">
                       SOL Amount
                     </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">
                       Token Amount
                     </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Time
-                    </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Tx Link
-                    </th>
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Time</th>
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Tx Link</th>
                   </tr>
                 </thead>
                 <tbody>
                   {mockTransactions.map((tx) => (
                     <tr
                       key={`tx-${tx.account}-${tx.time}`}
-                      className="border-b border-slate-700 hover:bg-slate-700/30"
+                      className="border-slate-700 border-b hover:bg-slate-700/30"
                     >
-                      <td className="py-3 text-sm text-slate-200 font-mono">
-                        {tx.account}
-                      </td>
-                      <td className="py-3 text-sm text-green-400">{tx.type}</td>
-                      <td className="py-3 text-sm text-slate-200">
-                        {tx.solAmount}
-                      </td>
-                      <td className="py-3 text-sm text-slate-200">
-                        {tx.tokenAmount}K
-                      </td>
-                      <td className="py-3 text-sm text-slate-200">{tx.time}</td>
-                      <td className="py-3 text-sm text-blue-400">
+                      <td className="py-3 font-mono text-slate-200 text-sm">{tx.account}</td>
+                      <td className="py-3 text-green-400 text-sm">{tx.type}</td>
+                      <td className="py-3 text-slate-200 text-sm">{tx.solAmount}</td>
+                      <td className="py-3 text-slate-200 text-sm">{tx.tokenAmount}K</td>
+                      <td className="py-3 text-slate-200 text-sm">{tx.time}</td>
+                      <td className="py-3 text-blue-400 text-sm">
                         <button type="button" className="hover:text-blue-300">
                           <ExternalLink size={16} />
                         </button>
@@ -274,49 +246,37 @@ export default function CoinDetailClient({
         )}
 
         {activeTab === "holders" && (
-          <div className="bg-slate-800 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Token Holders</h2>
+          <div className="rounded-lg bg-slate-800 p-4">
+            <h2 className="mb-4 font-semibold text-lg">Token Holders</h2>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Rank
-                    </th>
-                    <th className="text-left text-sm font-normal text-slate-400 py-2">
-                      Account
-                    </th>
-                    <th className="text-right text-sm font-normal text-slate-400 py-2">
-                      Balance
-                    </th>
-                    <th className="text-right text-sm font-normal text-slate-400 py-2">
+                  <tr className="border-slate-700 border-b">
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Rank</th>
+                    <th className="py-2 text-left font-normal text-slate-400 text-sm">Account</th>
+                    <th className="py-2 text-right font-normal text-slate-400 text-sm">Balance</th>
+                    <th className="py-2 text-right font-normal text-slate-400 text-sm">
                       Percentage
                     </th>
-                    <th className="text-right text-sm font-normal text-slate-400 py-2">
-                      Value
-                    </th>
+                    <th className="py-2 text-right font-normal text-slate-400 text-sm">Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   {mockHolders.map((holder, index) => (
                     <tr
                       key={`holder-${holder.account}`}
-                      className="border-b border-slate-700 hover:bg-slate-700/30"
+                      className="border-slate-700 border-b hover:bg-slate-700/30"
                     >
-                      <td className="py-3 text-sm text-slate-400">
-                        #{index + 1}
-                      </td>
-                      <td className="py-3 text-sm text-slate-200 font-mono">
-                        {holder.account}
-                      </td>
-                      <td className="py-3 text-sm text-slate-200 text-right">
+                      <td className="py-3 text-slate-400 text-sm">#{index + 1}</td>
+                      <td className="py-3 font-mono text-slate-200 text-sm">{holder.account}</td>
+                      <td className="py-3 text-right text-slate-200 text-sm">
                         {holder.balance.toLocaleString()}
                       </td>
-                      <td className="py-3 text-sm text-slate-200 text-right">
+                      <td className="py-3 text-right text-slate-200 text-sm">
                         {holder.percentage}%
                       </td>
-                      <td className="py-3 text-sm text-slate-200 text-right">
+                      <td className="py-3 text-right text-slate-200 text-sm">
                         ${holder.value.toLocaleString()}
                       </td>
                     </tr>

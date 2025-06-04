@@ -6,7 +6,6 @@ import { config } from "@/config";
 import { supabase } from "@/services/supabase";
 import { logger } from "@/utils/logger";
 import { SupabaseRepository } from "@workspace/supabase";
-import type { InsertChatMessageRequest } from "@workspace/supabase";
 import { type Result, err, ok } from "neverthrow";
 
 // 型定義
@@ -70,9 +69,9 @@ const createMessageGenerator = (messages: Messages): MessageGenerator => ({
   },
 
   generateAddress: () => {
-    const hex = Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16),
-    ).join("");
+    const hex = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(
+      "",
+    );
     return `0x${hex}`;
   },
 });
@@ -86,9 +85,7 @@ const getNextEventTime = (): number => {
 // データベース操作
 const dbRepository = new SupabaseRepository(supabase);
 
-const insertChatMessage = async (
-  message: ChatMessage,
-): Promise<Result<void, ErrorType>> => {
+const insertChatMessage = async (message: ChatMessage): Promise<Result<void, ErrorType>> => {
   const insertResult = await dbRepository.insertChatMessage(message);
 
   if (insertResult.isOk()) {
@@ -96,12 +93,7 @@ const insertChatMessage = async (
     return ok(undefined);
   }
 
-  logger.error("Failed to save message", {
-    error: {
-      message: insertResult.error.message,
-      code: insertResult.error.code,
-    },
-  });
+  logger.error(`Failed to save message: ${insertResult.error.message}`);
   return err(ERRORS.DB_INSERT);
 };
 
@@ -121,9 +113,7 @@ const generateAndSaveMessage = async (
 };
 
 // メイン処理
-export const startChatMessageInsertion = async (): Promise<
-  Result<void, ErrorType>
-> => {
+export const startChatMessageInsertion = async (): Promise<Result<void, ErrorType>> => {
   const messagesResult = loadMessages();
   if (messagesResult.isErr()) {
     return err(messagesResult.error);

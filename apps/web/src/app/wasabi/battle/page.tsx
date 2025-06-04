@@ -9,24 +9,16 @@ import RoundCoinTable from "@/components/RoundCoinTable";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
-import {
-  prepareCoinsMetadata,
-  prepareMultiCoinChartData,
-} from "@/utils/chartDataPreparation";
+import { prepareCoinsMetadata, prepareMultiCoinChartData } from "@/utils/chartDataPreparation";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(
-    undefined,
-  );
+  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(undefined);
 
   // データ準備ロジックをユーティリティ関数で実装
   const relevantCoins = prepareCoinsMetadata(mockCoinMetadata as CoinMeta[]);
-  const rechartPoints = prepareMultiCoinChartData(
-    mockDominanceChartData,
-    relevantCoins,
-  );
+  const rechartPoints = prepareMultiCoinChartData(mockDominanceChartData, relevantCoins);
 
   // 単一コイン用のデータ
   // const firstCoinFromMeta = relevantCoins[0];
@@ -40,7 +32,7 @@ export default function Home() {
         {/* Main content area */}
         <main className="flex-1 overflow-y-auto pb-6">
           {/* Hero Banner Section - さらに横長のアスペクト比に変更 */}
-          <div className="w-full overflow-hidden relative aspect-[48/7] mb-4">
+          <div className="relative mb-4 aspect-[48/7] w-full overflow-hidden">
             <Image
               src="/hero.png"
               alt="BUMP.WIN - Meme Coin Battle Royale"
@@ -63,8 +55,8 @@ export default function Home() {
           </div> */}
 
           {/* New DominanceRechart Section */}
-          <div className="px-4 mb-8">
-            <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+          <div className="mb-8 px-4">
+            <div className="rounded-lg bg-white/5 p-4 shadow-lg backdrop-blur-sm">
               <DominanceRechart
                 points={rechartPoints}
                 coins={relevantCoins}
@@ -86,16 +78,13 @@ export default function Home() {
           </div> */}
 
           {/* Round Coin Table Section */}
-          <div className="px-4 mb-8">
-            <div className="flex flex-col lg:flex-row gap-6 items-start w-full">
-              <div className="flex-1 min-w-0 flex flex-col justify-start">
-                <RoundCoinTable
-                  onSelectCoin={setSelectedCoin}
-                  selectedCoinId={selectedCoin?.id}
-                />
+          <div className="mb-8 px-4">
+            <div className="flex w-full flex-col items-start gap-6 lg:flex-row">
+              <div className="flex min-w-0 flex-1 flex-col justify-start">
+                <RoundCoinTable onSelectCoin={setSelectedCoin} selectedCoinId={selectedCoin?.id} />
               </div>
-              <div className="w-full lg:w-[340px] flex-shrink-0 flex items-start lg:items-end">
-                <div className="w-full self-start mt-12">
+              <div className="flex w-full flex-shrink-0 items-start lg:w-[340px] lg:items-end">
+                <div className="mt-12 w-full self-start">
                   <SwapUI coin={selectedCoin} />
                 </div>
               </div>

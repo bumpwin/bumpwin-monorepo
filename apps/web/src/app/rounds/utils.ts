@@ -1,20 +1,14 @@
 import { DEFAULT_ICON } from "@/app/rounds/constants";
 import type { ChartCoin, ChartPoint, CoinMetadata } from "@/app/rounds/types";
 
-export function getSafeIcon(
-  coinMetadata: CoinMetadata[] | undefined,
-  index: number,
-): string {
+export function getSafeIcon(coinMetadata: CoinMetadata[] | undefined, index: number): string {
   if (!coinMetadata || !coinMetadata[index]) {
     return DEFAULT_ICON;
   }
   return coinMetadata[index].icon || DEFAULT_ICON;
 }
 
-export function getSafeSymbol(
-  coinMetadata: CoinMetadata[] | undefined,
-  index: number,
-): string {
+export function getSafeSymbol(coinMetadata: CoinMetadata[] | undefined, index: number): string {
   if (!coinMetadata || !coinMetadata[index]) {
     return "COIN";
   }
@@ -42,23 +36,17 @@ export function getChartPoints(
   const dataSlice =
     endIndex > startIndex
       ? mockDominanceChartData.slice(startIndex, endIndex)
-      : [
-          ...mockDominanceChartData.slice(startIndex),
-          ...mockDominanceChartData.slice(0, endIndex),
-        ];
+      : [...mockDominanceChartData.slice(startIndex), ...mockDominanceChartData.slice(0, endIndex)];
 
   return dataSlice.map((point) => ({
     timestamp: point.timestamp,
-    ...(point.shares || []).reduce(
-      (acc: Record<string, number>, share: number, index: number) => {
-        const symbol = mockCoinMetadata?.[index]
-          ? mockCoinMetadata[index].symbol.toLowerCase()
-          : `coin${index}`;
+    ...(point.shares || []).reduce((acc: Record<string, number>, share: number, index: number) => {
+      const symbol = mockCoinMetadata?.[index]
+        ? mockCoinMetadata[index].symbol.toLowerCase()
+        : `coin${index}`;
 
-        return Object.assign(acc, { [symbol]: share });
-      },
-      {},
-    ),
+      return Object.assign(acc, { [symbol]: share });
+    }, {}),
   }));
 }
 

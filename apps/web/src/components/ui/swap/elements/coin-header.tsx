@@ -21,20 +21,11 @@ export const CoinHeader = ({ coin, variant = "default" }: CoinHeaderProps) => {
 
   return (
     <div className="flex items-center gap-3">
-      <div
-        className={`relative w-12 h-12 rounded-xl overflow-hidden ${containerStyles}`}
-      >
-        <Image
-          src={coin.iconUrl}
-          alt={coin.name}
-          fill
-          className="object-cover"
-        />
+      <div className={`relative h-12 w-12 overflow-hidden rounded-xl ${containerStyles}`}>
+        <Image src={coin.iconUrl} alt={coin.name} fill className="object-cover" />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className={`font-bold text-xl truncate ${textStyles}`}>
-          {coin.name}
-        </div>
+      <div className="min-w-0 flex-1">
+        <div className={`truncate font-bold text-xl ${textStyles}`}>{coin.name}</div>
       </div>
     </div>
   );

@@ -15,14 +15,13 @@ interface ChatHistoryRecord {
   created_at: string;
   sender_address: string;
   message_text: string;
-  [key: string]: any; // For any additional fields
+  [key: string]: unknown; // For any additional fields
 }
 
 /**
  * Type for the new chat message payload from real-time updates
  */
-export type ChatMessagePayload =
-  RealtimePostgresChangesPayload<ChatHistoryRecord>;
+export type ChatMessagePayload = RealtimePostgresChangesPayload<ChatHistoryRecord>;
 
 /**
  * Callback function type for chat message events

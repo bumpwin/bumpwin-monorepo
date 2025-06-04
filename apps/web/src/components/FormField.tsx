@@ -27,11 +27,11 @@ export const FormField = ({
   return (
     <div className={cn("space-y-2", disabled && "opacity-70", className)}>
       <div className="flex items-center">
-        <Label htmlFor={id} className="text-white font-normal">
+        <Label htmlFor={id} className="font-normal text-white">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {info && (
-          <div className="ml-1 text-gray-400 cursor-help">
+          <div className="ml-1 cursor-help text-gray-400">
             <Info className="h-4 w-4" />
           </div>
         )}

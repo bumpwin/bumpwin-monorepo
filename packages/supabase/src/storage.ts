@@ -31,24 +31,18 @@ export async function uploadAvatar(
     const buffer = new Uint8Array(arrayBuffer);
 
     // Upload file
-    const { error: uploadError } = await client.storage
-      .from("avatars")
-      .upload(filePath, buffer, {
-        contentType: file.type,
-        upsert: true,
-      });
+    const { error: uploadError } = await client.storage.from("avatars").upload(filePath, buffer, {
+      contentType: file.type,
+      upsert: true,
+    });
 
     if (uploadError) {
       logger.error("Failed to upload avatar", { error: uploadError });
-      return err(
-        createApiError("database", "Failed to upload avatar", uploadError),
-      );
+      return err(createApiError("database", "Failed to upload avatar", uploadError));
     }
 
     // Get public URL
-    const { data: urlData } = client.storage
-      .from("avatars")
-      .getPublicUrl(filePath);
+    const { data: urlData } = client.storage.from("avatars").getPublicUrl(filePath);
 
     return ok(urlData.publicUrl);
   } catch (error) {

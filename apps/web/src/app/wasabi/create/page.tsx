@@ -5,11 +5,7 @@ import { FormField } from "@/components/FormField";
 import { ImageUpload } from "@/components/ImageUpload";
 import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
 import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
-import {
-  useCurrentAccount,
-  useSignAndExecuteTransaction,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { logger } from "@workspace/logger";
 import { Button } from "@workspace/shadcn/components/button";
 import { Card, CardContent } from "@workspace/shadcn/components/card";
@@ -34,9 +30,7 @@ export default function CreateCoinPage() {
   const suiClient = useSuiClient();
   const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [phase, setPhase] = useState<Phase>(
-    account ? "PUBLISH_PACKAGE" : "CONNECT_WALLET",
-  );
+  const [phase, setPhase] = useState<Phase>(account ? "PUBLISH_PACKAGE" : "CONNECT_WALLET");
   const [packageData, setPackageData] = useState<{
     packageId: string;
     coinMetadataID: string;
@@ -61,9 +55,7 @@ export default function CreateCoinPage() {
     setPhase("PUBLISH_PACKAGE");
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -123,10 +115,7 @@ export default function CreateCoinPage() {
         suiClient,
         account.address,
         async (transactionBlock: Uint8Array) => {
-          return await signTransactionAndExecute(
-            transactionBlock,
-            signAndExecuteTransaction,
-          );
+          return await signTransactionAndExecute(transactionBlock, signAndExecuteTransaction);
         },
       );
 
@@ -193,10 +182,7 @@ export default function CreateCoinPage() {
           iconUrl: iconUrl || undefined,
         },
         async (transactionBlock: Uint8Array) => {
-          return await signTransactionAndExecute(
-            transactionBlock,
-            signAndExecuteTransaction,
-          );
+          return await signTransactionAndExecute(transactionBlock, signAndExecuteTransaction);
         },
       );
 
@@ -242,7 +228,7 @@ export default function CreateCoinPage() {
         return (
           <Button
             onClick={handlePublishPackage}
-            className="w-full h-12 bg-[#00c8ff] hover:bg-[#00c8ff]/90 text-white rounded-md font-medium text-base"
+            className="h-12 w-full rounded-md bg-[#00c8ff] font-medium text-base text-white hover:bg-[#00c8ff]/90"
             disabled={isProcessing}
           >
             {isProcessing ? "Deploying package..." : "Deploy Package"}
@@ -252,7 +238,7 @@ export default function CreateCoinPage() {
         return (
           <Button
             type="submit"
-            className="w-full h-12 bg-[#00c8ff] hover:bg-[#00c8ff]/90 text-white rounded-md font-medium text-base"
+            className="h-12 w-full rounded-md bg-[#00c8ff] font-medium text-base text-white hover:bg-[#00c8ff]/90"
             disabled={isProcessing}
           >
             {isProcessing ? "Creating coin..." : "Create Coin"}
@@ -261,7 +247,7 @@ export default function CreateCoinPage() {
       case "COMPLETED":
         return (
           <Button
-            className="w-full h-12 bg-green-500 hover:bg-green-600 text-white rounded-md font-medium text-base"
+            className="h-12 w-full rounded-md bg-green-500 font-medium text-base text-white hover:bg-green-600"
             disabled={true}
           >
             Creation successful! Redirecting...
@@ -273,66 +259,46 @@ export default function CreateCoinPage() {
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
       <div className="flex flex-1">
-        <main className="flex-1 overflow-y-auto py-12 px-6 flex justify-center">
+        <main className="flex flex-1 justify-center overflow-y-auto px-6 py-12">
           <div className="w-full max-w-2xl">
-            <h1 className="text-3xl font-bold text-white mb-8 text-center">
-              Create Coin
-            </h1>
+            <h1 className="mb-8 text-center font-bold text-3xl text-white">Create Coin</h1>
 
-            <Card className="w-full bg-[#141d38] border-[#2c2d3a] rounded-3xl shadow-xl overflow-hidden">
+            <Card className="w-full overflow-hidden rounded-3xl border-[#2c2d3a] bg-[#141d38] shadow-xl">
               <CardContent className="p-8">
                 <form onSubmit={handleCreateCoin} className="space-y-8">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    <div className="md:w-2/3 space-y-6">
-                      <FormField
-                        id="name"
-                        label="Name"
-                        required
-                        disabled={areFieldsLocked}
-                      >
+                  <div className="flex flex-col gap-8 md:flex-row">
+                    <div className="space-y-6 md:w-2/3">
+                      <FormField id="name" label="Name" required disabled={areFieldsLocked}>
                         <Input
                           id="name"
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
                           placeholder="Sui"
-                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          className="h-12 rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                           required
                           disabled={areFieldsLocked}
                         />
-                        <p className="text-xs text-gray-400 mt-1">
-                          Enter token name
-                        </p>
+                        <p className="mt-1 text-gray-400 text-xs">Enter token name</p>
                       </FormField>
 
-                      <FormField
-                        id="symbol"
-                        label="Symbol"
-                        required
-                        disabled={areFieldsLocked}
-                      >
+                      <FormField id="symbol" label="Symbol" required disabled={areFieldsLocked}>
                         <Input
                           id="symbol"
                           name="symbol"
                           value={formData.symbol}
                           onChange={handleChange}
                           placeholder="SUI"
-                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          className="h-12 rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                           required
                           disabled={areFieldsLocked}
                         />
-                        <p className="text-xs text-gray-400 mt-1">
-                          Enter ticker
-                        </p>
+                        <p className="mt-1 text-gray-400 text-xs">Enter ticker</p>
                       </FormField>
                     </div>
 
                     <div className="md:w-1/3">
-                      <FormField
-                        id="image"
-                        label="Icon"
-                        disabled={areFieldsLocked}
-                      >
+                      <FormField id="image" label="Icon" disabled={areFieldsLocked}>
                         <ImageUpload
                           preview={preview}
                           isDragging={isDragging}
@@ -358,48 +324,35 @@ export default function CreateCoinPage() {
                       value={formData.description}
                       onChange={handleChange}
                       placeholder="Enter a description for your coin"
-                      className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 min-h-[120px] rounded-md"
+                      className="min-h-[120px] rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                       required
                       disabled={areFieldsLocked}
                     />
-                    <p className="text-xs text-gray-400 mt-1">
-                      Enter description
-                    </p>
+                    <p className="mt-1 text-gray-400 text-xs">Enter description</p>
                   </FormField>
 
-                  <CollapsibleSection
-                    title="Socials & more options"
-                    defaultOpen={false}
-                  >
-                    <div className="space-y-6 mt-4">
-                      <FormField
-                        id="telegramLink"
-                        label="Telegram link"
-                        disabled={areFieldsLocked}
-                      >
+                  <CollapsibleSection title="Socials & more options" defaultOpen={false}>
+                    <div className="mt-4 space-y-6">
+                      <FormField id="telegramLink" label="Telegram link" disabled={areFieldsLocked}>
                         <Input
                           id="telegramLink"
                           name="telegramLink"
                           value={formData.telegramLink}
                           onChange={handleChange}
                           placeholder="https://t.me/yourgroup"
-                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          className="h-12 rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                           disabled={areFieldsLocked}
                         />
                       </FormField>
 
-                      <FormField
-                        id="websiteLink"
-                        label="Website link"
-                        disabled={areFieldsLocked}
-                      >
+                      <FormField id="websiteLink" label="Website link" disabled={areFieldsLocked}>
                         <Input
                           id="websiteLink"
                           name="websiteLink"
                           value={formData.websiteLink}
                           onChange={handleChange}
                           placeholder="https://yourwebsite.com"
-                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          className="h-12 rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                           disabled={areFieldsLocked}
                         />
                       </FormField>
@@ -415,7 +368,7 @@ export default function CreateCoinPage() {
                           value={formData.twitterLink}
                           onChange={handleChange}
                           placeholder="https://twitter.com/youraccount"
-                          className="bg-[#10172d] border-[#2c2d3a] text-white placeholder-gray-400 rounded-md h-12"
+                          className="h-12 rounded-md border-[#2c2d3a] bg-[#10172d] text-white placeholder-gray-400"
                           disabled={areFieldsLocked}
                         />
                       </FormField>
@@ -423,7 +376,7 @@ export default function CreateCoinPage() {
                   </CollapsibleSection>
 
                   <div className="pt-6">
-                    <p className="text-yellow-500 text-sm mb-6 w-full">
+                    <p className="mb-6 w-full text-sm text-yellow-500">
                       Note: token data can&apos;t be changed after creation
                     </p>
 
@@ -432,23 +385,20 @@ export default function CreateCoinPage() {
 
                       {phase === "CONNECT_WALLET" && (
                         <div className="text-center">
-                          <p className="text-gray-400 text-sm mb-2">
-                            Wallet connection required
-                          </p>
+                          <p className="mb-2 text-gray-400 text-sm">Wallet connection required</p>
                         </div>
                       )}
                       {phase === "PUBLISH_PACKAGE" && (
                         <div className="text-center">
-                          <p className="text-gray-400 text-sm mb-2">
+                          <p className="mb-2 text-gray-400 text-sm">
                             Package must be deployed first
                           </p>
                         </div>
                       )}
                       {phase === "CREATE_COIN" && (
                         <div className="text-center">
-                          <p className="text-blue-400 text-sm mb-2">
-                            Package deployed successfully! Fill in details and
-                            create your coin.
+                          <p className="mb-2 text-blue-400 text-sm">
+                            Package deployed successfully! Fill in details and create your coin.
                           </p>
                         </div>
                       )}

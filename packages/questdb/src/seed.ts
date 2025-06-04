@@ -1,6 +1,5 @@
 import { insertCoins, insertDominanceBatch } from "./insert";
-import type { Coin } from "./models/coin";
-import type { Dominance } from "./models/dominance";
+import type { Coin, Dominance } from "./models";
 
 // サンプルデータ生成用のヘルパー関数
 function generateSampleDominance(timestamp: Date): Dominance[] {

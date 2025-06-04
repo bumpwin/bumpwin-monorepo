@@ -5,11 +5,7 @@ import { chatApi } from "@/lib/api/chat";
 import type { ChatMessage } from "@/types/chat";
 import { convertToMessage } from "@/utils/convert";
 import { supabase } from "@/utils/supabaseClient";
-import {
-  useCurrentAccount,
-  useSignAndExecuteTransaction,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { formatAddress } from "@mysten/sui/utils";
 import { Input } from "@workspace/shadcn/components/input";
 import { sendChatMessage } from "@workspace/sui/src/movecall";
@@ -96,14 +92,8 @@ export default function TwitchStyleChatPanel() {
         },
         (err) => {
           console.error("Failed to fetch chat messages:", err);
-          if (
-            err.message.includes(
-              "Supabase environment variables are not configured",
-            )
-          ) {
-            setError(
-              "Chat service is not properly configured. Please contact the administrator.",
-            );
+          if (err.message.includes("Supabase environment variables are not configured")) {
+            setError("Chat service is not properly configured. Please contact the administrator.");
           } else {
             setError("Failed to load chat messages. Please try again later.");
           }
@@ -220,7 +210,7 @@ export default function TwitchStyleChatPanel() {
           toast.error(
             <div>
               Insufficient SUI balance
-              <div className="mt-1 text-sm text-gray-300">
+              <div className="mt-1 text-gray-300 text-sm">
                 You need more SUI to pay for transaction fees
               </div>
             </div>,
@@ -249,7 +239,7 @@ export default function TwitchStyleChatPanel() {
         return (
           <span
             key={`emoji-${index}-${part.length}`}
-            className="text-xl inline-block animate-pulse"
+            className="inline-block animate-pulse text-xl"
           >
             {part}
           </span>
@@ -260,12 +250,12 @@ export default function TwitchStyleChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#0e0e10] rounded-lg overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-[#0e0e10]">
       {/* Chat header */}
-      <div className="flex-shrink-0 flex justify-between items-center px-4 py-3 bg-[#18181b] border-b border-[#2a2a2d]">
+      <div className="flex flex-shrink-0 items-center justify-between border-[#2a2a2d] border-b bg-[#18181b] px-4 py-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-white" />
-          <h2 className="font-bold text-white text-lg">Chat Room</h2>
+          <h2 className="font-bold text-lg text-white">Chat Room</h2>
         </div>
       </div>
 
@@ -273,50 +263,43 @@ export default function TwitchStyleChatPanel() {
         {/* Message list - scrollable area */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 min-h-0 overflow-y-auto px-2 py-1 space-y-1 bg-[#0e0e10] scroll-smooth"
+          className="min-h-0 flex-1 space-y-1 overflow-y-auto scroll-smooth bg-[#0e0e10] px-2 py-1"
         >
           {loading ? (
-            <div className="flex flex-col items-center justify-center h-full gap-2">
+            <div className="flex h-full flex-col items-center justify-center gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-[#9147ff]" />
               <p className="text-gray-400 text-sm">Loading messages...</p>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full p-4 rounded-lg bg-red-900/20 border border-red-800">
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-800 bg-red-900/20 p-4">
               <p className="text-red-400 text-sm">{error}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="mt-2 px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded-md"
+                className="mt-2 rounded-md bg-red-800 px-3 py-1 text-white text-xs hover:bg-red-700"
               >
                 Reload
               </button>
             </div>
           ) : chatMessages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <div className="p-5 rounded-full bg-[#9147ff]/20 mb-3">
+            <div className="flex h-full flex-col items-center justify-center">
+              <div className="mb-3 rounded-full bg-[#9147ff]/20 p-5">
                 <MessageSquare className="h-8 w-8 text-[#9147ff]" />
               </div>
-              <p className="text-gray-300 text-sm font-medium">
-                No messages yet
-              </p>
-              <p className="text-gray-500 text-xs mt-1">
-                Send the first message!
-              </p>
+              <p className="font-medium text-gray-300 text-sm">No messages yet</p>
+              <p className="mt-1 text-gray-500 text-xs">Send the first message!</p>
             </div>
           ) : (
             <>
               <div className="py-2 text-center">
-                <span className="text-xs bg-[#18181b] text-gray-400 px-2 py-1 rounded-full">
-                  <Clock className="inline-block h-3 w-3 mr-1" />
+                <span className="rounded-full bg-[#18181b] px-2 py-1 text-gray-400 text-xs">
+                  <Clock className="mr-1 inline-block h-3 w-3" />
                   Chat History
                 </span>
               </div>
               {chatMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className="py-1 group hover:bg-[#18181b]/30 px-1 rounded"
-                >
-                  <div className="text-sm break-words">
+                <div key={msg.id} className="group rounded px-1 py-1 hover:bg-[#18181b]/30">
+                  <div className="break-words text-sm">
                     <span className="break-words">
                       <span>{getEmojiFromUserId(msg.userId)} </span>
                       <span
@@ -327,9 +310,7 @@ export default function TwitchStyleChatPanel() {
                       >
                         {formatAddress(msg.userId)}
                       </span>
-                      <span className="text-gray-200">
-                        : {renderWithEmoji(msg.message)}
-                      </span>
+                      <span className="text-gray-200">: {renderWithEmoji(msg.message)}</span>
                     </span>
                   </div>
                 </div>
@@ -340,7 +321,7 @@ export default function TwitchStyleChatPanel() {
         </div>
 
         {/* Chat input area - fixed at bottom */}
-        <div className="flex-shrink-0 border-t border-[#2a2a2d] p-3 bg-[#18181b]">
+        <div className="flex-shrink-0 border-[#2a2a2d] border-t bg-[#18181b] p-3">
           <div className="relative">
             <Input
               value={message}
@@ -353,21 +334,18 @@ export default function TwitchStyleChatPanel() {
                     ? "Send a message for 0.000001 SUI"
                     : "Type your message"
               }
-              className="bg-[#0e0e10] border border-[#2a2a2d] hover:border-[#9147ff] focus:border-[#9147ff] pl-4 pr-14 py-3 w-full text-white rounded-md shadow-inner transition-colors"
+              className="w-full rounded-md border border-[#2a2a2d] bg-[#0e0e10] py-3 pr-14 pl-4 text-white shadow-inner transition-colors hover:border-[#9147ff] focus:border-[#9147ff]"
               disabled={loading || isSending || !account}
             />
             <button
               type="button"
               onClick={handleSendMessage}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-1.5
-                  ${
-                    !loading && !isSending && message.trim() !== "" && account
-                      ? "bg-[#9147ff] text-white hover:bg-[#772ce8]"
-                      : "bg-[#3a3a3d] text-gray-400"
-                  } transition-colors disabled:opacity-50`}
-              disabled={
-                loading || isSending || message.trim() === "" || !account
-              }
+              className={`-translate-y-1/2 absolute top-1/2 right-3 transform rounded-full p-1.5 ${
+                !loading && !isSending && message.trim() !== "" && account
+                  ? "bg-[#9147ff] text-white hover:bg-[#772ce8]"
+                  : "bg-[#3a3a3d] text-gray-400"
+              } transition-colors disabled:opacity-50`}
+              disabled={loading || isSending || message.trim() === "" || !account}
             >
               {isSending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -378,9 +356,7 @@ export default function TwitchStyleChatPanel() {
           </div>
           {!account && (
             <div className="mt-2 text-center">
-              <span className="text-xs text-[#efeff1]">
-                Connect your wallet to chat
-              </span>
+              <span className="text-[#efeff1] text-xs">Connect your wallet to chat</span>
             </div>
           )}
         </div>

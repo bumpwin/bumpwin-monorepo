@@ -17,15 +17,14 @@ const SharrowStatsBar = ({
 }: SharrowStatsBarProps) => {
   return (
     <div
-      className={`w-full flex items-center justify-center gap-4 text-base sm:text-lg font-semibold text-white bg-black/40 rounded-lg px-3 py-1.5 shadow-sm ${className}`}
+      className={`flex w-full items-center justify-center gap-4 rounded-lg bg-black/40 px-3 py-1.5 font-semibold text-base text-white shadow-sm sm:text-lg ${className}`}
       style={{ letterSpacing: "0.01em" }}
     >
       <span className="flex items-center gap-1">
         🏁 <span>Round</span> <span className="font-bold">{round}</span>
       </span>
       <span className="flex items-center gap-1">
-        🪙 <span>Total MCap</span>{" "}
-        <span className="font-bold">{marketCap}</span>
+        🪙 <span>Total MCap</span> <span className="font-bold">{marketCap}</span>
       </span>
       <span className="flex items-center gap-1">
         📊 <span>Vol.</span> <span className="font-bold">{volume}</span>

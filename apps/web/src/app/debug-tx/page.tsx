@@ -65,22 +65,22 @@ const DebugTxPage = () => {
   if (!currentAccount) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Please connect your wallet</h1>
+        <h1 className="mb-6 font-bold text-2xl">Please connect your wallet</h1>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Transaction Debugger</h1>
+      <h1 className="mb-6 font-bold text-2xl">Transaction Debugger</h1>
 
       <div className="space-y-8">
         <div className="rounded-lg bg-muted p-6">
-          <h2 className="text-xl font-semibold mb-4">Mint WSUI</h2>
+          <h2 className="mb-4 font-semibold text-xl">Mint WSUI</h2>
           <div className="flex gap-4">
             <button
               type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
               onClick={() => handleTransaction(createMintWSUITransaction, true)}
               disabled={isProcessing}
             >
@@ -89,10 +89,8 @@ const DebugTxPage = () => {
 
             <button
               type="button"
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              onClick={() =>
-                handleTransaction(createMintWSUITransaction, false)
-              }
+              className="rounded-lg bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600 disabled:opacity-50"
+              onClick={() => handleTransaction(createMintWSUITransaction, false)}
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Execute"}
@@ -101,14 +99,12 @@ const DebugTxPage = () => {
         </div>
 
         <div className="rounded-lg bg-muted p-6">
-          <h2 className="text-xl font-semibold mb-4">Increment Counter</h2>
+          <h2 className="mb-4 font-semibold text-xl">Increment Counter</h2>
           <div className="flex gap-4">
             <button
               type="button"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-              onClick={() =>
-                handleTransaction(createIncrementCounterTransaction, true)
-              }
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+              onClick={() => handleTransaction(createIncrementCounterTransaction, true)}
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Dry Run"}
@@ -116,10 +112,8 @@ const DebugTxPage = () => {
 
             <button
               type="button"
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
-              onClick={() =>
-                handleTransaction(createIncrementCounterTransaction, false)
-              }
+              className="rounded-lg bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600 disabled:opacity-50"
+              onClick={() => handleTransaction(createIncrementCounterTransaction, false)}
               disabled={isProcessing}
             >
               {isProcessing ? "Processing..." : "Execute"}
@@ -128,21 +122,17 @@ const DebugTxPage = () => {
         </div>
 
         <div className="rounded-lg bg-muted p-6">
-          <h2 className="text-xl font-semibold mb-4">Swap Champion</h2>
+          <h2 className="mb-4 font-semibold text-xl">Swap Champion</h2>
           <div className="flex flex-col gap-4">
             <div className="flex gap-4">
               <input
                 type="number"
                 placeholder="Amount"
-                className="px-4 py-2 border rounded-lg"
+                className="rounded-lg border px-4 py-2"
                 defaultValue={1}
                 id="swapAmount"
               />
-              <select
-                className="px-4 py-2 border rounded-lg"
-                id="swapDirection"
-                defaultValue="buy"
-              >
+              <select className="rounded-lg border px-4 py-2" id="swapDirection" defaultValue="buy">
                 <option value="buy">Buy</option>
                 <option value="sell">Sell</option>
               </select>
@@ -150,20 +140,15 @@ const DebugTxPage = () => {
             <div className="flex gap-4">
               <button
                 type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+                className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
                 onClick={() => {
-                  const amountInput = document.getElementById(
-                    "swapAmount",
-                  ) as HTMLInputElement;
+                  const amountInput = document.getElementById("swapAmount") as HTMLInputElement;
                   const directionSelect = document.getElementById(
                     "swapDirection",
                   ) as HTMLSelectElement;
                   const amount = Number(amountInput?.value || 1);
                   const isBuy = directionSelect?.value === "buy";
-                  handleTransaction(
-                    () => createSwapChampTransaction(amount, isBuy),
-                    true,
-                  );
+                  handleTransaction(() => createSwapChampTransaction(amount, isBuy), true);
                 }}
                 disabled={isProcessing}
               >
@@ -172,20 +157,15 @@ const DebugTxPage = () => {
 
               <button
                 type="button"
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
+                className="rounded-lg bg-green-500 px-4 py-2 text-white transition-colors hover:bg-green-600 disabled:opacity-50"
                 onClick={() => {
-                  const amountInput = document.getElementById(
-                    "swapAmount",
-                  ) as HTMLInputElement;
+                  const amountInput = document.getElementById("swapAmount") as HTMLInputElement;
                   const directionSelect = document.getElementById(
                     "swapDirection",
                   ) as HTMLSelectElement;
                   const amount = Number(amountInput?.value || 1);
                   const isBuy = directionSelect?.value === "buy";
-                  handleTransaction(
-                    () => createSwapChampTransaction(amount, isBuy),
-                    false,
-                  );
+                  handleTransaction(() => createSwapChampTransaction(amount, isBuy), false);
                 }}
                 disabled={isProcessing}
               >

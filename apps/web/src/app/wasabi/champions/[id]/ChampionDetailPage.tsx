@@ -5,15 +5,8 @@ import { ChartTitle } from "@/components/ChartTitle";
 import SwapUI from "@/components/ui/swap/core/SwapUI";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@workspace/shadcn/components/card";
-import {
-  LWCChart,
-  type OHLCData,
-} from "@workspace/shadcn/components/chart/lwc-chart";
+import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
+import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,9 +52,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
 
   const fallbackData: OHLCData[] = [];
   const currentPrice =
-    priceData && priceData.length > 0
-      ? (priceData[priceData.length - 1]?.close ?? 0)
-      : 0;
+    priceData && priceData.length > 0 ? (priceData[priceData.length - 1]?.close ?? 0) : 0;
 
   // champion coin を RoundCoin 型にマッピング
   const roundCoin = {
@@ -81,18 +72,18 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="flex-1 flex flex-col max-w-5xl mx-auto py-8 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="mx-auto flex max-w-5xl flex-1 flex-col px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* チャート（左2/3） */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            <Card className="w-full bg-black/20 backdrop-blur-sm border-none">
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <Card className="w-full border-none bg-black/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
                 <ChartTitle coin={roundCoin} />
               </CardHeader>
               <CardContent>
                 {isPriceLoading ? (
-                  <div className="flex items-center justify-center h-40">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+                  <div className="flex h-40 items-center justify-center">
+                    <div className="h-16 w-16 animate-spin rounded-full border-blue-500 border-t-4 border-b-4" />
                   </div>
                 ) : (
                   <LWCChart
@@ -112,36 +103,32 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
             </div>
             {/* コイン画像・名前・シンボル */}
             <div className="flex flex-col items-center gap-2">
-              <div className="relative w-28 h-28 mb-2">
+              <div className="relative mb-2 h-28 w-28">
                 <Image
                   src={coin.iconUrl}
                   alt={coin.name}
                   width={112}
                   height={112}
-                  className="rounded-full w-full h-full object-cover border-2 border-yellow-400 shadow-lg"
+                  className="h-full w-full rounded-full border-2 border-yellow-400 object-cover shadow-lg"
                 />
-                <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center text-base font-bold bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 text-black shadow-xl border-2 border-white">
+                <div className="-top-3 -right-3 absolute flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 font-bold text-base text-black shadow-xl">
                   #{coin.round}
                 </div>
               </div>
-              <div className="text-xl font-bold text-white flex items-center gap-2">
+              <div className="flex items-center gap-2 font-bold text-white text-xl">
                 {coin.name}
                 <span className="text-base text-gray-400">({coin.symbol})</span>
               </div>
             </div>
             {/* bonding curve progress */}
             <div>
-              <div className="text-sm text-gray-300 mb-1">
-                bonding curve progress:{" "}
-                <span className="font-semibold text-white">1%</span>
+              <div className="mb-1 text-gray-300 text-sm">
+                bonding curve progress: <span className="font-semibold text-white">1%</span>
               </div>
-              <div className="w-full h-2 bg-gray-700 rounded">
-                <div
-                  className="h-2 bg-green-400 rounded"
-                  style={{ width: "1%" }}
-                />
+              <div className="h-2 w-full rounded bg-gray-700">
+                <div className="h-2 rounded bg-green-400" style={{ width: "1%" }} />
               </div>
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="mt-1 text-gray-400 text-xs">
                 graduate this coin to PumpSwap at $68,387 market cap.
                 <br />
                 there is 0.007 SOL in the bonding curve.
@@ -149,9 +136,9 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
             </div>
             {/* コントラクトアドレス */}
             <div>
-              <div className="text-sm text-gray-300 mb-1">contract address</div>
+              <div className="mb-1 text-gray-300 text-sm">contract address</div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded text-gray-200 select-all">
+                <span className="select-all rounded bg-gray-800 px-2 py-1 font-mono text-gray-200 text-xs">
                   AWWMk...kjR4
                 </span>
               </div>
@@ -164,7 +151,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Telegram"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
+                  className="text-gray-400 transition-colors hover:text-blue-400"
                 >
                   <Send size={28} />
                 </a>
@@ -175,7 +162,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Website"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
+                  className="text-gray-400 transition-colors hover:text-blue-400"
                 >
                   <Globe size={28} />
                 </a>
@@ -186,7 +173,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Twitter"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
+                  className="text-gray-400 transition-colors hover:text-blue-400"
                 >
                   <Twitter size={28} />
                 </a>
@@ -194,8 +181,8 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
             </div>
             {/* トップホルダーリスト（ダミー） */}
             <div>
-              <div className="text-sm text-gray-300 mb-1">top holders</div>
-              <ul className="text-xs text-gray-200 bg-gray-800 rounded p-2 space-y-1">
+              <div className="mb-1 text-gray-300 text-sm">top holders</div>
+              <ul className="space-y-1 rounded bg-gray-800 p-2 text-gray-200 text-xs">
                 <li>
                   1. bonding curve <span className="float-right">99.97%</span>
                 </li>
@@ -213,7 +200,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
         <div className="mt-8 flex justify-center">
           <Link
             href="/champions"
-            className="text-blue-400 hover:text-blue-300 text-base font-medium transition-colors flex items-center gap-1"
+            className="flex items-center gap-1 font-medium text-base text-blue-400 transition-colors hover:text-blue-300"
           >
             <ArrowLeft size={16} />
             Back to Champions

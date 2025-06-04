@@ -1,8 +1,5 @@
 import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
-import type {
-  ComponentType,
-  ToggleSide,
-} from "@/components/ui/swap/elements/types";
+import type { ComponentType, ToggleSide } from "@/components/ui/swap/elements/types";
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
@@ -46,18 +43,12 @@ export const PotentialWinDisplay = ({
   // Determine which coin to show based on componentType and activeSide
   const displayCoin = match({ componentType, activeSide })
     .with({ componentType: "daytime" }, () => suiCoin)
-    .with(
-      { componentType: "darknight", activeSide: "buy" },
-      () => coin ?? suiCoin,
-    )
+    .with({ componentType: "darknight", activeSide: "buy" }, () => coin ?? suiCoin)
     .with(
       { componentType: "darknight", activeSide: "switch" },
       () => raccCoin, // Show RACC when darknight sell/switch
     )
-    .with(
-      { componentType: "champion", activeSide: "buy" },
-      () => coin ?? suiCoin,
-    )
+    .with({ componentType: "champion", activeSide: "buy" }, () => coin ?? suiCoin)
     .otherwise(() => suiCoin);
 
   // Determine if we should show the unit symbol based on componentType and activeSide
@@ -71,12 +62,10 @@ export const PotentialWinDisplay = ({
   // Special case for Daytime
   const isDaytime = componentType === "daytime";
 
-  const labelText =
-    isDaytime && activeSide === "buy" ? "To win 🌻" : "To receive";
+  const labelText = isDaytime && activeSide === "buy" ? "To win 🌻" : "To receive";
 
   // Text color for amounts in Daytime
-  const amountTextColor =
-    isDaytime && activeSide === "buy" ? "text-[#00E065]" : "text-white";
+  const amountTextColor = isDaytime && activeSide === "buy" ? "text-[#00E065]" : "text-white";
 
   return (
     <AnimatePresence>
@@ -92,42 +81,36 @@ export const PotentialWinDisplay = ({
         }}
         className="overflow-hidden"
       >
-        <div className="border-t border-[#2D3244] py-4 mb-4">
+        <div className="mb-4 border-[#2D3244] border-t py-4">
           {isDaytime ? (
             // Daytime特有のレイアウト - 左にラベル、右に緑色テキスト
-            <div className="flex justify-between items-center cursor-not-allowed">
+            <div className="flex cursor-not-allowed items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-gray-400 font-medium">{labelText}</span>
+                <span className="font-medium text-gray-400">{labelText}</span>
               </div>
               <div className="flex items-baseline justify-end px-3">
-                <span className={`${amountTextColor} text-4xl font-bold`}>
+                <span className={`${amountTextColor} font-bold text-4xl`}>
                   {potentialWin.toFixed(2)}
                 </span>
-                <span
-                  className={`ml-2 ${amountTextColor} text-xl font-bold select-none`}
-                >
-                  SUI
-                </span>
+                <span className={`ml-2 ${amountTextColor} select-none font-bold text-xl`}>SUI</span>
               </div>
             </div>
           ) : (
             // Darknight/Champion向けの元のレイアウト
             <>
-              <div className="text-gray-400 font-medium text-sm mb-2 cursor-not-allowed">
+              <div className="mb-2 cursor-not-allowed font-medium text-gray-400 text-sm">
                 {labelText}
               </div>
-              <div className="flex items-baseline px-3 cursor-not-allowed">
+              <div className="flex cursor-not-allowed items-baseline px-3">
                 <CoinIconSymbol
                   coin={displayCoin}
                   size="sm"
                   className="mr-1 min-w-0 flex-shrink-0"
                 />
-                <div className="flex items-baseline justify-end flex-1">
-                  <span className="text-white text-4xl font-bold">
-                    {potentialWin.toFixed(2)}
-                  </span>
+                <div className="flex flex-1 items-baseline justify-end">
+                  <span className="font-bold text-4xl text-white">{potentialWin.toFixed(2)}</span>
                   <span
-                    className={`ml-2 text-white text-xl font-bold select-none${!showUnitSymbol ? " invisible" : ""}`}
+                    className={`ml-2 font-bold text-white text-xl select-none${!showUnitSymbol ? " invisible" : ""}`}
                   >
                     {displayCoin.symbol === "RACC" ? "RACC" : "SUI"}
                   </span>
@@ -136,7 +119,7 @@ export const PotentialWinDisplay = ({
             </>
           )}
 
-          <div className="flex items-center gap-1 mt-1.5 text-gray-500 text-xs cursor-not-allowed">
+          <div className="mt-1.5 flex cursor-not-allowed items-center gap-1 text-gray-500 text-xs">
             <span>Avg. Price {avgPrice.toFixed(1)}¢</span>
             <Info className="h-3 w-3 cursor-not-allowed" />
           </div>

@@ -19,39 +19,39 @@ export const BattleInfoBar: React.FC<BattleInfoBarProps> = ({
   topCoin = { symbol: "MONKE", iconUrl: "/monke-icon.png" },
 }) => {
   return (
-    <div className="w-full bg-black border-t border-b border-orange-600/30">
+    <div className="w-full border-orange-600/30 border-t border-b bg-black">
       <div className="flex items-center justify-between px-8 py-2">
         <div className="flex items-center space-x-6">
           <div className="flex items-center">
-            <span className="text-orange-500 mr-2">🔥</span>
-            <span className="text-white font-bold">Battle Round {round}</span>
+            <span className="mr-2 text-orange-500">🔥</span>
+            <span className="font-bold text-white">Battle Round {round}</span>
           </div>
 
           <div className="flex items-center">
-            <span className="text-yellow-400 mr-2">💰</span>
+            <span className="mr-2 text-yellow-400">💰</span>
             <span className="text-white">MCap {mcap}</span>
           </div>
 
           <div className="flex items-center">
-            <span className="text-pink-400 mr-2">🟣</span>
+            <span className="mr-2 text-pink-400">🟣</span>
             <span className="text-white">{memes} memes</span>
           </div>
 
           <div className="flex items-center">
-            <span className="text-blue-400 mr-2">📊</span>
+            <span className="mr-2 text-blue-400">📊</span>
             <span className="text-white">Vol {volume}</span>
           </div>
 
           <div className="flex items-center">
-            <span className="text-green-400 mr-2">⏱️</span>
-            <span className="text-white font-mono">{timeLeft}</span>
+            <span className="mr-2 text-green-400">⏱️</span>
+            <span className="font-mono text-white">{timeLeft}</span>
           </div>
         </div>
 
         <div className="flex items-center">
-          <span className="text-orange-400 mr-2">#1:</span>
+          <span className="mr-2 text-orange-400">#1:</span>
           {topCoin.iconUrl && (
-            <div className="relative w-6 h-6 mr-1">
+            <div className="relative mr-1 h-6 w-6">
               <Image
                 src={topCoin.iconUrl}
                 alt={`${topCoin.symbol} icon`}
@@ -61,7 +61,7 @@ export const BattleInfoBar: React.FC<BattleInfoBarProps> = ({
               />
             </div>
           )}
-          <span className="text-yellow-400 font-bold">${topCoin.symbol}</span>
+          <span className="font-bold text-yellow-400">${topCoin.symbol}</span>
         </div>
       </div>
     </div>

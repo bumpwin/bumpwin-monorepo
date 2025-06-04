@@ -1,7 +1,4 @@
-import type {
-  ComponentType,
-  ToggleSide,
-} from "@/components/ui/swap/elements/types";
+import type { ComponentType, ToggleSide } from "@/components/ui/swap/elements/types";
 
 interface ToggleButtonProps {
   activeSide: ToggleSide;
@@ -44,11 +41,11 @@ export const ToggleButton = ({
   const secondaryHoverClass = secondaryHoverClasses[secondaryColor];
 
   return (
-    <div className={`flex p-1 mb-3 ${getBackgroundColor()} rounded-full`}>
+    <div className={`mb-3 flex p-1 ${getBackgroundColor()} rounded-full`}>
       <button
         type="button"
         onClick={() => onChange("buy")}
-        className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
+        className={`flex-1 rounded-full py-2 font-bold text-base transition-all duration-200 ${
           activeSide === "buy"
             ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
             : "text-gray-400 hover:bg-green-500/20 hover:text-green-400"
@@ -59,7 +56,7 @@ export const ToggleButton = ({
       <button
         type="button"
         onClick={() => onChange(secondaryOption)}
-        className={`flex-1 py-2 font-bold text-base transition-all duration-200 rounded-full ${
+        className={`flex-1 rounded-full py-2 font-bold text-base transition-all duration-200 ${
           activeSide === secondaryOption
             ? secondaryActiveClass
             : `text-gray-400 ${secondaryHoverClass}`

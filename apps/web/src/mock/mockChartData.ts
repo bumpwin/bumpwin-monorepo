@@ -70,10 +70,4 @@ export const mockChartData: Record<string, OHLCData[]> = {
 };
 
 // デフォルトのチャートデータ（IDがマッチしない場合用）
-export const defaultChartData = generateOHLCData(
-  "2023-01-01",
-  30,
-  0.00001,
-  0.2,
-  0.2,
-);
+export const defaultChartData = generateOHLCData("2023-01-01", 30, 0.00001, 0.2, 0.2);

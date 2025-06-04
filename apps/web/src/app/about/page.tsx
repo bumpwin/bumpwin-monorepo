@@ -2,18 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
-  title:
-    "BUMP.WIN - Bump. Survive. Win. Squid Game Style Meme Coin Battle Royale",
+  title: "BUMP.WIN - Bump. Survive. Win. Squid Game Style Meme Coin Battle Royale",
   description:
     "Only one meme coin survives. Rally community support, win the battle, and dominate the market.",
 };
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 pb-12 max-w-7xl">
+    <div className="container mx-auto max-w-7xl px-4 pb-12">
       {/* Hero Section */}
       <section
-        className="mt-20 mb-20 flex flex-col md:flex-row items-center gap-12 min-h-[80vh] justify-center"
+        className="mt-20 mb-20 flex min-h-[80vh] flex-col items-center justify-center gap-12 md:flex-row"
         data-lenis-scroll-snap-align="start"
       >
         <div className="md:w-1/2" data-parallax-depth="-0.3">
@@ -22,27 +21,23 @@ export default function AboutPage() {
             alt="Last One Standing - Meme Coin Battle"
             width={600}
             height={450}
-            className="rounded-xl shadow-2xl w-full"
+            className="w-full rounded-xl shadow-2xl"
           />
         </div>
-        <div
-          className="md:w-1/2 space-y-6 text-center md:text-left"
-          data-parallax-depth="0.2"
-        >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+        <div className="space-y-6 text-center md:w-1/2 md:text-left" data-parallax-depth="0.2">
+          <h1 className="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text font-bold text-5xl text-transparent md:text-6xl">
             Squid Game Style
-            <span className="block text-white mt-2">Meme Launchpad</span>
+            <span className="mt-2 block text-white">Meme Launchpad</span>
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-gray-300 text-xl">
             Winner-takes-all meme coin battle royale.{" "}
-            <span className="text-yellow-400">Only one winner</span> gets
-            officially launched and acquires{" "}
-            <span className="text-yellow-400">all the liquidity</span>.
+            <span className="text-yellow-400">Only one winner</span> gets officially launched and
+            acquires <span className="text-yellow-400">all the liquidity</span>.
           </p>
           <div className="pt-4">
             <Link
               href="/rounds"
-              className="px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg inline-block"
+              className="inline-block rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:translate-y-[-2px] hover:opacity-90 hover:shadow-lg"
             >
               Join the Battle
             </Link>
@@ -52,55 +47,48 @@ export default function AboutPage() {
 
       {/* Slogan Section */}
       <section
-        className="my-24 relative rounded-2xl h-[40vh]"
+        className="relative my-24 h-[40vh] rounded-2xl"
         data-lenis-scroll-snap-align="center"
       >
         <div className="absolute inset-0 overflow-hidden">
           <div
-            className="w-full h-full bg-center bg-cover opacity-15"
+            className="h-full w-full bg-center bg-cover opacity-15"
             style={{
               backgroundImage: "url('/images/last-one-standing.png')",
             }}
             data-parallax-depth="-0.4"
           />
         </div>
-        <div className="relative h-full flex items-center bg-gradient-to-r from-black/70 via-black/40 to-black/70">
-          <div
-            className="max-w-4xl mx-auto text-center space-y-6 px-4"
-            data-parallax-depth="0.2"
-          >
-            <p className="text-3xl md:text-4xl font-bold text-white">
+        <div className="relative flex h-full items-center bg-gradient-to-r from-black/70 via-black/40 to-black/70">
+          <div className="mx-auto max-w-4xl space-y-6 px-4 text-center" data-parallax-depth="0.2">
+            <p className="font-bold text-3xl text-white md:text-4xl">
               Countless meme coins launch every day
             </p>
-            <p className="text-3xl md:text-4xl font-bold text-yellow-400">
+            <p className="font-bold text-3xl text-yellow-400 md:text-4xl">
               But on BUMP.WIN,{" "}
-              <span className="underline decoration-dashed">
-                only one survives
-              </span>
-              !
+              <span className="underline decoration-dashed">only one survives</span>!
             </p>
-            <p className="text-2xl md:text-3xl font-bold text-white">
-              All competing meme coins&apos; funds boost the winner&apos;s
-              liquidity!
+            <p className="font-bold text-2xl text-white md:text-3xl">
+              All competing meme coins&apos; funds boost the winner&apos;s liquidity!
             </p>
-            <div className="w-32 h-1 bg-gradient-to-r from-pink-500 to-purple-500 mx-auto mt-2" />
+            <div className="mx-auto mt-2 h-1 w-32 bg-gradient-to-r from-pink-500 to-purple-500" />
           </div>
         </div>
       </section>
 
       {/* Previous Champion Section */}
       <section
-        className="mb-24 bg-gradient-to-br from-gray-900/80 to-gray-800/40 rounded-2xl overflow-hidden shadow-xl p-8 relative"
+        className="relative mb-24 overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-800/40 p-8 shadow-xl"
         data-lenis-scroll-snap-align="center"
       >
         {/* Champion badge with glow effect */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/5 rounded-bl-full overflow-hidden z-0" />
+        <div className="absolute top-0 right-0 z-0 h-32 w-32 overflow-hidden rounded-bl-full bg-yellow-500/5" />
         <div className="absolute top-6 right-6 flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-5 h-5 text-yellow-500 mr-1"
+            className="mr-1 h-5 w-5 text-yellow-500"
             aria-hidden="true"
           >
             <path
@@ -109,37 +97,28 @@ export default function AboutPage() {
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-yellow-400 text-sm font-bold tracking-wider uppercase">
+          <span className="font-bold text-sm text-yellow-400 uppercase tracking-wider">
             Hall of Fame
           </span>
         </div>
 
-        <div className="grid md:grid-cols-5 gap-8 items-center relative z-10">
-          <div
-            className="md:col-span-2 sticky-container"
-            data-parallax-depth="0.1"
-          >
-            <div
-              className="relative aspect-square md:aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-indigo-500/30 sticky-element
-                hover:scale-[1.02] transition-all duration-300
-                shadow-[0_0_30px_rgba(255,215,0,0.2)]
-                hover:shadow-[0_0_40px_rgba(255,215,0,0.4)]
-                before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:z-0"
-            >
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-500/10 rounded-full blur-xl z-0" />
+        <div className="relative z-10 grid items-center gap-8 md:grid-cols-5">
+          <div className="sticky-container md:col-span-2" data-parallax-depth="0.1">
+            <div className="sticky-element relative aspect-square overflow-hidden rounded-xl border border-indigo-500/30 shadow-2xl shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all duration-300 before:absolute before:inset-0 before:z-0 before:bg-gradient-to-t before:from-transparent before:to-yellow-500/10 before:content-[''] hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,215,0,0.4)] md:aspect-[3/4]">
+              <div className="-top-6 -right-6 absolute z-0 h-24 w-24 rounded-full bg-yellow-500/10 blur-xl" />
               <Image
                 src="/images/mockmemes/JELL.png"
                 alt="Previous Champion - JELL"
                 width={400}
                 height={500}
-                className="w-full h-full object-cover relative z-10"
+                className="relative z-10 h-full w-full object-cover"
               />
-              <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-1 px-4 rounded-lg text-sm uppercase tracking-wider flex items-center shadow-lg z-20">
+              <div className="absolute top-3 left-3 z-20 flex items-center rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 px-4 py-1 font-bold text-black text-sm uppercase tracking-wider shadow-lg">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-4 h-4 mr-1"
+                  className="mr-1 h-4 w-4"
                   aria-hidden="true"
                 >
                   <path
@@ -150,30 +129,22 @@ export default function AboutPage() {
                 </svg>
                 Champion
               </div>
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t bg-black/70 backdrop-blur-sm px-4 py-3 z-10 w-full">
-                <div className="text-2xl font-bold tracking-wider text-amber-400 -mb-1">
-                  JELL
-                </div>
-                <div className="text-gray-300 text-sm mb-2">Jello Cult</div>
-                <div className="grid grid-cols-2 gap-1 border-t border-gray-700 pt-2">
+              <div className="absolute right-0 bottom-0 left-0 z-10 w-full bg-black/70 bg-gradient-to-t px-4 py-3 backdrop-blur-sm">
+                <div className="-mb-1 font-bold text-2xl text-amber-400 tracking-wider">JELL</div>
+                <div className="mb-2 text-gray-300 text-sm">Jello Cult</div>
+                <div className="grid grid-cols-2 gap-1 border-gray-700 border-t pt-2">
                   <div>
-                    <span className="text-gray-400 text-xs block">mcap </span>
+                    <span className="block text-gray-400 text-xs">mcap </span>
                     <div className="flex items-center">
-                      <span className="text-white text-sm font-bold">
-                        $0.00
-                      </span>
-                      <span className="text-green-400 text-xs ml-1">+0%</span>
+                      <span className="font-bold text-sm text-white">$0.00</span>
+                      <span className="ml-1 text-green-400 text-xs">+0%</span>
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-xs block">
-                      24h vol{" "}
-                    </span>
+                    <span className="block text-gray-400 text-xs">24h vol </span>
                     <div className="flex items-center">
-                      <span className="text-white text-sm font-bold">
-                        $0.00
-                      </span>
-                      <span className="text-green-400 text-xs ml-1">+0%</span>
+                      <span className="font-bold text-sm text-white">$0.00</span>
+                      <span className="ml-1 text-green-400 text-xs">+0%</span>
                     </div>
                   </div>
                 </div>
@@ -182,24 +153,24 @@ export default function AboutPage() {
           </div>
           <div className="md:col-span-3" data-parallax-depth="-0.05">
             <div className="space-y-6">
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent flex items-center">
+              <h2 className="flex items-center bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text font-bold text-4xl text-transparent">
                 Winner Takes All
-                <span className="ml-2 inline-block w-10 h-[3px] bg-gradient-to-r from-yellow-300 to-amber-500" />
+                <span className="ml-2 inline-block h-[3px] w-10 bg-gradient-to-r from-yellow-300 to-amber-500" />
               </h2>
-              <p className="text-xl text-gray-200">
-                All liquidity from defeated competitors goes directly to the
-                Champion Meme Coin&apos;s liquidity pool
+              <p className="text-gray-200 text-xl">
+                All liquidity from defeated competitors goes directly to the Champion Meme
+                Coin&apos;s liquidity pool
               </p>
 
               <div className="mt-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-bold text-white flex items-center">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="flex items-center font-bold text-2xl text-white">
                     <span className="mr-2 text-yellow-400">✦</span>
                     Previous Champion Showcase
                   </h3>
-                  <span className="bg-yellow-500/20 text-yellow-400 text-xs font-medium px-2.5 py-1 rounded-full border border-yellow-500/30 flex items-center">
+                  <span className="flex items-center rounded-full border border-yellow-500/30 bg-yellow-500/20 px-2.5 py-1 font-medium text-xs text-yellow-400">
                     <svg
-                      className="w-3 h-3 mr-1 text-yellow-400"
+                      className="mr-1 h-3 w-3 text-yellow-400"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="currentColor"
@@ -211,44 +182,40 @@ export default function AboutPage() {
                   </span>
                 </div>
 
-                <div className="bg-gradient-to-r from-gray-800/80 to-gray-800/40 border-l-4 border-yellow-500 pl-4 py-4 mb-6 rounded-r-lg shadow-inner">
-                  <p className="text-lg text-gray-300">
-                    They defeated{" "}
-                    <span className="text-yellow-400 font-bold">118</span>{" "}
-                    competing meme coins and launched with a liquidity pool of{" "}
-                    <span className="text-yellow-400 font-bold">$114,514</span>
+                <div className="mb-6 rounded-r-lg border-yellow-500 border-l-4 bg-gradient-to-r from-gray-800/80 to-gray-800/40 py-4 pl-4 shadow-inner">
+                  <p className="text-gray-300 text-lg">
+                    They defeated <span className="font-bold text-yellow-400">118</span> competing
+                    meme coins and launched with a liquidity pool of{" "}
+                    <span className="font-bold text-yellow-400">$114,514</span>
                   </p>
                 </div>
 
-                <div className="p-5 bg-gradient-to-r from-yellow-900/30 to-yellow-900/10 border border-yellow-500/30 rounded-lg shadow-[inset_0_1px_1px_rgba(255,215,0,0.1)]">
-                  <p className="text-white text-lg">
-                    With{" "}
-                    <span className="text-yellow-400 font-bold">
-                      Champions AMM
-                    </span>
-                    , the winning meme coin gains permanent liquidity backed by
-                    all funds invested during the battle
+                <div className="rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-900/30 to-yellow-900/10 p-5 shadow-[inset_0_1px_1px_rgba(255,215,0,0.1)]">
+                  <p className="text-lg text-white">
+                    With <span className="font-bold text-yellow-400">Champions AMM</span>, the
+                    winning meme coin gains permanent liquidity backed by all funds invested during
+                    the battle
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col gap-4 pt-4 sm:flex-row">
                 <Link
                   href="/champions/JELL"
-                  className="inline-block px-8 py-3.5 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-lg font-bold text-black hover:opacity-90 transition-all duration-300 hover:scale-[1.02] text-center"
+                  className="inline-block rounded-lg bg-gradient-to-r from-yellow-500 to-amber-600 px-8 py-3.5 text-center font-bold text-black transition-all duration-300 hover:scale-[1.02] hover:opacity-90"
                 >
                   Trade This Champ
                 </Link>
 
                 <Link
                   href="/champions"
-                  className="inline-block px-8 py-3.5 bg-gray-800/70 border border-yellow-500/30 rounded-lg font-bold text-yellow-400 hover:bg-gray-700 transition-all duration-300 hover:border-yellow-500 flex items-center justify-center"
+                  className="inline-block flex items-center justify-center rounded-lg border border-yellow-500/30 bg-gray-800/70 px-8 py-3.5 font-bold text-yellow-400 transition-all duration-300 hover:border-yellow-500 hover:bg-gray-700"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="w-5 h-5 mr-2"
+                    className="mr-2 h-5 w-5"
                     aria-hidden="true"
                   >
                     <path
@@ -266,18 +233,18 @@ export default function AboutPage() {
       </section>
 
       {/* Visual Divider */}
-      <div className="my-28 max-w-4xl mx-auto">
+      <div className="mx-auto my-28 max-w-4xl">
         <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
       </div>
 
       {/* Call to Action */}
       <section
-        className="my-24 relative rounded-2xl overflow-hidden h-[30vh]"
+        className="relative my-24 h-[30vh] overflow-hidden rounded-2xl"
         data-lenis-scroll-snap-align="center"
       >
-        <div className="absolute inset-0 overflow-hidden pin-background">
+        <div className="pin-background absolute inset-0 overflow-hidden">
           <div
-            className="w-full h-full bg-center bg-cover opacity-10"
+            className="h-full w-full bg-center bg-cover opacity-10"
             style={{
               backgroundImage: "url('/images/mockmemes/JELL.png')",
             }}
@@ -285,20 +252,17 @@ export default function AboutPage() {
             data-parallax-pin-offset="0.5"
           />
         </div>
-        <div className="relative h-full flex items-center bg-gradient-to-r from-black/80 via-purple-900/20 to-black/80">
-          <div
-            className="max-w-4xl mx-auto text-center py-8 px-8"
-            data-parallax-depth="0.15"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent mb-6">
+        <div className="relative flex h-full items-center bg-gradient-to-r from-black/80 via-purple-900/20 to-black/80">
+          <div className="mx-auto max-w-4xl px-8 py-8 text-center" data-parallax-depth="0.15">
+            <h2 className="mb-6 bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text font-bold text-3xl text-transparent md:text-4xl">
               Launch the next Champion Meme coin!
             </h2>
-            <p className="text-xl text-white mb-6">
+            <p className="mb-6 text-white text-xl">
               Join the battle and make your meme the next champion
             </p>
             <Link
               href="/create"
-              className="inline-block px-8 py-3 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg"
+              className="inline-block rounded-lg bg-gradient-to-r from-pink-500 to-purple-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:translate-y-[-2px] hover:opacity-90 hover:shadow-lg"
             >
               Register Your Coin
             </Link>
@@ -307,31 +271,27 @@ export default function AboutPage() {
       </section>
 
       {/* Register Form Section */}
-      <section
-        className="mb-28 rounded-2xl overflow-hidden"
-        data-lenis-scroll-snap-align="center"
-      >
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+      <section className="mb-28 overflow-hidden rounded-2xl" data-lenis-scroll-snap-align="center">
+        <div className="grid items-center gap-8 md:grid-cols-2">
           <div className="p-6" data-parallax-depth="0.05">
-            <h2 className="text-3xl font-bold mb-6 text-white">
+            <h2 className="mb-6 font-bold text-3xl text-white">
               Register your meme coin
               <br />
               for upcoming battle rounds!
             </h2>
-            <p className="text-xl mb-8 text-gray-300">
-              With a simple registration process, your meme coin could become
-              the next champion. Registration opens 3 days before each round
-              starts.
+            <p className="mb-8 text-gray-300 text-xl">
+              With a simple registration process, your meme coin could become the next champion.
+              Registration opens 3 days before each round starts.
             </p>
             <Link
               href="/create"
-              className="inline-block px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="inline-block rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-lg"
             >
               Register Your Coin Now
             </Link>
           </div>
           <div
-            className="rounded-xl overflow-hidden shadow-2xl border border-indigo-500/20"
+            className="overflow-hidden rounded-xl border border-indigo-500/20 shadow-2xl"
             data-parallax-depth="-0.05"
           >
             <Image
@@ -346,16 +306,16 @@ export default function AboutPage() {
       </section>
 
       {/* Visual Topic Divider */}
-      <div className="my-48 max-w-xl mx-auto px-4">
+      <div className="mx-auto my-48 max-w-xl px-4">
         <div className="flex items-center justify-center gap-4">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-gray-700" />
           <div className="text-center">
-            <span className="inline-block p-3 bg-gray-800/80 rounded-full border border-gray-700">
+            <span className="inline-block rounded-full border border-gray-700 bg-gray-800/80 p-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-5 h-5 text-gray-400"
+                className="h-5 w-5 text-gray-400"
                 aria-hidden="true"
               >
                 <path
@@ -373,32 +333,30 @@ export default function AboutPage() {
 
       {/* Battle Rounds Explanation */}
       <section
-        className="mb-28 battle-phases-section min-h-screen"
+        className="battle-phases-section mb-28 min-h-screen"
         data-lenis-scroll-snap-align="center"
       >
-        <div className="sticky top-[60px] pt-8 pb-4 bg-gradient-to-b from-black via-black/95 to-transparent z-30">
+        <div className="sticky top-[60px] z-30 bg-gradient-to-b from-black via-black/95 to-transparent pt-8 pb-4">
           <div className="text-center" data-parallax-depth="0.2">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+            <h2 className="mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text font-bold text-4xl text-transparent">
               When the Round Begins, the Race is On
             </h2>
-            <p className="text-xl text-white max-w-3xl mx-auto">
+            <p className="mx-auto max-w-3xl text-white text-xl">
               The deadly game begins to determine which meme coin will triumph!
-              <span className="block text-2xl font-bold text-yellow-400 mt-2">
-                Bet on Beliefs.
-              </span>
+              <span className="mt-2 block font-bold text-2xl text-yellow-400">Bet on Beliefs.</span>
             </p>
-            <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto mt-4" />
+            <div className="mx-auto mt-4 h-1 w-32 bg-gradient-to-r from-blue-500 to-indigo-500" />
           </div>
 
           {/* Battle Phases Progress Bar */}
-          <div className="max-w-4xl mx-auto mt-8 battle-progress-container z-40">
-            <div className="relative py-6 px-4 bg-gray-900/80 rounded-xl backdrop-blur shadow-lg border border-gray-800">
+          <div className="battle-progress-container z-40 mx-auto mt-8 max-w-4xl">
+            <div className="relative rounded-xl border border-gray-800 bg-gray-900/80 px-4 py-6 shadow-lg backdrop-blur">
               {/* Progress Bar Background */}
-              <div className="absolute h-2 bg-gray-700 rounded-full w-full top-1/2 transform -translate-y-1/2" />
+              <div className="-translate-y-1/2 absolute top-1/2 h-2 w-full transform rounded-full bg-gray-700" />
 
               {/* Active Progress Bar */}
               <div
-                className="absolute h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 rounded-full top-1/2 transform -translate-y-1/2 battle-progress-bar"
+                className="-translate-y-1/2 battle-progress-bar absolute top-1/2 h-2 transform rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500"
                 style={{ width: "43%" }}
               />
 
@@ -406,44 +364,40 @@ export default function AboutPage() {
               <div className="relative flex justify-between">
                 {/* Daytime */}
                 <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-daytime-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">1</span>
+                  <div className="phase-marker phase-daytime-marker mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 shadow-lg">
+                    <span className="font-bold text-sm text-white">1</span>
                   </div>
-                  <p className="text-blue-400 font-bold phase-label phase-daytime-label">
-                    Daytime
-                  </p>
-                  <p className="text-xs text-gray-400">24 Hours</p>
+                  <p className="phase-label phase-daytime-label font-bold text-blue-400">Daytime</p>
+                  <p className="text-gray-400 text-xs">24 Hours</p>
                 </div>
 
                 {/* DarkNight */}
                 <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-darknight-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">2</span>
+                  <div className="phase-marker phase-darknight-marker mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 shadow-lg">
+                    <span className="font-bold text-sm text-white">2</span>
                   </div>
-                  <p className="text-purple-400 font-bold phase-label phase-darknight-label">
+                  <p className="phase-label phase-darknight-label font-bold text-purple-400">
                     DarkNight
                   </p>
-                  <p className="text-xs text-gray-400">1 Hour</p>
+                  <p className="text-gray-400 text-xs">1 Hour</p>
                 </div>
 
                 {/* Sunrise */}
                 <div className="z-10 text-center">
-                  <div className="w-8 h-8 bg-gray-600 rounded-full mx-auto mb-2 flex items-center justify-center phase-marker phase-sunrise-marker shadow-lg">
-                    <span className="text-sm font-bold text-white">3</span>
+                  <div className="phase-marker phase-sunrise-marker mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 shadow-lg">
+                    <span className="font-bold text-sm text-white">3</span>
                   </div>
-                  <p className="text-gray-400 font-bold phase-label phase-sunrise-label">
-                    Sunrise
-                  </p>
-                  <p className="text-xs text-gray-400">Launch</p>
+                  <p className="phase-label phase-sunrise-label font-bold text-gray-400">Sunrise</p>
+                  <p className="text-gray-400 text-xs">Launch</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start relative pt-24 px-4 mt-4">
-          <div className="relative md:sticky top-[300px] h-auto w-full z-20">
-            <div className="mt-40 rounded-xl overflow-hidden shadow-xl border border-blue-500/20 transform hover:rotate-0 transition-all duration-500 sticky-chart">
+        <div className="relative mt-4 grid items-start gap-12 px-4 pt-24 md:grid-cols-2">
+          <div className="relative top-[300px] z-20 h-auto w-full md:sticky">
+            <div className="sticky-chart mt-40 transform overflow-hidden rounded-xl border border-blue-500/20 shadow-xl transition-all duration-500 hover:rotate-0">
               <Image
                 src="/images/prediction-chart.png"
                 alt="Live prediction chart"
@@ -453,74 +407,61 @@ export default function AboutPage() {
               />
             </div>
           </div>
-          <div data-parallax-depth="-0.05" className="pt-6 z-10">
+          <div data-parallax-depth="-0.05" className="z-10 pt-6">
             <div className="space-y-6">
-              <div className="bg-blue-900/20 p-6 rounded-lg border-l-2 border-blue-400">
-                <h4 className="text-xl font-bold text-blue-300 mb-3">
-                  Daytime (24 H)
-                </h4>
-                <p className="text-lg text-gray-200">
-                  Elimination through{" "}
-                  <span className="text-yellow-400">price discovery</span>{" "}
+              <div className="rounded-lg border-blue-400 border-l-2 bg-blue-900/20 p-6">
+                <h4 className="mb-3 font-bold text-blue-300 text-xl">Daytime (24 H)</h4>
+                <p className="text-gray-200 text-lg">
+                  Elimination through <span className="text-yellow-400">price discovery</span>{" "}
                   selects 8 finalists from countless meme coin candidates!
                 </p>
-                <p className="text-sm text-gray-400 mt-3">
-                  Brier Score Dual SCPM AMM - Total win probability across all
-                  coins always equals 100%, with withdrawals allowed but with a
-                  time-based fee
+                <p className="mt-3 text-gray-400 text-sm">
+                  Brier Score Dual SCPM AMM - Total win probability across all coins always equals
+                  100%, with withdrawals allowed but with a time-based fee
                 </p>
               </div>
 
-              <div className="bg-purple-900/20 p-6 rounded-lg border-l-2 border-purple-400">
-                <h4 className="text-xl font-bold text-purple-300 mb-3">
-                  DarkNight (1H)
-                </h4>
-                <p className="text-lg text-gray-200">
-                  Final hour of{" "}
-                  <span className="text-yellow-400">decisive voting</span>!
-                  <span className="text-yellow-400 block mt-2">
+              <div className="rounded-lg border-purple-400 border-l-2 bg-purple-900/20 p-6">
+                <h4 className="mb-3 font-bold text-purple-300 text-xl">DarkNight (1H)</h4>
+                <p className="text-gray-200 text-lg">
+                  Final hour of <span className="text-yellow-400">decisive voting</span>!
+                  <span className="mt-2 block text-yellow-400">
                     Real-time share positions are hidden
                   </span>{" "}
                   from all participants!
                 </p>
-                <p className="text-sm text-gray-400 mt-3">
-                  TLE cryptography enables fully-private batch auctions - 5
-                  rounds of 12 minutes each in a true psychological battle
+                <p className="mt-3 text-gray-400 text-sm">
+                  TLE cryptography enables fully-private batch auctions - 5 rounds of 12 minutes
+                  each in a true psychological battle
                 </p>
-                <p className="text-lg text-red-400 font-semibold mt-3">
-                  No withdrawals during DarkNight! A true battle royale with no
-                  turning back
+                <p className="mt-3 font-semibold text-lg text-red-400">
+                  No withdrawals during DarkNight! A true battle royale with no turning back
                 </p>
               </div>
 
-              <div className="bg-yellow-900/20 p-6 rounded-lg border-l-2 border-yellow-400">
-                <h4 className="text-xl font-bold text-yellow-300 mb-3">
+              <div className="rounded-lg border-yellow-400 border-l-2 bg-yellow-900/20 p-6">
+                <h4 className="mb-3 font-bold text-xl text-yellow-300">
                   Sunrise (Immediately After)
                 </h4>
-                <p className="text-lg text-gray-200">
-                  <span className="text-yellow-400">
-                    Only one meme coin emerges victorious
-                  </span>{" "}
-                  and is officially launched! All Battle AMM funds are
-                  automatically transferred to Champions AMM
+                <p className="text-gray-200 text-lg">
+                  <span className="text-yellow-400">Only one meme coin emerges victorious</span> and
+                  is officially launched! All Battle AMM funds are automatically transferred to
+                  Champions AMM
                 </p>
-                <p className="text-sm text-gray-400 mt-3">
-                  Winners receive the champion meme coin tokens, losers receive
-                  LOSER tokens proportional to their investment
+                <p className="mt-3 text-gray-400 text-sm">
+                  Winners receive the champion meme coin tokens, losers receive LOSER tokens
+                  proportional to their investment
                 </p>
               </div>
             </div>
 
-            <div className="mt-8 backdrop-blur-sm bg-gray-900/40 p-6 rounded-xl border-l-4 border-blue-500">
-              <p className="text-xl text-gray-200">
+            <div className="mt-8 rounded-xl border-blue-500 border-l-4 bg-gray-900/40 p-6 backdrop-blur-sm">
+              <p className="text-gray-200 text-xl">
                 The top meme in the current round has a{" "}
-                <span className="text-blue-400 font-bold">43%</span> chance of
-                winning! If you invest{" "}
-                <span className="text-green-400 font-bold">$1</span> worth of
-                SUI and it wins, you&apos;ll receive{" "}
-                <span className="text-green-400 font-bold">$2.32</span> worth of
-                Champion meme tokens! If it loses, you&apos;ll receive LOSER
-                tokens.
+                <span className="font-bold text-blue-400">43%</span> chance of winning! If you
+                invest <span className="font-bold text-green-400">$1</span> worth of SUI and it
+                wins, you&apos;ll receive <span className="font-bold text-green-400">$2.32</span>{" "}
+                worth of Champion meme tokens! If it loses, you&apos;ll receive LOSER tokens.
               </p>
             </div>
           </div>
@@ -528,16 +469,16 @@ export default function AboutPage() {
       </section>
 
       {/* Visual Topic Divider */}
-      <div className="my-36 max-w-xl mx-auto px-4">
+      <div className="mx-auto my-36 max-w-xl px-4">
         <div className="flex items-center justify-center gap-4">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-gray-700" />
           <div className="text-center">
-            <span className="inline-block p-3 bg-gray-800/80 rounded-full border border-gray-700">
+            <span className="inline-block rounded-full border border-gray-700 bg-gray-800/80 p-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-5 h-5 text-gray-400"
+                className="h-5 w-5 text-gray-400"
                 aria-hidden="true"
               >
                 <path
@@ -555,75 +496,66 @@ export default function AboutPage() {
 
       {/* Community Chat Section */}
       <section
-        className="mb-28 bg-gradient-to-br from-gray-900 to-gray-800/60 rounded-2xl overflow-hidden shadow-xl min-h-[45vh]"
+        className="mb-28 min-h-[45vh] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800/60 shadow-xl"
         data-lenis-scroll-snap-align="center"
       >
-        <div className="grid md:grid-cols-2 items-center">
+        <div className="grid items-center md:grid-cols-2">
           <div className="p-8" data-parallax-depth="0.05">
-            <h2 className="text-3xl font-bold mb-5 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <h2 className="mb-5 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text font-bold text-3xl text-transparent">
               Bump That
             </h2>
-            <p className="text-xl mb-6 text-gray-300">
-              Chat with the community and rally support for your meme coin! In
-              this battle of wits, community unity is key to victory in an
-              environment of incomplete information.
+            <p className="mb-6 text-gray-300 text-xl">
+              Chat with the community and rally support for your meme coin! In this battle of wits,
+              community unity is key to victory in an environment of incomplete information.
             </p>
 
-            <div className="mb-8 p-5 bg-gray-800/70 rounded-lg border-l-4 border-purple-500">
-              <h3 className="text-xl font-bold text-purple-300 mb-3">
-                Strategic Communication
-              </h3>
-              <p className="text-gray-200 mb-4">
+            <div className="mb-8 rounded-lg border-purple-500 border-l-4 bg-gray-800/70 p-5">
+              <h3 className="mb-3 font-bold text-purple-300 text-xl">Strategic Communication</h3>
+              <p className="mb-4 text-gray-200">
                 Defeat rival memes and aim for{" "}
-                <span className="text-yellow-400">winner-takes-all</span>{" "}
-                through collective action!
+                <span className="text-yellow-400">winner-takes-all</span> through collective action!
               </p>
-              <ul className="list-disc pl-5 text-gray-300 space-y-2">
+              <ul className="list-disc space-y-2 pl-5 text-gray-300">
                 <li>Secure advantageous positions with early participation</li>
                 <li>Gain information superiority through community insights</li>
                 <li>Make strategic choices based on collective intelligence</li>
               </ul>
             </div>
 
-            <h3 className="text-2xl font-bold mb-6 text-white/90">
-              Win the deadly game together
-            </h3>
+            <h3 className="mb-6 font-bold text-2xl text-white/90">Win the deadly game together</h3>
             <Link
               href="/chat"
-              className="inline-block px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-bold text-white hover:opacity-90 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg"
+              className="inline-block rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-bold text-white transition-all duration-300 hover:translate-y-[-2px] hover:opacity-90 hover:shadow-lg"
             >
               Join the Community
             </Link>
           </div>
-          <div
-            className="relative h-full pin-container overflow-hidden"
-            data-parallax-depth="-0.1"
-          >
-            <div className="relative h-full max-h-[600px] pin-element">
+          <div className="pin-container relative h-full overflow-hidden" data-parallax-depth="-0.1">
+            <div className="pin-element relative h-full max-h-[600px]">
               <Image
                 src="/images/community-chat.webp"
                 alt="BUMP.WIN Community Chat"
                 width={600}
                 height={600}
-                className="w-full h-full object-cover object-center"
+                className="h-full w-full object-cover object-center"
               />
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-gray-900 to-transparent" />
+              <div className="absolute right-0 bottom-0 left-0 h-1/3 bg-gradient-to-t from-gray-900 to-transparent" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Visual Topic Divider */}
-      <div className="my-36 max-w-xl mx-auto px-4">
+      <div className="mx-auto my-36 max-w-xl px-4">
         <div className="flex items-center justify-center gap-4">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-gray-700" />
           <div className="text-center">
-            <span className="inline-block p-3 bg-gray-800/80 rounded-full border border-gray-700">
+            <span className="inline-block rounded-full border border-gray-700 bg-gray-800/80 p-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-5 h-5 text-gray-400"
+                className="h-5 w-5 text-gray-400"
                 aria-hidden="true"
               >
                 <path
@@ -641,7 +573,7 @@ export default function AboutPage() {
 
       {/* Epic Final Call to Action */}
       <section
-        className="relative h-[90vh] flex items-center justify-center overflow-hidden mt-24"
+        className="relative mt-24 flex h-[90vh] items-center justify-center overflow-hidden"
         data-lenis-scroll-snap-align="end"
       >
         {/* Background Image with Overlay */}
@@ -658,16 +590,16 @@ export default function AboutPage() {
 
         {/* Content with Glow Effects */}
         <div
-          className="relative z-10 max-w-4xl mx-auto text-center px-4 py-16"
+          className="relative z-10 mx-auto max-w-4xl px-4 py-16 text-center"
           data-parallax-depth="0.1"
         >
           <div className="mb-12">
-            <div className="inline-block mb-3 px-6 py-2 bg-yellow-500/10 border border-yellow-500/30 rounded-full">
-              <span className="text-yellow-400 font-bold tracking-wider uppercase text-sm">
+            <div className="mb-3 inline-block rounded-full border border-yellow-500/30 bg-yellow-500/10 px-6 py-2">
+              <span className="font-bold text-sm text-yellow-400 uppercase tracking-wider">
                 The Final Decision
               </span>
             </div>
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-lg [text-shadow:_0_0_30px_rgba(255,255,255,0.2)]">
+            <h2 className="mb-6 font-bold text-5xl text-white tracking-tight drop-shadow-lg [text-shadow:_0_0_30px_rgba(255,255,255,0.2)] md:text-7xl">
               Bet On The Tail.
               <br />
               <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">
@@ -679,7 +611,7 @@ export default function AboutPage() {
           <div className="mt-10">
             <Link
               href="/rounds"
-              className="inline-block px-12 py-5 bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 rounded-xl font-bold text-black text-xl hover:opacity-90 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.4)]"
+              className="inline-block rounded-xl bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-500 px-12 py-5 font-bold text-black text-xl transition-all duration-300 hover:scale-105 hover:opacity-90 hover:shadow-[0_0_40px_rgba(255,215,0,0.4)]"
             >
               You bet!
             </Link>
@@ -687,7 +619,7 @@ export default function AboutPage() {
         </div>
 
         {/* Decorative Elements */}
-        <div className="absolute bottom-8 left-0 right-0 text-center text-gray-500 text-sm">
+        <div className="absolute right-0 bottom-8 left-0 text-center text-gray-500 text-sm">
           BUMP.WIN — Only One Coin Survives
         </div>
       </section>

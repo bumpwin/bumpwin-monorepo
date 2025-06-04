@@ -1,0 +1,4 @@
+{
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": ["context7", "memory", "sequential-thinking", "everything", "playwright"]
+}

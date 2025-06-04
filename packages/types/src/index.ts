@@ -8,6 +8,7 @@ export interface MemeMetadata {
   symbol: string;
   description: string;
   iconUrl: string;
+  marketCap?: number; // Optional market cap for compatibility
 }
 
 export type RoundData =

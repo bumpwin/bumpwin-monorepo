@@ -19,9 +19,7 @@ export interface DbRepository {
   findProfileById(
     request: GetProfileByIdRequest,
   ): Promise<Result<GetProfileByIdResponse, ApiError>>;
-  updateProfile(
-    request: UpdateProfileRequest,
-  ): Promise<Result<UpdateProfileResponse, ApiError>>;
+  updateProfile(request: UpdateProfileRequest): Promise<Result<UpdateProfileResponse, ApiError>>;
 
   // Chat operations
   insertChatMessage(

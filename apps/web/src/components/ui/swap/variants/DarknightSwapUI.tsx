@@ -88,7 +88,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   if (!coin) return null;
 
   return (
-    <DarkCard className="w-full bg-gradient-to-b from-[#0F1225] to-[#1A1E32] border border-[#2A2F45] shadow-[0_8px_32px_rgba(124,58,237,0.15)] before:absolute before:inset-0 before:rounded-xl before:shadow-[0_0_30px_rgba(124,58,237,0.1)] before:pointer-events-none relative">
+    <DarkCard className="relative w-full border border-[#2A2F45] bg-gradient-to-b from-[#0F1225] to-[#1A1E32] shadow-[0_8px_32px_rgba(124,58,237,0.15)] before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:shadow-[0_0_30px_rgba(124,58,237,0.1)]">
       <CardHeader className="">
         <CoinHeader coin={coin} variant={variant} />
       </CardHeader>
@@ -96,9 +96,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
         {/* Buy/Switch Toggle */}
         <ToggleButton
           activeSide={activeSide}
-          onChange={(side: ToggleSide) =>
-            setActiveSide(side as "buy" | "switch")
-          }
+          onChange={(side: ToggleSide) => setActiveSide(side as "buy" | "switch")}
           secondaryOption="switch"
           secondaryColor="violet"
           componentType="darknight"

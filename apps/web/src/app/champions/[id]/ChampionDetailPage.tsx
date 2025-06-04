@@ -6,15 +6,8 @@ import { ChartTitle } from "@/components/ChartTitle";
 import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@workspace/shadcn/components/card";
-import {
-  LWCChart,
-  type OHLCData,
-} from "@workspace/shadcn/components/chart/lwc-chart";
+import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
+import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 
 interface ChampionDetailPageProps {
   coin: RoundCoin;
@@ -62,34 +55,29 @@ export const ChampionDetailPage = ({ coin }: ChampionDetailPageProps) => {
 
   const fallbackData: OHLCData[] = [];
   const currentPrice =
-    priceData && priceData.length > 0
-      ? (priceData[priceData.length - 1]?.close ?? 0)
-      : 0;
+    priceData && priceData.length > 0 ? (priceData[priceData.length - 1]?.close ?? 0) : 0;
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-var(--header-height))]">
+    <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col">
       {/* メイン2カラム */}
-      <div className="flex flex-1 px-8 pb-8 gap-8 items-start min-h-[600px]">
+      <div className="flex min-h-[600px] flex-1 items-start gap-8 px-8 pb-8">
         {/* 左: 詳細/チャート */}
-        <div className="flex-1 flex flex-col gap-6">
+        <div className="flex flex-1 flex-col gap-6">
           {/* チャート */}
-          <Card className="bg-black/20 border border-[#23262F] shadow-lg">
+          <Card className="border border-[#23262F] bg-black/20 shadow-lg">
             <CardHeader>
               <ChartTitle coin={coin} />
             </CardHeader>
             <CardContent>
               <div className="h-[400px]">
-                <LWCChart
-                  data={priceData || fallbackData}
-                  currentPrice={currentPrice}
-                />
+                <LWCChart data={priceData || fallbackData} currentPrice={currentPrice} />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* 右: Swap UI */}
-        <div className="w-[400px] sticky top-8">
+        <div className="sticky top-8 w-[400px]">
           <ChampionSwapUI coin={coin} />
           <BattleCoinDetailCard coin={coin} />
         </div>

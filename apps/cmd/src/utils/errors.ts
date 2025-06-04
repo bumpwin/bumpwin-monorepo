@@ -59,10 +59,7 @@ export const handleError = (error: unknown): AppError => {
     });
   }
 
-  return new AppError(
-    "An unexpected error occurred",
-    "INTERNAL_SERVER_ERROR",
-    500,
-    { originalError: error },
-  );
+  return new AppError("An unexpected error occurred", "INTERNAL_SERVER_ERROR", 500, {
+    originalError: error,
+  });
 };

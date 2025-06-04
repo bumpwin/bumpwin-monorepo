@@ -1,5 +1,4 @@
 import { migrate } from "./migrate";
-import { withConn } from "./pool";
 
 export async function deploy() {
   try {

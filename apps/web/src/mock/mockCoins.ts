@@ -21,8 +21,7 @@ export const mockCoins: CoinCardProps[] = [
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
     isFavorite: false,
     logoUrl: "/icon.png",
-    description:
-      "Welcome to the memetic resistance. Welcome to the satirical side of geopolitics.",
+    description: "Welcome to the memetic resistance. Welcome to the satirical side of geopolitics.",
     marketCap: 49700, // $49.7K
     onToggleFavorite: undefined,
   },

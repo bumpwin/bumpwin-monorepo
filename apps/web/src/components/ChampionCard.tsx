@@ -22,10 +22,10 @@ export const ChampionCard: React.FC<ChampionCardProps> = ({
 
   return (
     <Link href="/champions/1">
-      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-xl shadow-2xl border border-yellow-500/30 bg-gray-900 transition-transform duration-200 hover:scale-[1.03] hover:shadow-3xl group cursor-pointer shadow-[0_0_20px_rgba(255,215,0,0.15)] hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]">
+      <div className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-xl border border-yellow-500/30 bg-gray-900 shadow-2xl shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-transform duration-200 hover:scale-[1.03] hover:shadow-3xl hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]">
         {/* Champion of Round badge */}
-        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-bold py-1 px-3 rounded-full text-sm tracking-wide flex items-center shadow-md border border-yellow-300">
-          <Trophy className="w-4 h-4 mr-1.5 text-black" />
+        <div className="absolute top-3 left-3 z-10 flex items-center rounded-full border border-yellow-300 bg-gradient-to-r from-amber-400 to-yellow-500 px-3 py-1 font-bold text-black text-sm tracking-wide shadow-md">
+          <Trophy className="mr-1.5 h-4 w-4 text-black" />
           Round {round}
         </div>
 
@@ -40,25 +40,18 @@ export const ChampionCard: React.FC<ChampionCardProps> = ({
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-            <span className="text-3xl font-bold text-yellow-500">{symbol}</span>
+            <span className="font-bold text-3xl text-yellow-500">{symbol}</span>
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-4 py-2 flex flex-col gap-0.5">
-          <div className="text-2xl font-extrabold text-white tracking-wide truncate">
-            {symbol}
-          </div>
-          <div className="text-sm text-yellow-200 truncate mb-2">{name}</div>
+        <div className="absolute right-0 bottom-0 left-0 flex flex-col gap-0.5 bg-black/80 px-4 py-2 backdrop-blur-sm">
+          <div className="truncate font-extrabold text-2xl text-white tracking-wide">{symbol}</div>
+          <div className="mb-2 truncate text-sm text-yellow-200">{name}</div>
           {/* 右下 MCap */}
           <div className="absolute right-[1rem] bottom-[1rem] flex flex-col items-end">
-            <span className="text-xs text-gray-400 font-medium leading-none">
-              MCap
-            </span>
-            <span className="text-2xl font-extrabold text-yellow-300 leading-tight">
-              $
-              {typeof mcap === "number" && !Number.isNaN(mcap)
-                ? mcap.toLocaleString()
-                : "0"}
+            <span className="font-medium text-gray-400 text-xs leading-none">MCap</span>
+            <span className="font-extrabold text-2xl text-yellow-300 leading-tight">
+              ${typeof mcap === "number" && !Number.isNaN(mcap) ? mcap.toLocaleString() : "0"}
             </span>
           </div>
         </div>

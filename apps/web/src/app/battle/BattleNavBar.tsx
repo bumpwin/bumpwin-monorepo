@@ -45,10 +45,8 @@ export const BattleNavBar: React.FC<BattleNavBarProps> = ({
   }, [timer]);
 
   return (
-    <nav className="sticky top-[var(--header-height)] z-50 w-full max-w-[calc(100vw-24rem)] mx-auto bg-black/90 border-b-2 border-orange-500 shadow-lg flex items-center justify-start px-6 py-2 gap-6 text-white text-base font-medium backdrop-blur-md">
-      <span className="font-bold text-orange-400 text-xl">
-        🕹 Battle Round {round}
-      </span>
+    <nav className="sticky top-[var(--header-height)] z-50 mx-auto flex w-full max-w-[calc(100vw-24rem)] items-center justify-start gap-6 border-orange-500 border-b-2 bg-black/90 px-6 py-2 font-medium text-base text-white shadow-lg backdrop-blur-md">
+      <span className="font-bold text-orange-400 text-xl">🕹 Battle Round {round}</span>
       <span className="flex items-center gap-1">
         💰 <span className="font-bold">MCap {mcap}</span>
       </span>
@@ -59,7 +57,7 @@ export const BattleNavBar: React.FC<BattleNavBarProps> = ({
       <span className="flex items-center gap-1">
         ⏳ <span className="font-mono text-lg">{timer}</span>
       </span>
-      <span className="flex items-center gap-1 ml-auto">
+      <span className="ml-auto flex items-center gap-1">
         🔥 #1:
         <Image
           src={topCoin.iconUrl}
@@ -68,9 +66,7 @@ export const BattleNavBar: React.FC<BattleNavBarProps> = ({
           height={28}
           className="rounded-full border border-orange-400 bg-white"
         />
-        <span className="font-bold text-orange-300 text-lg">
-          ${topCoin.symbol}
-        </span>
+        <span className="font-bold text-lg text-orange-300">${topCoin.symbol}</span>
       </span>
     </nav>
   );

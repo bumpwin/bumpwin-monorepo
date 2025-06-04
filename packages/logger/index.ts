@@ -1,5 +1,4 @@
-export * from "./src/types";
-export * from "./src/console";
+export * from "./src";
 
-import { createConsoleLogger } from "./src/console";
+import { createConsoleLogger } from "./src";
 export const logger = createConsoleLogger();

@@ -4,7 +4,7 @@ import { ClaimOutcomeModal } from "@/app/rounds/components/ClaimOutcomeModal";
 import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
 import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
-import { getChartPoints, getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
+import { getChartPoints } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/ChampionCard";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { motion } from "framer-motion";
@@ -101,11 +101,7 @@ export default function RoundsPage() {
     }
   };
 
-  const handleClaimClick = (
-    winnerName: string,
-    share: number,
-    roundId: string,
-  ) => {
+  const handleClaimClick = (winnerName: string, share: number, roundId: string) => {
     setClaimData({
       winner: {
         name: winnerName,
@@ -131,19 +127,12 @@ export default function RoundsPage() {
       volume: round.metrics.volume,
       memeCount: round.metrics.memes.toString(),
       traderCount: round.metrics.traders.toString(),
-      chartData: getChartPoints(
-        mockDominanceChartData,
-        mockCoinMetadata,
-        i,
-      ).map((point) => {
+      chartData: getChartPoints(mockDominanceChartData, mockCoinMetadata, i).map((point) => {
         const time =
           typeof point.timestamp === "number"
             ? `${Math.floor(point.timestamp / 60)
                 .toString()
-                .padStart(
-                  2,
-                  "0",
-                )}:${(point.timestamp % 60).toString().padStart(2, "0")}`
+                .padStart(2, "0")}:${(point.timestamp % 60).toString().padStart(2, "0")}`
             : point.timestamp;
 
         // Extract token data from point
@@ -176,21 +165,18 @@ export default function RoundsPage() {
   });
 
   // Token colors - matching to the colors used in the application
-  const tokenColors: TokenColors = mockCoinMetadata.reduce(
-    (acc: TokenColors, coin) => {
-      acc[coin.symbol.toUpperCase()] = coin.color;
-      return acc;
-    },
-    {},
-  );
+  const tokenColors: TokenColors = mockCoinMetadata.reduce((acc: TokenColors, coin) => {
+    acc[coin.symbol.toUpperCase()] = coin.color;
+    return acc;
+  }, {});
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] flex-col bg-gradient-to-br from-gray-900 to-gray-800">
       <div className="flex flex-1">
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto pb-6 pt-4">
-          <div className="max-w-7xl w-full mx-auto space-y-8">
-            <h1 className="text-5xl font-extrabold text-white text-center mb-14 tracking-tight z-10 relative">
+        <main className="flex-1 overflow-y-auto pt-4 pb-6">
+          <div className="mx-auto w-full max-w-7xl space-y-8">
+            <h1 className="relative z-10 mb-14 text-center font-extrabold text-5xl text-white tracking-tight">
               Battle Rounds
             </h1>
 
@@ -199,9 +185,7 @@ export default function RoundsPage() {
                 key={dashboard.id}
                 data={dashboard}
                 tokenColors={tokenColors}
-                onCreateClick={
-                  dashboard.state === "waiting" ? handleCreateClick : undefined
-                }
+                onCreateClick={dashboard.state === "waiting" ? handleCreateClick : undefined}
                 onClaimClick={handleClaimClick}
                 intent={intent}
                 claimButtonRef={claimButtonRef}
@@ -243,7 +227,7 @@ function DashboardSection({
           ease: [0.33, 1, 0.68, 1],
         }}
       >
-        <div className="bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]">
+        <div className="relative w-full overflow-hidden rounded-2xl border border-[#343850]/80 bg-gradient-to-br from-[#1D1F2B] to-[#13151E] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-sm">
           {/* State indicator line */}
           <div className="absolute top-0 left-0 h-full w-2 bg-gray-700" />
 
@@ -253,54 +237,46 @@ function DashboardSection({
             <div className="p-6">
               {/* Header for mobile view */}
               <div className="lg:hidden">
-                <div className="flex flex-col space-y-2 mb-4">
+                <div className="mb-4 flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                        {data.id}
-                      </h1>
-                      <span className="text-xl font-bold text-white">
-                        Upcoming Battle
-                      </span>
+                      <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                      <span className="font-bold text-white text-xl">Upcoming Battle</span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-400 font-medium tracking-wide">
+                  <div className="font-medium text-gray-400 text-sm tracking-wide">
                     Start: {data.startDate} · End: {data.endDate}
                   </div>
                 </div>
               </div>
 
               {/* Header for desktop */}
-              <div className="hidden lg:flex items-center justify-between mb-5">
+              <div className="mb-5 hidden items-center justify-between lg:flex">
                 <div className="flex items-center gap-4">
-                  <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                    {data.id}
-                  </h1>
-                  <span className="text-xl font-bold text-white">
-                    Upcoming Battle
-                  </span>
+                  <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                  <span className="font-bold text-white text-xl">Upcoming Battle</span>
                 </div>
-                <div className="text-sm text-gray-400 font-medium tracking-wide">
+                <div className="font-medium text-gray-400 text-sm tracking-wide">
                   Start: {data.startDate} · End: {data.endDate}
                 </div>
               </div>
 
               {/* Action/description section */}
-              <div className="flex flex-row items-center gap-4 mb-6">
+              <div className="mb-6 flex flex-row items-center gap-4">
                 <button
                   type="button"
                   onClick={onCreateClick}
-                  className={`group relative px-8 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] ${
+                  className={`group relative transform rounded-xl px-8 py-4 font-bold transition-all duration-300 hover:scale-[1.02] ${
                     intent === "create-coin"
-                      ? "bg-gradient-to-r from-purple-600 to-violet-600 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.5)] animate-pulse"
-                      : "bg-gradient-to-r from-purple-500 to-violet-500 hover:from-violet-500 hover:to-purple-500 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.3)]"
+                      ? "animate-pulse bg-gradient-to-r from-purple-600 to-violet-600 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.5)]"
+                      : "bg-gradient-to-r from-purple-500 to-violet-500 shadow-[0_5px_30px_-10px_rgba(168,85,247,0.3)] hover:from-violet-500 hover:to-purple-500"
                   } text-white`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     <span>Create Coin</span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 transition-transform duration-300 transform group-hover:translate-x-1"
+                      className="h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -316,16 +292,15 @@ function DashboardSection({
                       />
                     </svg>
                   </span>
-                  <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300" />
+                  <span className="absolute inset-0 rounded-xl bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </button>
-                <div className="text-gray-400 text-base whitespace-normal max-w-xs">
-                  This battle hasn&apos;t started yet. Create a coin to
-                  participate!
+                <div className="max-w-xs whitespace-normal text-base text-gray-400">
+                  This battle hasn&apos;t started yet. Create a coin to participate!
                 </div>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
                 <StatCard title="Market Cap" value={data.marketCap} />
                 <StatCard title="Volume" value={data.volume} />
                 <StatCard title="Meme Count" value={data.memeCount} />
@@ -351,12 +326,12 @@ function DashboardSection({
                   justifyContent: "center",
                 }}
               >
-                <div className="w-full h-full bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl flex items-center justify-center border-2 border-[#FFD700]/30 backdrop-blur-sm relative overflow-hidden group">
+                <div className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl border-2 border-[#FFD700]/30 bg-gradient-to-br from-black/80 to-[#13151E]/90 backdrop-blur-sm">
                   {/* Animated pulsing effect */}
-                  <div className="absolute inset-0 bg-[#FFD700]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out" />
-                  <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-[#FFD700] opacity-[0.03] blur-[50px] rounded-full" />
+                  <div className="absolute inset-0 bg-[#FFD700]/5 opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100" />
+                  <div className="absolute top-0 right-0 h-[150px] w-[150px] rounded-full bg-[#FFD700] opacity-[0.03] blur-[50px]" />
 
-                  <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300">
+                  <span className="font-bold text-lg text-white tracking-wide opacity-80 transition-transform duration-300 group-hover:scale-105">
                     Upcoming Battle
                   </span>
                 </div>
@@ -382,7 +357,7 @@ function DashboardSection({
         }}
       >
         <div
-          className={`bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative ${
+          className={`relative w-full overflow-hidden rounded-2xl border border-[#343850]/80 bg-gradient-to-br from-[#1D1F2B] to-[#13151E] backdrop-blur-sm ${
             data.state === "active"
               ? "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7),0_0_15px_0_rgba(168,85,247,0.25)]"
               : "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]"
@@ -391,9 +366,7 @@ function DashboardSection({
           {/* State indicator line */}
           <div
             className={`absolute top-0 left-0 h-full w-2 ${
-              data.state === "active"
-                ? "bg-purple-500 animate-pulse"
-                : "bg-gray-700"
+              data.state === "active" ? "animate-pulse bg-purple-500" : "bg-gray-700"
             }`}
           />
 
@@ -403,60 +376,55 @@ function DashboardSection({
             <div className="p-6">
               {/* Header for mobile view */}
               <div className="lg:hidden">
-                <div className="flex flex-col space-y-2 mb-4">
+                <div className="mb-4 flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                        {data.id}
-                      </h1>
-                      <span className="text-xl font-bold text-white">
+                      <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                      <span className="font-bold text-white text-xl">
                         Battle In Progress
-                        <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
+                        <span className="ml-3 inline-flex animate-pulse items-center rounded-full border border-purple-400/30 bg-gradient-to-r from-purple-500/20 to-violet-500/20 px-2.5 py-1 font-medium text-purple-300 text-xs">
                           ● LIVE
                         </span>
                       </span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-400 font-medium tracking-wide">
+                  <div className="font-medium text-gray-400 text-sm tracking-wide">
                     Start: {data.startDate} · End: {data.endDate}
                   </div>
                 </div>
               </div>
 
               {/* Header for desktop */}
-              <div className="hidden lg:flex items-center justify-between mb-5">
+              <div className="mb-5 hidden items-center justify-between lg:flex">
                 <div className="flex items-center gap-4">
-                  <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                    {data.id}
-                  </h1>
-                  <span className="text-xl font-bold text-white">
+                  <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                  <span className="font-bold text-white text-xl">
                     Battle In Progress
-                    <span className="ml-3 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-300 animate-pulse border border-purple-400/30">
+                    <span className="ml-3 inline-flex animate-pulse items-center rounded-full border border-purple-400/30 bg-gradient-to-r from-purple-500/20 to-violet-500/20 px-2.5 py-1 font-medium text-purple-300 text-xs">
                       ● LIVE
                     </span>
                   </span>
                 </div>
-                <div className="text-sm text-gray-400 font-medium tracking-wide">
+                <div className="font-medium text-gray-400 text-sm tracking-wide">
                   Start: {data.startDate} · End: {data.endDate}
                 </div>
               </div>
 
               {/* Action/description section */}
-              <div className="flex flex-row items-center gap-4 mb-6">
+              <div className="mb-6 flex flex-row items-center gap-4">
                 <Link
                   href="/battle"
-                  className="rounded-full px-5 py-2 text-xl font-bold border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-lg hover:from-violet-500 hover:to-purple-500 transition-all duration-150 cursor-pointer shrink-0"
+                  className="shrink-0 cursor-pointer rounded-full border-2 border-purple-400 bg-gradient-to-r from-purple-500 to-violet-500 px-5 py-2 font-bold text-white text-xl shadow-lg transition-all duration-150 hover:from-violet-500 hover:to-purple-500"
                 >
                   Join the Battle
                 </Link>
-                <div className="text-gray-400 text-base whitespace-normal max-w-xs">
-                  The battle is heating up! Join now and help your favorite meme
-                  coin win the round.
+                <div className="max-w-xs whitespace-normal text-base text-gray-400">
+                  The battle is heating up! Join now and help your favorite meme coin win the round.
                 </div>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
                 <StatCard title="Market Cap" value={data.marketCap} />
                 <StatCard title="Volume" value={data.volume} />
                 <StatCard title="Meme Count" value={data.memeCount} />
@@ -470,10 +438,10 @@ function DashboardSection({
               </div>
 
               {/* Chart */}
-              <div className="bg-gradient-to-br from-[#181B27] to-[#0F1017] rounded-xl border border-[#343850]/50 overflow-hidden backdrop-filter backdrop-blur-sm shadow-inner">
-                <div className="h-[240px] px-2 pt-4 pb-6 relative">
+              <div className="overflow-hidden rounded-xl border border-[#343850]/50 bg-gradient-to-br from-[#181B27] to-[#0F1017] shadow-inner backdrop-blur-sm backdrop-filter">
+                <div className="relative h-[240px] px-2 pt-4 pb-6">
                   {/* Chart subtle grid overlay */}
-                  <div className="absolute inset-0 bg-[url('/images/grid-chart.svg')] bg-center opacity-[0.07] z-0" />
+                  <div className="absolute inset-0 z-0 bg-[url('/images/grid-chart.svg')] bg-center opacity-[0.07]" />
 
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data.chartData}>
@@ -534,14 +502,14 @@ function DashboardSection({
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex flex-wrap gap-6 justify-center py-3 border-t border-[#343850]/70 bg-[#13151E]/80 backdrop-blur-sm">
+                <div className="flex flex-wrap justify-center gap-6 border-[#343850]/70 border-t bg-[#13151E]/80 py-3 backdrop-blur-sm">
                   {Object.keys(tokenColors).map((token) => (
                     <div
                       key={token}
-                      className="flex items-center gap-2 transition-transform hover:scale-105 duration-300"
+                      className="flex items-center gap-2 transition-transform duration-300 hover:scale-105"
                     >
                       <div
-                        className="w-[10px] h-[10px] rounded-full ring-2 ring-opacity-50"
+                        className="h-[10px] w-[10px] rounded-full ring-2 ring-opacity-50"
                         style={
                           {
                             backgroundColor: tokenColors[token] || "#FFD700",
@@ -550,9 +518,7 @@ function DashboardSection({
                           } as React.CSSProperties
                         }
                       />
-                      <span className="text-gray-300 font-medium tracking-wide">
-                        {token}
-                      </span>
+                      <span className="font-medium text-gray-300 tracking-wide">{token}</span>
                     </div>
                   ))}
                 </div>
@@ -560,11 +526,11 @@ function DashboardSection({
             </div>
 
             {/* 右側 - Battle In Progress Box - アスペクト比3:4を厳密に保持 */}
-            <div className="p-6 flex items-center justify-center h-full">
-              <div className="w-full aspect-[3/4] max-w-[320px] flex items-center justify-center bg-gradient-to-br from-black/80 to-[#13151E]/90 rounded-xl border-2 border-purple-500/30 backdrop-blur-sm relative overflow-hidden group">
-                <span className="text-white text-lg font-bold opacity-80 tracking-wide group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+            <div className="flex h-full items-center justify-center p-6">
+              <div className="group relative flex aspect-[3/4] w-full max-w-[320px] items-center justify-center overflow-hidden rounded-xl border-2 border-purple-500/30 bg-gradient-to-br from-black/80 to-[#13151E]/90 backdrop-blur-sm">
+                <span className="flex items-center justify-center font-bold text-lg text-white tracking-wide opacity-80 transition-transform duration-300 group-hover:scale-105">
                   Battle in progress
-                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 animate-pulse align-middle">
+                  <span className="ml-2 inline-flex animate-pulse items-center rounded-full bg-purple-500/20 px-2.5 py-0.5 align-middle font-medium text-purple-300 text-xs">
                     ● LIVE
                   </span>
                 </span>
@@ -589,7 +555,7 @@ function DashboardSection({
           ease: [0.33, 1, 0.68, 1],
         }}
       >
-        <div className="bg-gradient-to-br from-[#1D1F2B] to-[#13151E] w-full border border-[#343850]/80 rounded-2xl overflow-hidden backdrop-blur-sm relative shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)]">
+        <div className="relative w-full overflow-hidden rounded-2xl border border-[#343850]/80 bg-gradient-to-br from-[#1D1F2B] to-[#13151E] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-sm">
           {/* State indicator line */}
           <div className="absolute top-0 left-0 h-full w-2 bg-gray-700" />
 
@@ -599,69 +565,56 @@ function DashboardSection({
             <div className="p-6">
               {/* Header for mobile view */}
               <div className="lg:hidden">
-                <div className="flex flex-col space-y-2 mb-4">
+                <div className="mb-4 flex flex-col space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                        {data.id}
-                      </h1>
-                      <span className="text-xl font-bold text-white">
-                        Completed Battle
-                      </span>
+                      <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                      <span className="font-bold text-white text-xl">Completed Battle</span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-400 font-medium tracking-wide">
+                  <div className="font-medium text-gray-400 text-sm tracking-wide">
                     Start: {data.startDate} · End: {data.endDate}
                   </div>
                 </div>
               </div>
 
               {/* Header for desktop */}
-              <div className="hidden lg:flex items-center justify-between mb-5">
+              <div className="mb-5 hidden items-center justify-between lg:flex">
                 <div className="flex items-center gap-4">
-                  <h1 className="text-4xl font-bold text-white drop-shadow-md">
-                    {data.id}
-                  </h1>
-                  <span className="text-xl font-bold text-white">
-                    Completed Battle
-                  </span>
+                  <h1 className="font-bold text-4xl text-white drop-shadow-md">{data.id}</h1>
+                  <span className="font-bold text-white text-xl">Completed Battle</span>
                 </div>
-                <div className="text-sm text-gray-400 font-medium tracking-wide">
+                <div className="font-medium text-gray-400 text-sm tracking-wide">
                   Start: {data.startDate} · End: {data.endDate}
                 </div>
               </div>
 
               {/* Action/description section */}
               {data.winner && (
-                <div className="flex items-center gap-4 mb-6">
+                <div className="mb-6 flex items-center gap-4">
                   <button
                     ref={claimButtonRef}
                     type="button"
                     onClick={() =>
-                      onClaimClick?.(
-                        data.winner?.name || "",
-                        data.topShare || 42,
-                        data.id,
-                      )
+                      onClaimClick?.(data.winner?.name || "", data.topShare || 42, data.id)
                     }
-                    className={`rounded-full px-5 py-2 text-xl font-bold border-2 transition-all duration-150 cursor-pointer ${
+                    className={`cursor-pointer rounded-full border-2 px-5 py-2 font-bold text-xl transition-all duration-150 ${
                       intent === "claim-outcome"
-                        ? "border-yellow-400 bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-[0_5px_30px_-10px_rgba(234,179,8,0.5)] animate-pulse"
-                        : "border-transparent bg-black text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text hover:border-yellow-400"
+                        ? "animate-pulse border-yellow-400 bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-[0_5px_30px_-10px_rgba(234,179,8,0.5)]"
+                        : "border-transparent bg-black bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent hover:border-yellow-400"
                     }`}
                   >
                     Claim outcome
                   </button>
-                  <span className="text-gray-400 text-base max-w-xs whitespace-normal block">
-                    The {data.winner.name} won the round with a{" "}
-                    {data.topShare || 42}% share. The remaining{" "}
-                    {100 - (data.topShare || 42)}% memes was burned.
+                  <span className="block max-w-xs whitespace-normal text-base text-gray-400">
+                    The {data.winner.name} won the round with a {data.topShare || 42}% share. The
+                    remaining {100 - (data.topShare || 42)}% memes was burned.
                   </span>
                 </div>
               )}
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+              <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
                 <StatCard title="Market Cap" value={data.marketCap} />
                 <StatCard title="Volume" value={data.volume} />
                 <StatCard title="Meme Count" value={data.memeCount} />
@@ -675,10 +628,10 @@ function DashboardSection({
               </div>
 
               {/* Chart */}
-              <div className="bg-gradient-to-br from-[#181B27] to-[#0F1017] rounded-xl border border-[#343850]/50 overflow-hidden backdrop-filter backdrop-blur-sm shadow-inner">
-                <div className="h-[240px] px-2 pt-4 pb-6 relative">
+              <div className="overflow-hidden rounded-xl border border-[#343850]/50 bg-gradient-to-br from-[#181B27] to-[#0F1017] shadow-inner backdrop-blur-sm backdrop-filter">
+                <div className="relative h-[240px] px-2 pt-4 pb-6">
                   {/* Chart subtle grid overlay */}
-                  <div className="absolute inset-0 bg-[url('/images/grid-chart.svg')] bg-center opacity-[0.07] z-0" />
+                  <div className="absolute inset-0 z-0 bg-[url('/images/grid-chart.svg')] bg-center opacity-[0.07]" />
 
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data.chartData}>
@@ -739,14 +692,14 @@ function DashboardSection({
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex flex-wrap gap-6 justify-center py-3 border-t border-[#343850]/70 bg-[#13151E]/80 backdrop-blur-sm">
+                <div className="flex flex-wrap justify-center gap-6 border-[#343850]/70 border-t bg-[#13151E]/80 py-3 backdrop-blur-sm">
                   {Object.keys(tokenColors).map((token) => (
                     <div
                       key={token}
-                      className="flex items-center gap-2 transition-transform hover:scale-105 duration-300"
+                      className="flex items-center gap-2 transition-transform duration-300 hover:scale-105"
                     >
                       <div
-                        className="w-[10px] h-[10px] rounded-full ring-2 ring-opacity-50"
+                        className="h-[10px] w-[10px] rounded-full ring-2 ring-opacity-50"
                         style={
                           {
                             backgroundColor: tokenColors[token] || "#FFD700",
@@ -755,9 +708,7 @@ function DashboardSection({
                           } as React.CSSProperties
                         }
                       />
-                      <span className="text-gray-300 font-medium tracking-wide">
-                        {token}
-                      </span>
+                      <span className="font-medium text-gray-300 tracking-wide">{token}</span>
                     </div>
                   ))}
                 </div>
@@ -766,17 +717,13 @@ function DashboardSection({
 
             {/* 右側 - Champion Card - アスペクト比3:4を厳密に保持 */}
             {data.winner && (
-              <div className="p-6 flex items-center justify-center h-full">
-                <div className="w-full aspect-[3/4] max-w-[320px]">
+              <div className="flex h-full items-center justify-center p-6">
+                <div className="aspect-[3/4] w-full max-w-[320px]">
                   <ChampionCard
-                    imageUrl={
-                      data.winner.image || "/images/mockmemes/ANTS.webp"
-                    }
+                    imageUrl={data.winner.image || "/images/mockmemes/ANTS.webp"}
                     symbol={data.winner.symbol || "WINNER"}
                     name={data.winner.name || "Champion"}
-                    mcap={
-                      Number(data.winner.mcap.replace(/[^0-9]/g, "")) || 100000
-                    }
+                    mcap={Number(data.winner.mcap.replace(/[^0-9]/g, "")) || 100000}
                     round={Number.parseInt(data.id.replace("#", ""), 10) || 1}
                   />
                 </div>
@@ -793,12 +740,12 @@ function DashboardSection({
 
 function StatCard({ title, value }: StatCardProps) {
   return (
-    <div className="bg-gradient-to-br from-[#1A1D2A]/80 to-[#13151E] rounded-xl p-4 border border-[#343850]/50 shadow-inner group hover:border-[#343850]/70 transition-all duration-300 overflow-hidden relative">
+    <div className="group relative overflow-hidden rounded-xl border border-[#343850]/50 bg-gradient-to-br from-[#1A1D2A]/80 to-[#13151E] p-4 shadow-inner transition-all duration-300 hover:border-[#343850]/70">
       {/* Subtle shine effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+      <div className="-translate-x-full absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full" />
 
-      <p className="text-gray-400 text-sm font-medium mb-1">{title}</p>
-      <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 tracking-tight">
+      <p className="mb-1 font-medium text-gray-400 text-sm">{title}</p>
+      <p className="bg-gradient-to-r from-white to-gray-300 bg-clip-text font-bold text-2xl text-transparent tracking-tight">
         {value}
       </p>
     </div>

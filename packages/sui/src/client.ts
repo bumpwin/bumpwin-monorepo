@@ -10,8 +10,6 @@ export const networks = {
 
 export type NetworkType = "testnet" | "mainnet" | "devnet";
 
-export function createSuiClient(
-  network: NetworkType = NETWORK_TYPE,
-): SuiClient {
+export function createSuiClient(network: NetworkType = NETWORK_TYPE): SuiClient {
   return new SuiClient({ url: networks[network].url });
 }

@@ -118,8 +118,7 @@ export const mockmemes: MemeMetadata[] = [
     id: MEME_IDS.YAKIU,
     symbol: "YAKIU",
     name: "Yakiumin",
-    description:
-      "why he shaped like that\n\nalso: devs are asleep, deploy sushi llama",
+    description: "why he shaped like that\n\nalso: devs are asleep, deploy sushi llama",
     iconUrl: "/images/mockmemes/YAKIU.png",
   },
   {
@@ -140,8 +139,7 @@ export const mockmemes: MemeMetadata[] = [
     id: MEME_IDS.TREX,
     symbol: "TREX",
     name: "T-Rex Chain",
-    description:
-      "Sir, our tech is outdated.\n– SO IS THE T-REX AND IT ATE PEOPLE",
+    description: "Sir, our tech is outdated.\n– SO IS THE T-REX AND IT ATE PEOPLE",
     iconUrl: "/images/mockmemes/TREX.png",
   },
   {

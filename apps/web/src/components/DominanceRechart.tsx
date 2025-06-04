@@ -47,33 +47,21 @@ interface DominanceRechartProps {
 }
 
 // Custom tooltip (similar to DominanceChart)
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-}: TooltipProps<number, string>) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-black/90 text-white p-3 rounded-lg shadow-lg border border-white/10 backdrop-blur-sm">
-        <p className="font-medium text-center border-b border-white/20 pb-1 mb-1 text-sm">
+      <div className="rounded-lg border border-white/10 bg-black/90 p-3 text-white shadow-lg backdrop-blur-sm">
+        <p className="mb-1 border-white/20 border-b pb-1 text-center font-medium text-sm">
           {typeof label === "number" ? `${label} min` : label}
         </p>
         <div className="space-y-1">
           {payload.map((entry) => (
-            <div
-              key={entry.name}
-              className="flex items-center justify-between gap-3"
-            >
+            <div key={entry.name} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: entry.color }}
-                />
+                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: entry.color }} />
                 <span className="font-medium text-xs">{entry.name}</span>
               </div>
-              <span className="font-bold text-sm">
-                {(entry.value as number).toFixed(2)}%
-              </span>
+              <span className="font-bold text-sm">{(entry.value as number).toFixed(2)}%</span>
             </div>
           ))}
         </div>
@@ -111,9 +99,7 @@ const DominanceRechart: React.FC<DominanceRechartProps> = ({
   const filteredPoints = showAllTime
     ? points
     : points.filter(
-        (point) =>
-          typeof point.timestamp === "number" &&
-          point.timestamp <= currentMinute,
+        (point) => typeof point.timestamp === "number" && point.timestamp <= currentMinute,
       );
 
   // 24時間の固定スケールを設定

@@ -2,44 +2,29 @@
 
 import { DarkCard } from "@/components/ui/dark-card";
 import type { RoundCoin } from "@/types/roundcoin";
-import {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/shadcn/components/card";
+import { CardContent, CardHeader, CardTitle } from "@workspace/shadcn/components/card";
 import Image from "next/image";
 
 interface BattleCoinDetailCardProps {
   coin: RoundCoin;
 }
 
-const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({
-  coin,
-}) => {
+const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({ coin }) => {
   return (
-    <DarkCard className="w-full mt-4">
+    <DarkCard className="mt-4 w-full">
       <CardHeader className="pb-3">
         <div className="flex flex-col items-center gap-3">
-          <div className="relative w-full h-[240px]">
-            <Image
-              src={coin.iconUrl}
-              alt={coin.symbol}
-              fill
-              className="object-contain"
-            />
+          <div className="relative h-[240px] w-full">
+            <Image src={coin.iconUrl} alt={coin.symbol} fill className="object-contain" />
           </div>
           <div className="text-center">
-            <CardTitle className="text-2xl font-bold text-white">
-              {coin.symbol}
-            </CardTitle>
-            <p className="text-lg text-gray-400 mt-1">{coin.name}</p>
+            <CardTitle className="font-bold text-2xl text-white">{coin.symbol}</CardTitle>
+            <p className="mt-1 text-gray-400 text-lg">{coin.name}</p>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-300 whitespace-pre-wrap">
-          {coin.description}
-        </p>
+        <p className="whitespace-pre-wrap text-gray-300 text-sm">{coin.description}</p>
       </CardContent>
     </DarkCard>
   );

@@ -25,9 +25,7 @@ export function CoinList() {
   const handleToggleFavorite = (address: string) => {
     setCoins((prevCoins) =>
       prevCoins.map((coin) =>
-        coin.address === address
-          ? { ...coin, isFavorite: !coin.isFavorite }
-          : coin,
+        coin.address === address ? { ...coin, isFavorite: !coin.isFavorite } : coin,
       ),
     );
   };
@@ -60,9 +58,7 @@ export function CoinList() {
       case "marketCap":
         return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
       case "new":
-        return [...filtered].sort(
-          (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-        );
+        return [...filtered].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       default:
         return filtered;
     }
@@ -70,27 +66,25 @@ export function CoinList() {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center">
-          <h2 className="text-xl font-bold text-white">Round 42 Contestants</h2>
+          <h2 className="font-bold text-white text-xl">Round 42 Contestants</h2>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-slate-800 border-slate-700 text-white hover:bg-slate-700 h-8"
+                className="h-8 border-slate-700 bg-slate-800 text-white hover:bg-slate-700"
               >
                 {sortType === "marketCap" ? "Market cap" : "New"}
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleSort("new")}>
-                New
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleSort("new")}>New</DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleSort("marketCap")}>
                 Market cap
               </DropdownMenuItem>
@@ -101,7 +95,7 @@ export function CoinList() {
             variant="outline"
             size="sm"
             className={cn(
-              "bg-slate-800 border-slate-700 hover:bg-slate-700 h-8",
+              "h-8 border-slate-700 bg-slate-800 hover:bg-slate-700",
               showOnlyFavorites && "text-yellow-400",
             )}
             onClick={handleToggleWatchlist}
@@ -112,25 +106,19 @@ export function CoinList() {
           <Button
             variant="outline"
             size="icon"
-            className="bg-slate-800 border-slate-700 text-blue-400 hover:bg-slate-700 h-8 w-8"
+            className="h-8 w-8 border-slate-700 bg-slate-800 text-blue-400 hover:bg-slate-700"
             onClick={handleRefresh}
             disabled={isRefreshing}
           >
-            <RotateCw
-              className={cn("h-4 w-4", isRefreshing && "animate-spin")}
-            />
+            <RotateCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
             <span className="sr-only">Refresh</span>
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filteredAndSortedCoins().map((coin) => (
-          <CoinCard
-            key={coin.address}
-            {...coin}
-            onToggleFavorite={handleToggleFavorite}
-          />
+          <CoinCard key={coin.address} {...coin} onToggleFavorite={handleToggleFavorite} />
         ))}
       </div>
     </div>

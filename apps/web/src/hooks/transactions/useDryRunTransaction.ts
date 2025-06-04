@@ -11,9 +11,7 @@ export const useDryRunTransaction = () => {
   const currentAccount = useCurrentAccount();
 
   const dryRunTransaction = useCallback(
-    async (
-      transaction: Transaction,
-    ): Promise<Result<DryRunTransactionBlockResponse, Error>> => {
+    async (transaction: Transaction): Promise<Result<DryRunTransactionBlockResponse, Error>> => {
       if (!currentAccount) return err(new Error("No wallet connected"));
 
       setIsLoading(true);

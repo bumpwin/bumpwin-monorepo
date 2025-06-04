@@ -10,10 +10,8 @@ export const mockMemeMetadata: Record<MEME_ID, MemeMetadata> = mockmemes.reduce(
   {} as Record<MEME_ID, MemeMetadata>,
 );
 
-export const getMemeMetadataById = (
-  memeId: MEME_ID,
-): MemeMetadata | undefined => mockMemeMetadata[memeId];
+export const getMemeMetadataById = (memeId: MEME_ID): MemeMetadata | undefined =>
+  mockMemeMetadata[memeId];
 
-export const getMemeMetadataBySymbol = (
-  symbol: string,
-): MemeMetadata | undefined => mockmemes.find((meme) => meme.symbol === symbol);
+export const getMemeMetadataBySymbol = (symbol: string): MemeMetadata | undefined =>
+  mockmemes.find((meme) => meme.symbol === symbol);
