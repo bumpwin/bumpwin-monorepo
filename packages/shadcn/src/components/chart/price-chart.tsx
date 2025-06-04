@@ -1,6 +1,6 @@
 "use client";
 
-import { ColorType, type IChartApi, LineStyle, createChart } from "lightweight-charts";
+import { ColorType, type IChartApi, LineSeries, LineStyle, createChart } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 export interface PriceChartData {
@@ -110,8 +110,8 @@ export function PriceChart({
 
       console.log("Formatted data:", formattedData);
 
-      // 正しくラインシリーズを作成
-      const lineSeries = chart.addLineSeries({
+      // 正しくラインシリーズを作成 (v5 API)
+      const lineSeries = chart.addSeries(LineSeries, {
         color: lineColor,
         lineWidth: 2,
         lineStyle: LineStyle.Solid,

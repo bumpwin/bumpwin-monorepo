@@ -1,6 +1,14 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
+
+// Type definitions for transaction results
+interface TransactionResult {
+  digest: string;
+  packageId?: string;
+  coinMetadataID?: string;
+  treasuryCapID?: string;
+}
 // Remove the problematic imports
 // import { BumpFamCoin } from "bumpwin";
 // import { Justchat } from "bumpwin";
@@ -168,13 +176,13 @@ export async function publishBumpFamCoinPackage(
       };
     }
 
-    let txResult: unknown;
+    let txResult: TransactionResult;
     let digest = "";
     try {
       const txResultStr = await signCallback(builtTx);
 
       try {
-        txResult = JSON.parse(txResultStr);
+        txResult = JSON.parse(txResultStr) as TransactionResult;
         logger.info("Transaction signed and executed successfully", {
           digest: txResult.digest,
         });
@@ -190,7 +198,7 @@ export async function publishBumpFamCoinPackage(
           packageId: "",
           coinMetadataID: "",
           treasuryCapID: "",
-        };
+        } as TransactionResult;
       }
     } catch (signError) {
       logger.error("Failed to sign and execute transaction", {
@@ -293,12 +301,12 @@ export async function createBumpFamCoin(
       };
     }
 
-    let txResult: unknown;
+    let txResult: TransactionResult;
     try {
       const txResultStr = await signCallback(builtTx);
 
       try {
-        txResult = JSON.parse(txResultStr);
+        txResult = JSON.parse(txResultStr) as TransactionResult;
         logger.info("Coin creation transaction signed and executed successfully", {
           digest: txResult.digest,
         });
@@ -308,7 +316,7 @@ export async function createBumpFamCoin(
         });
         txResult = {
           digest: txResultStr,
-        };
+        } as TransactionResult;
       }
     } catch (signError) {
       logger.error("Failed to sign transaction", { error: signError });
@@ -443,12 +451,12 @@ export async function sendChatMessage(
 
     // Sign and execute the transaction
     logger.info("Signing and executing transaction");
-    let txResult: unknown;
+    let txResult: TransactionResult;
     try {
       const txResultStr = await signCallback(builtTx);
 
       try {
-        txResult = JSON.parse(txResultStr);
+        txResult = JSON.parse(txResultStr) as TransactionResult;
         logger.info("Chat message transaction signed and executed successfully", {
           digest: txResult.digest,
         });
@@ -458,7 +466,7 @@ export async function sendChatMessage(
         });
         txResult = {
           digest: txResultStr,
-        };
+        } as TransactionResult;
       }
     } catch (signError) {
       logger.error("Failed to execute chat message transaction", {

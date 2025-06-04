@@ -2,12 +2,12 @@ import type { CoinDisplayInfo, DominanceChartData, DominancePoint } from "../typ
 
 // Mock coin display information
 export const mockCoinDisplayInfo: CoinDisplayInfo[] = [
-  { id: "doge", name: "Dogecoin", color: "#C2A633" },
-  { id: "pepe", name: "Pepe", color: "#3CB043" },
-  { id: "wif", name: "WIF", color: "#FF69B4" },
-  { id: "shib", name: "Shiba Inu", color: "#F7931A" },
-  { id: "bonk", name: "Bonk", color: "#8B4513" },
-  { id: "other", name: "Other", color: "#808080" },
+  { id: "doge", symbol: "DOGE", name: "Dogecoin", color: "#C2A633" },
+  { id: "pepe", symbol: "PEPE", name: "Pepe", color: "#3CB043" },
+  { id: "wif", symbol: "WIF", name: "WIF", color: "#FF69B4" },
+  { id: "shib", symbol: "SHIB", name: "Shiba Inu", color: "#F7931A" },
+  { id: "bonk", symbol: "BONK", name: "Bonk", color: "#8B4513" },
+  { id: "other", symbol: "OTHER", name: "Other", color: "#808080" },
 ];
 
 // Helper function to generate random fluctuation
@@ -46,7 +46,7 @@ const generateTimePoints = (hours: number, minuteInterval: number) => {
       other = Math.max(0, 1 - sum);
 
       points.push({
-        date: currentDate.toISOString(),
+        time: currentDate.toISOString(),
         doge,
         pepe,
         wif,

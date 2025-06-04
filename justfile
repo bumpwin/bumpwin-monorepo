@@ -73,9 +73,8 @@ checkall: format lint # typecheck
 check-all: format lint typecheck
 
 # Fix linting and formatting issues
-check-fix: 
-    pnpm run format
-    pnpm run lint
+check-fix:
+    pnpm run k
 
 create-package pkg_name:
     ./scripts/create-package.sh {{pkg_name}}

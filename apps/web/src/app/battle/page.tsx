@@ -15,6 +15,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
 import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import type { MemeMetadata } from "@workspace/types";
+
+// API Response types
+interface BattleApiResponse {
+  memes?: Array<{ metadata?: MemeMetadata }>;
+}
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -201,10 +206,11 @@ export default function RoundsAPage() {
     },
   });
 
-  const allMemes =
-    battleData?.memes
-      ?.filter((m: { metadata?: unknown }) => m.metadata)
-      .map((m: { metadata: unknown }) => m.metadata) || [];
+  const typedBattleData = battleData as BattleApiResponse | undefined;
+  const allMemes: MemeMetadata[] =
+    typedBattleData?.memes
+      ?.filter((m): m is { metadata: MemeMetadata } => !!m.metadata)
+      .map((m) => m.metadata) || [];
 
   // Store darknight memes selection to prevent re-shuffling
   const darknightMemesRef = useRef<MemeMetadata[]>([]);
@@ -213,8 +219,8 @@ export default function RoundsAPage() {
   // Only recalculate when phase changes TO darknight
   useEffect(() => {
     if (phase === "darknight" && lastPhaseRef.current !== "darknight" && allMemes.length > 8) {
-      const jellMeme = allMemes.find((m: MemeMetadata) => m.symbol === "JELL");
-      const otherMemes = allMemes.filter((m: MemeMetadata) => m.symbol !== "JELL");
+      const jellMeme = allMemes.find((m) => m.symbol === "JELL");
+      const otherMemes = allMemes.filter((m) => m.symbol !== "JELL");
 
       // Shuffle and pick 7 random memes
       const shuffled = [...otherMemes].sort(() => Math.random() - 0.5);

@@ -9,6 +9,15 @@ import type {
   InsertChatMessageRequest,
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
+
+// Event type definition
+interface ChatEvent {
+  digest: string;
+  sequence: number;
+  timestamp: string | number;
+  sender: string;
+  text: string;
+}
 import { EventFetcher } from "bumpwin";
 
 const dbRepository = new SupabaseRepository(supabase);
@@ -51,12 +60,14 @@ const getInitialCursor = async (): Promise<EventId | null> => {
 /**
  * Save chat message to Supabase
  */
-const saveChatMessage = async (event: unknown): Promise<void> => {
+const saveChatMessage = async (event: ChatEvent): Promise<void> => {
   try {
     const chatMessageRequest: InsertChatMessageRequest = {
       txDigest: event.digest,
       eventSequence: BigInt(event.sequence),
-      createdAt: new Date(event.timestamp).toISOString(),
+      createdAt: new Date(
+        typeof event.timestamp === "string" ? Number.parseInt(event.timestamp) : event.timestamp,
+      ).toISOString(),
       senderAddress: event.sender,
       messageText: event.text,
     };
@@ -135,7 +146,10 @@ const isEventAlreadyProcessed = async (eventId: string): Promise<boolean> => {
 /**
  * Process new events, save to DB and log details
  */
-const processEvents = async (events: unknown[], processedEventIds: Set<string>): Promise<void> => {
+const processEvents = async (
+  events: ChatEvent[],
+  processedEventIds: Set<string>,
+): Promise<void> => {
   if (events.length === 0) return;
 
   logger.info(`[${new Date().toISOString()}] Processing ${events.length} new event(s)`);

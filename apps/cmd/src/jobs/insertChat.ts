@@ -93,12 +93,7 @@ const insertChatMessage = async (message: ChatMessage): Promise<Result<void, Err
     return ok(undefined);
   }
 
-  logger.error("Failed to save message", {
-    error: {
-      message: insertResult.error.message,
-      code: insertResult.error.code,
-    },
-  });
+  logger.error(`Failed to save message: ${insertResult.error.message}`);
   return err(ERRORS.DB_INSERT);
 };
 
