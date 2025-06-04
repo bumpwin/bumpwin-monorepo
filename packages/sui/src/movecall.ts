@@ -9,11 +9,11 @@ import { isCoinMetadata, isTreasuryCap } from "./utils";
 // Mock implementations to replace the missing imports
 // These will be placeholders until the actual implementations are available
 const BumpFamCoin = {
-  publishBumpFamCoinPackage: (tx: Transaction, params: { sender: string }) => {
+  publishBumpFamCoinPackage: (_tx: Transaction, params: { sender: string }) => {
     logger.info("Mock BumpFamCoin.publishBumpFamCoinPackage called", params);
     // This is a placeholder - no actual implementation
   },
-  createCoin: (tx: Transaction, coinType: string, params: any) => {
+  createCoin: (_tx: Transaction, coinType: string, params: unknown) => {
     logger.info("Mock BumpFamCoin.createCoin called", { coinType, params });
     // This is a placeholder - no actual implementation
   },
@@ -26,7 +26,7 @@ class Justchat {
     this.network = network;
   }
 
-  sendMessage(tx: Transaction, params: { message: string; sender: string }) {
+  sendMessage(_tx: Transaction, params: { message: string; sender: string }) {
     logger.info("Mock Justchat.sendMessage called", {
       ...params,
       network: this.network,
@@ -43,10 +43,7 @@ class Justchat {
  */
 export async function signTransactionAndExecute(
   transactionBlock: Uint8Array,
-  signAndExecuteTransactionFn: (
-    args: { transaction: string },
-    options: any,
-  ) => void,
+  signAndExecuteTransactionFn: (args: { transaction: string }, options: unknown) => void,
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     try {
@@ -101,21 +98,21 @@ async function fetchObjectIdsFromTransaction(
 
     // Extract IDs from object changes
     const packageId =
-      (txBlock.objectChanges?.find((c) => c.type === "published") as any)
+      (txBlock.objectChanges?.find((c) => c.type === "published") as { packageId?: string })
         ?.packageId || "";
 
     const coinMetadataID =
       (
         txBlock.objectChanges?.find(
           (c) => c.type === "created" && isCoinMetadata(c.objectType),
-        ) as any
+        ) as { objectId?: string }
       )?.objectId || "";
 
     const treasuryCapID =
       (
-        txBlock.objectChanges?.find(
-          (c) => c.type === "created" && isTreasuryCap(c.objectType),
-        ) as any
+        txBlock.objectChanges?.find((c) => c.type === "created" && isTreasuryCap(c.objectType)) as {
+          objectId?: string;
+        }
       )?.objectId || "";
 
     logger.info("Extracted object IDs from transaction", {
@@ -171,7 +168,7 @@ export async function publishBumpFamCoinPackage(
       };
     }
 
-    let txResult: any;
+    let txResult: unknown;
     let digest = "";
     try {
       const txResultStr = await signCallback(builtTx);
@@ -182,7 +179,7 @@ export async function publishBumpFamCoinPackage(
           digest: txResult.digest,
         });
         digest = txResult.digest;
-      } catch (parseError) {
+      } catch (_parseError) {
         logger.warn("Received legacy format transaction result", {
           result: txResultStr,
         });
@@ -207,11 +204,7 @@ export async function publishBumpFamCoinPackage(
     }
 
     // If package info is missing, fetch it from the blockchain
-    if (
-      !txResult.packageId ||
-      !txResult.coinMetadataID ||
-      !txResult.treasuryCapID
-    ) {
+    if (!txResult.packageId || !txResult.coinMetadataID || !txResult.treasuryCapID) {
       logger.info("Fetching object IDs from transaction", { digest });
       const objectIds = await fetchObjectIdsFromTransaction(client, digest);
 
@@ -300,19 +293,16 @@ export async function createBumpFamCoin(
       };
     }
 
-    let txResult: any;
+    let txResult: unknown;
     try {
       const txResultStr = await signCallback(builtTx);
 
       try {
         txResult = JSON.parse(txResultStr);
-        logger.info(
-          "Coin creation transaction signed and executed successfully",
-          {
-            digest: txResult.digest,
-          },
-        );
-      } catch (parseError) {
+        logger.info("Coin creation transaction signed and executed successfully", {
+          digest: txResult.digest,
+        });
+      } catch (_parseError) {
         logger.warn("Received legacy format transaction result", {
           result: txResultStr,
         });
@@ -453,19 +443,16 @@ export async function sendChatMessage(
 
     // Sign and execute the transaction
     logger.info("Signing and executing transaction");
-    let txResult: any;
+    let txResult: unknown;
     try {
       const txResultStr = await signCallback(builtTx);
 
       try {
         txResult = JSON.parse(txResultStr);
-        logger.info(
-          "Chat message transaction signed and executed successfully",
-          {
-            digest: txResult.digest,
-          },
-        );
-      } catch (parseError) {
+        logger.info("Chat message transaction signed and executed successfully", {
+          digest: txResult.digest,
+        });
+      } catch (_parseError) {
         logger.warn("Received legacy format transaction result", {
           result: txResultStr,
         });
@@ -476,13 +463,11 @@ export async function sendChatMessage(
     } catch (signError) {
       logger.error("Failed to execute chat message transaction", {
         error: signError,
-        errorMessage:
-          signError instanceof Error ? signError.message : String(signError),
+        errorMessage: signError instanceof Error ? signError.message : String(signError),
       });
 
       // Check for specific error types to provide better messages
-      const errorMessage =
-        signError instanceof Error ? signError.message : String(signError);
+      const errorMessage = signError instanceof Error ? signError.message : String(signError);
       if (errorMessage.includes("InsufficientCoinBalance")) {
         throw {
           type: "insufficient_balance",
@@ -520,14 +505,9 @@ export async function sendChatMessage(
   } catch (error) {
     logger.error("Error during chat message sending", {
       error,
-      errorType:
-        error && typeof error === "object" && "type" in error
-          ? error.type
-          : "unknown",
+      errorType: error && typeof error === "object" && "type" in error ? error.type : "unknown",
       errorMessage:
-        error && typeof error === "object" && "message" in error
-          ? error.message
-          : String(error),
+        error && typeof error === "object" && "message" in error ? error.message : String(error),
     });
     throw error;
   }

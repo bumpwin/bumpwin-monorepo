@@ -7,14 +7,10 @@ import { createApiError } from "./error";
 /**
  * Extract bearer token from authorization header
  */
-export function extractBearerToken(
-  authHeader: string | null,
-): Result<string, ApiError> {
+export function extractBearerToken(authHeader: string | null): Result<string, ApiError> {
   if (!authHeader?.startsWith("Bearer ")) {
     logger.warn("Missing or invalid authorization header");
-    return err(
-      createApiError("unauthorized", "Missing or invalid authorization header"),
-    );
+    return err(createApiError("unauthorized", "Missing or invalid authorization header"));
   }
 
   return ok(authHeader.substring("Bearer ".length));
@@ -24,9 +20,7 @@ export function extractBearerToken(
  * Get current auth session
  * @throws Error if no session is found
  */
-export async function getAuthSession(
-  supabase: SupabaseClient,
-): Promise<Session> {
+export async function getAuthSession(supabase: SupabaseClient): Promise<Session> {
   const {
     data: { session },
     error,

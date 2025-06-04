@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 type WordmarkLogoProps = {
   marginLeft?: string;
   textSize?: string;
@@ -20,7 +18,7 @@ export default function WordmarkLogo({
   const bumpShadow = `6px 6px 0 ${shadowColor}, -6px -6px 0 ${shadowColor}, 6px -6px 0 ${shadowColor}, -6px 6px 0 ${shadowColor}`;
   return (
     <h1
-      className={`text-6xl font-satoshi font-extrabold italic [transform:scaleX(0.8)] group ${containerClass}`}
+      className={`group font-extrabold font-satoshi text-6xl italic [transform:scaleX(0.8)] ${containerClass}`}
       style={{
         position: "relative",
         display: "inline-block",
@@ -44,7 +42,7 @@ export default function WordmarkLogo({
           BUMP
         </span>
         <span
-          className="text-[#FED201] relative top-[4px]"
+          className="relative top-[4px] text-[#FED201]"
           style={{ marginLeft, fontSize: textSize }}
         >
           <span style={{ marginRight: dotMarginRight }}>.</span>

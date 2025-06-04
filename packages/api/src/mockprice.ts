@@ -18,11 +18,7 @@ const querySchema = z.object({
 });
 
 // Mock price data generation function - オリジナルのロジックを踏襲
-const generateMockPriceData = (
-  seed: string,
-  freq: "day" | "min" = "day",
-  count = 30,
-) => {
+const generateMockPriceData = (seed: string, freq: "day" | "min" = "day", count = 30) => {
   const data = [];
   const now = Date.now();
 
@@ -64,12 +60,8 @@ const generateMockPriceData = (
   return data;
 };
 
-export const mockpriceApi = new Hono().get(
-  "/",
-  zValidator("query", querySchema),
-  (c) => {
-    const { seed, freq, count } = c.req.valid("query");
-    const data = generateMockPriceData(seed, freq, count);
-    return c.json({ data });
-  },
-);
+export const mockpriceApi = new Hono().get("/", zValidator("query", querySchema), (c) => {
+  const { seed, freq, count } = c.req.valid("query");
+  const data = generateMockPriceData(seed, freq, count);
+  return c.json({ data });
+});

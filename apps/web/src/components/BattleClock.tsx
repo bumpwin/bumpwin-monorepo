@@ -48,20 +48,20 @@ const SevenSegmentDisplay = ({
   const inactiveOpacity = "opacity-12"; // 非アクティブセグメントの透明度
 
   return (
-    <div className="flex scale-[0.7] origin-center">
+    <div className="flex origin-center scale-[0.7]">
       {value.split("").map((char, i) => (
         <div key={`char-${i}-${char}`} className="relative mx-0.5">
           {char === ":" ? (
-            <div className="flex flex-col justify-center items-center h-full mx-1">
+            <div className="mx-1 flex h-full flex-col items-center justify-center">
               <div
-                className="w-3 h-3 rounded-full mb-4"
+                className="mb-4 h-3 w-3 rounded-full"
                 style={{
                   backgroundColor: segmentColor,
                   boxShadow: `0 0 12px ${shadowColor}`,
                 }}
               />
               <div
-                className="w-3 h-3 rounded-full"
+                className="h-3 w-3 rounded-full"
                 style={{
                   backgroundColor: segmentColor,
                   boxShadow: `0 0 12px ${shadowColor}`,
@@ -70,50 +70,50 @@ const SevenSegmentDisplay = ({
             </div>
           ) : (
             <div
-              className="w-14 h-24 relative"
+              className="relative h-24 w-14"
               style={{
                 filter: `drop-shadow(0 0 8px ${shadowColor})`,
               }}
             >
               {/* 上部セグメント */}
               <div
-                className={`absolute top-0 left-2 right-2 h-2.5 ${char === "1" || char === "4" ? inactiveOpacity : ""}`}
+                className={`absolute top-0 right-2 left-2 h-2.5 ${char === "1" || char === "4" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 右上セグメント */}
               <div
-                className={`absolute top-1 right-0 w-2.5 h-10 ${char === "5" || char === "6" ? inactiveOpacity : ""}`}
+                className={`absolute top-1 right-0 h-10 w-2.5 ${char === "5" || char === "6" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 右下セグメント */}
               <div
-                className={`absolute bottom-1 right-0 w-2.5 h-10 ${char === "2" ? inactiveOpacity : ""}`}
+                className={`absolute right-0 bottom-1 h-10 w-2.5 ${char === "2" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 下部セグメント */}
               <div
-                className={`absolute bottom-0 left-2 right-2 h-2.5 ${char === "1" || char === "4" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute right-2 bottom-0 left-2 h-2.5 ${char === "1" || char === "4" || char === "7" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 左下セグメント */}
               <div
-                className={`absolute bottom-1 left-0 w-2.5 h-10 ${char === "1" || char === "3" || char === "4" || char === "5" || char === "7" || char === "9" ? inactiveOpacity : ""}`}
+                className={`absolute bottom-1 left-0 h-10 w-2.5 ${char === "1" || char === "3" || char === "4" || char === "5" || char === "7" || char === "9" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 左上セグメント */}
               <div
-                className={`absolute top-1 left-0 w-2.5 h-10 ${char === "1" || char === "2" || char === "3" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute top-1 left-0 h-10 w-2.5 ${char === "1" || char === "2" || char === "3" || char === "7" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 中央セグメント */}
               <div
-                className={`absolute top-10 left-2 right-2 h-2.5 ${char === "0" || char === "1" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute top-10 right-2 left-2 h-2.5 ${char === "0" || char === "1" || char === "7" ? inactiveOpacity : ""}`}
                 style={{ backgroundColor: segmentColor }}
               />
             </div>
@@ -157,7 +157,7 @@ export default function BattleClock({
   return (
     <AnimatePresence>
       <motion.div
-        className="relative w-full h-20 flex justify-center items-center overflow-hidden rounded-lg"
+        className="relative flex h-20 w-full items-center justify-center overflow-hidden rounded-lg"
         animate={
           isChallenge
             ? {
@@ -167,7 +167,7 @@ export default function BattleClock({
         }
         transition={{ duration: 0.3 }}
       >
-        <div className="flex justify-center items-center scale-[0.8] origin-center">
+        <div className="flex origin-center scale-[0.8] items-center justify-center">
           <SevenSegmentDisplay
             value={formatTime(totalSeconds)}
             isChallenge={isChallenge}

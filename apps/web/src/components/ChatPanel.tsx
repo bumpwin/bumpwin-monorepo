@@ -5,11 +5,7 @@ import type { ChatMessage } from "@/types/chat";
 import { convertToMessage } from "@/utils/convert";
 import { formatTime } from "@/utils/format";
 import { supabase } from "@/utils/supabaseClient";
-import {
-  useCurrentAccount,
-  useSignAndExecuteTransaction,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Input } from "@workspace/shadcn/components/input";
 import { sendChatMessage } from "@workspace/sui/src/movecall";
 import { getSuiScanTxUrl } from "@workspace/sui/src/utils";
@@ -73,14 +69,8 @@ export default function ChatPanel() {
         },
         (err) => {
           console.error("Failed to fetch chat messages:", err);
-          if (
-            err.message.includes(
-              "Supabase environment variables are not configured",
-            )
-          ) {
-            setError(
-              "Chat service is not properly configured. Please contact the administrator.",
-            );
+          if (err.message.includes("Supabase environment variables are not configured")) {
+            setError("Chat service is not properly configured. Please contact the administrator.");
           } else {
             setError("Failed to load chat messages. Please try again later.");
           }
@@ -197,7 +187,7 @@ export default function ChatPanel() {
           toast.error(
             <div>
               Insufficient SUI balance
-              <div className="mt-1 text-sm text-gray-300">
+              <div className="mt-1 text-gray-300 text-sm">
                 You need more SUI to pay for transaction fees
               </div>
             </div>,
@@ -219,12 +209,12 @@ export default function ChatPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-gray-900 rounded-lg border border-gray-800 shadow-lg overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-gray-800 bg-gray-900 shadow-lg">
       {/* Chat header */}
-      <div className="flex-shrink-0 flex justify-between items-center px-4 py-3 bg-gradient-to-r from-blue-900 to-purple-900 border-b border-gray-700">
+      <div className="flex flex-shrink-0 items-center justify-between border-gray-700 border-b bg-gradient-to-r from-blue-900 to-purple-900 px-4 py-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-blue-300" />
-          <h2 className="font-bold text-white text-lg">Sui Chat</h2>
+          <h2 className="font-bold text-lg text-white">Sui Chat</h2>
         </div>
       </div>
 
@@ -232,41 +222,37 @@ export default function ChatPanel() {
         {/* Message list - scrollable area */}
         <div
           ref={messagesContainerRef}
-          className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-3 bg-gradient-to-b from-gray-900 to-gray-950 scroll-smooth"
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto scroll-smooth bg-gradient-to-b from-gray-900 to-gray-950 px-4 py-3"
         >
           {loading ? (
-            <div className="flex flex-col items-center justify-center h-full gap-2">
+            <div className="flex h-full flex-col items-center justify-center gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
               <p className="text-gray-400 text-sm">Loading messages...</p>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full p-4 rounded-lg bg-red-900/20 border border-red-800">
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-800 bg-red-900/20 p-4">
               <p className="text-red-400 text-sm">{error}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="mt-2 px-3 py-1 text-xs bg-red-800 hover:bg-red-700 text-white rounded-md"
+                className="mt-2 rounded-md bg-red-800 px-3 py-1 text-white text-xs hover:bg-red-700"
               >
                 Reload
               </button>
             </div>
           ) : chatMessages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <div className="p-5 rounded-full bg-blue-900/20 mb-3">
+            <div className="flex h-full flex-col items-center justify-center">
+              <div className="mb-3 rounded-full bg-blue-900/20 p-5">
                 <MessageSquare className="h-8 w-8 text-blue-400" />
               </div>
-              <p className="text-gray-300 text-sm font-medium">
-                No messages yet
-              </p>
-              <p className="text-gray-500 text-xs mt-1">
-                Send the first message!
-              </p>
+              <p className="font-medium text-gray-300 text-sm">No messages yet</p>
+              <p className="mt-1 text-gray-500 text-xs">Send the first message!</p>
             </div>
           ) : (
             <>
               <div className="py-2 text-center">
-                <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full">
-                  <Clock className="inline-block h-3 w-3 mr-1" />
+                <span className="rounded-full bg-gray-800 px-2 py-1 text-gray-400 text-xs">
+                  <Clock className="mr-1 inline-block h-3 w-3" />
                   Chat History
                 </span>
               </div>
@@ -275,14 +261,13 @@ export default function ChatPanel() {
                 const showTimeHeader =
                   index === 0 ||
                   (prevMsg &&
-                    new Date(prevMsg.timestamp).getDate() !==
-                      new Date(msg.timestamp).getDate());
+                    new Date(prevMsg.timestamp).getDate() !== new Date(msg.timestamp).getDate());
 
                 return (
                   <React.Fragment key={msg.id}>
                     {showTimeHeader && (
-                      <div className="flex justify-center my-2">
-                        <div className="px-2 py-1 bg-gray-800/50 rounded-md text-xs text-gray-400">
+                      <div className="my-2 flex justify-center">
+                        <div className="rounded-md bg-gray-800/50 px-2 py-1 text-gray-400 text-xs">
                           {msg.timestamp.toLocaleDateString([], {
                             month: "long",
                             day: "numeric",
@@ -290,13 +275,13 @@ export default function ChatPanel() {
                         </div>
                       </div>
                     )}
-                    <div className="flex items-start gap-3 py-1 group">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-900/30">
+                    <div className="group flex items-start gap-3 py-1">
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-900/30">
                         <span className="text-lg">{msg.avatar}</span>
                       </div>
-                      <div className="flex-1 max-w-[80%] text-left">
-                        <div className="flex items-center gap-1 mb-1 justify-start">
-                          <span className="font-semibold text-xs text-gray-300">
+                      <div className="max-w-[80%] flex-1 text-left">
+                        <div className="mb-1 flex items-center justify-start gap-1">
+                          <span className="font-semibold text-gray-300 text-xs">
                             {msg.username}
                           </span>
                           {/*
@@ -309,12 +294,12 @@ export default function ChatPanel() {
                             <ExternalLink className="inline h-3 w-3 ml-1" />
                           </a>
                           */}
-                          <span className="text-xs text-gray-500 ml-2">
+                          <span className="ml-2 text-gray-500 text-xs">
                             {formatTime(msg.timestamp)}
                           </span>
                         </div>
-                        <div className="relative px-3 py-2 rounded-lg shadow-sm text-left bg-gray-800/80 text-gray-100 rounded-tl-none mr-auto">
-                          <p className="text-sm break-words">{msg.message}</p>
+                        <div className="relative mr-auto rounded-lg rounded-tl-none bg-gray-800/80 px-3 py-2 text-left text-gray-100 shadow-sm">
+                          <p className="break-words text-sm">{msg.message}</p>
                         </div>
                       </div>
                     </div>
@@ -327,7 +312,7 @@ export default function ChatPanel() {
         </div>
 
         {/* Chat input area - fixed at bottom */}
-        <div className="flex-shrink-0 border-t border-gray-800 p-3 bg-gray-900">
+        <div className="flex-shrink-0 border-gray-800 border-t bg-gray-900 p-3">
           <div className="relative">
             <Input
               value={message}
@@ -340,21 +325,18 @@ export default function ChatPanel() {
                     ? "Pay 0.000001SUI to send a message"
                     : "Type your message"
               }
-              className="bg-gray-800 border border-gray-700 hover:border-blue-700 focus:border-blue-600 pl-4 pr-14 py-3 w-full text-white rounded-lg shadow-inner transition-colors"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 py-3 pr-14 pl-4 text-white shadow-inner transition-colors hover:border-blue-700 focus:border-blue-600"
               disabled={loading || isSending || !account}
             />
             <button
               type="button"
               onClick={handleSendMessage}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-1.5
-                  ${
-                    !loading && !isSending && message.trim() !== "" && account
-                      ? "bg-blue-600 text-white hover:bg-blue-500"
-                      : "bg-gray-700 text-gray-400"
-                  } transition-colors disabled:opacity-50`}
-              disabled={
-                loading || isSending || message.trim() === "" || !account
-              }
+              className={`-translate-y-1/2 absolute top-1/2 right-3 transform rounded-full p-1.5 ${
+                !loading && !isSending && message.trim() !== "" && account
+                  ? "bg-blue-600 text-white hover:bg-blue-500"
+                  : "bg-gray-700 text-gray-400"
+              } transition-colors disabled:opacity-50`}
+              disabled={loading || isSending || message.trim() === "" || !account}
             >
               {isSending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -365,9 +347,7 @@ export default function ChatPanel() {
           </div>
           {!account && (
             <div className="mt-2 text-center">
-              <span className="text-xs text-amber-400">
-                Connect your wallet to send messages
-              </span>
+              <span className="text-amber-400 text-xs">Connect your wallet to send messages</span>
             </div>
           )}
         </div>

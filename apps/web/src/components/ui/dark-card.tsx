@@ -6,15 +6,11 @@ interface DarkCardProps extends ComponentProps<typeof Card> {
   variant?: "default" | "champion";
 }
 
-export const DarkCard = ({
-  className,
-  variant = "default",
-  ...props
-}: DarkCardProps) => {
+export const DarkCard = ({ className, variant = "default", ...props }: DarkCardProps) => {
   return (
     <Card
       className={cn(
-        "bg-black/20 backdrop-blur-sm border border-[#23262F]",
+        "border border-[#23262F] bg-black/20 backdrop-blur-sm",
         variant === "champion" && "hover:border-yellow-400/20",
         className,
       )}

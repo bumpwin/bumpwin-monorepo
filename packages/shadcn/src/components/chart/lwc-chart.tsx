@@ -118,11 +118,7 @@ export function LWCChart({
   }, [data, currentPrice, height, priceLines]);
 
   return (
-    <div
-      ref={container}
-      className={`w-full ${className}`}
-      style={{ height: `${height}px` }}
-    />
+    <div ref={container} className={`w-full ${className}`} style={{ height: `${height}px` }} />
   );
 }
 

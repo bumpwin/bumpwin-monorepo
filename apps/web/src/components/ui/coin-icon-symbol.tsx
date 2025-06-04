@@ -7,11 +7,7 @@ interface CoinIconSymbolProps {
   className?: string;
 }
 
-export const CoinIconSymbol = ({
-  coin,
-  size = "md",
-  className = "",
-}: CoinIconSymbolProps) => {
+export const CoinIconSymbol = ({ coin, size = "md", className = "" }: CoinIconSymbolProps) => {
   if (!coin) return null;
 
   const iconSize = size === "sm" ? "w-7 h-7" : "w-12 h-12";
@@ -20,16 +16,9 @@ export const CoinIconSymbol = ({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <div className={`${iconSize} relative overflow-hidden rounded-md`}>
-        <Image
-          src={coin.iconUrl}
-          alt={coin.symbol}
-          fill
-          className="object-cover rounded-md"
-        />
+        <Image src={coin.iconUrl} alt={coin.symbol} fill className="rounded-md object-cover" />
       </div>
-      <span className={`font-bold ${textSize} text-white select-none truncate`}>
-        {coin.symbol}
-      </span>
+      <span className={`font-bold ${textSize} select-none truncate text-white`}>{coin.symbol}</span>
     </div>
   );
 };

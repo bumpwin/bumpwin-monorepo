@@ -1,5 +1,4 @@
 import process from "node:process";
-import { config } from "@/config";
 import { supabase } from "@/services/supabase";
 import { logger } from "@/utils/logger";
 import type { EventId } from "@mysten/sui/client";
@@ -28,9 +27,7 @@ const getInitialCursor = async (): Promise<EventId | null> => {
     const cursorResult = await dbRepository.getPollCursor();
     if (!cursorResult.isOk()) {
       if (cursorResult.error.type === "not_found") {
-        logger.info(
-          "No initial cursor found in Supabase, starting from scratch.",
-        );
+        logger.info("No initial cursor found in Supabase, starting from scratch.");
         return null;
       }
       throw cursorResult.error;
@@ -54,7 +51,7 @@ const getInitialCursor = async (): Promise<EventId | null> => {
 /**
  * Save chat message to Supabase
  */
-const saveChatMessage = async (event: any): Promise<void> => {
+const saveChatMessage = async (event: unknown): Promise<void> => {
   try {
     const chatMessageRequest: InsertChatMessageRequest = {
       txDigest: event.digest,
@@ -64,12 +61,9 @@ const saveChatMessage = async (event: any): Promise<void> => {
       messageText: event.text,
     };
 
-    const insertResult =
-      await dbRepository.insertChatMessage(chatMessageRequest);
+    const insertResult = await dbRepository.insertChatMessage(chatMessageRequest);
     if (insertResult.isOk()) {
-      logger.info(
-        `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
-      );
+      logger.info(`Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`);
     } else {
       logger.error(
         `Failed to save message (Digest: ${event.digest}):`,
@@ -77,10 +71,7 @@ const saveChatMessage = async (event: any): Promise<void> => {
       );
     }
   } catch (error) {
-    logger.error(
-      `Error saving message (Digest: ${event.digest}):`,
-      error as Error,
-    );
+    logger.error(`Error saving message (Digest: ${event.digest}):`, error as Error);
   }
 };
 
@@ -93,17 +84,11 @@ const updatePollCursor = async (cursor: EventId | null): Promise<void> => {
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    const updateResult =
-      await dbRepository.updatePollCursor(updateCursorRequest);
+    const updateResult = await dbRepository.updatePollCursor(updateCursorRequest);
     if (updateResult.isOk()) {
-      logger.info(
-        `Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`,
-      );
+      logger.info(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`);
     } else {
-      logger.error(
-        "Failed to update poll cursor:",
-        updateResult.error as unknown as Error,
-      );
+      logger.error("Failed to update poll cursor:", updateResult.error as unknown as Error);
     }
   } catch (error) {
     logger.error("Error updating poll cursor:", error as Error);
@@ -150,15 +135,10 @@ const isEventAlreadyProcessed = async (eventId: string): Promise<boolean> => {
 /**
  * Process new events, save to DB and log details
  */
-const processEvents = async (
-  events: any[],
-  processedEventIds: Set<string>,
-): Promise<void> => {
+const processEvents = async (events: unknown[], processedEventIds: Set<string>): Promise<void> => {
   if (events.length === 0) return;
 
-  logger.info(
-    `[${new Date().toISOString()}] Processing ${events.length} new event(s)`,
-  );
+  logger.info(`[${new Date().toISOString()}] Processing ${events.length} new event(s)`);
 
   // First, check all events against the database in a single pass
   const eventsToProcess = [];
@@ -167,9 +147,7 @@ const processEvents = async (
 
     // Skip if already processed in this session
     if (processedEventIds.has(eventId)) {
-      logger.info(
-        `Skipping already processed event in this session: ${eventId}`,
-      );
+      logger.info(`Skipping already processed event in this session: ${eventId}`);
       continue;
     }
 
@@ -248,9 +226,7 @@ export const startChatEventPolling = async (pollingIntervalMs: number) => {
       isPolling = true;
 
       try {
-        logger.info(
-          `Starting poll cycle with cursor: ${JSON.stringify(cursor)}`,
-        );
+        logger.info(`Starting poll cycle with cursor: ${JSON.stringify(cursor)}`);
 
         // Fetch new events
         const result = await fetcher.fetch(cursor);
@@ -262,9 +238,7 @@ export const startChatEventPolling = async (pollingIntervalMs: number) => {
           // On first poll, just save the cursor without processing events
           // This helps when restarting the server to avoid reprocessing old events
           if (isFirstPoll) {
-            logger.info(
-              "First poll - updating cursor without processing events",
-            );
+            logger.info("First poll - updating cursor without processing events");
             cursor = result.cursor;
             await updatePollCursor(cursor);
             isFirstPoll = false;

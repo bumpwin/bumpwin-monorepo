@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from "react";
 
 // Constants
 const REFERENCE_DATE = new Date("2025-05-17T00:00:00Z").getTime();
@@ -60,17 +53,13 @@ const calculateTimeAndRound = (
 
   let remaining: number;
   if (isInChallengePeriod) {
-    remaining = Math.floor(
-      (challengePeriodDuration - timeInCurrentCycle) / 1000,
-    );
+    remaining = Math.floor((challengePeriodDuration - timeInCurrentCycle) / 1000);
   } else {
-    const nextCycleStart =
-      REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS;
+    const nextCycleStart = REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS;
     remaining = Math.floor((nextCycleStart - adjustedNow) / 1000);
   }
 
-  const isDarknight =
-    timeInCurrentCycle >= CYCLE_DURATION_MS - challengePeriodDuration;
+  const isDarknight = timeInCurrentCycle >= CYCLE_DURATION_MS - challengePeriodDuration;
 
   return {
     currentRound: currentRoundNumber,
@@ -80,9 +69,7 @@ const calculateTimeAndRound = (
   };
 };
 
-const BattleClockContext = createContext<BattleClockContextType | undefined>(
-  undefined,
-);
+const BattleClockContext = createContext<BattleClockContextType | undefined>(undefined);
 
 export function BattleClockProvider({ children }: { children: ReactNode }) {
   const totalTime = CYCLE_DURATION_SEC;
@@ -95,11 +82,7 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
   const [demoOffset, setDemoOffset] = useState(0);
 
   const updateTimeAndRound = useCallback(() => {
-    const result = calculateTimeAndRound(
-      new Date().getTime(),
-      timeOffset,
-      demoOffset,
-    );
+    const result = calculateTimeAndRound(new Date().getTime(), timeOffset, demoOffset);
     setCurrentRound(result.currentRound);
     setIsChallengePeriod(result.isChallengePeriod);
     setRemainingTime(result.remainingTime);
@@ -129,8 +112,7 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
       (completedCycles + 1) * CYCLE_DURATION_MS -
       CHALLENGE_DURATION_SEC * 1000 -
       5000;
-    const requiredDemoOffset =
-      nextDarknightStart - (new Date().getTime() + timeOffset);
+    const requiredDemoOffset = nextDarknightStart - (new Date().getTime() + timeOffset);
     setDemoOffset(requiredDemoOffset);
   }, [timeOffset]);
 
@@ -142,10 +124,8 @@ export function BattleClockProvider({ children }: { children: ReactNode }) {
     const now = new Date().getTime() + timeOffset;
     const timeSinceReference = now - REFERENCE_DATE;
     const completedCycles = Math.floor(timeSinceReference / CYCLE_DURATION_MS);
-    const nextSunriseStart =
-      REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS - 5000; // 5 seconds before daytime
-    const requiredDemoOffset =
-      nextSunriseStart - (new Date().getTime() + timeOffset);
+    const nextSunriseStart = REFERENCE_DATE + (completedCycles + 1) * CYCLE_DURATION_MS - 5000; // 5 seconds before daytime
+    const requiredDemoOffset = nextSunriseStart - (new Date().getTime() + timeOffset);
     setDemoOffset(requiredDemoOffset);
   }, [timeOffset]);
 

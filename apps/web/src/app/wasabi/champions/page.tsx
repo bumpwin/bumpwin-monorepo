@@ -9,25 +9,22 @@ import {
 } from "@/mock/mockData";
 import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
-import React from "react";
 
 export default function ChampionsPage() {
   // Transform mockChampionCoinMetadata to ChampionCoin type
-  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map(
-    (coin) => ({
-      id: coin.id.toString(),
-      round: coin.round,
-      name: coin.name,
-      symbol: coin.symbol,
-      iconUrl: coin.iconUrl,
-      description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      share: 0.35, // Mock data
-      marketCap: 1000000, // Mock data
-    }),
-  );
+  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map((coin) => ({
+    id: coin.id.toString(),
+    round: coin.round,
+    name: coin.name,
+    symbol: coin.symbol,
+    iconUrl: coin.iconUrl,
+    description: coin.description,
+    telegramLink: coin.telegramLink,
+    websiteLink: coin.websiteLink,
+    twitterLink: coin.twitterLink,
+    share: 0.35, // Mock data
+    marketCap: 1000000, // Mock data
+  }));
 
   // Transform mockDominanceChartData to DominanceChartData type
   const dominanceData: DominanceChartData = {
@@ -59,7 +56,7 @@ export default function ChampionsPage() {
           <div className="flex flex-col items-center justify-center py-6">
             <div className="flex items-center gap-2">
               <h1
-                className="text-4xl md:text-6xl font-extrabold bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(255,255,180,0.35)] relative"
+                className="relative bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-500 bg-clip-text font-extrabold text-4xl text-transparent drop-shadow-[0_2px_12px_rgba(255,255,180,0.35)] md:text-6xl"
                 style={{
                   WebkitTextStroke: "1px #fff9",
                   letterSpacing: "0.02em",
@@ -67,18 +64,18 @@ export default function ChampionsPage() {
               >
                 CHAMPIONS <span className="align-middle" />
                 <span
-                  className="absolute left-0 right-0 top-0 h-1/3 bg-white/60 rounded-full blur-md pointer-events-none"
+                  className="pointer-events-none absolute top-0 right-0 left-0 h-1/3 rounded-full bg-white/60 blur-md"
                   style={{ zIndex: 1 }}
                 />
               </h1>
             </div>
-            <div className="mt-4 text-center text-gray-300 text-xl font-medium drop-shadow-lg">
+            <div className="mt-4 text-center font-medium text-gray-300 text-xl drop-shadow-lg">
               The greatest coins of all time
             </div>
           </div>
 
           {/* Result View */}
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+          <div className="rounded-lg bg-white/5 p-4 shadow-lg backdrop-blur-sm">
             <ResultView
               coin={{
                 ...mockLastChampionCoinMetadata,
@@ -89,11 +86,8 @@ export default function ChampionsPage() {
           </div>
 
           {/* Champions List */}
-          <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg shadow-lg">
-            <ChampionsList
-              coins={championCoins}
-              dominanceData={dominanceData}
-            />
+          <div className="rounded-lg bg-white/5 p-4 shadow-lg backdrop-blur-sm">
+            <ChampionsList coins={championCoins} dominanceData={dominanceData} />
           </div>
         </div>
       </div>

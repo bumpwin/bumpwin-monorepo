@@ -64,12 +64,12 @@ export default function AppBar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-gray-900/95 backdrop-blur-md shadow-lg shadow-gray-900/50">
+    <header className="sticky top-0 z-50 w-full border-gray-800 border-b bg-gray-900/95 shadow-gray-900/50 shadow-lg backdrop-blur-md">
       <div className="flex h-16 items-center">
         {/* 左寄せセクション */}
-        <div className="flex items-center pl-4 gap-6 flex-1">
+        <div className="flex flex-1 items-center gap-6 pl-4">
           <Link href="/about">
-            <div className="scale-[0.45] max-w-[200px] flex items-center mb-2 mr-2">
+            <div className="mr-2 mb-2 flex max-w-[200px] scale-[0.45] items-center">
               <WordmarkLogo />
             </div>
           </Link>
@@ -78,11 +78,10 @@ export default function AppBar() {
               key={href}
               href={href}
               className={cn(
-                "text-xl text-gray-300 font-semibold transition-all duration-200 flex items-center justify-center",
-                "hover:text-orange-400 w-24",
+                "flex items-center justify-center font-semibold text-gray-300 text-xl transition-all duration-200",
+                "w-24 hover:text-orange-400",
                 "hover:drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]",
-                isActive(href) &&
-                  "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]",
+                isActive(href) && "text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.5)]",
               )}
             >
               {label}
@@ -91,8 +90,8 @@ export default function AppBar() {
         </div>
 
         {/* 中央寄せセクション */}
-        <div className="flex items-center justify-center flex-1">
-          <div className="flex items-center justify-center h-full">
+        <div className="flex flex-1 items-center justify-center">
+          <div className="flex h-full items-center justify-center">
             <BattleClock
               totalSeconds={remainingTime}
               challengeSeconds={challengeTime}
@@ -102,18 +101,12 @@ export default function AppBar() {
         </div>
 
         {/* 右寄せセクション */}
-        <div className="flex items-center justify-end gap-3 pr-4 flex-1">
+        <div className="flex flex-1 items-center justify-end gap-3 pr-4">
           {/* Claim outcome ボタン */}
-          <Link
-            href="/rounds?intent=claim-outcome"
-            className="flex items-center"
-          >
+          <Link href="/rounds?intent=claim-outcome" className="flex items-center">
             <button
               type="button"
-              className="rounded-full px-4 py-1.5 text-sm font-medium
-                text-amber-400 hover:text-amber-300
-                hover:bg-amber-900/30 hover:border hover:border-amber-400/40
-                transition-all duration-200"
+              className="rounded-full px-4 py-1.5 font-medium text-amber-400 text-sm transition-all duration-200 hover:border hover:border-amber-400/40 hover:bg-amber-900/30 hover:text-amber-300"
             >
               Claim outcome
             </button>
@@ -123,28 +116,23 @@ export default function AppBar() {
           <button
             type="button"
             onClick={handleCreateCoinClick}
-            className="rounded-full px-4 py-1.5 text-sm font-medium
-              bg-gradient-to-r from-indigo-600 to-violet-600
-              text-white border border-indigo-400/50
-              hover:from-violet-600 hover:to-indigo-600 hover:border-indigo-300/70
-              shadow-lg shadow-indigo-900/30 transition-all duration-200
-              hover:scale-105"
+            className="rounded-full border border-indigo-400/50 bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-1.5 font-medium text-sm text-white shadow-indigo-900/30 shadow-lg transition-all duration-200 hover:scale-105 hover:border-indigo-300/70 hover:from-violet-600 hover:to-indigo-600"
           >
             Create Coin
           </button>
 
           {/* ウォレット接続ボタン */}
-          <div className="h-10 flex items-center">
+          <div className="flex h-10 items-center">
             <SuiWalletConnectButton />
           </div>
         </div>
       </div>
 
       {/* プログレスバー */}
-      <div className="w-full h-0.5 bg-gray-800/50 relative">
+      <div className="relative h-0.5 w-full bg-gray-800/50">
         {/* チャレンジポイントのマーカー */}
         <div
-          className="absolute top-[-1px] bottom-[-1px] w-1 bg-red-500 z-10 rounded-full"
+          className="absolute top-[-1px] bottom-[-1px] z-10 w-1 rounded-full bg-red-500"
           style={{ left: `${challengePoint}%` }}
         />
 

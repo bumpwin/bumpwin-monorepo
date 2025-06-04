@@ -54,7 +54,7 @@ export const ActionButton = ({
       return (
         <div className="flex items-center justify-center gap-2">
           <svg
-            className="animate-spin h-5 w-5 text-white"
+            className="h-5 w-5 animate-spin text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -91,15 +91,11 @@ export const ActionButton = ({
   if (!isConnected) {
     return (
       <ConnectButton
-        connectText={
-          <div className="w-full text-center !text-white font-bold">
-            Login to Trade
-          </div>
-        }
-        className={`w-full !py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !ring-0 ${
+        connectText={<div className="!text-white w-full text-center font-bold">Login to Trade</div>}
+        className={`!py-3.5 !rounded-xl !text-base !transition-all !duration-200 !min-w-0 !h-auto !px-0 !border-none !ring-0 w-full ${
           variant === "darknight"
             ? "!bg-[#3C41FF] !shadow-md"
-            : "!bg-gradient-to-r !from-blue-600 !to-blue-500 !hover:from-blue-700 !hover:to-blue-600 !shadow-[0_4px_12px_rgba(0,118,255,0.25)]"
+            : "!bg-gradient-to-r !from-blue-600 !to-blue-500 !shadow-[0_4px_12px_rgba(0,118,255,0.25)] !hover:from-blue-700 !hover:to-blue-600"
         }`}
       />
     );
@@ -108,7 +104,7 @@ export const ActionButton = ({
   return (
     <button
       type="button"
-      className={`w-full py-3.5 font-bold text-base transition-all duration-200 rounded-xl ${getButtonStyle()} disabled:opacity-50 disabled:shadow-none`}
+      className={`w-full rounded-xl py-3.5 font-bold text-base transition-all duration-200 ${getButtonStyle()} disabled:opacity-50 disabled:shadow-none`}
       onClick={onClick}
       disabled={isExecuting || disabled}
     >

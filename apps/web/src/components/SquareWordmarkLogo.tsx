@@ -1,10 +1,8 @@
-import React from "react";
-
 export default function SquareWordmarkLogo() {
   return (
-    <div className="bg-black w-64 h-64 flex flex-col justify-center items-center rounded-lg shadow-lg">
+    <div className="flex h-64 w-64 flex-col items-center justify-center rounded-lg bg-black shadow-lg">
       <span
-        className="text-white text-6xl font-satoshi font-extrabold italic [transform:scaleX(0.8)]"
+        className="font-extrabold font-satoshi text-6xl text-white italic [transform:scaleX(0.8)]"
         style={{
           WebkitTextStroke: "6px #9400D3",
           WebkitTextFillColor: "#fff",
@@ -13,7 +11,7 @@ export default function SquareWordmarkLogo() {
       >
         BUMP
       </span>
-      <span className="text-[#FED201] text-6xl font-satoshi font-extrabold italic ml-12 [transform:scaleX(0.8)]">
+      <span className="ml-12 font-extrabold font-satoshi text-6xl text-[#FED201] italic [transform:scaleX(0.8)]">
         .WIN
       </span>
     </div>

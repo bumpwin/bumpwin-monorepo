@@ -1,8 +1,4 @@
-import type {
-  CoinDisplayInfo,
-  DominanceChartData,
-  DominancePoint,
-} from "../types/dominance";
+import type { CoinDisplayInfo, DominanceChartData, DominancePoint } from "../types";
 
 // Mock coin display information
 export const mockCoinDisplayInfo: CoinDisplayInfo[] = [

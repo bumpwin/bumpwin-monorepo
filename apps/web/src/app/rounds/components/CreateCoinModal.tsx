@@ -92,14 +92,14 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
   // Preview card with real-time updates
   const MemeCard = () => (
     <div
-      className="relative w-full overflow-hidden rounded-lg shadow-xl border border-gray-700/50 bg-[#141420] transition-transform duration-200 mx-auto"
+      className="relative mx-auto w-full overflow-hidden rounded-lg border border-gray-700/50 bg-[#141420] shadow-xl transition-transform duration-200"
       style={{ aspectRatio: "3/4" }}
     >
-      <div className="absolute top-2 right-2 z-10 bg-white text-gray-900 text-sm font-bold px-2 py-0.5 rounded-full shadow-md">
+      <div className="absolute top-2 right-2 z-10 rounded-full bg-white px-2 py-0.5 font-bold text-gray-900 text-sm shadow-md">
         #1
       </div>
       {preview ? (
-        <div className="w-full h-full relative">
+        <div className="relative h-full w-full">
           <Image
             src={preview}
             alt={formData.symbol || "Coin preview"}
@@ -109,28 +109,22 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
           />
         </div>
       ) : (
-        <div className="w-full h-full bg-purple-500 flex items-center justify-center">
+        <div className="flex h-full w-full items-center justify-center bg-purple-500">
           <div className="flex flex-col items-center justify-center">
-            <div className="w-4 h-4 rounded-full bg-black mr-10" />
-            <div className="w-4 h-4 rounded-full bg-black ml-10 mt-5" />
-            <div className="w-24 h-1 bg-black mt-10 rounded-full" />
+            <div className="mr-10 h-4 w-4 rounded-full bg-black" />
+            <div className="mt-5 ml-10 h-4 w-4 rounded-full bg-black" />
+            <div className="mt-10 h-1 w-24 rounded-full bg-black" />
           </div>
         </div>
       )}
-      <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm px-3 py-2 flex flex-col gap-0.5 items-start text-left">
-        <div className="text-xl font-bold text-white tracking-wide truncate w-full">
+      <div className="absolute right-0 bottom-0 left-0 flex flex-col items-start gap-0.5 bg-black/80 px-3 py-2 text-left backdrop-blur-sm">
+        <div className="w-full truncate font-bold text-white text-xl tracking-wide">
           {formData.symbol || "TICKER"}
         </div>
-        <div className="text-xs text-gray-300 truncate w-full">
-          {formData.name || "NAME"}
-        </div>
+        <div className="w-full truncate text-gray-300 text-xs">{formData.name || "NAME"}</div>
         <div className="absolute right-3 bottom-2 flex flex-col items-end">
-          <span className="text-xs text-gray-400 font-medium leading-none">
-            % chance
-          </span>
-          <span className="text-xl font-bold text-green-400 leading-tight">
-            13%
-          </span>
+          <span className="font-medium text-gray-400 text-xs leading-none">% chance</span>
+          <span className="font-bold text-green-400 text-xl leading-tight">13%</span>
         </div>
       </div>
     </div>
@@ -142,47 +136,43 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl rounded-2xl bg-gray-900 border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.3)] overflow-hidden z-50"
+        className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 w-full max-w-5xl transform overflow-hidden rounded-2xl border border-purple-500/50 bg-gray-900 shadow-[0_0_30px_rgba(168,85,247,0.3)]"
       >
         <div className="p-6">
-          <h2 className="text-3xl font-extrabold text-center mb-6 text-white">
+          <h2 className="mb-6 text-center font-extrabold text-3xl text-white">
             Create Your Meme Coin
           </h2>
-          <p className="text-gray-300 text-center mb-8">
+          <p className="mb-8 text-center text-gray-300">
             Be part of the next battle round by creating your own meme coin!
           </p>
 
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col gap-8 md:flex-row">
             {/* Left Column - Meme Card Preview */}
-            <div className="w-full md:w-1/2 flex flex-col items-center">
-              <h3 className="text-lg font-bold text-white mb-3">
-                Meme Preview
-              </h3>
+            <div className="flex w-full flex-col items-center md:w-1/2">
+              <h3 className="mb-3 font-bold text-lg text-white">Meme Preview</h3>
               <div className="w-full max-w-[320px]">
                 <MemeCard />
               </div>
               <div className="mt-4 text-center text-gray-400 text-sm">
-                <p className="mt-2">
-                  Your coin will appear like this in battles
-                </p>
+                <p className="mt-2">Your coin will appear like this in battles</p>
               </div>
             </div>
 
             {/* Right Column - Form */}
             <div className="w-full md:w-1/2">
               <form onSubmit={handleSubmit}>
-                <div className="space-y-4 mb-6">
+                <div className="mb-6 space-y-4">
                   <div>
                     <label
                       htmlFor="coinSymbol"
-                      className="block text-gray-300 text-sm font-medium mb-2"
+                      className="mb-2 block font-medium text-gray-300 text-sm"
                     >
                       Coin Symbol
                     </label>
@@ -192,14 +182,14 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                       name="symbol"
                       value={formData.symbol}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="TICKER"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="coinName"
-                      className="block text-gray-300 text-sm font-medium mb-2"
+                      className="mb-2 block font-medium text-gray-300 text-sm"
                     >
                       Coin Name
                     </label>
@@ -209,14 +199,14 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="NAME"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="coinDescription"
-                      className="block text-gray-300 text-sm font-medium mb-2"
+                      className="mb-2 block font-medium text-gray-300 text-sm"
                     >
                       Description
                     </label>
@@ -229,16 +219,13 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                           description: e.target.value,
                         }))
                       }
-                      className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      className="w-full resize-none rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="Describe your coin..."
                       rows={3}
                     />
                   </div>
                   <div>
-                    <label
-                      htmlFor="coinIcon"
-                      className="block text-white text-sm font-medium mb-2"
-                    >
+                    <label htmlFor="coinIcon" className="mb-2 block font-medium text-sm text-white">
                       Upload Icon
                     </label>
                     <div className="space-y-2">
@@ -254,7 +241,7 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                         <button
                           type="button"
                           onClick={handleRemoveImage}
-                          className="w-full px-4 py-2 text-red-500 border border-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+                          className="w-full rounded-lg border border-red-500 px-4 py-2 text-red-500 transition-colors hover:bg-red-500/10"
                         >
                           Remove Image
                         </button>
@@ -267,14 +254,14 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-6 py-3 rounded-lg text-white bg-gray-800 hover:bg-gray-700 transition-colors"
+                    className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isExecuting}
-                    className="px-6 py-3 rounded-lg font-bold text-white bg-purple-700 hover:bg-purple-600 transition-all hover:scale-[1.03] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-lg bg-purple-700 px-6 py-3 font-bold text-white transition-all hover:scale-[1.03] hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isExecuting ? "Creating..." : "Create Coin"}
                   </button>

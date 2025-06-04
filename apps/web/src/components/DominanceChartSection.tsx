@@ -8,8 +8,7 @@ const DominanceChartSection = () => {
     ...point.shares.reduce(
       (acc, share, index) =>
         Object.assign(acc, {
-          [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]:
-            share,
+          [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]: share,
         }),
       {},
     ),
@@ -21,14 +20,8 @@ const DominanceChartSection = () => {
   }));
 
   return (
-    <div className="w-full mt-4">
-      <DominanceRechart
-        points={chartPoints}
-        coins={chartCoins}
-        height={180}
-        compact
-        hideLegend
-      />
+    <div className="mt-4 w-full">
+      <DominanceRechart points={chartPoints} coins={chartCoins} height={180} compact hideLegend />
     </div>
   );
 };

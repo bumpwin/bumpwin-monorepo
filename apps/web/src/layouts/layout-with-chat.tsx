@@ -12,7 +12,7 @@ export default function LayoutWithChat({
     <div className="flex h-[calc(100vh-64px)] bg-gradient-to-br from-gray-900 to-gray-800">
       <main className="flex-1 overflow-y-auto">{children}</main>
 
-      <aside className="w-[340px] flex flex-col">
+      <aside className="flex w-[340px] flex-col">
         <TwitchStyleChatPanel />
       </aside>
     </div>

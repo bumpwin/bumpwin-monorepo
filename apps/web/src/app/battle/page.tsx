@@ -12,18 +12,11 @@ import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@workspace/shadcn/components/card";
-import {
-  LWCChart,
-  type OHLCData,
-} from "@workspace/shadcn/components/chart/lwc-chart";
+import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
+import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Constants
 const DEFAULT_COIN: RoundCoin = {
@@ -109,23 +102,19 @@ const PriceChart = ({
   isLoading: boolean;
 }) => {
   const currentPrice =
-    priceData && priceData.length > 0
-      ? (priceData[priceData.length - 1]?.close ?? 0)
-      : 0;
-  const percentage =
-    coin.symbol === "LAG" ? PERCENTAGE.LAG : PERCENTAGE.DEFAULT;
-  const priceMultiplier =
-    coin.symbol === "LAG" ? PRICE_MULTIPLIER.LAG : PRICE_MULTIPLIER.DEFAULT;
+    priceData && priceData.length > 0 ? (priceData[priceData.length - 1]?.close ?? 0) : 0;
+  const percentage = coin.symbol === "LAG" ? PERCENTAGE.LAG : PERCENTAGE.DEFAULT;
+  const priceMultiplier = coin.symbol === "LAG" ? PRICE_MULTIPLIER.LAG : PRICE_MULTIPLIER.DEFAULT;
 
   return (
-    <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
+    <Card className="mb-4 w-full border-none bg-black/20 backdrop-blur-sm">
       <CardHeader className="pb-2">
         <ChartTitle coin={coin} percentage={percentage} />
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-16 w-16 animate-spin rounded-full border-blue-500 border-t-4 border-b-4" />
           </div>
         ) : (
           <LWCChart
@@ -174,7 +163,7 @@ const MemeGallery = ({
             if (e.key === "Enter" || e.key === " ") onSelect(meme);
           }}
           tabIndex={0}
-          className="w-[200px] cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-xl bg-transparent border-none p-0"
+          className="w-[200px] cursor-pointer rounded-xl border-none bg-transparent p-0 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           aria-pressed={selectedSymbol === meme.symbol}
           type="button"
         >
@@ -214,8 +203,8 @@ export default function RoundsAPage() {
 
   const allMemes =
     battleData?.memes
-      ?.filter((m: any) => m.metadata)
-      .map((m: any) => m.metadata) || [];
+      ?.filter((m: { metadata?: unknown }) => m.metadata)
+      .map((m: { metadata: unknown }) => m.metadata) || [];
 
   // Store darknight memes selection to prevent re-shuffling
   const darknightMemesRef = useRef<MemeMetadata[]>([]);
@@ -223,15 +212,9 @@ export default function RoundsAPage() {
 
   // Only recalculate when phase changes TO darknight
   useEffect(() => {
-    if (
-      phase === "darknight" &&
-      lastPhaseRef.current !== "darknight" &&
-      allMemes.length > 8
-    ) {
+    if (phase === "darknight" && lastPhaseRef.current !== "darknight" && allMemes.length > 8) {
       const jellMeme = allMemes.find((m: MemeMetadata) => m.symbol === "JELL");
-      const otherMemes = allMemes.filter(
-        (m: MemeMetadata) => m.symbol !== "JELL",
-      );
+      const otherMemes = allMemes.filter((m: MemeMetadata) => m.symbol !== "JELL");
 
       // Shuffle and pick 7 random memes
       const shuffled = [...otherMemes].sort(() => Math.random() - 0.5);
@@ -283,15 +266,15 @@ export default function RoundsAPage() {
 
   if (isBattleLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500" />
+      <div className="flex h-full items-center justify-center">
+        <div className="h-16 w-16 animate-spin rounded-full border-blue-500 border-t-4 border-b-4" />
       </div>
     );
   }
 
   return (
     <div className="flex h-full">
-      <main className="flex-1 h-full overflow-hidden">
+      <main className="h-full flex-1 overflow-hidden">
         {!selectedId ? (
           <ScrollableContainer>
             <div className="sticky top-0 z-20 bg-[#181B27]/95">
@@ -309,18 +292,14 @@ export default function RoundsAPage() {
             />
           </ScrollableContainer>
         ) : (
-          <div className="h-full flex flex-col overflow-hidden">
+          <div className="flex h-full flex-col overflow-hidden">
             <FixedContainer>
               <div className="sticky top-0 z-20 bg-[#181B27]/95">
                 <SharrowStatsBar />
               </div>
 
               <div className="px-4">
-                <PriceChart
-                  coin={selectedCoin}
-                  priceData={priceData}
-                  isLoading={isPriceLoading}
-                />
+                <PriceChart coin={selectedCoin} priceData={priceData} isLoading={isPriceLoading} />
               </div>
             </FixedContainer>
 
@@ -335,7 +314,7 @@ export default function RoundsAPage() {
         )}
       </main>
 
-      <aside className="w-[400px] flex-shrink-0 h-full overflow-hidden">
+      <aside className="h-full w-[400px] flex-shrink-0 overflow-hidden">
         <ScrollableContainer>
           <div className="p-4">
             <div className="flex flex-col items-center gap-2">

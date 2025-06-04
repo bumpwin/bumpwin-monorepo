@@ -1,11 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
 import { type Result, err, ok } from "neverthrow";
-import {
-  chatHistoryModelToDomain,
-  pollCursorModelToDomain,
-  profileModelToDomain,
-} from "./domain";
+import { chatHistoryModelToDomain, pollCursorModelToDomain, profileModelToDomain } from "./domain";
 import type { ApiError } from "./error";
 import { createApiError } from "./error";
 import { authenticateUser } from "./middleware";
@@ -44,12 +40,7 @@ export class SupabaseRepository implements DbRepository {
       }
 
       if (!data) {
-        return err(
-          createApiError(
-            "not_found",
-            `Profile with id ${request.userId} not found`,
-          ),
-        );
+        return err(createApiError("not_found", `Profile with id ${request.userId} not found`));
       }
 
       return ok(profileModelToDomain(data) as GetProfileByIdResponse);
@@ -119,9 +110,7 @@ export class SupabaseRepository implements DbRepository {
       }
 
       if (!data) {
-        return err(
-          createApiError("not_found", `Profile with id ${user.id} not found`),
-        );
+        return err(createApiError("not_found", `Profile with id ${user.id} not found`));
       }
 
       const profile = profileModelToDomain(data);
@@ -163,12 +152,7 @@ export class SupabaseRepository implements DbRepository {
       }
 
       if (!data) {
-        return err(
-          createApiError(
-            "unknown",
-            "Failed to insert chat message, no data returned",
-          ),
-        );
+        return err(createApiError("unknown", "Failed to insert chat message, no data returned"));
       }
 
       const chatMessage = chatHistoryModelToDomain(data);
@@ -224,10 +208,7 @@ export class SupabaseRepository implements DbRepository {
   async getPollCursor(): Promise<Result<GetPollCursorResponse, ApiError>> {
     try {
       logger.info("Fetching poll cursor");
-      const { data, error } = await this.client
-        .from("poll_cursor")
-        .select("*")
-        .single(); // Assuming there's only one row or you want the first
+      const { data, error } = await this.client.from("poll_cursor").select("*").single(); // Assuming there's only one row or you want the first
 
       if (error) {
         // If no rows found, it might not be an error, depends on logic
@@ -282,9 +263,7 @@ export class SupabaseRepository implements DbRepository {
 
       if (!data) {
         // This might happen if the row with id = true doesn't exist
-        return err(
-          createApiError("not_found", "Poll cursor entry to update not found"),
-        );
+        return err(createApiError("not_found", "Poll cursor entry to update not found"));
       }
 
       const pollCursor = pollCursorModelToDomain(data);

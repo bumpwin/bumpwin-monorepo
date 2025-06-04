@@ -6,10 +6,7 @@
  * import { submitForm } from './actions';
  * <form action={submitForm}>...</form>
  */
-export async function submitForm(
-  prevState: { name: string; error?: string },
-  formData: FormData,
-) {
+export async function submitForm(_prevState: { name: string; error?: string }, formData: FormData) {
   try {
     // ビジネスロジックを実装
     // 例: データベースへの保存、APIコールなど
@@ -25,8 +22,7 @@ export async function submitForm(
     };
   } catch (error: unknown) {
     // エラーハンドリング
-    const errorMessage =
-      error instanceof Error ? error.message : "Something went wrong";
+    const errorMessage = error instanceof Error ? error.message : "Something went wrong";
     return {
       success: false,
       error: errorMessage,

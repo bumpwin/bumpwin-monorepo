@@ -1,8 +1,8 @@
 import { logger } from "@workspace/logger";
-import { SupabaseRepository } from "@workspace/supabase/src/adapters";
-import { createSupabaseClient } from "@workspace/supabase/src/client";
-import type { ApiError } from "@workspace/supabase/src/error";
-import { createApiError } from "@workspace/supabase/src/error";
+import { SupabaseRepository } from "@workspace/supabase";
+import { createSupabaseClient } from "@workspace/supabase";
+import type { ApiError } from "@workspace/supabase";
+import { createApiError } from "@workspace/supabase";
 import { Hono } from "hono";
 import { type Result, err, ok } from "neverthrow";
 
@@ -29,19 +29,13 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
   return ok(supabaseRepo);
 };
 
-const parseLimit = (
-  limitParam: string | undefined,
-): Result<number, ApiError> => {
+const parseLimit = (limitParam: string | undefined): Result<number, ApiError> => {
   if (!limitParam) return ok(40); // Default to 40 messages
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
     return err(
-      createApiError(
-        "validation",
-        "Invalid limit parameter",
-        "Limit must be a positive number",
-      ),
+      createApiError("validation", "Invalid limit parameter", "Limit must be a positive number"),
     );
   }
 

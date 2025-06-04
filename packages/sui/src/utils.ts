@@ -9,10 +9,7 @@ import { SUI_BASE_UNIT, SUI_TYPE } from "./constants";
  * @param address - Wallet address
  * @returns Formatted balance string with 3 decimal places
  */
-export async function getSuiBalance(
-  suiClient: SuiClient,
-  address: string,
-): Promise<string> {
+export async function getSuiBalance(suiClient: SuiClient, address: string): Promise<string> {
   try {
     const { totalBalance } = await suiClient.getBalance({
       owner: address,
@@ -49,10 +46,7 @@ export function isTreasuryCap(objectType: string): boolean {
  * @param network - Network type (defaults to config NETWORK_TYPE)
  * @returns SuiScan URL for the address
  */
-export function getSuiScanUrl(
-  address: string,
-  network: string = NETWORK_TYPE,
-): string {
+export function getSuiScanUrl(address: string, network: string = NETWORK_TYPE): string {
   return `https://suiscan.xyz/${network}/account/${address}`;
 }
 
@@ -62,10 +56,7 @@ export function getSuiScanUrl(
  * @param network - Network type (defaults to config NETWORK_TYPE)
  * @returns SuiScan URL for the transaction
  */
-export function getSuiScanTxUrl(
-  digest: string,
-  network: string = NETWORK_TYPE,
-): string {
+export function getSuiScanTxUrl(digest: string, network: string = NETWORK_TYPE): string {
   return `https://suiscan.xyz/${network}/tx/${digest}`;
 }
 
@@ -75,9 +66,6 @@ export function getSuiScanTxUrl(
  * @param network - Network type (defaults to config NETWORK_TYPE)
  * @returns SuiScan URL for the object
  */
-export function getSuiScanObjectUrl(
-  objectId: string,
-  network: string = NETWORK_TYPE,
-): string {
+export function getSuiScanObjectUrl(objectId: string, network: string = NETWORK_TYPE): string {
   return `https://suiscan.xyz/${network}/object/${objectId}`;
 }

@@ -4,8 +4,7 @@ import { useBattleClock } from "@/providers/BattleClockProvider";
 import { useEffect, useState } from "react";
 
 export const BattleRoundPhaseToggle = () => {
-  const { phase, skipToDarkNight, skipToSunrise, resetDemoOffset } =
-    useBattleClock();
+  const { phase, skipToDarkNight, skipToSunrise } = useBattleClock();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
@@ -43,20 +42,18 @@ export const BattleRoundPhaseToggle = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-center mb-4">
+      <div className="mb-4 flex items-center justify-center">
         <button
           type="button"
-          onClick={
-            phase === "daytime" ? handleSkipToDarknight : handleSkipToSunrise
-          }
+          onClick={phase === "daytime" ? handleSkipToDarknight : handleSkipToSunrise}
           disabled={isButtonDisabled}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-300 border-2 ${
+          className={`flex items-center gap-1 rounded-full border-2 px-3 py-1.5 transition-all duration-300 ${
             isButtonDisabled
-              ? "bg-black/20 border-gray-500 cursor-not-allowed scale-95"
-              : "bg-black/40 hover:bg-black/60 border-red-500 hover:scale-105"
+              ? "scale-95 cursor-not-allowed border-gray-500 bg-black/20"
+              : "border-red-500 bg-black/40 hover:scale-105 hover:bg-black/60"
           }`}
         >
-          <span className="text-sm font-medium text-white">
+          <span className="font-medium text-sm text-white">
             {isButtonDisabled ? (
               <span className="flex items-center gap-2">
                 <span className="animate-pulse">⏳</span>
@@ -68,14 +65,14 @@ export const BattleRoundPhaseToggle = () => {
           </span>
         </button>
       </div>
-      <div className="flex items-center justify-center gap-4 mb-4">
+      <div className="mb-4 flex items-center justify-center gap-4">
         <div
           className={`flex items-center gap-1 transition-opacity duration-300 ${
             phase === "darknight" ? "opacity-50" : ""
           }`}
         >
           <span className="text-2xl">🌞</span>
-          <div className="px-2.5 py-1 text-black font-semibold text-sm bg-yellow-300 rounded-full shadow-sm">
+          <div className="rounded-full bg-yellow-300 px-2.5 py-1 font-semibold text-black text-sm shadow-sm">
             Daytime
           </div>
         </div>
@@ -85,7 +82,7 @@ export const BattleRoundPhaseToggle = () => {
           }`}
         >
           <span className="text-2xl">🌑</span>
-          <div className="px-2.5 py-1 text-white font-semibold text-sm bg-purple-600 rounded-full shadow-sm">
+          <div className="rounded-full bg-purple-600 px-2.5 py-1 font-semibold text-sm text-white shadow-sm">
             DarkNight
           </div>
         </div>

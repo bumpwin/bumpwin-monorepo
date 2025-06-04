@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ColorType,
-  type IChartApi,
-  LineStyle,
-  createChart,
-} from "lightweight-charts";
+import { ColorType, type IChartApi, LineStyle, createChart } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 export interface PriceChartData {

@@ -19,18 +19,15 @@ export const CollapsibleSection = ({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-t border-[#2c2d3a] pt-4">
+    <div className="border-[#2c2d3a] border-t pt-4">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full text-[#00c8ff] text-sm"
+        className="flex w-full items-center justify-between text-[#00c8ff] text-sm"
       >
         <span>{title}</span>
         <ChevronDown
-          className={cn(
-            "h-5 w-5 transition-transform",
-            isOpen && "transform rotate-180",
-          )}
+          className={cn("h-5 w-5 transition-transform", isOpen && "rotate-180 transform")}
         />
       </button>
       {isOpen && <div className="mt-4 space-y-4">{children}</div>}

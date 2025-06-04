@@ -9,9 +9,7 @@ export const pool = new Pool({
   password: QUESTDB_CONFIG.PROJECT.PASSWORD,
 });
 
-export async function withConn<T>(
-  fn: (client: PoolClient) => Promise<T>,
-): Promise<T> {
+export async function withConn<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await pool.connect();
   try {
     return await fn(client);

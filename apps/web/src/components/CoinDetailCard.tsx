@@ -25,35 +25,30 @@ interface CoinDetailCardProps {
   variant?: "default" | "champion";
 }
 
-export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
-  coin,
-  variant = "default",
-}) => {
+export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({ coin, variant = "default" }) => {
   return (
     <Card
-      className={`bg-black/20 border border-[#23262F] ${
-        variant === "champion"
-          ? "hover:border-yellow-400"
-          : "hover:border-purple-400"
-      } transition-colors shadow-lg`}
+      className={`border border-[#23262F] bg-black/20 ${
+        variant === "champion" ? "hover:border-yellow-400" : "hover:border-purple-400"
+      } shadow-lg transition-colors`}
     >
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           <div className="relative">
-            <div className="relative w-24 h-24">
+            <div className="relative h-24 w-24">
               <Image
                 src={coin.iconUrl}
                 alt={coin.name}
                 width={96}
                 height={96}
-                className="rounded-full w-full h-full object-cover"
+                className="h-full w-full rounded-full object-cover"
               />
               <div
-                className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                className={`-top-2 -right-2 absolute flex h-8 w-8 items-center justify-center rounded-full font-bold text-sm ${
                   variant === "champion"
                     ? "bg-gradient-to-br from-yellow-200 to-yellow-600"
                     : "bg-gradient-to-br from-purple-200 to-purple-600"
-                } text-black border-2 border-white`}
+                } border-2 border-white text-black`}
               >
                 #{coin.round}
               </div>
@@ -64,15 +59,15 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h3
-                    className={`text-xl font-bold ${
+                    className={`font-bold text-xl ${
                       variant === "champion" ? "text-yellow-400" : "text-white"
                     }`}
                   >
                     {coin.name}
                   </h3>
-                  <span className="text-sm text-gray-400">({coin.symbol})</span>
+                  <span className="text-gray-400 text-sm">({coin.symbol})</span>
                 </div>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="mt-1 text-gray-400 text-sm">
                   {coin.description.substring(0, 100)}...
                 </p>
               </div>
@@ -80,24 +75,22 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
             <div className="mt-3 flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-gray-400">Market Cap:</span>
-                <span className="text-white font-medium">
-                  {formatMarketCap(coin.marketCap)}
-                </span>
+                <span className="font-medium text-white">{formatMarketCap(coin.marketCap)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-gray-400">Created by:</span>
-                <span className="text-white font-medium">BUMP.WIN</span>
+                <span className="font-medium text-white">BUMP.WIN</span>
               </div>
             </div>
-            <div className="flex gap-3 mt-3">
+            <div className="mt-3 flex gap-3">
               {coin.websiteLink && (
                 <a
                   href={coin.websiteLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 transition-colors hover:text-white"
                 >
-                  <Globe className="w-5 h-5" />
+                  <Globe className="h-5 w-5" />
                 </a>
               )}
               {coin.telegramLink && (
@@ -105,9 +98,9 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
                   href={coin.telegramLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 transition-colors hover:text-white"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="h-5 w-5" />
                 </a>
               )}
               {coin.twitterLink && (
@@ -115,9 +108,9 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({
                   href={coin.twitterLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 transition-colors hover:text-white"
                 >
-                  <Twitter className="w-5 h-5" />
+                  <Twitter className="h-5 w-5" />
                 </a>
               )}
             </div>

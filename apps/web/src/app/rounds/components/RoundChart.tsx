@@ -1,6 +1,5 @@
 import type { ChartCoin, ChartPoint } from "@/app/rounds/types";
 import DominanceRechart from "@/components/DominanceRechart";
-import React from "react";
 
 interface RoundChartProps {
   points: ChartPoint[];
@@ -9,7 +8,7 @@ interface RoundChartProps {
 
 export function RoundChart({ points, coins }: RoundChartProps) {
   return (
-    <div className="bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-3 mb-2">
+    <div className="mb-2 rounded-xl border border-gray-700/50 bg-black/50 p-3 backdrop-blur-sm">
       <DominanceRechart
         points={points}
         coins={coins}

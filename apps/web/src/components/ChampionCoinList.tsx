@@ -8,76 +8,66 @@ import Link from "next/link";
 export const ChampionCoinList = () => {
   return (
     <div className="container mx-auto px-4">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2
-            className="text-2xl md:text-3xl font-extrabold bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_2px_12px_rgba(255,255,180,0.35)] relative"
+            className="relative bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-500 bg-clip-text font-extrabold text-2xl text-transparent drop-shadow-[0_2px_12px_rgba(255,255,180,0.35)] md:text-3xl"
             style={{ WebkitTextStroke: "1px #fff9", letterSpacing: "0.02em" }}
           >
             Previous Champions <span className="align-middle">🏆</span>
             <span
-              className="absolute left-0 right-0 top-0 h-1/3 bg-white/60 rounded-full blur-md pointer-events-none"
+              className="pointer-events-none absolute top-0 right-0 left-0 h-1/3 rounded-full bg-white/60 blur-md"
               style={{ zIndex: 1 }}
             />
           </h2>
         </div>
         <Link
           href="/champions"
-          className="text-blue-400 hover:text-blue-300 text-lg font-bold transition-colors drop-shadow"
+          className="font-bold text-blue-400 text-lg drop-shadow transition-colors hover:text-blue-300"
         >
           View All Champions →
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {mockChampionCoinMetadata.map((coin) => (
           <div key={coin.id} className="relative">
-            <Link
-              href={`/champions/${coin.round}`}
-              className="block group"
-              tabIndex={0}
-            >
+            <Link href={`/champions/${coin.round}`} className="group block" tabIndex={0}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#181A20] border border-[#23262F] rounded-2xl p-6 hover:border-yellow-400 transition-colors cursor-pointer group-hover:shadow-lg group-active:scale-[0.98]"
+                className="cursor-pointer rounded-2xl border border-[#23262F] bg-[#181A20] p-6 transition-colors hover:border-yellow-400 group-hover:shadow-lg group-active:scale-[0.98]"
               >
                 <div className="flex items-start gap-6">
                   <div className="relative">
-                    <div className="relative w-28 h-28">
+                    <div className="relative h-28 w-28">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-900 p-[4px] shadow-[0_0_24px_4px_rgba(255,215,0,0.25)]">
                         <div className="absolute inset-0 rounded-full bg-white p-[2px]">
                           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
-                          <div className="absolute inset-0 rounded-full overflow-hidden">
+                          <div className="absolute inset-0 overflow-hidden rounded-full">
                             <Image
                               src={coin.iconUrl}
                               alt={coin.name}
                               width={112}
                               height={112}
-                              className="rounded-full w-full h-full object-cover border-0"
+                              className="h-full w-full rounded-full border-0 object-cover"
                             />
-                            <div className="absolute left-2 top-2 w-2/3 h-1/4 bg-white/60 rounded-full blur-md rotate-[-20deg]" />
+                            <div className="absolute top-2 left-2 h-1/4 w-2/3 rotate-[-20deg] rounded-full bg-white/60 blur-md" />
                           </div>
                         </div>
                       </div>
-                      <div className="absolute -top-3 -right-3 w-9 h-9 rounded-full flex items-center justify-center text-base font-bold bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 text-black shadow-xl border-2 border-white">
+                      <div className="-top-3 -right-3 absolute flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 font-bold text-base text-black shadow-xl">
                         #{coin.round}
                       </div>
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-bold text-white truncate">
-                        {coin.name}
-                      </h3>
-                      <span className="text-sm text-gray-400">
-                        ({coin.symbol})
-                      </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <h3 className="truncate font-bold text-lg text-white">{coin.name}</h3>
+                      <span className="text-gray-400 text-sm">({coin.symbol})</span>
                     </div>
-                    <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-                      {coin.description}
-                    </p>
+                    <p className="mb-4 line-clamp-2 text-gray-400 text-sm">{coin.description}</p>
                   </div>
                 </div>
               </motion.div>

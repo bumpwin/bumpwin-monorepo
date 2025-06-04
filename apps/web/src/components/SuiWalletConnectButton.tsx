@@ -70,7 +70,7 @@ export function SuiWalletConnectButton() {
         <ConnectButton
           connectText={
             <span
-              className="bg-gradient-to-r from-fuchsia-400 via-purple-400 to-blue-400 bg-clip-text text-transparent font-extrabold !opacity-100"
+              className="!opacity-100 bg-gradient-to-r from-fuchsia-400 via-purple-400 to-blue-400 bg-clip-text font-extrabold text-transparent"
               style={{
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -87,40 +87,40 @@ export function SuiWalletConnectButton() {
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center px-2 h-12 rounded-full bg-[#5D20D3] min-w-[180px] shadow-xl">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5D20D3] -ml-4 overflow-hidden">
+            <div className="flex h-12 min-w-[180px] items-center rounded-full bg-[#5D20D3] px-2 shadow-xl">
+              <div className="-ml-4 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#5D20D3]">
                 {currentWallet?.icon && (
                   <Image
                     src={currentWallet.icon}
                     alt={currentWallet.name}
                     width={24}
                     height={24}
-                    className="w-11 h-11"
+                    className="h-11 w-11"
                   />
                 )}
               </div>
-              <span className="flex-1 text-white text-xl font-bold text-center ml-2 tracking-wide">
+              <span className="ml-2 flex-1 text-center font-bold text-white text-xl tracking-wide">
                 {formatAddress(account.address)}
               </span>
-              <ChevronDown className="w-6 h-6 text-white flex-shrink-0 ml-2" />
+              <ChevronDown className="ml-2 h-6 w-6 flex-shrink-0 text-white" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-[240px] mt-2 rounded-2xl shadow-2xl border border-gray-800 bg-[#18122B] p-3"
+            className="mt-2 w-[240px] rounded-2xl border border-gray-800 bg-[#18122B] p-3 shadow-2xl"
           >
             <DropdownMenuItem
               onClick={copyAddressToClipboard}
-              className="focus:bg-[#5D20D3]/10 hover:bg-[#5D20D3]/20 cursor-pointer rounded-xl px-4 py-3 transition flex items-center gap-4 text-xl text-white font-bold"
+              className="flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 font-bold text-white text-xl transition hover:bg-[#5D20D3]/20 focus:bg-[#5D20D3]/10"
             >
-              <CopyIcon className="w-7 h-7 text-violet-400" />
+              <CopyIcon className="h-7 w-7 text-violet-400" />
               <span>Copy Address</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDisconnect}
-              className="focus:bg-red-900/10 hover:bg-red-900/20 cursor-pointer rounded-xl px-4 py-3 transition flex items-center gap-4 text-xl font-bold text-red-500 mt-2"
+              className="mt-2 flex cursor-pointer items-center gap-4 rounded-xl px-4 py-3 font-bold text-red-500 text-xl transition hover:bg-red-900/20 focus:bg-red-900/10"
             >
-              <LogOut className="w-7 h-7 text-red-400" />
+              <LogOut className="h-7 w-7 text-red-400" />
               <span>Disconnect</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

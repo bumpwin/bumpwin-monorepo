@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  CandlestickSeries,
-  type IChartApi,
-  createChart,
-} from "lightweight-charts";
+import { CandlestickSeries, type IChartApi, createChart } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
 interface OHLCData {
@@ -20,10 +16,7 @@ interface LWCChartProps {
   currentPrice?: number;
 }
 
-export default function LWCChart({
-  data,
-  currentPrice = 0.000026,
-}: LWCChartProps) {
+export default function LWCChart({ data, currentPrice = 0.000026 }: LWCChartProps) {
   const container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -182,8 +175,7 @@ export default function LWCChart({
 
     chart.timeScale().fitContent();
 
-    const resize = () =>
-      chart.applyOptions({ width: container.current?.clientWidth });
+    const resize = () => chart.applyOptions({ width: container.current?.clientWidth });
     window.addEventListener("resize", resize);
     return () => {
       window.removeEventListener("resize", resize);
@@ -191,5 +183,5 @@ export default function LWCChart({
     };
   }, [data, currentPrice]);
 
-  return <div ref={container} className="w-full h-[400px]" />;
+  return <div ref={container} className="h-[400px] w-full" />;
 }

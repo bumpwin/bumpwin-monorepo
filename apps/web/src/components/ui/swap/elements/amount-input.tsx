@@ -1,8 +1,5 @@
 import { CoinIconSymbol } from "@/components/ui/coin-icon-symbol";
-import type {
-  ComponentType,
-  ToggleSide,
-} from "@/components/ui/swap/elements/types";
+import type { ComponentType, ToggleSide } from "@/components/ui/swap/elements/types";
 import type { RoundCoin } from "@/types/roundcoin";
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { match } from "ts-pattern";
@@ -55,31 +52,27 @@ export const AmountInput = ({
 
   return (
     <div className="mb-4">
-      <div className="text-gray-400 font-medium text-sm ml-1">You pay</div>
+      <div className="ml-1 font-medium text-gray-400 text-sm">You pay</div>
       <div className="relative mb-3">
         <div
-          className={`${getBackgroundColor()} rounded-2xl overflow-hidden shadow-inner text-white`}
+          className={`${getBackgroundColor()} overflow-hidden rounded-2xl text-white shadow-inner`}
         >
           <div className="flex items-baseline px-3">
             {showCoinIcon && coin && (
-              <CoinIconSymbol
-                coin={coin}
-                size="sm"
-                className="mr-1 min-w-0 flex-shrink-0"
-              />
+              <CoinIconSymbol coin={coin} size="sm" className="mr-1 min-w-0 flex-shrink-0" />
             )}
             <input
               type="text"
               {...register}
               value={amount === null ? "" : amount}
               onChange={(e) => onAmountChange(e.target.value)}
-              className="bg-transparent border-none outline-none text-5xl font-bold text-right w-auto p-0 m-0 placeholder:text-gray-500 flex-1"
+              className="m-0 w-auto flex-1 border-none bg-transparent p-0 text-right font-bold text-5xl outline-none placeholder:text-gray-500"
               style={{ width: `${String(amount ?? "").length + 1}ch` }}
               placeholder="0"
               autoComplete="off"
             />
             <span
-              className={`ml-2 text-xl font-bold select-none${!showSuiLabel ? " invisible" : ""}`}
+              className={`ml-2 font-bold text-xl select-none${!showSuiLabel ? " invisible" : ""}`}
             >
               SUI
             </span>
@@ -87,7 +80,7 @@ export const AmountInput = ({
         </div>
       </div>
       {error && <span className="text-red-500 text-xs">{error}</span>}
-      <div className="flex justify-end gap-1.5 mb-1">
+      <div className="mb-1 flex justify-end gap-1.5">
         {activeSide === "buy"
           ? [
               { label: "+0.1", value: 0.1 },
@@ -97,10 +90,8 @@ export const AmountInput = ({
               <button
                 type="button"
                 key={label}
-                className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
-                onClick={() =>
-                  setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))
-                }
+                className="w-auto rounded-xl border border-[#3A3F51] bg-transparent px-3 py-1.5 font-medium text-gray-300 text-sm shadow-none transition-colors hover:bg-[#23262F] hover:text-white"
+                onClick={() => setAmountValue(Number(((amount ?? 0) + value).toFixed(2)))}
               >
                 {label}
               </button>
@@ -112,7 +103,7 @@ export const AmountInput = ({
               <button
                 type="button"
                 key={label}
-                className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+                className="w-auto rounded-xl border border-[#3A3F51] bg-transparent px-3 py-1.5 font-medium text-gray-300 text-sm shadow-none transition-colors hover:bg-[#23262F] hover:text-white"
                 onClick={() => setAmountValue(Number(value.toFixed(2)))}
               >
                 {label}
@@ -120,7 +111,7 @@ export const AmountInput = ({
             ))}
         <button
           type="button"
-          className="w-auto px-3 bg-transparent text-gray-300 border border-[#3A3F51] rounded-xl py-1.5 text-sm font-medium hover:bg-[#23262F] hover:text-white transition-colors shadow-none"
+          className="w-auto rounded-xl border border-[#3A3F51] bg-transparent px-3 py-1.5 font-medium text-gray-300 text-sm shadow-none transition-colors hover:bg-[#23262F] hover:text-white"
           onClick={() => setAmountValue(balance)}
         >
           Max

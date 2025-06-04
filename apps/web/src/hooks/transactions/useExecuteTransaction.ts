@@ -1,8 +1,5 @@
 import { setupTransaction } from "@/hooks/transactions/utils";
-import {
-  useCurrentAccount,
-  useSignAndExecuteTransaction,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import type { Transaction } from "@mysten/sui/transactions";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";

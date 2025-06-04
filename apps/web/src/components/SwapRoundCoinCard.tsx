@@ -2,11 +2,7 @@
 
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
-import {
-  ConnectButton,
-  useCurrentAccount,
-  useSuiClient,
-} from "@mysten/dapp-kit";
+import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Input } from "@workspace/shadcn/components/input";
 import { getSuiBalance } from "@workspace/sui";
 import Image from "next/image";
@@ -19,9 +15,9 @@ interface SwapRoundCoinCardProps {
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
   coin = (() => {
     if (mockCoinMetadata.length > 0 && mockDominanceChartData.length > 0) {
-      const latestData = mockDominanceChartData[
-        mockDominanceChartData.length - 1
-      ] as { shares: number[] };
+      const latestData = mockDominanceChartData[mockDominanceChartData.length - 1] as {
+        shares: number[];
+      };
       if (!latestData?.shares) return undefined;
       const latestShares = latestData.shares as number[];
       const maxShare = Math.max(...latestShares);
@@ -71,23 +67,15 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
   if (!coin) return null;
 
   return (
-    <div className="bg-[#181A20] border border-[#23262F] rounded-2xl p-4 w-full max-w-xs mx-auto shadow-lg">
-      <div className="flex items-center gap-3 mb-2">
-        <Image
-          src={coin.iconUrl}
-          alt={coin.name}
-          width={48}
-          height={48}
-          className="rounded-xl"
-        />
-        <div className="flex-1 min-w-0">
-          <div className="font-bold text-lg text-white truncate">
-            {coin.name}
-          </div>
+    <div className="mx-auto w-full max-w-xs rounded-2xl border border-[#23262F] bg-[#181A20] p-4 shadow-lg">
+      <div className="mb-2 flex items-center gap-3">
+        <Image src={coin.iconUrl} alt={coin.name} width={48} height={48} className="rounded-xl" />
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-bold text-lg text-white">{coin.name}</div>
         </div>
       </div>
-      <div className="mb-2 text-gray-400 font-medium">Amount</div>
-      <div className="flex items-center gap-2 mb-2">
+      <div className="mb-2 font-medium text-gray-400">Amount</div>
+      <div className="mb-2 flex items-center gap-2">
         <Input
           type="text"
           min={0}
@@ -102,17 +90,17 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
             val = val.replace(/^0+(?=\d)/, "");
             setAmount(Number(val));
           }}
-          className="w-full bg-[#23262F] text-white rounded-lg px-6 py-6 text-4xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg bg-[#23262F] px-6 py-6 font-bold text-4xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter amount"
         />
-        <span className="text-2xl font-bold text-gray-400">SUI</span>
+        <span className="font-bold text-2xl text-gray-400">SUI</span>
       </div>
-      <div className="flex gap-2 mb-6">
+      <div className="mb-6 flex gap-2">
         {[1, 20].map((v) => (
           <button
             type="button"
             key={v}
-            className="bg-[#23262F] text-gray-300 rounded-lg px-3 py-1 text-sm font-semibold hover:bg-[#2c2f38]"
+            className="rounded-lg bg-[#23262F] px-3 py-1 font-semibold text-gray-300 text-sm hover:bg-[#2c2f38]"
             onClick={() => setAmount(amount + v)}
           >
             +{v} SUI
@@ -120,24 +108,24 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
         ))}
         <button
           type="button"
-          className="bg-[#23262F] text-gray-300 rounded-lg px-3 py-1 text-sm font-semibold hover:bg-[#2c2f38]"
+          className="rounded-lg bg-[#23262F] px-3 py-1 font-semibold text-gray-300 text-sm hover:bg-[#2c2f38]"
           onClick={() => setAmount(balance)}
         >
           Max
         </button>
       </div>
-      <div className="flex gap-2 mb-6">
+      <div className="mb-6 flex gap-2">
         {account ? (
           <>
             <button
               type="button"
-              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-green-600 hover:bg-green-700 text-white"
+              className="flex-1 rounded-xl bg-green-600 py-3 font-bold text-lg text-white transition hover:bg-green-700"
             >
               Buy
             </button>
             <button
               type="button"
-              className="flex-1 rounded-xl py-3 font-bold text-lg transition bg-red-600 hover:bg-red-700 text-white"
+              className="flex-1 rounded-xl bg-red-600 py-3 font-bold text-lg text-white transition hover:bg-red-700"
             >
               Sell
             </button>
@@ -145,17 +133,13 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
         ) : (
           <>
             <ConnectButton
-              connectText={
-                <div className="w-full text-center !text-white">
-                  Login to Trade
-                </div>
-              }
-              className="flex-1 !bg-blue-500 !hover:bg-blue-600 !text-white font-bold py-3 rounded-xl text-lg transition !min-w-0 !h-auto !px-0 !border-none !shadow-none !ring-0"
+              connectText={<div className="!text-white w-full text-center">Login to Trade</div>}
+              className="!bg-blue-500 !text-white !min-w-0 !h-auto !px-0 !border-none !shadow-none !ring-0 flex-1 rounded-xl !hover:bg-blue-600 py-3 font-bold text-lg transition"
             />
           </>
         )}
       </div>
-      <div className="mt-6 text-center text-xs text-gray-500">
+      <div className="mt-6 text-center text-gray-500 text-xs">
         By trading, you agree to the{" "}
         <a href="/terms" className="underline">
           Terms of Use

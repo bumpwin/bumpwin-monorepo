@@ -5,8 +5,7 @@ import { champMarket, counter, mockcoins } from "bumpwin/suigen";
 import { useCallback } from "react";
 
 // Constants
-const COUNTER_ID =
-  "0x184d597dacb67afb95037132af97d146f15d1650e11cd0f1abc09c6fe8e1f0cc";
+const COUNTER_ID = "0x184d597dacb67afb95037132af97d146f15d1650e11cd0f1abc09c6fe8e1f0cc";
 
 export const useTransactionCreators = () => {
   const currentAccount = useCurrentAccount();

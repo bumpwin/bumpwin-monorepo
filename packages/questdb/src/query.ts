@@ -1,5 +1,4 @@
-import type { Coin } from "./models/coin";
-import type { Dominance } from "./models/dominance";
+import type { Coin, Dominance } from "./models";
 import { withConn } from "./pool";
 
 // 最新のドミナンスデータを取得

@@ -18,11 +18,7 @@ export interface LogMessage {
 }
 
 // ログフォーマッター
-function formatLogMessage(
-  level: LogLevel,
-  message: string,
-  context?: LogContext,
-): LogMessage {
+function formatLogMessage(level: LogLevel, message: string, context?: LogContext): LogMessage {
   return {
     level,
     message,
@@ -35,9 +31,7 @@ function formatLogMessage(
 export const logger = {
   debug: (message: string, context?: LogContext) => {
     if (config.isDevelopment) {
-      baseLogger.debug(
-        JSON.stringify(formatLogMessage("debug", message, context)),
-      );
+      baseLogger.debug(JSON.stringify(formatLogMessage("debug", message, context)));
     }
   },
 
@@ -60,8 +54,6 @@ export const logger = {
           }
         : undefined,
     };
-    baseLogger.error(
-      JSON.stringify(formatLogMessage("error", message, errorContext)),
-    );
+    baseLogger.error(JSON.stringify(formatLogMessage("error", message, errorContext)));
   },
 };

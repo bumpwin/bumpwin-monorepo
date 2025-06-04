@@ -3,14 +3,9 @@ import { z } from "zod";
 
 // 環境変数のスキーマ定義
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   PORT: z.string().transform(Number).default("4000"),
-  LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS: z
-    .string()
-    .transform(Number)
-    .default("5000"),
+  LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS: z.string().transform(Number).default("5000"),
   INSERT_CHAT_INTERVAL_MS: z.string().transform(Number).default("2000"),
   SUPABASE_URL: z.string(),
   SUPABASE_ANON_KEY: z.string(),

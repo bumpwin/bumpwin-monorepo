@@ -74,15 +74,13 @@ export const getCurrentRound = (): RoundData | undefined =>
 
 export const getCompletedRounds = (): RoundData[] =>
   Object.values(mockRoundData).filter(
-    (round): round is RoundData & { status: "completed" } =>
-      round.status === "completed",
+    (round): round is RoundData & { status: "completed" } => round.status === "completed",
   );
 
 export const getUpcomingRounds = (): RoundData[] =>
   Object.values(mockRoundData).filter((round) => round.status === "upcoming");
 
-export const getRoundById = (roundId: string): RoundData | undefined =>
-  mockRoundData[roundId];
+export const getRoundById = (roundId: string): RoundData | undefined => mockRoundData[roundId];
 
 export const getRoundByNumber = (roundNumber: number): RoundData | undefined =>
   Object.values(mockRoundData).find((round) => round.round === roundNumber);

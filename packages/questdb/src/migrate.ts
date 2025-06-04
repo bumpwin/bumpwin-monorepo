@@ -1,5 +1,4 @@
-import { COINS_TABLE } from "./models/coin";
-import { DOMINANCE_TABLE } from "./models/dominance";
+import { COINS_TABLE, DOMINANCE_TABLE } from "./models";
 import { withConn } from "./pool";
 
 export async function migrate() {
