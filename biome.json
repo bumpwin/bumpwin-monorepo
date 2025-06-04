@@ -1,29 +1,91 @@
 {
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
+      "style": {
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useImportType": "error",
+        "useExportType": "error"
+      },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "error",
+        "noImplicitAnyLet": "error"
+      },
+      "complexity": {
+        "noBannedTypes": "error",
+        "noUselessTypeConstraint": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
       },
       "nursery": {
-        "useImportRestrictions": "off"
+        "useSortedClasses": {
+          "level": "error",
+          "options": {
+            "attributes": ["className", "class"],
+            "functions": ["cn", "clsx", "cva", "tw"]
+          }
+        },
+        "useImportRestrictions": "error"
       }
     }
   },
   "formatter": {
     "enabled": true,
+    "formatWithErrors": false,
     "indentStyle": "space",
-    "indentWidth": 2
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "bracketSameLine": false,
+      "quoteStyle": "double"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "trailingCommas": "none"
+    }
   },
   "files": {
     "ignore": [
-      "node_modules/",
-      ".next/",
-      "dist/",
-      "build/",
-      ".wrangler/",
-      ".vercel/"
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/.turbo/**",
+      "**/.vercel/**",
+      "**/.wrangler/**",
+      "**/coverage/**",
+      "**/*.min.js",
+      "**/*.min.css",
+      "**/bun.lock",
+      "**/pnpm-lock.yaml",
+      "**/.git/**",
+      "**/*.d.ts",
+      "**/*.d.ts.map",
+      "**/*.d.mts",
+      "**/examples/**",
+      "**/seed/**"
     ]
   }
 }

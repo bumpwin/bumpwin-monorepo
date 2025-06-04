@@ -7,6 +7,10 @@ PROJECT_NAME := "monorepo-template-web"
 alias i := install
 alias d := dev
 alias b := build
+alias p := preview
+alias up := update-all
+alias c := clean
+alias k := check-fix
 
 
 install:
@@ -30,17 +34,19 @@ install:
 dev:
     pnpm run dev
 
+preview:
+    pnpm run preview
+
 server-dev:
-    #!/usr/bin/env bash
-    if [ ! -f "apps/cmd/.env" ]; then
-        echo "Error: apps/cmd/.env file not found"
-        echo "Please create apps/cmd/.env file with required environment variables:"
-        echo "SUPABASE_URL=your_supabase_project_url"
-        echo "SUPABASE_ANON_KEY=your_supabase_anon_key"
-        exit 1
+    @if [ ! -f "apps/cmd/.env" ]; then \
+        echo "Error: apps/cmd/.env file not found"; \
+        echo "Please create apps/cmd/.env file with required environment variables:"; \
+        echo "SUPABASE_URL=your_supabase_project_url"; \
+        echo "SUPABASE_ANON_KEY=your_supabase_anon_key"; \
+        exit 1; \
     fi
-    cat apps/cmd/.env
-    pnpm run server:dev
+    @cat apps/cmd/.env
+    pnpm run dev:cmd
 
 build:
     pnpm run build
@@ -62,6 +68,14 @@ typecheck:
     pnpm run typecheck
 
 checkall: format lint # typecheck
+
+# Run all checks (format, lint, typecheck)
+check-all: format lint typecheck
+
+# Fix linting and formatting issues
+check-fix: 
+    pnpm run format
+    pnpm run lint
 
 create-package pkg_name:
     ./scripts/create-package.sh {{pkg_name}}
@@ -160,3 +174,28 @@ listen-chat:
 
 faucet-testnet:
     open https://faucet.sui.io/?network=testnet
+
+# Update all packages to latest versions (including major versions)
+update-all:
+    pnpm up -L --latest --recursive
+    pnpm install
+
+# Update packages within current version constraints
+update-safe:
+    pnpm up -L --recursive
+    pnpm install
+
+# Check for outdated packages
+outdated:
+    pnpm outdated --recursive
+
+# Clean all node_modules and build artifacts
+clean:
+    find . -name "node_modules" -type d -prune -exec rm -rf '{}' +
+    find . -name "dist" -type d -prune -exec rm -rf '{}' +
+    find . -name ".next" -type d -prune -exec rm -rf '{}' +
+    find . -name ".turbo" -type d -prune -exec rm -rf '{}' +
+    rm -rf .vercel
+
+# Reinstall dependencies after clean
+refresh: clean install
