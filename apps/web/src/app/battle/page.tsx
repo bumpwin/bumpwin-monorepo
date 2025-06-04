@@ -23,27 +23,27 @@ import {
 } from "@workspace/shadcn/components/chart/lwc-chart";
 import type { MemeMetadata } from "@workspace/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 // Constants
 const DEFAULT_COIN: RoundCoin = {
   id: "default",
-  symbol: "YAKIU",
-  name: "Yakiu",
-  iconUrl: "/images/mockmemes/YAKIU.png",
+  symbol: "LAG",
+  name: "Lag Girl",
+  iconUrl: "/images/mockmemes/LAG.jpg",
   round: 12,
   share: 0,
   marketCap: 180000,
-  description: "Default coin",
+  description: "lagging since 2020",
 };
 
 const PERCENTAGE = {
-  YAKIU: "0.9%",
+  LAG: "0.9%",
   DEFAULT: "13%",
 } as const;
 
 const PRICE_MULTIPLIER = {
-  YAKIU: 1.009,
+  LAG: 1.009,
   DEFAULT: 1.13,
 } as const;
 
@@ -113,9 +113,9 @@ const PriceChart = ({
       ? (priceData[priceData.length - 1]?.close ?? 0)
       : 0;
   const percentage =
-    coin.symbol === "YAKIU" ? PERCENTAGE.YAKIU : PERCENTAGE.DEFAULT;
+    coin.symbol === "LAG" ? PERCENTAGE.LAG : PERCENTAGE.DEFAULT;
   const priceMultiplier =
-    coin.symbol === "YAKIU" ? PRICE_MULTIPLIER.YAKIU : PRICE_MULTIPLIER.DEFAULT;
+    coin.symbol === "LAG" ? PRICE_MULTIPLIER.LAG : PRICE_MULTIPLIER.DEFAULT;
 
   return (
     <Card className="w-full bg-black/20 backdrop-blur-sm border-none mb-4">
@@ -182,7 +182,7 @@ const MemeGallery = ({
             imageUrl={meme.iconUrl}
             symbol={meme.symbol}
             name={meme.name}
-            percent={i % 2 === 0 ? PERCENTAGE.YAKIU : PERCENTAGE.DEFAULT}
+            percent={i % 2 === 0 ? PERCENTAGE.LAG : PERCENTAGE.DEFAULT}
             rank={i + 1}
           />
         </button>
@@ -212,10 +212,44 @@ export default function RoundsAPage() {
     },
   });
 
-  const memes =
+  const allMemes =
     battleData?.memes
       ?.filter((m: any) => m.metadata)
       .map((m: any) => m.metadata) || [];
+
+  // Store darknight memes selection to prevent re-shuffling
+  const darknightMemesRef = useRef<MemeMetadata[]>([]);
+  const lastPhaseRef = useRef<string>("");
+
+  // Only recalculate when phase changes TO darknight
+  useEffect(() => {
+    if (
+      phase === "darknight" &&
+      lastPhaseRef.current !== "darknight" &&
+      allMemes.length > 8
+    ) {
+      const jellMeme = allMemes.find((m: MemeMetadata) => m.symbol === "JELL");
+      const otherMemes = allMemes.filter(
+        (m: MemeMetadata) => m.symbol !== "JELL",
+      );
+
+      // Shuffle and pick 7 random memes
+      const shuffled = [...otherMemes].sort(() => Math.random() - 0.5);
+      const selectedMemes = shuffled.slice(0, 7);
+
+      // Always include JELL if it exists
+      darknightMemesRef.current = jellMeme
+        ? [jellMeme, ...selectedMemes]
+        : selectedMemes.slice(0, 8);
+    }
+    lastPhaseRef.current = phase;
+  }, [phase, allMemes]);
+
+  // Use stored selection for darknight, otherwise show all memes
+  const memes =
+    phase === "darknight" && darknightMemesRef.current.length > 0
+      ? darknightMemesRef.current
+      : allMemes;
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme

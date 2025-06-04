@@ -85,7 +85,7 @@ export default function TwitchStyleChatPanel() {
       setLoading(true);
       setError(null);
 
-      await chatApi.fetchLatest(20).match(
+      await chatApi.fetchLatest(40).match(
         (messages) => {
           // Convert to ChatMessage format and sort by timestamp (oldest first)
           const convertedMessages = messages

@@ -32,7 +32,7 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
 const parseLimit = (
   limitParam: string | undefined,
 ): Result<number, ApiError> => {
-  if (!limitParam) return ok(20); // Default to 20 messages
+  if (!limitParam) return ok(40); // Default to 40 messages
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {

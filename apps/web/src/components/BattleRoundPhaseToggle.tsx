@@ -4,7 +4,8 @@ import { useBattleClock } from "@/providers/BattleClockProvider";
 import { useEffect, useState } from "react";
 
 export const BattleRoundPhaseToggle = () => {
-  const { phase, skipToDarkNight, resetDemoOffset } = useBattleClock();
+  const { phase, skipToDarkNight, skipToSunrise, resetDemoOffset } =
+    useBattleClock();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
@@ -20,8 +21,8 @@ export const BattleRoundPhaseToggle = () => {
     };
   }, [isButtonDisabled, countdown]);
 
-  const handleSkipToDaytime = () => {
-    resetDemoOffset();
+  const handleSkipToSunrise = () => {
+    skipToSunrise();
     setIsButtonDisabled(true);
     setCountdown(7);
     setTimeout(() => {
@@ -46,7 +47,7 @@ export const BattleRoundPhaseToggle = () => {
         <button
           type="button"
           onClick={
-            phase === "daytime" ? handleSkipToDarknight : handleSkipToDaytime
+            phase === "daytime" ? handleSkipToDarknight : handleSkipToSunrise
           }
           disabled={isButtonDisabled}
           className={`flex items-center gap-1 px-3 py-1.5 rounded-full transition-all duration-300 border-2 ${
@@ -62,7 +63,7 @@ export const BattleRoundPhaseToggle = () => {
                 {countdown}s until next skip
               </span>
             ) : (
-              `skip to ${phase === "daytime" ? "Darknight" : "Daytime"} for demo`
+              `skip to ${phase === "daytime" ? "Darknight" : "Sunrise"} for demo`
             )}
           </span>
         </button>

@@ -160,23 +160,14 @@ export default function RoundsPage() {
         };
       }),
       winner:
-        round.state === "ended"
+        round.state === "ended" && round.champion
           ? {
-              name: getSafeSymbol(
-                mockCoinMetadata,
-                round.round % mockCoinMetadata.length,
-              ),
+              name: round.champion.name,
               round: `Round ${round.round} Winner`,
               mcap: round.metrics.mcap,
               volume: round.metrics.volume,
-              image: getSafeIcon(
-                mockCoinMetadata,
-                round.round % mockCoinMetadata.length,
-              ),
-              symbol: getSafeSymbol(
-                mockCoinMetadata,
-                round.round % mockCoinMetadata.length,
-              ),
+              image: round.champion.icon,
+              symbol: round.champion.symbol,
             }
           : null,
       loserIssuance: round.metrics.loserIssuance,
