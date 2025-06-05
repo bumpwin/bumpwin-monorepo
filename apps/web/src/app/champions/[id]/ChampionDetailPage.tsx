@@ -1,13 +1,13 @@
 "use client";
 
 import { api } from "@/app/client";
-import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
-import { ChartTitle } from "@/components/ChartTitle";
-import ChampionSwapUI from "@/components/ui/swap/variants/ChampionSwapUI";
+import BattleCoinDetailCard from "@/components/battle/BattleCoinDetailCard";
+import { ChartTitle } from "@/components/charts/ChartTitle";
+import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
+import ChampionSwapUI from "@/components/trading/swap/variants/ChampionSwapUI";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
-import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 
 interface ChampionDetailPageProps {
   coin: RoundCoin;

@@ -1,5 +1,5 @@
-import SquareWordmarkLogo from "@/components/SquareWordmarkLogo";
-import WordmarkLogo from "@/components/WordmarkLogo";
+import SquareWordmarkLogo from "@/components/branding/SquareWordmarkLogo";
+import WordmarkLogo from "@/components/branding/WordmarkLogo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

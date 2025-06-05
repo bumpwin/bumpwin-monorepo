@@ -19,12 +19,18 @@
   },
   "dependencies": {
     "@mysten/dapp-kit": "^0.16.6",
+    "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.80.5",
     "@workspace/api": "workspace:*",
     "@workspace/logger": "workspace:*",
     "@workspace/mockdata": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/types": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.16.0",
     "gsap": "^3.13.0",
@@ -39,7 +45,8 @@
     "react-hook-form": "^7.57.0",
     "reactflow": "^11.11.4",
     "recharts": "^2.15.3",
-    "sonner": "^2.0.5"
+    "sonner": "^2.0.5",
+    "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

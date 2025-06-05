@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ConnectButton,
   useCurrentAccount,
   useCurrentWallet,
@@ -9,12 +15,6 @@ import {
 } from "@mysten/dapp-kit";
 import { formatAddress } from "@mysten/sui/utils";
 import { logger } from "@workspace/logger";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/shadcn/components/dropdown-menu";
 import { getSuiBalance } from "@workspace/sui";
 import { ChevronDown, Copy as CopyIcon, LogOut } from "lucide-react";
 import Image from "next/image";

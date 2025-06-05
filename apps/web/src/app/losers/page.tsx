@@ -1,6 +1,6 @@
 "use client";
 
-import FeeFlowChart from "@/components/FeeFlowChart";
+import FeeFlowChart from "@/components/charts/FeeFlowChart";
 import Image from "next/image";
 import {
   Area,

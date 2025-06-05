@@ -1,4 +1,8 @@
-import type { ChartDataPoint, CoinMeta, PreparedCoinMeta } from "@/components/DominanceRechart";
+import type {
+  ChartDataPoint,
+  CoinMeta,
+  PreparedCoinMeta,
+} from "@/components/charts/DominanceRechart";
 
 const DEFAULT_COLOR_PALETTE = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#c300ff", "#00c3ff"];
 
