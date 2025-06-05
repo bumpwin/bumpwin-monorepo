@@ -10,9 +10,9 @@
     "format": "biome format . --write"
   },
   "dependencies": {
-    "@effect/platform": "^0.85.2",
-    "@effect/platform-node": "^0.85.2",
-    "@effect/schema": "^0.85.2",
+    "@effect/platform": "^0.84.6",
+    "@effect/platform-node": "^0.85.4",
+    "@effect/schema": "^0.75.5",
     "@workspace/mockdata": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
