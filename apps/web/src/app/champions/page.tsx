@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/app/client";
-import { ChampionCard } from "@/components/ChampionCard";
+import { ChampionCard } from "@/components/champions/ChampionCard";
 import { useQuery } from "@tanstack/react-query";
 import type { MemeMetadata } from "@workspace/types";
 

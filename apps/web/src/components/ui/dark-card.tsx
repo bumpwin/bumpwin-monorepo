@@ -1,5 +1,5 @@
-import { Card } from "@workspace/shadcn/components/card";
-import { cn } from "@workspace/shadcn/lib/utils";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { ComponentProps } from "react";
 
 interface DarkCardProps extends ComponentProps<typeof Card> {

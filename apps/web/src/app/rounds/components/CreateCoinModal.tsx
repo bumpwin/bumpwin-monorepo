@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageUpload } from "@/components/ImageUpload";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
 import { motion } from "framer-motion";

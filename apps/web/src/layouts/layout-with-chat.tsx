@@ -1,6 +1,6 @@
 "use client";
 
-import TwitchStyleChatPanel from "@/components/TwitchStyleChatPanel";
+import TwitchStyleChatPanel from "@/components/chat/TwitchStyleChatPanel";
 import type React from "react";
 
 export default function LayoutWithChat({

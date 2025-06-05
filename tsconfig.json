@@ -9,7 +9,6 @@
     { "path": "./packages/logger" },
     { "path": "./packages/mockdata" },
     { "path": "./packages/questdb" },
-    { "path": "./packages/shadcn" },
     { "path": "./packages/sui" },
     { "path": "./packages/supabase" },
     { "path": "./packages/types" },

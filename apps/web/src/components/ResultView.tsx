@@ -1,6 +1,6 @@
 "use client";
-import DominanceRechart from "@/components/DominanceRechart";
-import type { ChartDataPoint, PreparedCoinMeta } from "@/components/DominanceRechart";
+import DominanceRechart from "@/components/charts/DominanceRechart";
+import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";

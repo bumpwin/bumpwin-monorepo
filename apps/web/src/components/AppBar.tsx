@@ -1,10 +1,10 @@
 "use client";
 
-import BattleClock from "@/components/BattleClock";
 import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
-import WordmarkLogo from "@/components/WordmarkLogo";
+import BattleClock from "@/components/battle/BattleClock";
+import WordmarkLogo from "@/components/branding/WordmarkLogo";
+import { cn } from "@/lib/utils";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import { cn } from "@workspace/shadcn/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
