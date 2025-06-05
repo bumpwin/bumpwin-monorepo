@@ -2,6 +2,7 @@
 
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import { useEffect, useState } from "react";
+import { match } from "ts-pattern";
 
 export const BattleRoundPhaseToggle = () => {
   const { phase, skipToDarkNight, skipToSunrise } = useBattleClock();
@@ -45,30 +46,38 @@ export const BattleRoundPhaseToggle = () => {
       <div className="mb-4 flex items-center justify-center">
         <button
           type="button"
-          onClick={phase === "daytime" ? handleSkipToDarknight : handleSkipToSunrise}
+          onClick={match(phase)
+            .with("daytime", () => handleSkipToDarknight)
+            .with("darknight", () => handleSkipToSunrise)
+            .exhaustive()}
           disabled={isButtonDisabled}
           className={`flex items-center gap-1 rounded-full border-2 px-3 py-1.5 transition-all duration-300 ${
-            isButtonDisabled
-              ? "scale-95 cursor-not-allowed border-gray-500 bg-black/20"
-              : "border-red-500 bg-black/40 hover:scale-105 hover:bg-black/60"
+            match(isButtonDisabled)
+              .with(true, () => "scale-95 cursor-not-allowed border-gray-500 bg-black/20")
+              .with(false, () => "border-red-500 bg-black/40 hover:scale-105 hover:bg-black/60")
+              .exhaustive()
           }`}
         >
           <span className="font-medium text-sm text-white">
-            {isButtonDisabled ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-pulse">⏳</span>
-                {countdown}s until next skip
-              </span>
-            ) : (
-              `skip to ${phase === "daytime" ? "Darknight" : "Sunrise"} for demo`
-            )}
+            {match({ isButtonDisabled, phase })
+              .with({ isButtonDisabled: true }, () => (
+                <span className="flex items-center gap-2">
+                  <span className="animate-pulse">⏳</span>
+                  {countdown}s until next skip
+                </span>
+              ))
+              .with({ phase: "daytime" }, () => "skip to Darknight for demo")
+              .with({ phase: "darknight" }, () => "skip to Sunrise for demo")
+              .exhaustive()}
           </span>
         </button>
       </div>
       <div className="mb-4 flex items-center justify-center gap-4">
         <div
           className={`flex items-center gap-1 transition-opacity duration-300 ${
-            phase === "darknight" ? "opacity-50" : ""
+            match(phase)
+              .with("darknight", () => "opacity-50")
+              .otherwise(() => "")
           }`}
         >
           <span className="text-2xl">🌞</span>
@@ -78,7 +87,9 @@ export const BattleRoundPhaseToggle = () => {
         </div>
         <div
           className={`flex items-center gap-1 transition-opacity duration-300 ${
-            phase === "daytime" ? "opacity-50" : ""
+            match(phase)
+              .with("daytime", () => "opacity-50")
+              .otherwise(() => "")
           }`}
         >
           <span className="text-2xl">🌑</span>

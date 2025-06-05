@@ -13,6 +13,7 @@ import {
 import { cn } from "@workspace/shadcn/lib/utils";
 import { ChevronDown, RotateCw } from "lucide-react";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 type SortType = "marketCap" | "new";
 
@@ -54,14 +55,10 @@ export function CoinList() {
       filtered = filtered.filter((coin) => coin.isFavorite);
     }
 
-    switch (sortType) {
-      case "marketCap":
-        return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
-      case "new":
-        return [...filtered].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      default:
-        return filtered;
-    }
+    return match(sortType)
+      .with("marketCap", () => [...filtered].sort((a, b) => b.marketCap - a.marketCap))
+      .with("new", () => [...filtered].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()))
+      .otherwise(() => filtered);
   };
 
   return (

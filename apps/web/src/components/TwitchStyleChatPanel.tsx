@@ -18,6 +18,7 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
+import { match } from "ts-pattern";
 
 const getColorFromUserId = (userId: string): string => {
   // 0xプレフィックスを除去
@@ -265,59 +266,63 @@ export default function TwitchStyleChatPanel() {
           ref={messagesContainerRef}
           className="min-h-0 flex-1 space-y-1 overflow-y-auto scroll-smooth bg-[#0e0e10] px-2 py-1"
         >
-          {loading ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2">
-              <Loader2 className="h-8 w-8 animate-spin text-[#9147ff]" />
-              <p className="text-gray-400 text-sm">Loading messages...</p>
-            </div>
-          ) : error ? (
-            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-800 bg-red-900/20 p-4">
-              <p className="text-red-400 text-sm">{error}</p>
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="mt-2 rounded-md bg-red-800 px-3 py-1 text-white text-xs hover:bg-red-700"
-              >
-                Reload
-              </button>
-            </div>
-          ) : chatMessages.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center">
-              <div className="mb-3 rounded-full bg-[#9147ff]/20 p-5">
-                <MessageSquare className="h-8 w-8 text-[#9147ff]" />
+          {match({ loading, error, isEmpty: chatMessages.length === 0 })
+            .with({ loading: true }, () => (
+              <div className="flex h-full flex-col items-center justify-center gap-2">
+                <Loader2 className="h-8 w-8 animate-spin text-[#9147ff]" />
+                <p className="text-gray-400 text-sm">Loading messages...</p>
               </div>
-              <p className="font-medium text-gray-300 text-sm">No messages yet</p>
-              <p className="mt-1 text-gray-500 text-xs">Send the first message!</p>
-            </div>
-          ) : (
-            <>
-              <div className="py-2 text-center">
-                <span className="rounded-full bg-[#18181b] px-2 py-1 text-gray-400 text-xs">
-                  <Clock className="mr-1 inline-block h-3 w-3" />
-                  Chat History
-                </span>
+            ))
+            .with({ error: true }, () => (
+              <div className="flex h-full flex-col items-center justify-center rounded-lg border border-red-800 bg-red-900/20 p-4">
+                <p className="text-red-400 text-sm">{error}</p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="mt-2 rounded-md bg-red-800 px-3 py-1 text-white text-xs hover:bg-red-700"
+                >
+                  Reload
+                </button>
               </div>
-              {chatMessages.map((msg) => (
-                <div key={msg.id} className="group rounded px-1 py-1 hover:bg-[#18181b]/30">
-                  <div className="break-words text-sm">
-                    <span className="break-words">
-                      <span>{getEmojiFromUserId(msg.userId)} </span>
-                      <span
-                        className="font-bold"
-                        style={{
-                          color: getColorFromUserId(msg.userId),
-                        }}
-                      >
-                        {formatAddress(msg.userId)}
-                      </span>
-                      <span className="text-gray-200">: {renderWithEmoji(msg.message)}</span>
-                    </span>
-                  </div>
+            ))
+            .with({ isEmpty: true }, () => (
+              <div className="flex h-full flex-col items-center justify-center">
+                <div className="mb-3 rounded-full bg-[#9147ff]/20 p-5">
+                  <MessageSquare className="h-8 w-8 text-[#9147ff]" />
                 </div>
-              ))}
-              <div className="h-2" />
-            </>
-          )}
+                <p className="font-medium text-gray-300 text-sm">No messages yet</p>
+                <p className="mt-1 text-gray-500 text-xs">Send the first message!</p>
+              </div>
+            ))
+            .otherwise(() => (
+              <>
+                <div className="py-2 text-center">
+                  <span className="rounded-full bg-[#18181b] px-2 py-1 text-gray-400 text-xs">
+                    <Clock className="mr-1 inline-block h-3 w-3" />
+                    Chat History
+                  </span>
+                </div>
+                {chatMessages.map((msg) => (
+                  <div key={msg.id} className="group rounded px-1 py-1 hover:bg-[#18181b]/30">
+                    <div className="break-words text-sm">
+                      <span className="break-words">
+                        <span>{getEmojiFromUserId(msg.userId)} </span>
+                        <span
+                          className="font-bold"
+                          style={{
+                            color: getColorFromUserId(msg.userId),
+                          }}
+                        >
+                          {formatAddress(msg.userId)}
+                        </span>
+                        <span className="text-gray-200">: {renderWithEmoji(msg.message)}</span>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                <div className="h-2" />
+              </>
+            ))}
         </div>
 
         {/* Chat input area - fixed at bottom */}

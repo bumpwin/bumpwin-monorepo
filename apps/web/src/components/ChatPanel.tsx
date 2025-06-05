@@ -17,6 +17,7 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
+import { match } from "ts-pattern";
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -181,20 +182,25 @@ export default function ChatPanel() {
       } catch (err) {
         console.error("Failed to send message:", err);
 
-        // Check for InsufficientCoinBalance error
+        // Handle different error types with pattern matching
         const errorMessage = err instanceof Error ? err.message : String(err);
-        if (errorMessage.includes("InsufficientCoinBalance")) {
-          toast.error(
-            <div>
-              Insufficient SUI balance
-              <div className="mt-1 text-gray-300 text-sm">
-                You need more SUI to pay for transaction fees
-              </div>
-            </div>,
-          );
-        } else {
-          toast.error("Failed to send message");
-        }
+        match(errorMessage)
+          .when(
+            (msg) => msg.includes("InsufficientCoinBalance"),
+            () => {
+              toast.error(
+                <div>
+                  Insufficient SUI balance
+                  <div className="mt-1 text-gray-300 text-sm">
+                    You need more SUI to pay for transaction fees
+                  </div>
+                </div>,
+              );
+            }
+          )
+          .otherwise(() => {
+            toast.error("Failed to send message");
+          });
       } finally {
         setIsSending(false);
       }
