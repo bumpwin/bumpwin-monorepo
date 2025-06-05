@@ -3,7 +3,6 @@ import type { ComponentType, ToggleSide } from "@/components/trading/swap/elemen
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
-import { match } from "ts-pattern";
 
 interface PotentialWinDisplayProps {
   amount: number | null;

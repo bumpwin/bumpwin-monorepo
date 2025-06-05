@@ -2,7 +2,6 @@ import { CoinIconSymbol } from "@/components/coins/coin-icon-symbol";
 import type { ComponentType, ToggleSide } from "@/components/trading/swap/elements/types";
 import type { RoundCoin } from "@/types/roundcoin";
 import type { UseFormRegisterReturn } from "react-hook-form";
-import { match } from "ts-pattern";
 
 interface AmountInputProps {
   amount: number | null;
@@ -28,14 +27,14 @@ export const AmountInput = ({
   componentType,
 }: AmountInputProps) => {
   // Determine if we're showing a coin icon based on activeSide and componentType
-  const showCoinIcon = 
+  const showCoinIcon =
     (componentType === "daytime" && activeSide === "sell") ||
     (componentType === "darknight" && activeSide === "switch") ||
     (componentType === "champion" && activeSide === "sell");
 
   // Determine if we're showing the SUI label (unit) based on componentType and activeSide
-  const showSuiLabel = 
-    activeSide === "buy" && 
+  const showSuiLabel =
+    activeSide === "buy" &&
     (componentType === "daytime" || componentType === "darknight" || componentType === "champion");
 
   // Determine background color based on componentType
