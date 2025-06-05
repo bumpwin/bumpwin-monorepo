@@ -4,6 +4,7 @@ import { CHAMP_MARKET_OBJECT_IDS, MOCKCOINS_OBJECT_IDS } from "bumpwin";
 import { champMarket, mockcoins } from "bumpwin/suigen";
 import { Effect } from "effect";
 import { toast } from "sonner";
+import { match } from "ts-pattern";
 
 const WSUI_AMOUNT = 100n * BigInt(1e9);
 const GAS_BUDGET = 50000000; // 0.05 SUI
@@ -23,6 +24,9 @@ type TransactionError = {
 type WalletNotConnectedError = {
   readonly _tag: "WalletNotConnectedError";
 };
+
+// Union type for all swap errors
+type SwapErrorUnion = ChampionSwapError | TransactionError | WalletNotConnectedError;
 
 // Error factory functions
 const SwapErrors = {
@@ -112,28 +116,22 @@ export const useChampionSwap = () => {
         Effect.sync(() => {
           console.error("Transaction failed:", error);
 
-          // Handle specific error types
-          if (typeof error === "object" && error !== null && "_tag" in error) {
-            const typedError = error as { _tag: string; cause?: unknown; message?: string };
-
-            switch (typedError._tag) {
-              case "ChampionSwapError":
-                toast.error("Failed to prepare transaction");
-                break;
-              case "TransactionError":
-                toast.error("Transaction failed", {
-                  description: typedError.message || "Unknown error",
-                });
-                break;
-              case "WalletNotConnectedError":
-                toast.error("Please connect your wallet first");
-                break;
-              default:
-                toast.error("Failed to execute transaction");
-            }
-          } else {
-            toast.error("Failed to execute transaction");
-          }
+          // Handle error types using ts-pattern
+          match(error as SwapErrorUnion | unknown)
+            .with({ _tag: "ChampionSwapError" }, () => {
+              toast.error("Failed to prepare transaction");
+            })
+            .with({ _tag: "TransactionError" }, (err: TransactionError) => {
+              toast.error("Transaction failed", {
+                description: err.message || "Unknown error",
+              });
+            })
+            .with({ _tag: "WalletNotConnectedError" }, () => {
+              toast.error("Please connect your wallet first");
+            })
+            .otherwise(() => {
+              toast.error("Failed to execute transaction");
+            });
         }),
       ),
     );

@@ -18,6 +18,7 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
+import { match } from "ts-pattern";
 
 // Effect Error types for chat message sending
 type ChatSendError = {
@@ -33,6 +34,9 @@ type InsufficientBalanceError = {
 type WalletNotConnectedError = {
   readonly _tag: "WalletNotConnectedError";
 };
+
+// Union type for all chat errors
+type ChatErrorUnion = ChatSendError | InsufficientBalanceError | WalletNotConnectedError;
 
 // Error factory functions
 const ChatErrors = {
@@ -228,49 +232,41 @@ export default function ChatPanel() {
           Effect.sync(() => {
             console.error("Failed to send message:", error);
 
-            // Handle specific error types
-            if (typeof error === "object" && error !== null && "_tag" in error) {
-              const typedError = error as { _tag: string; cause?: unknown; message?: string };
+            // Handle error types using ts-pattern
+            match(error as ChatErrorUnion | unknown)
+              .with({ _tag: "ChatSendError" }, (err: ChatSendError) => {
+                const errorMessage =
+                  err.cause instanceof Error ? err.cause.message : String(err.cause);
 
-              switch (typedError._tag) {
-                case "ChatSendError": {
-                  const errorMessage =
-                    typedError.cause instanceof Error
-                      ? typedError.cause.message
-                      : String(typedError.cause);
-                  if (errorMessage.includes("InsufficientCoinBalance")) {
-                    toast.error(
-                      <div>
-                        Insufficient SUI balance
-                        <div className="mt-1 text-gray-300 text-sm">
-                          You need more SUI to pay for transaction fees
-                        </div>
-                      </div>,
-                    );
-                  } else {
-                    toast.error("Failed to send message");
-                  }
-                  break;
-                }
-                case "InsufficientBalanceError":
+                if (errorMessage.includes("InsufficientCoinBalance")) {
                   toast.error(
                     <div>
-                      {typedError.message || "Insufficient balance"}
+                      Insufficient SUI balance
                       <div className="mt-1 text-gray-300 text-sm">
                         You need more SUI to pay for transaction fees
                       </div>
                     </div>,
                   );
-                  break;
-                case "WalletNotConnectedError":
-                  toast.error("Please connect your wallet to send messages");
-                  break;
-                default:
+                } else {
                   toast.error("Failed to send message");
-              }
-            } else {
-              toast.error("Failed to send message");
-            }
+                }
+              })
+              .with({ _tag: "InsufficientBalanceError" }, (err: InsufficientBalanceError) => {
+                toast.error(
+                  <div>
+                    {err.message || "Insufficient balance"}
+                    <div className="mt-1 text-gray-300 text-sm">
+                      You need more SUI to pay for transaction fees
+                    </div>
+                  </div>,
+                );
+              })
+              .with({ _tag: "WalletNotConnectedError" }, () => {
+                toast.error("Please connect your wallet to send messages");
+              })
+              .otherwise(() => {
+                toast.error("Failed to send message");
+              });
           }),
         ),
         Effect.tap(() =>

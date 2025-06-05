@@ -1,3 +1,5 @@
+import { P, match } from "ts-pattern";
+
 // ベースエラー型
 export type AppError = {
   readonly _tag: "AppError";
@@ -120,41 +122,79 @@ export type AppErrorUnion =
   | NotFoundError
   | RetryableError;
 
-// Type guard to check if error is one of our app errors
+// Type guard to check if error is one of our app errors using ts-pattern
 export const isAppError = (error: unknown): error is AppErrorUnion => {
-  if (typeof error !== "object" || error === null || !("_tag" in error)) {
-    return false;
-  }
-
-  const errorWithTag = error as { _tag: unknown };
-  return (
-    typeof errorWithTag._tag === "string" &&
-    [
-      "AppError",
-      "ValidationError",
-      "AuthenticationError",
-      "AuthorizationError",
-      "NotFoundError",
-      "RetryableError",
-    ].includes(errorWithTag._tag)
-  );
+  return match(error)
+    .with(
+      {
+        _tag: P.union(
+          "AppError",
+          "ValidationError",
+          "AuthenticationError",
+          "AuthorizationError",
+          "NotFoundError",
+          "RetryableError",
+        ),
+      },
+      () => true,
+    )
+    .otherwise(() => false);
 };
 
-// エラーハンドリングユーティリティ
+// エラーハンドリングユーティリティ using ts-pattern
 export const handleError = (error: unknown): AppError => {
-  if (isAppError(error)) {
-    return error._tag === "AppError"
-      ? error
-      : AppErrors.appError(error.message, error.code, error.statusCode, error.context);
-  }
-
-  if (error instanceof Error) {
-    return AppErrors.appError(error.message, "INTERNAL_SERVER_ERROR", 500, {
-      originalError: error,
-    });
-  }
-
-  return AppErrors.appError("An unexpected error occurred", "INTERNAL_SERVER_ERROR", 500, {
-    originalError: error,
-  });
+  return match(error as AppErrorUnion | Error | unknown)
+    .with({ _tag: "AppError" }, (appError: AppError) => appError)
+    .with({ _tag: "ValidationError" }, (validationError: ValidationError) =>
+      AppErrors.appError(
+        validationError.message,
+        validationError.code,
+        validationError.statusCode,
+        validationError.context,
+      ),
+    )
+    .with({ _tag: "AuthenticationError" }, (authError: AuthenticationError) =>
+      AppErrors.appError(
+        authError.message,
+        authError.code,
+        authError.statusCode,
+        authError.context,
+      ),
+    )
+    .with({ _tag: "AuthorizationError" }, (authzError: AuthorizationError) =>
+      AppErrors.appError(
+        authzError.message,
+        authzError.code,
+        authzError.statusCode,
+        authzError.context,
+      ),
+    )
+    .with({ _tag: "NotFoundError" }, (notFoundError: NotFoundError) =>
+      AppErrors.appError(
+        notFoundError.message,
+        notFoundError.code,
+        notFoundError.statusCode,
+        notFoundError.context,
+      ),
+    )
+    .with({ _tag: "RetryableError" }, (retryableError: RetryableError) =>
+      AppErrors.appError(
+        retryableError.message,
+        retryableError.code,
+        retryableError.statusCode,
+        retryableError.context,
+      ),
+    )
+    .when(
+      (err): err is Error => err instanceof Error,
+      (err) =>
+        AppErrors.appError(err.message, "INTERNAL_SERVER_ERROR", 500, {
+          originalError: err,
+        }),
+    )
+    .otherwise((unknownError) =>
+      AppErrors.appError("An unexpected error occurred", "INTERNAL_SERVER_ERROR", 500, {
+        originalError: unknownError,
+      }),
+    );
 };
