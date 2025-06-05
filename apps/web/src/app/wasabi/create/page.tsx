@@ -1,6 +1,5 @@
 "use client";
 
-import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { FormField } from "@/components/ui/FormField";
 import { ImageUpload } from "@/components/ui/ImageUpload";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { SuiWalletConnectButton } from "@/components/wallet/SuiWalletConnectButton";
 import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { logger } from "@workspace/logger";

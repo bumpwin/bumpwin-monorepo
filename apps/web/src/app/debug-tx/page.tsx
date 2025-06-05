@@ -1,8 +1,10 @@
 "use client";
 
-import { useDryRunTransaction } from "@/hooks/transactions/useDryRunTransaction";
-import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
-import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
+import { 
+  useDryRunTransaction, 
+  useExecuteTransaction, 
+  useTransactionCreators 
+} from "@/hooks";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import type { Transaction } from "@mysten/sui/transactions";
 import { useCallback } from "react";
