@@ -1,6 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { logger } from "@workspace/logger";
+import { Context, Effect } from "effect";
 
 // Type definitions for transaction results
 interface TransactionResult {
@@ -9,6 +10,64 @@ interface TransactionResult {
   coinMetadataID?: string;
   treasuryCapID?: string;
 }
+
+// Effect error types for blockchain operations (using union types like JAPOX mono2)
+export type TransactionBuildError = {
+  readonly type: "TRANSACTION_BUILD_ERROR";
+  readonly message: string;
+  readonly cause: unknown;
+};
+
+export type TransactionSignError = {
+  readonly type: "TRANSACTION_SIGN_ERROR";
+  readonly message: string;
+  readonly cause: unknown;
+};
+
+export type SuiTransactionError = {
+  readonly type: "SUI_TRANSACTION_ERROR";
+  readonly message: string;
+  readonly digest?: string;
+  readonly cause: unknown;
+};
+
+// Error factory functions
+export const SuiErrors = {
+  transactionBuild: (message: string, cause: unknown): TransactionBuildError => ({
+    type: "TRANSACTION_BUILD_ERROR",
+    message,
+    cause,
+  }),
+
+  transactionSign: (message: string, cause: unknown): TransactionSignError => ({
+    type: "TRANSACTION_SIGN_ERROR",
+    message,
+    cause,
+  }),
+
+  suiTransaction: (message: string, cause: unknown, digest?: string): SuiTransactionError => ({
+    type: "SUI_TRANSACTION_ERROR",
+    message,
+    digest,
+    cause,
+  }),
+} as const;
+
+// Services for dependency injection
+export interface SuiClientService {
+  readonly _: unique symbol;
+}
+export const SuiClientService = Context.GenericTag<SuiClientService, SuiClient>("SuiClientService");
+
+export interface TransactionSignerService {
+  readonly _: unique symbol;
+}
+export const TransactionSigner = Context.GenericTag<
+  TransactionSignerService,
+  {
+    readonly sign: (tx: Uint8Array) => Effect.Effect<string, TransactionSignError>;
+  }
+>("TransactionSigner");
 // Remove the problematic imports
 // import { BumpFamCoin } from "bumpwin";
 // import { Justchat } from "bumpwin";
@@ -140,11 +199,108 @@ async function fetchObjectIdsFromTransaction(
 }
 
 /**
- * Publish BumpFamCoin package to the blockchain
- * @param client SuiClient
+ * Publish BumpFamCoin package to the blockchain (Effect version)
  * @param senderAddress Sender address
- * @param signCallback Signature callback function that handles signing AND execution
- * @returns Publication result (packageId, coinMetadataID, treasuryCapID)
+ * @returns Effect that produces publication result or error
+ */
+export const publishBumpFamCoinPackageEffect = (
+  senderAddress: string,
+): Effect.Effect<
+  {
+    packageId: string;
+    coinMetadataID: string;
+    treasuryCapID: string;
+    digest: string;
+  },
+  TransactionBuildError | TransactionSignError | SuiTransactionError,
+  SuiClientService | TransactionSignerService
+> =>
+  Effect.gen(function* () {
+    const client = yield* SuiClientService;
+    const signer = yield* TransactionSigner;
+
+    // Create and configure transaction
+    const tx = new Transaction();
+    tx.setSender(senderAddress);
+    tx.setGasBudget(500_000_000);
+
+    BumpFamCoin.publishBumpFamCoinPackage(tx, { sender: senderAddress });
+
+    // Build transaction with error handling
+    const builtTx = yield* Effect.tryPromise(() => tx.build({ client })).pipe(
+      Effect.mapError((cause) => SuiErrors.transactionBuild("Failed to build transaction", cause)),
+      Effect.tap(() => Effect.log("Transaction built successfully", { sender: senderAddress })),
+    );
+
+    // Sign and execute transaction
+    const txResultStr = yield* signer.sign(builtTx);
+
+    // Parse transaction result
+    const txResult = yield* Effect.try(() => JSON.parse(txResultStr) as TransactionResult).pipe(
+      Effect.mapError((cause) =>
+        SuiErrors.suiTransaction("Failed to parse transaction result", cause),
+      ),
+      Effect.catchAll(() =>
+        // Handle legacy format - just a digest string
+        Effect.succeed({
+          digest: txResultStr,
+          packageId: "",
+          coinMetadataID: "",
+          treasuryCapID: "",
+        } as TransactionResult),
+      ),
+      Effect.tap((result) =>
+        Effect.log("Transaction signed and executed successfully", { digest: result.digest }),
+      ),
+    );
+
+    const digest = txResult.digest;
+
+    // Fetch object IDs if missing
+    const finalResult = yield* (() => {
+      if (!txResult.packageId || !txResult.coinMetadataID || !txResult.treasuryCapID) {
+        return Effect.log("Fetching object IDs from transaction", { digest }).pipe(
+          Effect.andThen(() =>
+            Effect.tryPromise(() => fetchObjectIdsFromTransaction(client, digest)).pipe(
+              Effect.mapError((cause) =>
+                SuiErrors.suiTransaction(
+                  "Failed to fetch object IDs from transaction",
+                  cause,
+                  digest,
+                ),
+              ),
+              Effect.map((objectIds) => ({
+                packageId: objectIds.packageId,
+                coinMetadataID: objectIds.coinMetadataID,
+                treasuryCapID: objectIds.treasuryCapID,
+                digest,
+              })),
+            ),
+          ),
+        );
+      }
+      return Effect.succeed({
+        packageId: txResult.packageId || "",
+        coinMetadataID: txResult.coinMetadataID || "",
+        treasuryCapID: txResult.treasuryCapID || "",
+        digest,
+      });
+    })();
+
+    // Log successful publication
+    yield* Effect.log("BumpFamCoin package published", {
+      packageId: finalResult.packageId,
+      coinMetadataID: finalResult.coinMetadataID,
+      treasuryCapID: finalResult.treasuryCapID,
+      digest: finalResult.digest,
+    });
+
+    return finalResult;
+  });
+
+/**
+ * Legacy Promise-based function (kept for compatibility)
+ * @deprecated Use publishBumpFamCoinPackageEffect instead
  */
 export async function publishBumpFamCoinPackage(
   client: SuiClient,
