@@ -1,12 +1,12 @@
 "use client";
 
 import { api } from "@/app/client";
-import { ChartTitle } from "@/components/ChartTitle";
-import SwapUI from "@/components/ui/swap/core/SwapUI";
+import { ChartTitle } from "@/components/charts/ChartTitle";
+import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
+import SwapUI from "@/components/trading/swap/core/SwapUI";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
-import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

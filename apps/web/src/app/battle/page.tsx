@@ -2,18 +2,18 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { api } from "@/app/client";
-import BattleCoinDetailCard from "@/components/BattleCoinDetailCard";
-import { BattleRoundPhaseToggle } from "@/components/BattleRoundPhaseToggle";
-import { ChartTitle } from "@/components/ChartTitle";
-import { MarketDominanceCard } from "@/components/MarketDominanceCard";
 import SharrowStatsBar from "@/components/SharrowStatsBar";
-import DarknightSwapUI from "@/components/ui/swap/variants/DarknightSwapUI";
-import DaytimeSwapUI from "@/components/ui/swap/variants/DaytimeSwapUI";
+import BattleCoinDetailCard from "@/components/battle/BattleCoinDetailCard";
+import { BattleRoundPhaseToggle } from "@/components/battle/BattleRoundPhaseToggle";
+import { ChartTitle } from "@/components/charts/ChartTitle";
+import { MarketDominanceCard } from "@/components/charts/MarketDominanceCard";
+import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
+import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI";
+import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader } from "@workspace/shadcn/components/card";
-import { LWCChart, type OHLCData } from "@workspace/shadcn/components/chart/lwc-chart";
 import type { MemeMetadata } from "@workspace/types";
 
 // API Response types

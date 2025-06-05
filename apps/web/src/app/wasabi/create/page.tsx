@@ -1,16 +1,16 @@
 "use client";
 
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { FormField } from "@/components/FormField";
-import { ImageUpload } from "@/components/ImageUpload";
 import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
+import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
+import { FormField } from "@/components/ui/FormField";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { mockUploadImageToWalrus } from "@/mock/mockUploadToWalrus";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { logger } from "@workspace/logger";
-import { Button } from "@workspace/shadcn/components/button";
-import { Card, CardContent } from "@workspace/shadcn/components/card";
-import { Input } from "@workspace/shadcn/components/input";
-import { Textarea } from "@workspace/shadcn/components/textarea";
 import {
   createBumpFamCoin,
   publishBumpFamCoinPackage,

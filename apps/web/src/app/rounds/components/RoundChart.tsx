@@ -1,5 +1,5 @@
 import type { ChartCoin, ChartPoint } from "@/app/rounds/types";
-import DominanceRechart from "@/components/DominanceRechart";
+import DominanceRechart from "@/components/charts/DominanceRechart";
 
 interface RoundChartProps {
   points: ChartPoint[];

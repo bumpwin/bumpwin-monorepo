@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@workspace/shadcn/components/button";
+import { Button } from "@/components/ui/button";
 import { useOptimistic, useState } from "react";
 
 interface Todo {

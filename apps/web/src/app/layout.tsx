@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "@workspace/shadcn/globals.css";
+import "@/components/ui/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 import AppBar from "@/components/AppBar";
-import { ConfettiEffect } from "@/components/ConfettiEffect";
 // import { ChallengeOverlay } from "@/components/ChallengeOverlay";
 import { ResultView } from "@/components/ResultView";
+import { ConfettiEffect } from "@/components/ui/ConfettiEffect";
 import { Providers } from "@/providers/Providers";
 import { getMemeMetadataById, getRoundByNumber } from "@workspace/mockdata";
 import { Toaster } from "sonner";

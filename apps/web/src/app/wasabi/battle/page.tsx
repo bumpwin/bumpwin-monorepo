@@ -1,12 +1,12 @@
 "use client";
 
-import { ChampionCoinList } from "@/components/ChampionCoinList";
+import { ChampionCoinList } from "@/components/champions/ChampionCoinList";
 // import DominanceChart from "@/components/DominanceChart";
-import DominanceRechart from "@/components/DominanceRechart";
+import DominanceRechart from "@/components/charts/DominanceRechart";
 // import { mockDominanceData } from "@/mock/mockDominanceData";
-import type { CoinMeta } from "@/components/DominanceRechart";
-import RoundCoinTable from "@/components/RoundCoinTable";
-import SwapUI from "@/components/ui/swap/core/SwapUI";
+import type { CoinMeta } from "@/components/charts/DominanceRechart";
+import RoundCoinTable from "@/components/coins/RoundCoinTable";
+import SwapUI from "@/components/trading/swap/core/SwapUI";
 import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { prepareCoinsMetadata, prepareMultiCoinChartData } from "@/utils/chartDataPreparation";

@@ -5,8 +5,8 @@ import { RoundMetrics } from "@/app/rounds/components/RoundMetrics";
 import { WaitingRoundCard } from "@/app/rounds/components/WaitingRoundCard";
 import type { ChartCoin, ChartPoint, CoinMetadata, Round } from "@/app/rounds/types";
 import { getSafeIcon, getSafeSymbol } from "@/app/rounds/utils";
-import { ChampionCard } from "@/components/ChampionCard";
-import { cn } from "@workspace/shadcn/lib/utils";
+import { ChampionCard } from "@/components/champions/ChampionCard";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 interface RoundCardProps {

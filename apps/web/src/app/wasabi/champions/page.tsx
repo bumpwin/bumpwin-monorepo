@@ -1,7 +1,7 @@
 "use client";
 
-import { ChampionsList } from "@/components/Champions";
 import { ResultView } from "@/components/ResultView";
+import { ChampionsList } from "@/components/champions/Champions";
 import {
   mockChampionCoinMetadata,
   mockDominanceChartData,
