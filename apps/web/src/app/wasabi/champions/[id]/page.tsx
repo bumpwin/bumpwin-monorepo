@@ -1,5 +1,5 @@
 import { ChampionDetailPage } from "@/app/wasabi/champions/[id]/ChampionDetailPage";
-import { mockChampionCoinMetadata } from "@/mock/mockData";
+import { mockChampionCoinMetadata } from "@/lib/tempMockData";
 import { notFound } from "next/navigation";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {

@@ -1,5 +1,5 @@
 import { ResultView } from "@/components/ResultView";
-import { mockLastChampionCoinMetadata } from "@/mock/mockData";
+import { mockLastChampionCoinMetadata } from "@/lib/tempMockData";
 
 export default function WasabiPage() {
   return (

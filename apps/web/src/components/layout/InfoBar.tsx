@@ -1,5 +1,5 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 
 interface StatsBarProps {
   compact?: boolean;

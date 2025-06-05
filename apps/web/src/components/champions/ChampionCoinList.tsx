@@ -1,6 +1,6 @@
 "use client";
 
-import { mockChampionCoinMetadata } from "@/mock/mockData";
+import { mockChampionCoinMetadata } from "@/lib/tempMockData";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";

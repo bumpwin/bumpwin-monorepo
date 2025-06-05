@@ -8,7 +8,6 @@ export interface MemeMetadata {
   symbol: string;
   description: string;
   iconUrl: string;
-  marketCap?: number; // Optional market cap for compatibility
 }
 
 export type RoundData =
@@ -31,11 +30,10 @@ export type RoundData =
     };
 
 export interface MemeMarketData {
-  share: number;
-  marketCap: number;
   price: number;
+  marketCap: number;
 }
 
-export const memeMetadata: Record<MEME_ID, MemeMetadata> = {};
-export const roundData: Record<string, RoundData> = {};
-export const memeMarketData: Record<MEME_ID, MemeMarketData> = {};
+export const memeMetadataRecord: Record<MEME_ID, MemeMetadata> = {};
+export const roundDataRecord: Record<string, RoundData> = {};
+export const memeMarketDataRecord: Record<MEME_ID, MemeMarketData> = {};

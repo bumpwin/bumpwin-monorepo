@@ -1,4 +1,4 @@
-import { mockChampionCoinMetadata } from "@/mock/mockData";
+import { mockChampionCoinMetadata } from "@/lib/tempMockData";
 import { notFound } from "next/navigation";
 import { ChampionDetailPage } from "./ChampionDetailPage";
 

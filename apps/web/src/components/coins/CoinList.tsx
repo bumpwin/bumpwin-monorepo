@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { mockCoins } from "@/lib/tempMockData";
 import { cn } from "@/lib/utils";
-import { mockCoins } from "@/mock/mockCoins";
 import type { CoinCardProps } from "@/types/coincard";
 import { ChevronDown, RotateCw } from "lucide-react";
 import { useState } from "react";

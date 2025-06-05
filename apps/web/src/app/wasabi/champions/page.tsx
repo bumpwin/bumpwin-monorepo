@@ -6,7 +6,7 @@ import {
   mockChampionCoinMetadata,
   mockDominanceChartData,
   mockLastChampionCoinMetadata,
-} from "@/mock/mockData";
+} from "@/lib/tempMockData";
 import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
 

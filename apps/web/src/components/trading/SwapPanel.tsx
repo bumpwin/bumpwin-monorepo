@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CoinDetailData } from "@/mock/mockCoinDetail";
+import type { CoinDetailData } from "@/lib/tempMockData";
 import Image from "next/image";
 import { useState } from "react";
 
