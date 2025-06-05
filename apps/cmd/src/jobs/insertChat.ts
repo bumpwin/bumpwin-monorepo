@@ -7,7 +7,7 @@ import { logger } from "@/utils/logger";
 import { FileSystem } from "@effect/platform";
 import { NodeFileSystem } from "@effect/platform-node";
 import { SupabaseRepository } from "@workspace/supabase";
-import { Effect, Schema } from "effect";
+import { Effect } from "effect";
 
 // 型定義
 interface Messages {
@@ -27,18 +27,39 @@ interface MessageGenerator {
   readonly generateAddress: () => string;
 }
 
-// Effect Error types using Schema.TaggedError (Effect v3 syntax)
-class FileReadError extends Schema.TaggedError<FileReadError>()("FileReadError", {
-  cause: Schema.Unknown,
-}) {}
+// Effect Error types using union types (avoiding classes)
+type FileReadError = {
+  readonly _tag: "FileReadError";
+  readonly cause: unknown;
+};
 
-class JsonParseError extends Schema.TaggedError<JsonParseError>()("JsonParseError", {
-  cause: Schema.Unknown,
-}) {}
+type JsonParseError = {
+  readonly _tag: "JsonParseError";
+  readonly cause: unknown;
+};
 
-class DbInsertError extends Schema.TaggedError<DbInsertError>()("DbInsertError", {
-  cause: Schema.Unknown,
-}) {}
+type DbInsertError = {
+  readonly _tag: "DbInsertError";
+  readonly cause: unknown;
+};
+
+// Error factory functions
+const InsertChatErrors = {
+  fileReadError: (cause: unknown): FileReadError => ({
+    _tag: "FileReadError",
+    cause,
+  }),
+
+  jsonParseError: (cause: unknown): JsonParseError => ({
+    _tag: "JsonParseError",
+    cause,
+  }),
+
+  dbInsertError: (cause: unknown): DbInsertError => ({
+    _tag: "DbInsertError",
+    cause,
+  }),
+} as const;
 
 // メッセージの読み込み (Effect version)
 const loadMessages = Effect.gen(function* () {
@@ -48,10 +69,10 @@ const loadMessages = Effect.gen(function* () {
 
   const fileContent = yield* fs
     .readFileString(filePath)
-    .pipe(Effect.mapError((cause) => new FileReadError({ cause })));
+    .pipe(Effect.mapError((cause) => InsertChatErrors.fileReadError(cause)));
 
   const messages = yield* Effect.try(() => JSON.parse(fileContent) as Messages).pipe(
-    Effect.mapError((cause) => new JsonParseError({ cause })),
+    Effect.mapError((cause) => InsertChatErrors.jsonParseError(cause)),
   );
 
   return messages;
@@ -85,7 +106,7 @@ const insertChatMessage = (message: ChatMessage) =>
   Effect.gen(function* () {
     const insertResult = yield* Effect.tryPromise(() =>
       dbRepository.insertChatMessage(message),
-    ).pipe(Effect.mapError((cause) => new DbInsertError({ cause })));
+    ).pipe(Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)));
 
     // Handle neverthrow Result in Effect way
     if ("isOk" in insertResult && insertResult.isOk()) {
@@ -94,7 +115,7 @@ const insertChatMessage = (message: ChatMessage) =>
     }
     if ("error" in insertResult) {
       yield* Effect.logError(`Failed to save message: ${insertResult.error.message}`);
-      yield* Effect.fail(new DbInsertError({ cause: insertResult.error }));
+      yield* Effect.fail(InsertChatErrors.dbInsertError(insertResult.error));
     }
     // If it's not a neverthrow Result, assume success
     yield* Effect.log(`Message from ${message.senderAddress} saved to Supabase.`);

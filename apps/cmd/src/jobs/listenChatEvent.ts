@@ -8,7 +8,7 @@ import type {
   InsertChatMessageRequest,
   UpdatePollCursorRequest,
 } from "@workspace/supabase";
-import { Effect, Schema } from "effect";
+import { Effect } from "effect";
 
 // Event type definition
 interface ChatEvent {
@@ -19,18 +19,39 @@ interface ChatEvent {
   readonly text: string;
 }
 
-// Effect Error types using Schema.TaggedError (Effect v3 syntax)
-class PollingError extends Schema.TaggedError<PollingError>()("PollingError", {
-  cause: Schema.Unknown,
-}) {}
+// Effect Error types using union types (avoiding classes)
+type PollingError = {
+  readonly _tag: "PollingError";
+  readonly cause: unknown;
+};
 
-class DatabaseError extends Schema.TaggedError<DatabaseError>()("DatabaseError", {
-  cause: Schema.Unknown,
-}) {}
+type DatabaseError = {
+  readonly _tag: "DatabaseError";
+  readonly cause: unknown;
+};
 
-class CursorError extends Schema.TaggedError<CursorError>()("CursorError", {
-  cause: Schema.Unknown,
-}) {}
+type CursorError = {
+  readonly _tag: "CursorError";
+  readonly cause: unknown;
+};
+
+// Error factory functions
+const ListenChatErrors = {
+  pollingError: (cause: unknown): PollingError => ({
+    _tag: "PollingError",
+    cause,
+  }),
+
+  databaseError: (cause: unknown): DatabaseError => ({
+    _tag: "DatabaseError",
+    cause,
+  }),
+
+  cursorError: (cause: unknown): CursorError => ({
+    _tag: "CursorError",
+    cause,
+  }),
+} as const;
 
 import { EventFetcher } from "bumpwin";
 
@@ -47,7 +68,7 @@ const fetcher = new EventFetcher({
  */
 const getInitialCursor = Effect.gen(function* () {
   const cursorResult = yield* Effect.tryPromise(() => dbRepository.getPollCursor()).pipe(
-    Effect.mapError((cause) => new CursorError({ cause })),
+    Effect.mapError((cause) => ListenChatErrors.cursorError(cause)),
   );
 
   // Handle neverthrow Result in Effect way - check if result is success
@@ -56,7 +77,7 @@ const getInitialCursor = Effect.gen(function* () {
       yield* Effect.log("No initial cursor found in Supabase, starting from scratch.");
       return null;
     }
-    yield* Effect.fail(new CursorError({ cause: cursorResult }));
+    yield* Effect.fail(ListenChatErrors.cursorError(cursorResult));
   }
 
   // Extract value safely
@@ -69,7 +90,7 @@ const getInitialCursor = Effect.gen(function* () {
   }
 
   const cursor = yield* Effect.try(() => JSON.parse(pollCursor.cursor) as EventId).pipe(
-    Effect.mapError((cause) => new CursorError({ cause })),
+    Effect.mapError((cause) => ListenChatErrors.cursorError(cause)),
   );
 
   yield* Effect.log(`Initial cursor loaded from Supabase: ${pollCursor.cursor}`);
@@ -93,7 +114,7 @@ const saveChatMessage = (event: ChatEvent) =>
 
     const insertResult = yield* Effect.tryPromise(() =>
       dbRepository.insertChatMessage(chatMessageRequest),
-    ).pipe(Effect.mapError((cause) => new DatabaseError({ cause })));
+    ).pipe(Effect.mapError((cause) => ListenChatErrors.databaseError(cause)));
 
     // Handle neverthrow Result in Effect way
     if ("isOk" in insertResult && insertResult.isOk()) {
@@ -104,7 +125,7 @@ const saveChatMessage = (event: ChatEvent) =>
       yield* Effect.logError(
         `Failed to save message (Digest: ${event.digest}): ${JSON.stringify(insertResult.error)}`,
       );
-      yield* Effect.fail(new DatabaseError({ cause: insertResult.error }));
+      yield* Effect.fail(ListenChatErrors.databaseError(insertResult.error));
     } else {
       // If it's not a neverthrow Result, assume success
       yield* Effect.log(
@@ -124,14 +145,14 @@ const updatePollCursor = (cursor: EventId | null) =>
 
     const updateResult = yield* Effect.tryPromise(() =>
       dbRepository.updatePollCursor(updateCursorRequest),
-    ).pipe(Effect.mapError((cause) => new DatabaseError({ cause })));
+    ).pipe(Effect.mapError((cause) => ListenChatErrors.databaseError(cause)));
 
     // Handle neverthrow Result in Effect way
     if ("isOk" in updateResult && updateResult.isOk()) {
       yield* Effect.log(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`);
     } else if ("error" in updateResult) {
       yield* Effect.logError(`Failed to update poll cursor: ${JSON.stringify(updateResult.error)}`);
-      yield* Effect.fail(new DatabaseError({ cause: updateResult.error }));
+      yield* Effect.fail(ListenChatErrors.databaseError(updateResult.error));
     } else {
       // If it's not a neverthrow Result, assume success
       yield* Effect.log(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`);
@@ -151,7 +172,7 @@ const isEventAlreadyProcessed = (eventId: string) =>
     }
 
     const sequence = yield* Effect.try(() => BigInt(sequenceStr)).pipe(
-      Effect.mapError((cause) => new DatabaseError({ cause })),
+      Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
     );
 
     // Check if the message exists in the database using a direct query
@@ -163,7 +184,7 @@ const isEventAlreadyProcessed = (eventId: string) =>
         .eq("event_sequence", sequence.toString())
         .limit(1),
     ).pipe(
-      Effect.mapError((cause) => new DatabaseError({ cause })),
+      Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
       Effect.catchAll((error) => {
         return Effect.logError(`Error checking if event exists: ${error._tag}`).pipe(
           Effect.andThen(Effect.succeed({ data: null, error: true })),
@@ -295,7 +316,7 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
 
             // Fetch new events
             const result = yield* Effect.tryPromise(() => fetcher.fetch(cursor)).pipe(
-              Effect.mapError((cause) => new PollingError({ cause })),
+              Effect.mapError((cause) => ListenChatErrors.pollingError(cause)),
             );
 
             // Check if any events were returned

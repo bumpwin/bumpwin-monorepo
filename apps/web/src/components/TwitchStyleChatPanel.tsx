@@ -14,10 +14,43 @@ import {
   subscribeToChatMessages,
   unsubscribeFromChatMessages,
 } from "@workspace/supabase/src/realtime";
+import { Effect } from "effect";
 import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
+
+// Effect Error types for chat message sending
+type ChatSendError = {
+  readonly _tag: "ChatSendError";
+  readonly cause: unknown;
+};
+
+type InsufficientBalanceError = {
+  readonly _tag: "InsufficientBalanceError";
+  readonly message: string;
+};
+
+type WalletNotConnectedError = {
+  readonly _tag: "WalletNotConnectedError";
+};
+
+// Error factory functions
+const ChatErrors = {
+  sendError: (cause: unknown): ChatSendError => ({
+    _tag: "ChatSendError",
+    cause,
+  }),
+
+  insufficientBalance: (message: string): InsufficientBalanceError => ({
+    _tag: "InsufficientBalanceError",
+    message,
+  }),
+
+  walletNotConnected: (): WalletNotConnectedError => ({
+    _tag: "WalletNotConnectedError",
+  }),
+} as const;
 
 const getColorFromUserId = (userId: string): string => {
   // 0xプレフィックスを除去
@@ -148,79 +181,129 @@ export default function TwitchStyleChatPanel() {
     };
   }, []);
 
+  // Effect-based message sending
+  const sendMessageEffect = (messageText: string, userAccount: { address: string }) =>
+    Effect.gen(function* () {
+      const signCallback = (tx: Uint8Array) =>
+        Effect.async<string, ChatSendError>((resume) => {
+          const base64Tx = Buffer.from(tx).toString("base64");
+          signAndExecuteTransaction(
+            {
+              transaction: base64Tx,
+            },
+            {
+              onSuccess: (result: { digest: string }) => {
+                resume(Effect.succeed(JSON.stringify({ digest: result.digest })));
+              },
+              onError: (error: Error) => {
+                resume(Effect.fail(ChatErrors.sendError(error)));
+              },
+            },
+          );
+        });
+
+      // Send chat message with Effect-wrapped callback
+      const txResult = yield* Effect.tryPromise({
+        try: () =>
+          sendChatMessage(
+            client,
+            userAccount.address,
+            messageText,
+            (tx: Uint8Array) => Effect.runPromise(signCallback(tx)),
+            "testnet",
+          ),
+        catch: (error) => ChatErrors.sendError(error),
+      });
+
+      return txResult;
+    });
+
   const handleSendMessage = async () => {
     if (message.trim() && !isSending && account) {
-      try {
-        setIsSending(true);
+      setIsSending(true);
 
-        const signCallback = async (tx: Uint8Array) => {
-          const base64Tx = Buffer.from(tx).toString("base64");
-          return new Promise<string>((resolve, reject) => {
-            signAndExecuteTransaction(
-              {
-                transaction: base64Tx,
-              },
-              {
-                onSuccess: (result: { digest: string }) => {
-                  resolve(JSON.stringify({ digest: result.digest }));
-                },
-                onError: (error: Error) => {
-                  reject(error);
-                },
-              },
+      const program = sendMessageEffect(message.trim(), account).pipe(
+        Effect.tap((result) =>
+          Effect.sync(() => {
+            // 成功トーストを表示
+            toast.success(
+              <div>
+                Message sent successfully!
+                <div className="mt-2">
+                  <a
+                    href={getSuiScanTxUrl(result.digest)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    View transaction on Suiscan
+                  </a>
+                </div>
+              </div>,
+              { duration: 3000 },
             );
-          });
-        };
 
-        // メッセージ送信
-        const txResult = await sendChatMessage(
-          client,
-          account.address,
-          message.trim(),
-          signCallback,
-          "testnet",
-        );
+            // 入力フィールドをクリア
+            setMessage("");
+          }),
+        ),
+        Effect.catchAll((error) =>
+          Effect.sync(() => {
+            console.error("Failed to send message:", error);
 
-        // 成功トーストを表示
-        toast.success(
-          <div>
-            Message sent successfully!
-            <div className="mt-2">
-              <a
-                href={getSuiScanTxUrl(txResult.digest)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                View transaction on Suiscan
-              </a>
-            </div>
-          </div>,
-          { duration: 3000 },
-        );
+            // Handle specific error types
+            if (typeof error === "object" && error !== null && "_tag" in error) {
+              const typedError = error as { _tag: string; cause?: unknown; message?: string };
 
-        // 入力フィールドをクリア
-        setMessage("");
-      } catch (err) {
-        console.error("Failed to send message:", err);
+              switch (typedError._tag) {
+                case "ChatSendError": {
+                  const errorMessage =
+                    typedError.cause instanceof Error
+                      ? typedError.cause.message
+                      : String(typedError.cause);
+                  if (errorMessage.includes("InsufficientCoinBalance")) {
+                    toast.error(
+                      <div>
+                        Insufficient SUI balance
+                        <div className="mt-1 text-gray-300 text-sm">
+                          You need more SUI to pay for transaction fees
+                        </div>
+                      </div>,
+                    );
+                  } else {
+                    toast.error("Failed to send message");
+                  }
+                  break;
+                }
+                case "InsufficientBalanceError":
+                  toast.error(
+                    <div>
+                      {typedError.message || "Insufficient balance"}
+                      <div className="mt-1 text-gray-300 text-sm">
+                        You need more SUI to pay for transaction fees
+                      </div>
+                    </div>,
+                  );
+                  break;
+                case "WalletNotConnectedError":
+                  toast.error("Please connect your wallet to send messages");
+                  break;
+                default:
+                  toast.error("Failed to send message");
+              }
+            } else {
+              toast.error("Failed to send message");
+            }
+          }),
+        ),
+        Effect.tap(() =>
+          Effect.sync(() => {
+            setIsSending(false);
+          }),
+        ),
+      );
 
-        // Check for InsufficientCoinBalance error
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        if (errorMessage.includes("InsufficientCoinBalance")) {
-          toast.error(
-            <div>
-              Insufficient SUI balance
-              <div className="mt-1 text-gray-300 text-sm">
-                You need more SUI to pay for transaction fees
-              </div>
-            </div>,
-          );
-        } else {
-          toast.error("Failed to send message");
-        }
-      } finally {
-        setIsSending(false);
-      }
+      await Effect.runPromise(program);
     }
   };
 
