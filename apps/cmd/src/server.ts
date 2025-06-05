@@ -1,5 +1,5 @@
 import { config } from "@/config";
-import { startChatMessageInsertion } from "@/jobs/insertChat";
+import { startChatMessageInsertionAsync } from "@/jobs/insertChat";
 import { startChatEventPolling } from "@/jobs/listenChatEvent";
 import { logger } from "@/utils/logger";
 
@@ -8,7 +8,7 @@ async function startServer() {
     // バックグラウンドジョブの開始
     await Promise.all([
       startChatEventPolling(config.env.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS),
-      startChatMessageInsertion(),
+      startChatMessageInsertionAsync(),
     ]);
 
     logger.info("Background jobs started", {
