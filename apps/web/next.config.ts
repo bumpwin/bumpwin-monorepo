@@ -10,7 +10,6 @@ const defineConfig = async (): Promise<NextConfig> => {
     transpilePackages: [
       "@workspace/api",
       "@workspace/logger",
-      "@workspace/mockdata",
       "@workspace/sui",
       "@workspace/types",
     ],

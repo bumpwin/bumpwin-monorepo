@@ -1,6 +1,9 @@
+"use client";
+
 import DominanceRechart from "@/components/charts/DominanceRechart";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
 import { getColorByIndex } from "@/utils/colors";
-import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
+import { useMemo } from "react";
 
 interface StatsBarProps {
   compact?: boolean;
@@ -43,22 +46,41 @@ const StatsBar = ({ compact = false }: StatsBarProps) => {
 };
 
 const DominanceChartSection = () => {
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
+
   // DominanceRechart用データ整形
-  const chartPoints = mockDominanceChartData.map((point) => ({
-    timestamp: point.timestamp,
-    ...point.shares.reduce(
-      (acc, share, index) =>
-        Object.assign(acc, {
-          [mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]: share,
-        }),
-      {},
-    ),
-  }));
-  const chartCoins = mockCoinMetadata.map((coin, index) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: getColorByIndex(index),
-  }));
+  const chartPoints = useMemo(() => {
+    if (!coinMetadata.length || !dominanceData.length) return [];
+    return dominanceData.map((point) => ({
+      timestamp: point.timestamp,
+      ...point.shares.reduce(
+        (acc, share, index) =>
+          Object.assign(acc, {
+            [coinMetadata[index]?.symbol.toLowerCase() || `coin${index}`]: share,
+          }),
+        {},
+      ),
+    }));
+  }, [coinMetadata, dominanceData]);
+
+  const chartCoins = useMemo(() => {
+    return coinMetadata.map((coin, index) => ({
+      symbol: coin.symbol.toLowerCase(),
+      name: coin.name,
+      color: getColorByIndex(index),
+    }));
+  }, [coinMetadata]);
+
+  if (isLoadingCoins || isLoadingDominance) {
+    return (
+      <div className="mt-4 w-full">
+        <div className="flex h-[180px] items-center justify-center">
+          <div className="text-white">Loading chart...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 w-full">

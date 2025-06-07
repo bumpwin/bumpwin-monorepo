@@ -47,6 +47,20 @@ const SevenSegmentDisplay = ({
 
   const inactiveOpacity = "opacity-12"; // 非アクティブセグメントの透明度
 
+  // 7セグメント表示のセグメント活性状態マッピング
+  const getSegmentActive = (char: string, segment: string): boolean => {
+    const segmentMap: Record<string, string[]> = {
+      top: ["0", "2", "3", "5", "6", "7", "8", "9"],
+      topRight: ["0", "1", "2", "3", "4", "7", "8", "9"],
+      bottomRight: ["0", "1", "3", "4", "5", "6", "7", "8", "9"],
+      bottom: ["0", "2", "3", "5", "6", "8", "9"],
+      bottomLeft: ["0", "2", "6", "8"],
+      topLeft: ["0", "4", "5", "6", "8", "9"],
+      middle: ["2", "3", "4", "5", "6", "8", "9"],
+    };
+    return segmentMap[segment]?.includes(char) ?? false;
+  };
+
   return (
     <div className="flex origin-center scale-[0.7]">
       {value.split("").map((char, i) => (
@@ -77,43 +91,43 @@ const SevenSegmentDisplay = ({
             >
               {/* 上部セグメント */}
               <div
-                className={`absolute top-0 right-2 left-2 h-2.5 ${char === "1" || char === "4" ? inactiveOpacity : ""}`}
+                className={`absolute top-0 right-2 left-2 h-2.5 ${getSegmentActive(char, "top") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 右上セグメント */}
               <div
-                className={`absolute top-1 right-0 h-10 w-2.5 ${char === "5" || char === "6" ? inactiveOpacity : ""}`}
+                className={`absolute top-1 right-0 h-10 w-2.5 ${getSegmentActive(char, "topRight") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 右下セグメント */}
               <div
-                className={`absolute right-0 bottom-1 h-10 w-2.5 ${char === "2" ? inactiveOpacity : ""}`}
+                className={`absolute right-0 bottom-1 h-10 w-2.5 ${getSegmentActive(char, "bottomRight") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 下部セグメント */}
               <div
-                className={`absolute right-2 bottom-0 left-2 h-2.5 ${char === "1" || char === "4" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute right-2 bottom-0 left-2 h-2.5 ${getSegmentActive(char, "bottom") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 左下セグメント */}
               <div
-                className={`absolute bottom-1 left-0 h-10 w-2.5 ${char === "1" || char === "3" || char === "4" || char === "5" || char === "7" || char === "9" ? inactiveOpacity : ""}`}
+                className={`absolute bottom-1 left-0 h-10 w-2.5 ${getSegmentActive(char, "bottomLeft") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 左上セグメント */}
               <div
-                className={`absolute top-1 left-0 h-10 w-2.5 ${char === "1" || char === "2" || char === "3" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute top-1 left-0 h-10 w-2.5 ${getSegmentActive(char, "topLeft") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
 
               {/* 中央セグメント */}
               <div
-                className={`absolute top-10 right-2 left-2 h-2.5 ${char === "0" || char === "1" || char === "7" ? inactiveOpacity : ""}`}
+                className={`absolute top-10 right-2 left-2 h-2.5 ${getSegmentActive(char, "middle") ? "" : inactiveOpacity}`}
                 style={{ backgroundColor: segmentColor }}
               />
             </div>

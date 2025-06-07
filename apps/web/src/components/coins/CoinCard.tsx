@@ -1,8 +1,8 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { CoinCardProps } from "@/types/coin";
 import { formatCurrency } from "@/utils/format";
-import type { CoinCardProps } from "@workspace/mockdata";
 import Image from "next/image";
 import Link from "next/link";
 
