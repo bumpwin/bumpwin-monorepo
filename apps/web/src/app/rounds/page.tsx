@@ -6,7 +6,8 @@ import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/champions/ChampionCard";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
+import { getColorByIndex } from "@/utils/colors";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -165,8 +166,8 @@ export default function RoundsPage() {
   });
 
   // Token colors - matching to the colors used in the application
-  const tokenColors: TokenColors = mockCoinMetadata.reduce((acc: TokenColors, coin) => {
-    acc[coin.symbol.toUpperCase()] = coin.color;
+  const tokenColors: TokenColors = mockCoinMetadata.reduce((acc: TokenColors, coin, index) => {
+    acc[coin.symbol.toUpperCase()] = getColorByIndex(index);
     return acc;
   }, {});
 

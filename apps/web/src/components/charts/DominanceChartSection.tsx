@@ -1,5 +1,6 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
+import { getColorByIndex } from "@/utils/colors";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 
 const DominanceChartSection = () => {
   // DominanceRechart用データ整形
@@ -13,10 +14,10 @@ const DominanceChartSection = () => {
       {},
     ),
   }));
-  const chartCoins = mockCoinMetadata.map((coin) => ({
+  const chartCoins = mockCoinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
-    color: coin.color,
+    color: getColorByIndex(index),
   }));
 
   return (

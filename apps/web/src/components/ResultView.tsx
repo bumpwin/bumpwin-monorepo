@@ -1,9 +1,10 @@
 "use client";
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
+import { getColorByIndex } from "@/utils/colors";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
@@ -35,10 +36,10 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
     ),
   }));
 
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin) => ({
+  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
-    color: coin.color,
+    color: getColorByIndex(index),
   }));
 
   useEffect(() => {

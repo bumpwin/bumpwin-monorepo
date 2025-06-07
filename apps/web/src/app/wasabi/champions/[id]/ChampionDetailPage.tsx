@@ -67,7 +67,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
     telegramLink: coin.telegramLink,
     websiteLink: coin.websiteLink,
     twitterLink: coin.twitterLink,
-    color: coin.color,
   };
 
   return (

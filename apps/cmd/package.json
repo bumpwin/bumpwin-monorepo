@@ -10,15 +10,15 @@
     "format": "biome format . --write"
   },
   "dependencies": {
-    "@effect/platform": "^0.84.6",
-    "@effect/platform-node": "^0.85.4",
+    "@effect/platform": "^0.84.8",
+    "@effect/platform-node": "^0.85.7",
     "@effect/schema": "^0.75.5",
     "@workspace/mockdata": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
     "@workspace/types": "workspace:*",
     "dotenv": "16.5.0",
-    "effect": "^3.16.3",
+    "effect": "^3.16.4",
     "ts-pattern": "^5.7.1"
   },
   "devDependencies": {

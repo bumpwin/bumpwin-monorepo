@@ -10,6 +10,6 @@ export interface Coin {
   telegramLink?: string;
   websiteLink?: string;
   twitterLink?: string;
-  color: string;
+  color?: string;
   createdBy?: string;
 }

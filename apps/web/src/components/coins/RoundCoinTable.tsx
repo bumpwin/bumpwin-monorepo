@@ -5,9 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
+import { getColorByIndex } from "@/utils/colors";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
@@ -67,7 +68,6 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
       telegramLink: coin.telegramLink,
       websiteLink: coin.websiteLink,
       twitterLink: coin.twitterLink,
-      color: coin.color,
     }));
 
     if (sortType === "marketcap") {
@@ -235,7 +235,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
                                 {
                                   symbol: coin.symbol,
                                   name: coin.name,
-                                  color: coin.color,
+                                  color: getColorByIndex(Number(coin.id)),
                                 },
                               ]}
                               height={220}

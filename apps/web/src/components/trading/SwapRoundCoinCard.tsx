@@ -1,9 +1,9 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { getSuiBalance } from "@workspace/sui";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -41,7 +41,6 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
           telegramLink: defaultCoin.telegramLink,
           websiteLink: defaultCoin.websiteLink,
           twitterLink: defaultCoin.twitterLink,
-          color: defaultCoin.color,
         };
       }
     }

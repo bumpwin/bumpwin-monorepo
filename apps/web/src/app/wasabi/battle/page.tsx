@@ -7,9 +7,9 @@ import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { CoinMeta } from "@/components/charts/DominanceRechart";
 import RoundCoinTable from "@/components/coins/RoundCoinTable";
 import SwapUI from "@/components/trading/swap/core/SwapUI";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { prepareCoinsMetadata, prepareMultiCoinChartData } from "@/utils/chartDataPreparation";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import Image from "next/image";
 import { useState } from "react";
 

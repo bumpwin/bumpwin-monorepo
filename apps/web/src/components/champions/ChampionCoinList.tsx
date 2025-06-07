@@ -1,11 +1,13 @@
 "use client";
 
-import { mockChampionCoinMetadata } from "@/lib/tempMockData";
+import { getChampions } from "@workspace/mockdata";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
 export const ChampionCoinList = () => {
+  const champions = getChampions();
+
   return (
     <div className="container mx-auto px-4">
       <div className="mb-6 flex items-center justify-between">
@@ -30,9 +32,9 @@ export const ChampionCoinList = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockChampionCoinMetadata.map((coin) => (
-          <div key={coin.id} className="relative">
-            <Link href={`/champions/${coin.round}`} className="group block" tabIndex={0}>
+        {champions.map((champion) => (
+          <div key={champion.meme?.id} className="relative">
+            <Link href={`/champions/${champion.round.round}`} className="group block" tabIndex={0}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -47,8 +49,8 @@ export const ChampionCoinList = () => {
                           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-100 via-yellow-300 to-yellow-600 opacity-70" />
                           <div className="absolute inset-0 overflow-hidden rounded-full">
                             <Image
-                              src={coin.iconUrl}
-                              alt={coin.name}
+                              src={champion.meme?.iconUrl}
+                              alt={champion.meme?.name}
                               width={112}
                               height={112}
                               className="h-full w-full rounded-full border-0 object-cover"
@@ -58,16 +60,20 @@ export const ChampionCoinList = () => {
                         </div>
                       </div>
                       <div className="-top-3 -right-3 absolute flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 font-bold text-base text-black shadow-xl">
-                        #{coin.round}
+                        #{champion.round.round}
                       </div>
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <h3 className="truncate font-bold text-lg text-white">{coin.name}</h3>
-                      <span className="text-gray-400 text-sm">({coin.symbol})</span>
+                      <h3 className="truncate font-bold text-lg text-white">
+                        {champion.meme?.name}
+                      </h3>
+                      <span className="text-gray-400 text-sm">({champion.meme?.symbol})</span>
                     </div>
-                    <p className="mb-4 line-clamp-2 text-gray-400 text-sm">{coin.description}</p>
+                    <p className="mb-4 line-clamp-2 text-gray-400 text-sm">
+                      {champion.meme?.description}
+                    </p>
                   </div>
                 </div>
               </motion.div>

@@ -8,9 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockCoins } from "@/lib/tempMockData";
 import { cn } from "@/lib/utils";
 import type { CoinCardProps } from "@/types/coincard";
+import { mockCoins } from "@workspace/mockdata";
 import { ChevronDown, RotateCw } from "lucide-react";
 import { useState } from "react";
 import { match } from "ts-pattern";
