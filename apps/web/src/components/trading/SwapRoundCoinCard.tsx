@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import type { RoundCoin } from "@/types/roundcoin";
 import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { getSuiBalance } from "@workspace/sui";

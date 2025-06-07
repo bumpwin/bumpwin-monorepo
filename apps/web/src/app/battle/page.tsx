@@ -2,12 +2,12 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { api } from "@/app/client";
-import SharrowStatsBar from "@/components/SharrowStatsBar";
 import BattleCoinDetailCard from "@/components/battle/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/battle/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/charts/ChartTitle";
 import { MarketDominanceCard } from "@/components/charts/MarketDominanceCard";
 import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
+import SharrowStatsBar from "@/components/stats/SharrowStatsBar";
 import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";

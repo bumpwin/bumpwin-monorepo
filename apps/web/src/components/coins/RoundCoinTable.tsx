@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { RoundCoin } from "@/types/roundcoin";
 import { AnimatePresence, motion } from "framer-motion";

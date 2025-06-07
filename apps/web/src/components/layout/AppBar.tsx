@@ -1,8 +1,8 @@
 "use client";
 
-import { SuiWalletConnectButton } from "@/components/SuiWalletConnectButton";
 import BattleClock from "@/components/battle/BattleClock";
 import WordmarkLogo from "@/components/branding/WordmarkLogo";
+import { SuiWalletConnectButton } from "@/components/wallet/SuiWalletConnectButton";
 import { cn } from "@/lib/utils";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import Link from "next/link";

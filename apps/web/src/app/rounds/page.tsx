@@ -6,7 +6,7 @@ import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/champions/ChampionCard";
-import { mockCoinMetadata, mockDominanceChartData } from "@/mock/mockData";
+import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";

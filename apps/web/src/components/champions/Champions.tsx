@@ -4,7 +4,7 @@ import {
   mockChampionCoinMetadata,
   mockCoinMetadata,
   mockDominanceChartData,
-} from "@/mock/mockData";
+} from "@/lib/tempMockData";
 import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData } from "@/types/dominance";
 import { motion } from "framer-motion";
