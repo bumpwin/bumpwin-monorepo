@@ -1,6 +1,6 @@
 import { CoinIconSymbol } from "@/components/coins/coin-icon-symbol";
 import type { ComponentType, ToggleSide } from "@/components/trading/swap/elements/types";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 interface AmountInputProps {
@@ -10,7 +10,7 @@ interface AmountInputProps {
   onAmountChange: (value: string) => void;
   setAmountValue: (val: number | null) => void;
   balance: number;
-  coin?: CoinWithRound;
+  coin?: UIRoundCoinData;
   error?: string;
   componentType: ComponentType;
 }

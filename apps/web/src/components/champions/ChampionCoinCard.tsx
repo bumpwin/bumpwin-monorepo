@@ -1,14 +1,12 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { formatCurrency } from "@/utils/format";
-import type { MemeMarketData, MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import Link from "next/link";
 
-interface ChampionCoinCardProps extends MemeMetadata, MemeMarketData {
-  round?: number;
-}
+type ChampionCoinCardProps = UIRoundCoinData;
 
 export function ChampionCoinCard({
   id,

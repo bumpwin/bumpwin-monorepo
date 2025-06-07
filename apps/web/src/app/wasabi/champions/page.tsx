@@ -2,25 +2,22 @@
 
 import { ResultView } from "@/components/ResultView";
 import { ChampionsList } from "@/components/champions/Champions";
-import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { getChampions, mockDominanceChartData } from "@workspace/mockdata";
 
 export default function ChampionsPage() {
   const champions = getChampions();
 
   // Transform champions to ChampionCoin type
-  const championCoins: ChampionCoin[] = champions.map((champion, index) => ({
-    id: champion.meme?.id || `champion-${index}`,
+  const championCoins: UIRoundCoinData[] = champions.map((champion, index) => ({
+    id: champion.meme?.id || (`0x${index.toString().padStart(40, "0")}` as const),
     round: champion.round.round,
     name: champion.meme?.name || "Unknown",
     symbol: champion.meme?.symbol || "UNKNOWN",
     iconUrl: champion.meme?.iconUrl || "/icon.png",
     description: champion.meme?.description || "Champion coin",
-    telegramLink: "",
-    websiteLink: "",
-    twitterLink: "",
-    share: 0.35, // Mock data
+    price: 1.0, // Mock data
     marketCap: 1000000, // Mock data
   }));
 
@@ -76,15 +73,16 @@ export default function ChampionsPage() {
           <div className="rounded-lg bg-white/5 p-4 shadow-lg backdrop-blur-sm">
             <ResultView
               coin={{
-                id: champions[champions.length - 1]?.meme?.id || "0",
+                id: champions[champions.length - 1]?.meme?.id || "0x0",
                 round: champions[champions.length - 1]?.round.round || 4,
                 symbol: champions[champions.length - 1]?.meme?.symbol || "JELL",
                 name: champions[champions.length - 1]?.meme?.name || "JELL",
                 iconUrl:
                   champions[champions.length - 1]?.meme?.iconUrl || "/images/mockmemes/JELL.png",
-                share: 68,
-                marketCap: 100000,
                 description: champions[champions.length - 1]?.meme?.description || "Champion coin",
+                share: 68,
+                price: 1.0,
+                marketCap: 100000,
               }}
               forceVisible={true}
             />

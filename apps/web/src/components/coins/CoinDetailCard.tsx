@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import type { Coin } from "@/types";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 
@@ -21,7 +21,11 @@ const formatMarketCap = (value: number | undefined): string => {
 };
 
 interface CoinDetailCardProps {
-  coin: Coin;
+  coin: UIRoundCoinData & {
+    websiteLink?: string;
+    telegramLink?: string;
+    twitterLink?: string;
+  };
   variant?: "default" | "champion";
 }
 
@@ -50,7 +54,7 @@ export const CoinDetailCard: React.FC<CoinDetailCardProps> = ({ coin, variant = 
                     : "bg-gradient-to-br from-purple-200 to-purple-600"
                 } border-2 border-white text-black`}
               >
-                #{coin.round}
+                #{coin.round ?? 0}
               </div>
             </div>
           </div>

@@ -18,6 +18,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           iconUrl: champion.meme.iconUrl,
           description: champion.meme.description,
           marketCap: 100000,
+          price: 0.1,
           share: 40,
         }}
         id={id}

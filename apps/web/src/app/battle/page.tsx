@@ -12,7 +12,7 @@ import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI"
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { useQuery } from "@tanstack/react-query";
 import type { MemeMetadata } from "@workspace/types";
 
@@ -24,8 +24,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 // Constants
-const DEFAULT_COIN: CoinWithRound = {
-  id: "0x0000000000000000000000000000000000000000000000000000000000000001" as const,
+const DEFAULT_COIN: UIRoundCoinData = {
+  id: "0x0000000000000000000000000000000000000000000000000000000000000001",
   symbol: "LAG",
   name: "Lag Girl",
   iconUrl: "/images/mockmemes/LAG.jpg",
@@ -61,7 +61,7 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToRoundCoin = (meme: MemeMetadata): CoinWithRound => ({
+const memeToRoundCoin = (meme: MemeMetadata): UIRoundCoinData => ({
   id: meme.id,
   symbol: meme.symbol,
   name: meme.name,
@@ -104,7 +104,7 @@ const PriceChart = ({
   priceData,
   isLoading,
 }: {
-  coin: CoinWithRound;
+  coin: UIRoundCoinData;
   priceData: OHLCData[] | undefined;
   isLoading: boolean;
 }) => {
@@ -246,7 +246,7 @@ export default function RoundsAPage() {
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme
     : firstMeme;
 
-  const [selectedCoin, setSelectedCoin] = useState<CoinWithRound>(
+  const [selectedCoin, setSelectedCoin] = useState<UIRoundCoinData>(
     selectedMeme ? memeToRoundCoin(selectedMeme) : DEFAULT_COIN,
   );
 

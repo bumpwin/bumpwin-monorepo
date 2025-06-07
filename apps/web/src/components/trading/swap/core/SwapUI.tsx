@@ -3,10 +3,10 @@
 import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 
 interface SwapUIProps {
-  coin?: CoinWithRound;
+  coin?: UIRoundCoinData;
   variant?: "default" | "champion";
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { getSuiBalance } from "@workspace/sui";
@@ -9,7 +9,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 interface SwapRoundCoinCardProps {
-  coin?: CoinWithRound;
+  coin?: UIRoundCoinData;
 }
 
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
@@ -36,11 +36,9 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
           iconUrl: defaultCoin.icon,
           round: 1,
           share: latestShares[maxShareIndex],
+          price: 0.1, // Add required price property
           marketCap: 0,
           description: defaultCoin.description,
-          telegramLink: defaultCoin.telegramLink,
-          websiteLink: defaultCoin.websiteLink,
-          twitterLink: defaultCoin.twitterLink,
         };
       }
     }

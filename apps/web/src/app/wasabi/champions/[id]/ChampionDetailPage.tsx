@@ -5,13 +5,19 @@ import { ChartTitle } from "@/components/charts/ChartTitle";
 import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
 import SwapUI from "@/components/trading/swap/core/SwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { Coin } from "@/types";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
+export function ChampionDetailPage({
+  coin,
+  id,
+}: {
+  coin: UIRoundCoinData;
+  id: string;
+}) {
   const { data: priceData, isLoading: isPriceLoading } = useQuery({
     queryKey: ["mockprice", id],
     queryFn: async () => {
@@ -54,18 +60,8 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
   const currentPrice =
     priceData && priceData.length > 0 ? (priceData[priceData.length - 1]?.close ?? 0) : 0;
 
-  // champion coin を CoinWithRound 型にマッピング
-  const roundCoin = {
-    id: coin.id as string,
-    symbol: coin.symbol,
-    name: coin.name,
-    iconUrl: coin.iconUrl,
-    round: coin.round,
-    share: coin.share ?? 0,
-    price: 0.1, // Default price for compatibility
-    marketCap: coin.marketCap ?? 0,
-    description: coin.description,
-  };
+  // Use coin directly as it's already UIRoundCoinData
+  const roundCoin = coin;
 
   return (
     <div className="flex min-h-[calc(100vh-var(--header-height))] bg-gradient-to-br from-gray-900 to-gray-800">
@@ -109,7 +105,7 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   className="h-full w-full rounded-full border-2 border-yellow-400 object-cover shadow-lg"
                 />
                 <div className="-top-3 -right-3 absolute flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700 font-bold text-base text-black shadow-xl">
-                  #{coin.round}
+                  #{coin.round ?? 0}
                 </div>
               </div>
               <div className="flex items-center gap-2 font-bold text-white text-xl">

@@ -1,14 +1,14 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
-import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData } from "@/types/dominance";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type React from "react";
 
 interface ChampionsListProps {
-  coins: ChampionCoin[];
+  coins: UIRoundCoinData[];
   dominanceData: DominanceChartData;
 }
 

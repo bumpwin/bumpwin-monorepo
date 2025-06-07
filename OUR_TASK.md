@@ -1,200 +1,177 @@
-# OUR_TASK - tempMockData.ts 削除タスク
+# apps/web 重複型定義完全除去タスク
 
-## 🎯 概要
-`apps/web/src/lib/tempMockData.ts` の完全削除を通じて、packages/mockdata への単一依存を実現する
+## 🎯 目標
+apps/web側の重複型定義を完全除去し、packages/typesのみを使用する純粋なmonorepo構造を実現
 
 ## 📊 現状分析
-- **重複データ管理**: tempMockData.ts と packages/mockdata
-- **16ファイル依存**: 直接インポートがWebアプリ全体に散在
-- **カスタムロジック**: 色マッピング、チャートデータ生成、型定義
 
-## 📋 タスク一覧
+### 除去対象の重複types (5つ)
+- **影響ファイル総数**: 47ファイル
+- **現在のpackages/types依存度**: 60%
+- **目標依存度**: 100%
 
-### 🚀 Phase 1: packages/mockdata 機能拡張 (High Priority)
-**目標**: tempMockData.ts のカスタムロジックを packages/mockdata に移行
+| Type | ファイル | 置き換え先 | 影響範囲 |
+|------|----------|------------|----------|
+| `ChampionCoin` | champion.ts | `MemeMetadata & MemeMarketData & { round: number }` | 8ファイル |
+| `Coin` | coin.ts | `MemeMetadata & MemeMarketData` | 15ファイル |
+| `CoinCard` | coincard.ts | `@workspace/mockdata CoinCardProps` | 3ファイル |
+| `CoinWithRound` | coin-with-round.ts | `MemeMetadata & MemeMarketData & { round: number; share?: number }` | 21ファイル |
+| `LocalCoinCardProps` | coincard.ts | 削除のみ (未使用) | 0ファイル |
 
-#### 1.1 色マッピング機能追加
-- **現状**: tempMockData.ts にハードコード
-  ```typescript
-  color: ["#FF69B4", "#3CB043", "#FFD700", "#00BFFF"][index] || "#FF69B4"
+### 保持すべきUI固有types ✅
+- `ChatMessage` (chat.ts) - チャット機能固有
+- `DominancePoint`, `CoinDisplayInfo`, `DominanceChartData` (dominance.ts) - チャート表示固有
+
+## 📋 実装計画
+
+### Phase 1: ChampionCoin置き換え (影響: 8ファイル)
+**優先度**: High | **工数**: 30分
+
+#### タスク詳細
+- [ ] **型定義作成**: `type ChampionData = MemeMetadata & MemeMarketData & { round: number }`
+- [ ] **対象ファイル更新**:
+  - `Champions.tsx` - import文変更
+  - `ChampionDetailPage.tsx` - 型使用箇所修正
+  - `ChampionCoinCard.tsx` - props型更新
+  - `ChampionCoinList.tsx` - データ型変更
+  - `wasabi/champions/page.tsx` - API型修正
+  - その他3ファイル
+
+#### 実装手順
+1. 各ファイルで`import type { ChampionCoin }`を削除
+2. `import type { MemeMetadata, MemeMarketData } from "@workspace/types"`追加
+3. `ChampionCoin`を`MemeMetadata & MemeMarketData & { round: number }`に置き換え
+4. `round`プロパティが不要な箇所は除去
+
+### Phase 2: Coin置き換え (影響: 15ファイル)  
+**優先度**: High | **工数**: 45分
+
+#### タスク詳細
+- [ ] **型定義作成**: `type CoinData = MemeMetadata & MemeMarketData`
+- [ ] **対象ファイル更新**:
+  - `CoinCard.tsx` - コンポーネントprops型
+  - `CoinList.tsx` - リスト表示型
+  - `CoinDetailClient.tsx` - 詳細データ型
+  - `SwapUI系` - 取引データ型
+  - `battle/page.tsx` - バトルロジック型
+  - その他10ファイル
+
+#### 実装手順
+1. 各ファイルで`import type { Coin }`を削除
+2. packages/types基準のimport追加
+3. カスタムプロパティ(color, createdBy等)削除
+4. UI表示ロジック調整
+
+### Phase 3: CoinCard置き換え (影響: 3ファイル)
+**優先度**: Medium | **工数**: 15分
+
+#### タスク詳細
+- [ ] **統一**: `@workspace/mockdata`の`CoinCardProps`に完全統一
+- [ ] **対象ファイル**:
+  - `CoinCard.tsx` - 既に対応済み
+  - `CoinList.tsx` - props型変更
+  - その他1ファイル
+
+### Phase 4: CoinWithRound置き換え (影響: 21ファイル)
+**優先度**: High | **工数**: 60分
+
+#### タスク詳細
+- [ ] **型定義作成**: `type RoundCoinData = MemeMetadata & MemeMarketData & { round: number; share?: number }`
+- [ ] **対象ファイル更新**:
+  - `RoundCoinTable.tsx` - テーブル表示型
+  - `SwapUI系` - 取引UI型 (8ファイル)
+  - `round系コンポーネント` - ラウンド管理型 (6ファイル)
+  - `battle系` - バトル機能型 (4ファイル)
+  - その他3ファイル
+
+#### 注意事項
+- **最大影響範囲**: 21ファイルで最も慎重な対応が必要
+- **段階的実装**: 5ファイル単位で確認しながら進行
+- **型互換性**: `share`プロパティの optional化確認
+
+### Phase 5: ファイル削除とクリーンアップ
+**優先度**: Low | **工数**: 10分
+
+#### タスク詳細
+- [ ] **ファイル削除**:
+  ```bash
+  rip apps/web/src/types/champion.ts
+  rip apps/web/src/types/coin.ts  
+  rip apps/web/src/types/coincard.ts
+  rip apps/web/src/types/coin-with-round.ts
   ```
-- **目標**: packages/mockdata に `getMemeWithColor()` 関数追加
-- **作業内容**:
-  ```typescript
-  // packages/mockdata/src/colors.ts 新規作成
-  export const CHART_COLORS = ["#FF69B4", "#3CB043", "#FFD700", "#00BFFF"];
-  export const getMemeWithColor = (meme: MemeMetadata, index: number) => ({
-    ...meme,
-    color: CHART_COLORS[index % CHART_COLORS.length]
-  });
-  ```
-- **工数**: 20分
+- [ ] **index.ts更新**: export文からの削除
+- [ ] **最終確認**: 47ファイル全てでエラーなし
 
-#### 1.2 チャートデータ生成機能追加
-- **現状**: tempMockData.ts に144ポイント生成ロジック
-- **目標**: packages/mockdata に `generateDominanceChartData()` 追加
-- **作業内容**:
-  ```typescript
-  // packages/mockdata/src/chartData.ts 新規作成
-  export const generateDominanceChartData = (points = 144) =>
-    Array.from({ length: points }, (_, i) => ({
-      timestamp: i * 10,
-      shares: Array.from({ length: 4 }, () => 15 + Math.random() * 20),
-    }));
-  ```
-- **工数**: 15分
+## 🚀 実行戦略
 
-#### 1.3 CoinCard 生成機能追加
-- **現状**: tempMockData.ts で mockmemes → CoinCardProps 変換
-- **目標**: packages/mockdata に `getCoinCards()` 関数追加
-- **作業内容**:
-  ```typescript
-  // packages/mockdata/src/coinCards.ts 新規作成
-  export const getCoinCards = (limit = 6): CoinCardProps[] =>
-    mockmemes.slice(0, limit).map((meme, index) => ({
-      // 変換ロジック
-    }));
-  ```
-- **工数**: 25分
+### Sprint 1: 軽量型から開始 (90分)
+1. **CoinCard置き換え** (15分) - 影響最小
+2. **ChampionCoin置き換え** (30分) - 単純置き換え
+3. **Coin置き換え** (45分) - 中規模影響
 
-### 🔧 Phase 2: 型定義移行 (Medium Priority)
-**目標**: カスタム型定義を適切な場所に移行
+### Sprint 2: 大規模型対応 (70分)  
+1. **CoinWithRound置き換え** (60分) - 最大影響
+2. **ファイル削除** (10分) - 最終クリーンアップ
 
-#### 2.1 CoinDetailData 型を packages/types に移行
-- **現状**: tempMockData.ts 内に定義
-- **目標**: packages/types/src/coin.ts に統合
-- **作業内容**:
-  ```typescript
-  // packages/types/src/coin.ts に追加
-  export interface CoinDetailData {
-    address: string;
-    symbol: string;
-    // ... 既存の型定義
-  }
-  ```
-- **工数**: 15分
-
-#### 2.2 インポートパス更新
-- **現状**: `import { CoinDetailData } from "@/lib/tempMockData"`
-- **目標**: `import { CoinDetailData } from "@workspace/types"`
-- **影響ファイル**: CoinDetailClient.tsx, SwapPanel.tsx
-- **工数**: 10分
-
-### 📱 Phase 3: インポート置換 (High Priority)
-**目標**: 16ファイルの tempMockData インポートを packages/mockdata に置換
-
-#### 3.1 簡単な置換 (60% - 即座可能)
-**対象ファイル**: 10ファイル
-- **置換内容**:
-  ```typescript
-  // Before
-  import { mockCoins } from "@/lib/tempMockData";
-  import { mockChampionCoinMetadata } from "@/lib/tempMockData";
-
-  // After
-  import { getCoinCards, getChampions } from "@workspace/mockdata";
-  ```
-- **工数**: 30分
-
-#### 3.2 色マッピング置換 (30% - カスタムロジック)
-**対象ファイル**: 6ファイル
-- **置換内容**:
-  ```typescript
-  // Before
-  import { mockCoinMetadata } from "@/lib/tempMockData";
-
-  // After
-  import { getMemeWithColor, mockmemes } from "@workspace/mockdata";
-  const mockCoinMetadata = mockmemes.slice(0, 4).map(getMemeWithColor);
-  ```
-- **工数**: 25分
-
-#### 3.3 チャートデータ置換 (30% - カスタムロジック)
-**対象ファイル**: 6ファイル
-- **置換内容**:
-  ```typescript
-  // Before
-  import { mockDominanceChartData } from "@/lib/tempMockData";
-
-  // After
-  import { generateDominanceChartData } from "@workspace/mockdata";
-  const mockDominanceChartData = generateDominanceChartData();
-  ```
-- **工数**: 25分
-
-### 🗑️ Phase 4: tempMockData.ts 削除 (Low Priority)
-**目標**: 完全削除とビルド確認
-
-#### 4.1 ファイル削除
-- **作業内容**: `rm apps/web/src/lib/tempMockData.ts`
-- **工数**: 1分
-
-#### 4.2 ビルド・型チェック確認
-- **作業内容**: `pnpm build && pnpm typecheck`
-- **工数**: 5分
-
-## 🎯 実装優先順位
-
-### Sprint 1 (1時間30分)
-1. packages/mockdata 機能拡張 (60分)
-   - 色マッピング (20分)
-   - チャートデータ生成 (15分)
-   - CoinCard生成 (25分)
-2. 型定義移行 (25分)
-3. 簡単なインポート置換 (30分)
-
-### Sprint 2 (50分)
-1. 色マッピング置換 (25分)
-2. チャートデータ置換 (25分)
-
-### Sprint 3 (10分)
-1. tempMockData.ts 削除 (1分)
-2. ビルド確認 (5分)
-3. 最終検証 (4分)
+### 各Phase完了後の確認事項
+- [ ] `bun run typecheck` - TypeScript型チェック
+- [ ] `bun run check` - biome lint  
+- [ ] 対象ファイルでのエラー0件確認
 
 ## ✅ 完了基準
 
-### Phase 1-2
-- [ ] packages/mockdata に全機能追加完了
-- [ ] packages/types に型定義移行完了
-- [ ] TypeScriptエラー0件維持
+### アーキテクチャ成果指標
 
-### Phase 3
-- [ ] 全16ファイルでtempMockDataインポート削除
-- [ ] packages/mockdata のみの依存に統合
-- [ ] 既存機能の動作確認
+| 指標 | Before | After | 達成度 |
+|------|--------|-------|--------|
+| apps/web重複型定義 | 5個 | 0個 | ✅ |
+| packages/types依存度 | 60% | 100% | ✅ |
+| UI固有型のみ残存 | ❌ | ✅ | ✅ |
+| monorepo原則準拠 | ❌ | ✅ | ✅ |
 
-### Phase 4
-- [ ] tempMockData.ts完全削除
-- [ ] `pnpm build` 成功
-- [ ] 全機能正常動作
+### 技術的完了条件
+- [ ] 47ファイル全てでTypeScriptエラー0件
+- [ ] apps/web/src/types/に残るのは`chat.ts`, `dominance.ts`, `index.ts`のみ
+- [ ] 全コンポーネントがpackages/types基準で動作
+- [ ] 重複型定義完全除去達成
 
-## 📊 影響分析
+## 🔧 実装ガイドライン
 
-### 削除によるメリット
-- **単一依存**: packages/mockdata のみ
-- **重複排除**: データ管理の一元化
-- **保守性向上**: 変更箇所の明確化
+### 型置き換えパターン
+```typescript
+// Before (重複型)
+import type { ChampionCoin } from "@/types/champion";
 
-### リスク
-- **型安全性**: 型定義移行時の整合性
-- **機能互換**: カスタムロジックの完全移行
+// After (canonical型)
+import type { MemeMetadata, MemeMarketData } from "@workspace/types";
+type ChampionData = MemeMetadata & MemeMarketData & { round: number };
+```
+
+### import更新パターン
+```typescript
+// Before
+import type { Coin, ChampionCoin, CoinWithRound } from "@/types";
+
+// After  
+import type { MemeMetadata, MemeMarketData } from "@workspace/types";
+```
 
 ## 📝 注意事項
 
-- **段階的実装**: 各Phase完了後にビルド確認
-- **型安全性**: TypeScriptエラー0件維持必須
-- **機能保証**: 既存UIの動作不変
-- **Git**: Phase毎コミット推奨
+### 実装時の必須チェック
+- **型安全性**: 各Phase完了後TypeScriptエラー0件確認
+- **UI互換性**: 既存コンポーネント表示の不変確認  
+- **段階的実装**: 5ファイル単位での逐次確認
+- **packages/types優先**: 常にcanonical型を基準とする
 
-## 🤝 次のステップ
-
-1. **Phase選択**: Sprint 1から開始推奨
-2. **実装**: packages/mockdata機能拡張から
-3. **検証**: 各段階でビルド・動作確認
-4. **完了**: tempMockData.ts完全削除
+### リスク管理
+- **最大リスク**: CoinWithRound (21ファイル影響)
+- **軽減策**: 段階的実装とPhase毎の動作確認
+- **回避策**: 問題発生時は前Phaseに戻って再実装
 
 ---
-*最終更新: 2025-01-06*
-*作成者: Claude Code*
-*対象: tempMockData.ts 削除による依存関係整理*
+
+**実行準備完了** ✅  
+**優先度**: Critical - packages/typesへの完全移行はmonorepo構造の根幹  
+**開始**: Phase 1 CoinCard置き換えから推奨

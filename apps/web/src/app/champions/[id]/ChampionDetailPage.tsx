@@ -6,11 +6,11 @@ import { ChartTitle } from "@/components/charts/ChartTitle";
 import { LWCChart, type OHLCData } from "@/components/charts/chart/lwc-chart";
 import ChampionSwapUI from "@/components/trading/swap/variants/ChampionSwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { useQuery } from "@tanstack/react-query";
 
 interface ChampionDetailPageProps {
-  coin: CoinWithRound;
+  coin: UIRoundCoinData;
   id: string;
 }
 

@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { getColorByIndex } from "@/utils/colors";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,7 +16,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 interface RoundCoinTableProps {
-  onSelectCoin?: (coin: CoinWithRound | undefined) => void;
+  onSelectCoin?: (coin: UIRoundCoinData | undefined) => void;
   selectedCoinId?: string;
 }
 
@@ -75,7 +75,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
     return randomOrder.map((i) => shares[i]).filter(Boolean);
   }, [currentMinute, sortType, randomOrder]);
 
-  const handleSelect = (coin: CoinWithRound) => {
+  const handleSelect = (coin: UIRoundCoinData) => {
     if (onSelectCoin) {
       if (selectedCoinId === coin.id) {
         onSelectCoin(undefined);

@@ -2,11 +2,11 @@
 
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DarkCard } from "@/components/ui/dark-card";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import Image from "next/image";
 
 interface BattleCoinDetailCardProps {
-  coin: CoinWithRound;
+  coin: UIRoundCoinData;
 }
 
 const BattleCoinDetailCard: React.FC<BattleCoinDetailCardProps> = ({ coin }) => {

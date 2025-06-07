@@ -1,6 +1,6 @@
 import { CoinIconSymbol } from "@/components/coins/coin-icon-symbol";
 import type { ComponentType, ToggleSide } from "@/components/trading/swap/elements/types";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 
@@ -8,7 +8,7 @@ interface PotentialWinDisplayProps {
   amount: number | null;
   potentialWin: number;
   activeSide: ToggleSide;
-  coin?: CoinWithRound;
+  coin?: UIRoundCoinData;
   avgPrice: number;
   componentType: ComponentType;
 }
@@ -25,8 +25,8 @@ export const PotentialWinDisplay = ({
   if (!amount || amount <= 0) return null;
 
   // Default SUI coin if needed
-  const suiCoin: CoinWithRound = {
-    id: "0x0000000000000000000000000000000000000000000000000000000000000001" as const,
+  const suiCoin: UIRoundCoinData = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000001",
     iconUrl: "/images/SUI.png",
     symbol: "SUI",
     name: "SUI",
@@ -37,8 +37,8 @@ export const PotentialWinDisplay = ({
   };
 
   // RACC coin for darknight mode
-  const raccCoin: CoinWithRound = {
-    id: "0x0000000000000000000000000000000000000000000000000000000000000009" as const,
+  const raccCoin: UIRoundCoinData = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000009",
     iconUrl: "/images/mockmemes/RACC.webp",
     symbol: "RACC",
     name: "Raccoon Moon",

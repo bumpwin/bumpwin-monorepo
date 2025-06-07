@@ -1,7 +1,7 @@
 export * from "./dominance";
 export * from "./chat";
-export * from "./champion";
-export * from "./coin";
-export * from "./coincard";
-export * from "./coin-with-round";
-// Note: RoundCoin has been replaced with CoinWithRound which uses canonical types
+export * from "./ui-types";
+
+// Note: All coin-related types (ChampionCoin, Coin, CoinCard, CoinWithRound) have been
+// replaced with canonical types from @workspace/types (MemeMetadata & MemeMarketData)
+// UI-compatible versions with flexible ID format are in ui-types.ts

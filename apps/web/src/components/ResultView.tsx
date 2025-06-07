@@ -2,7 +2,7 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { CoinWithRound } from "@/types/coin-with-round";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { getColorByIndex } from "@/utils/colors";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 interface ResultViewProps {
-  coin: CoinWithRound | undefined;
+  coin: UIRoundCoinData | undefined;
   forceVisible?: boolean;
 }
 
