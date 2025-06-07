@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { CoinDetailData } from "@workspace/mockdata";
+import type { CoinDetailData } from "@/types/coin";
 import Image from "next/image";
 import { useState } from "react";
+import { match } from "ts-pattern";
 
 interface SwapPanelProps {
   coinData: CoinDetailData;
@@ -28,7 +29,10 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
   };
 
   const totalCost = Number.parseFloat(amount) * coinData.price;
-  const formattedTotal = Number.isNaN(totalCost) ? "0.00" : totalCost.toFixed(4);
+  const formattedTotal = match(Number.isNaN(totalCost))
+    .with(true, () => "0.00")
+    .with(false, () => totalCost.toFixed(4))
+    .exhaustive();
 
   return (
     <div className="flex h-full flex-col rounded-lg bg-slate-800 p-4">
@@ -36,22 +40,18 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
       <div className="mb-4 flex">
         <button
           type="button"
-          className={`flex-1 rounded-l-md py-2 transition-colors ${
-            activeAction === "buy"
-              ? "bg-green-500 text-white"
-              : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-          }`}
+          className={`flex-1 rounded-l-md py-2 transition-colors ${match(activeAction)
+            .with("buy", () => "bg-green-500 text-white")
+            .otherwise(() => "bg-slate-700 text-slate-300 hover:bg-slate-600")}`}
           onClick={() => setActiveAction("buy")}
         >
           Buy
         </button>
         <button
           type="button"
-          className={`flex-1 rounded-r-md py-2 transition-colors ${
-            activeAction === "sell"
-              ? "bg-red-500 text-white"
-              : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-          }`}
+          className={`flex-1 rounded-r-md py-2 transition-colors ${match(activeAction)
+            .with("sell", () => "bg-red-500 text-white")
+            .otherwise(() => "bg-slate-700 text-slate-300 hover:bg-slate-600")}`}
           onClick={() => setActiveAction("sell")}
         >
           Sell
@@ -83,9 +83,12 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
           <button
             key={val.toString()}
             type="button"
-            className={`rounded bg-slate-700 px-2 py-1 text-slate-300 text-xs transition-colors hover:bg-slate-600 ${
-              amount === val.toString() ? "ring-1 ring-blue-500" : ""
-            }`}
+            className={`rounded bg-slate-700 px-2 py-1 text-slate-300 text-xs transition-colors hover:bg-slate-600 ${match(
+              amount === val.toString(),
+            )
+              .with(true, () => "ring-1 ring-blue-500")
+              .with(false, () => "")
+              .exhaustive()}`}
             onClick={() => setAmount(val.toString())}
           >
             {val} SOL
@@ -110,9 +113,15 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
         <div className="ml-auto text-right">
           <div className="font-medium text-white">${coinData.price.toFixed(6)}</div>
           <div
-            className={`text-xs ${coinData.priceChangePercentage24h >= 0 ? "text-green-400" : "text-red-400"}`}
+            className={`text-xs ${match(coinData.priceChangePercentage24h >= 0)
+              .with(true, () => "text-green-400")
+              .with(false, () => "text-red-400")
+              .exhaustive()}`}
           >
-            {coinData.priceChangePercentage24h >= 0 ? "+" : ""}
+            {match(coinData.priceChangePercentage24h >= 0)
+              .with(true, () => "+")
+              .with(false, () => "")
+              .exhaustive()}
             {coinData.priceChangePercentage24h.toFixed(2)}%
           </div>
         </div>
@@ -121,7 +130,10 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
       {/* You Receive */}
       <div className="mb-4 rounded bg-slate-700 p-3">
         <div className="mb-1 text-slate-300 text-sm">
-          {activeAction === "buy" ? "You receive:" : "You pay:"}
+          {match(activeAction)
+            .with("buy", () => "You receive:")
+            .with("sell", () => "You pay:")
+            .exhaustive()}
         </div>
         <div className="flex items-center justify-between">
           <div className="font-medium text-white">
@@ -157,11 +169,16 @@ export default function SwapPanel({ coinData }: SwapPanelProps) {
 
       {/* Action Button */}
       <Button
-        className={`w-full py-6 text-lg ${
-          activeAction === "buy" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
-        }`}
+        className={`w-full py-6 text-lg ${match(activeAction)
+          .with("buy", () => "bg-green-500 hover:bg-green-600")
+          .with("sell", () => "bg-red-500 hover:bg-red-600")
+          .exhaustive()}`}
       >
-        {activeAction === "buy" ? "Buy" : "Sell"} {coinData.symbol}
+        {match(activeAction)
+          .with("buy", () => "Buy")
+          .with("sell", () => "Sell")
+          .exhaustive()}{" "}
+        {coinData.symbol}
       </Button>
 
       {/* Additional Information */}

@@ -1,5 +1,10 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { mockCoinMetadata, mockCoins, mockDominanceChartData } from "@workspace/mockdata";
+import {
+  mockCoinMetadata,
+  mockCoins,
+  mockDominanceChartData,
+  mockmemes,
+} from "@workspace/mockdata";
 import { Effect } from "effect";
 import type { ApiResponse } from "./types";
 
@@ -16,7 +21,7 @@ const createErrorResponse = (error: string) => ({
   timestamp: Date.now(),
 });
 
-// Query parameter validation using effect-ts
+// Query parameter validation using class-free effect pattern
 const parsePaginationQuery = (
   query: Record<string, string>,
 ): Effect.Effect<{ limit?: number; offset?: number }, string> => {
@@ -57,15 +62,15 @@ export const mockdataApi = new OpenAPIHono()
   // Get all coins with optional pagination
   .get("/coins", (c) => {
     const program = Effect.gen(function* () {
-      const queryResult = yield* parsePaginationQuery(c.req.query());
+      const queryParams = yield* parsePaginationQuery(c.req.query());
       let coins = mockCoins;
 
       // Apply pagination if provided
-      if (queryResult.offset !== undefined) {
-        coins = coins.slice(queryResult.offset);
+      if (queryParams.offset !== undefined) {
+        coins = coins.slice(queryParams.offset);
       }
-      if (queryResult.limit !== undefined) {
-        coins = coins.slice(0, queryResult.limit);
+      if (queryParams.limit !== undefined) {
+        coins = coins.slice(0, queryParams.limit);
       }
 
       return createResponse(coins);
@@ -98,15 +103,15 @@ export const mockdataApi = new OpenAPIHono()
   // Get coin metadata (for charts and tables) with optional pagination
   .get("/coin-metadata", (c) => {
     const program = Effect.gen(function* () {
-      const queryResult = yield* parsePaginationQuery(c.req.query());
+      const queryParams = yield* parsePaginationQuery(c.req.query());
       let metadata = mockCoinMetadata;
 
       // Apply pagination if provided
-      if (queryResult.offset !== undefined) {
-        metadata = metadata.slice(queryResult.offset);
+      if (queryParams.offset !== undefined) {
+        metadata = metadata.slice(queryParams.offset);
       }
-      if (queryResult.limit !== undefined) {
-        metadata = metadata.slice(0, queryResult.limit);
+      if (queryParams.limit !== undefined) {
+        metadata = metadata.slice(0, queryParams.limit);
       }
 
       return createResponse(metadata);
@@ -127,12 +132,12 @@ export const mockdataApi = new OpenAPIHono()
   // Get dominance chart data with optional filtering
   .get("/dominance", (c) => {
     const program = Effect.gen(function* () {
-      const queryResult = yield* parseDominanceQuery(c.req.query());
+      const queryParams = yield* parseDominanceQuery(c.req.query());
       let dominanceData = mockDominanceChartData;
 
       // Apply limit if provided (get latest N points)
-      if (queryResult.limit !== undefined) {
-        dominanceData = dominanceData.slice(-queryResult.limit);
+      if (queryParams.limit !== undefined) {
+        dominanceData = dominanceData.slice(-queryParams.limit);
       }
 
       // Note: timeframe filtering could be implemented based on requirements
@@ -151,6 +156,11 @@ export const mockdataApi = new OpenAPIHono()
         ? 400
         : 500;
     return c.json(result, statusCode);
+  })
+
+  // Get mockmemes gallery data
+  .get("/mockmemes", (c) => {
+    return c.json(createResponse(mockmemes));
   })
 
   // Health check for mockdata endpoints

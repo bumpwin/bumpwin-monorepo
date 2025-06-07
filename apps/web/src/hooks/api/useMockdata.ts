@@ -1,3 +1,4 @@
+import { apiClient } from "@/lib/api/client";
 import { type QueryClient, useQuery } from "@tanstack/react-query";
 
 // Query keys for consistent caching
@@ -8,6 +9,7 @@ export const mockdataKeys = {
   coinMetadata: () => [...mockdataKeys.all, "coin-metadata"] as const,
   dominance: () => [...mockdataKeys.all, "dominance"] as const,
   champions: () => [...mockdataKeys.all, "champions"] as const,
+  mockmemes: () => [...mockdataKeys.all, "mockmemes"] as const,
 };
 
 // Hook for fetching all coins with optional pagination
@@ -15,20 +17,15 @@ export const useCoins = (options?: { limit?: number; offset?: number }) => {
   return useQuery({
     queryKey: [...mockdataKeys.coins(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
-      if (options?.offset) searchParams.set("offset", options.offset.toString());
+      const query: Record<string, string> = {};
+      if (options?.limit) query.limit = options.limit.toString();
+      if (options?.offset) query.offset = options.offset.toString();
 
-      const url = `/mockdata/coins${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as {
-        success: boolean;
-        data?: unknown;
-        error?: string;
-      };
+      const response = await apiClient.mockdata.coins.$get({ query });
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to fetch coins");
+        throw new Error("error" in result ? result.error : "Failed to fetch coins");
       }
 
       return result.data;
@@ -43,15 +40,13 @@ export const useCoin = (id: string) => {
   return useQuery({
     queryKey: mockdataKeys.coin(id),
     queryFn: async () => {
-      const response = await fetch(`/mockdata/coins/${encodeURIComponent(id)}`);
-      const result = (await response.json()) as {
-        success: boolean;
-        data?: unknown;
-        error?: string;
-      };
+      const response = await apiClient.mockdata.coins[":id"].$get({
+        param: { id },
+      });
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || `Failed to fetch coin ${id}`);
+        throw new Error("error" in result ? result.error : `Failed to fetch coin ${id}`);
       }
 
       return result.data;
@@ -67,20 +62,15 @@ export const useCoinMetadata = (options?: { limit?: number; offset?: number }) =
   return useQuery({
     queryKey: [...mockdataKeys.coinMetadata(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
-      if (options?.offset) searchParams.set("offset", options.offset.toString());
+      const query: Record<string, string> = {};
+      if (options?.limit) query.limit = options.limit.toString();
+      if (options?.offset) query.offset = options.offset.toString();
 
-      const url = `/mockdata/coin-metadata${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as {
-        success: boolean;
-        data?: unknown;
-        error?: string;
-      };
+      const response = await apiClient.mockdata["coin-metadata"].$get({ query });
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to fetch coin metadata");
+        throw new Error("error" in result ? result.error : "Failed to fetch coin metadata");
       }
 
       return result.data;
@@ -98,20 +88,15 @@ export const useDominanceData = (options?: {
   return useQuery({
     queryKey: [...mockdataKeys.dominance(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.timeframe) searchParams.set("timeframe", options.timeframe);
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
+      const query: Record<string, string> = {};
+      if (options?.timeframe) query.timeframe = options.timeframe;
+      if (options?.limit) query.limit = options.limit.toString();
 
-      const url = `/mockdata/dominance${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as {
-        success: boolean;
-        data?: unknown;
-        error?: string;
-      };
+      const response = await apiClient.mockdata.dominance.$get({ query });
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to fetch dominance data");
+        throw new Error("error" in result ? result.error : "Failed to fetch dominance data");
       }
 
       return result.data;
@@ -126,26 +111,37 @@ export const useChampions = (options?: { limit?: number; round?: number }) => {
   return useQuery({
     queryKey: [...mockdataKeys.champions(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
-      if (options?.round) searchParams.set("round", options.round.toString());
+      const query: Record<string, string> = {};
+      if (options?.limit) query.limit = options.limit.toString();
+      if (options?.round) query.round = options.round.toString();
 
-      const url = `/mockdata/champions${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as {
-        success: boolean;
-        data?: unknown;
-        error?: string;
-      };
+      const response = await apiClient.champions.$get({ query });
+      const result = await response.json();
+
+      // Champions endpoint returns data directly, not wrapped in success/error format
+      return result;
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes (champions change less frequently)
+    gcTime: 15 * 60 * 1000,
+  });
+};
+
+// Hook for fetching mockmemes gallery data
+export const useMockmemes = () => {
+  return useQuery({
+    queryKey: mockdataKeys.mockmemes(),
+    queryFn: async () => {
+      const response = await apiClient.mockdata.mockmemes.$get();
+      const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || "Failed to fetch champions");
+        throw new Error("error" in result ? result.error : "Failed to fetch mockmemes");
       }
 
       return result.data;
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes (champions change less frequently)
-    gcTime: 15 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes (static data)
+    gcTime: 10 * 60 * 1000,
   });
 };
 
@@ -157,14 +153,13 @@ export const prefetchCoins = async (
   await queryClient.prefetchQuery({
     queryKey: [...mockdataKeys.coins(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
-      if (options?.offset) searchParams.set("offset", options.offset.toString());
+      const query: Record<string, string> = {};
+      if (options?.limit) query.limit = options.limit.toString();
+      if (options?.offset) query.offset = options.offset.toString();
 
-      const url = `/mockdata/coins${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as { success: boolean; data?: unknown };
-      return result.success ? result.data : [];
+      const response = await apiClient.mockdata.coins.$get({ query });
+      const result = await response.json();
+      return "success" in result && result.success ? result.data : [];
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -177,14 +172,14 @@ export const prefetchChampions = async (
   await queryClient.prefetchQuery({
     queryKey: [...mockdataKeys.champions(), options],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (options?.limit) searchParams.set("limit", options.limit.toString());
-      if (options?.round) searchParams.set("round", options.round.toString());
+      const query: Record<string, string> = {};
+      if (options?.limit) query.limit = options.limit.toString();
+      if (options?.round) query.round = options.round.toString();
 
-      const url = `/mockdata/champions${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
-      const response = await fetch(url);
-      const result = (await response.json()) as { success: boolean; data?: unknown };
-      return result.success ? result.data : [];
+      const response = await apiClient.champions.$get({ query });
+      const result = await response.json();
+      // Champions endpoint returns data directly
+      return result;
     },
     staleTime: 10 * 60 * 1000,
   });

@@ -1,8 +1,8 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
 import type { DominanceChartData } from "@/types/dominance";
 import type { UIRoundCoinData } from "@/types/ui-types";
-import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type React from "react";
@@ -27,12 +27,25 @@ const formatMarketCap = (value: number): string => {
 };
 
 export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
-  // Transform mockDominanceChartData to DominanceRechart format
-  const chartPoints: ChartDataPoint[] = mockDominanceChartData.map((point) => ({
+  // APIからデータを取得
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
+
+  // ローディング状態の処理
+  if (isLoadingCoins || isLoadingDominance) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  // Transform dominanceData to DominanceRechart format
+  const chartPoints: ChartDataPoint[] = dominanceData.map((point) => ({
     timestamp: point.timestamp,
     ...point.shares.reduce(
       (acc, share, index) => {
-        const symbol = mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
+        const symbol = coinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
         acc[symbol] = share / 100;
         return acc;
       },
@@ -41,7 +54,7 @@ export const ChampionsList: React.FC<ChampionsListProps> = ({ coins }) => {
   }));
 
   const CHART_COLORS = ["#FF69B4", "#3CB043", "#FFD700", "#00BFFF"];
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin, index) => ({
+  const chartCoins: PreparedCoinMeta[] = coinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
     color: CHART_COLORS[index % CHART_COLORS.length],
