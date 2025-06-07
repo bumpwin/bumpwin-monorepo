@@ -11,6 +11,7 @@ interface PotentialWinDisplayProps {
   coin?: UIRoundCoinData;
   avgPrice: number;
   componentType: ComponentType;
+  onReceiveClick?: () => void;
 }
 
 export const PotentialWinDisplay = ({
@@ -20,6 +21,7 @@ export const PotentialWinDisplay = ({
   coin,
   avgPrice,
   componentType,
+  onReceiveClick,
 }: PotentialWinDisplayProps) => {
   // Only render if there's an amount greater than 0
   if (!amount || amount <= 0) return null;
@@ -105,10 +107,72 @@ export const PotentialWinDisplay = ({
           ) : (
             // Darknight/Champion向けの元のレイアウト
             <>
-              <div className="mb-2 cursor-not-allowed font-medium text-gray-400 text-sm">
+              <div
+                className={`mb-2 font-medium text-gray-400 text-sm ${
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "cursor-pointer transition-colors hover:text-white"
+                    : "cursor-not-allowed"
+                }`}
+                onClick={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? onReceiveClick
+                    : undefined
+                }
+                onKeyDown={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onReceiveClick();
+                        }
+                      }
+                    : undefined
+                }
+                role={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? 0
+                    : undefined
+                }
+              >
                 {labelText}
               </div>
-              <div className="flex cursor-not-allowed items-baseline px-3">
+              <div
+                className={`flex items-baseline px-3 ${
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "cursor-pointer rounded transition-colors hover:bg-[#3C41FF]/10"
+                    : "cursor-not-allowed"
+                }`}
+                onClick={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? onReceiveClick
+                    : undefined
+                }
+                onKeyDown={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onReceiveClick();
+                        }
+                      }
+                    : undefined
+                }
+                role={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? 0
+                    : undefined
+                }
+              >
                 <CoinIconSymbol
                   coin={displayCoin}
                   size="sm"

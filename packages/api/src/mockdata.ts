@@ -1,10 +1,5 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import {
-  mockCoinMetadata,
-  mockCoins,
-  mockDominanceChartData,
-  mockmemes,
-} from "@workspace/mockdata";
+import { getCurrentRound, mockCoins, mockDominanceChartData, mockmemes } from "@workspace/mockdata";
 import { Effect } from "effect";
 import type { ApiResponse } from "./types";
 
@@ -104,15 +99,38 @@ export const mockdataApi = new OpenAPIHono()
   .get("/coin-metadata", (c) => {
     const program = Effect.gen(function* () {
       const queryParams = yield* parsePaginationQuery(c.req.query());
-      let metadata = mockCoinMetadata;
 
-      // Apply pagination if provided
-      if (queryParams.offset !== undefined) {
-        metadata = metadata.slice(queryParams.offset);
+      // Check for darknight mode query parameter
+      const isDarknightMode = c.req.query("darknight") === "true";
+
+      let sourceData = mockmemes;
+
+      // If darknight mode, filter to current round coins only
+      if (isDarknightMode) {
+        const currentRound = getCurrentRound();
+
+        if (currentRound && currentRound.memeIds.length > 0) {
+          // Filter mockmemes to only include current round memes
+          sourceData = mockmemes.filter((meme) => currentRound.memeIds.includes(meme.id));
+        }
       }
-      if (queryParams.limit !== undefined) {
-        metadata = metadata.slice(0, queryParams.limit);
-      }
+
+      // Generate metadata with requested limit (default to all available)
+      const requestedLimit = queryParams.limit || sourceData.length;
+      const startOffset = queryParams.offset || 0;
+
+      const metadata = sourceData
+        .slice(startOffset, startOffset + requestedLimit)
+        .map((meme, index) => ({
+          id: startOffset + index,
+          symbol: meme.symbol,
+          name: meme.name,
+          icon: meme.iconUrl,
+          description: meme.description,
+          telegramLink: "",
+          websiteLink: "",
+          twitterLink: "",
+        }));
 
       return createResponse(metadata);
     });

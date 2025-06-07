@@ -1,5 +1,7 @@
 "use client";
 
+import type { CoinMetadata } from "@/app/rounds/types";
+import { CoinSelectionModal } from "@/components/trading/CoinSelectionModal";
 import { ActionButton } from "@/components/trading/swap/elements/action-button";
 import { AmountInput } from "@/components/trading/swap/elements/amount-input";
 import { CoinHeader } from "@/components/trading/swap/elements/coin-header";
@@ -36,6 +38,8 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   const [potentialWin, setPotentialWin] = useState<number>(0);
   const [avgPrice] = useState<number>(17.6);
   const [activeSide, setActiveSide] = useState<"buy" | "switch">("buy");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedReceiveCoin, setSelectedReceiveCoin] = useState<CoinMetadata | null>(null);
   const account = useCurrentAccount();
   const suiClient = useSuiClient();
   const { createSwapChampTransaction } = useTransactionCreators();
@@ -65,12 +69,41 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
       return;
     }
 
-    const tx = createSwapChampTransaction(amount, isBuy);
+    // For switch transactions, check if receive coin is selected
+    if (!isBuy && !selectedReceiveCoin) {
+      toast.error("Please select a receive coin first");
+      return;
+    }
+
+    const tx = createSwapChampTransaction(
+      amount,
+      isBuy,
+      !isBuy ? String(selectedReceiveCoin?.id) : undefined,
+    );
     if (!tx) {
       toast.error("Failed to create transaction");
       return;
     }
 
+    await executeTransaction(tx);
+  };
+
+  const handleCoinSelection = async (coin: CoinMetadata) => {
+    setSelectedReceiveCoin(coin);
+
+    if (!amount || amount <= 0) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    // Create switch transaction with selected receive coin
+    const tx = createSwapChampTransaction(amount, false, String(coin.id));
+    if (!tx) {
+      toast.error("Failed to create switch transaction");
+      return;
+    }
+
+    toast.success(`Switch transaction created for ${coin.symbol}`);
     await executeTransaction(tx);
   };
 
@@ -127,7 +160,45 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           coin={coin}
           avgPrice={avgPrice}
           componentType="darknight"
+          onReceiveClick={() => setIsModalOpen(true)}
         />
+
+        {/* Selected receive coin display (when switch is active) */}
+        {activeSide === "switch" && selectedReceiveCoin && (
+          <div className="mb-4 rounded-xl border border-[#3C41FF]/30 bg-[#3C41FF]/10 p-3">
+            <div className="flex items-center gap-3">
+              <div className="relative h-8 w-8 overflow-hidden rounded-full">
+                <img
+                  src={selectedReceiveCoin.icon}
+                  alt={selectedReceiveCoin.name}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div>
+                <div className="font-medium text-sm text-white">
+                  Receive: {selectedReceiveCoin.symbol}
+                </div>
+                <div className="text-gray-400 text-xs">{selectedReceiveCoin.name}</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedReceiveCoin(null)}
+                className="ml-auto text-gray-400 hover:text-white"
+              >
+                Change
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Debug info for testing */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="mb-2 text-gray-400 text-xs">
+            Debug: amount={String(amount)}, activeSide={activeSide}, isConnected={String(!!account)}
+            , isExecuting={String(isExecuting)}, buttonDisabled=
+            {String(activeSide === "buy" ? !amount : false)}
+          </div>
+        )}
 
         {/* Action Button */}
         <ActionButton
@@ -137,6 +208,15 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
           disabled={!amount}
           onClick={() => handleTransaction(activeSide === "buy")}
           variant="darknight"
+        />
+
+        {/* Coin Selection Modal */}
+        <CoinSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSelectCoin={handleCoinSelection}
+          title="Select Receive Coin"
+          description="Choose which coin you want to receive in this sealed switch transaction:"
         />
       </CardContent>
     </DarkCard>

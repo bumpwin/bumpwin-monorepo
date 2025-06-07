@@ -2,6 +2,7 @@
 
 import { RoundsACard } from "@/app/battle/RoundsACard";
 import { api } from "@/app/client";
+import type { CoinMetadata } from "@/app/rounds/types";
 import BattleCoinDetailCard from "@/components/battle/BattleCoinDetailCard";
 import { BattleRoundPhaseToggle } from "@/components/battle/BattleRoundPhaseToggle";
 import { ChartTitle } from "@/components/charts/ChartTitle";
@@ -11,6 +12,7 @@ import SharrowStatsBar from "@/components/stats/SharrowStatsBar";
 import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useCoinMetadata } from "@/hooks";
 import { useBattleClock } from "@/providers/BattleClockProvider";
 import type { UIRoundCoinData } from "@/types/ui-types";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +23,7 @@ interface BattleApiResponse {
   memes?: Array<{ metadata?: MemeMetadata }>;
 }
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 // Constants
 const DEFAULT_COIN: UIRoundCoinData = {
@@ -208,39 +210,29 @@ export default function RoundsAPage() {
     },
   });
 
+  // Use API-based coin data for consistent 8 coins in darknight mode
+  const { data: darknightCoins = [] } = useCoinMetadata({
+    darknight: true,
+    limit: 8,
+  });
+
   const typedBattleData = battleData as BattleApiResponse | undefined;
   const allMemes: MemeMetadata[] =
     typedBattleData?.memes
       ?.filter((m): m is { metadata: MemeMetadata } => !!m.metadata)
       .map((m) => m.metadata) || [];
 
-  // Store darknight memes selection to prevent re-shuffling
-  const darknightMemesRef = useRef<MemeMetadata[]>([]);
-  const lastPhaseRef = useRef<string>("");
+  // Convert CoinMetadata to MemeMetadata format for compatibility
+  const darknightMemes: MemeMetadata[] = darknightCoins.map((coin: CoinMetadata) => ({
+    id: `0x${coin.id.toString().padStart(64, "0")}` as `0x${string}`,
+    name: coin.name,
+    symbol: coin.symbol,
+    description: coin.description,
+    iconUrl: coin.icon,
+  }));
 
-  // Only recalculate when phase changes TO darknight
-  useEffect(() => {
-    if (phase === "darknight" && lastPhaseRef.current !== "darknight" && allMemes.length > 8) {
-      const jellMeme = allMemes.find((m) => m.symbol === "JELL");
-      const otherMemes = allMemes.filter((m) => m.symbol !== "JELL");
-
-      // Shuffle and pick 7 random memes
-      const shuffled = [...otherMemes].sort(() => Math.random() - 0.5);
-      const selectedMemes = shuffled.slice(0, 7);
-
-      // Always include JELL if it exists
-      darknightMemesRef.current = jellMeme
-        ? [jellMeme, ...selectedMemes]
-        : selectedMemes.slice(0, 8);
-    }
-    lastPhaseRef.current = phase;
-  }, [phase, allMemes]);
-
-  // Use stored selection for darknight, otherwise show all memes
-  const memes =
-    phase === "darknight" && darknightMemesRef.current.length > 0
-      ? darknightMemesRef.current
-      : allMemes;
+  // Use API-based selection for darknight, otherwise show all memes
+  const memes = phase === "darknight" ? darknightMemes : allMemes;
   const firstMeme = memes.length > 0 ? memes[0] : null;
   const selectedMeme = selectedId
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme

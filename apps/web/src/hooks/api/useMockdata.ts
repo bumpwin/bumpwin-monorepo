@@ -58,13 +58,18 @@ export const useCoin = (id: string) => {
 };
 
 // Hook for fetching coin metadata (used in charts and tables) with optional pagination
-export const useCoinMetadata = (options?: { limit?: number; offset?: number }) => {
+export const useCoinMetadata = (options?: {
+  limit?: number;
+  offset?: number;
+  darknight?: boolean;
+}) => {
   return useQuery({
     queryKey: [...mockdataKeys.coinMetadata(), options],
     queryFn: async () => {
       const query: Record<string, string> = {};
       if (options?.limit) query.limit = options.limit.toString();
       if (options?.offset) query.offset = options.offset.toString();
+      if (options?.darknight) query.darknight = "true";
 
       const response = await apiClient.mockdata["coin-metadata"].$get({ query });
       const result = await response.json();

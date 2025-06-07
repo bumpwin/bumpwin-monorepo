@@ -1,11 +1,17 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import { useCoinMetadata, useDominanceData } from "@/hooks";
+import { useBattleClock } from "@/providers/BattleClockProvider";
 import { getColorByIndex } from "@/utils/colors";
 import { useMemo } from "react";
 
 const DominanceChartSection = () => {
-  // APIからデータを取得
-  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { phase } = useBattleClock();
+
+  // APIからデータを取得 - darknightモードでは8つに制限
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata({
+    darknight: phase === "darknight",
+    limit: phase === "darknight" ? 8 : undefined,
+  });
   const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
 
   // DominanceRechart用データ整形

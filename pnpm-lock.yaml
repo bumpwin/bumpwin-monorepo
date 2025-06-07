@@ -227,9 +227,6 @@ importers:
       '@workspace/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@workspace/mockdata':
-        specifier: workspace:*
-        version: link:../../packages/mockdata
       '@workspace/sui':
         specifier: workspace:*
         version: link:../../packages/sui
