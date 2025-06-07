@@ -1,12 +1,19 @@
 "use client";
 
 import type { CoinMetadata } from "@/app/rounds/types";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useCoinMetadata } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import { match } from "ts-pattern";
 
 interface CoinSelectionModalProps {
@@ -34,7 +41,6 @@ export const CoinSelectionModal = ({
     darknight: true,
   });
   const [selectedCoin, setSelectedCoin] = useState<CoinMetadata | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   // Debug log to see what data we're getting
   useEffect(() => {
@@ -45,33 +51,12 @@ export const CoinSelectionModal = ({
     }
   }, [isOpen, coinMetadata, isLoading, error]);
 
-  // Ensure component is mounted before creating portal
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Reset selection when modal opens
   useEffect(() => {
     if (isOpen) {
       setSelectedCoin(null);
     }
   }, [isOpen]);
-
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isOpen) return;
-
-      if (event.key === "Escape") {
-        onClose();
-      } else if (event.key === "Enter" && selectedCoin) {
-        handleConfirm();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, selectedCoin, onClose]);
 
   const handleCoinSelect = (coin: CoinMetadata) => {
     setSelectedCoin(coin);
@@ -84,28 +69,19 @@ export const CoinSelectionModal = ({
     }
   };
 
-  if (!isOpen || !mounted) return null;
-
-  const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-      <div className="relative mx-8 w-full max-w-6xl rounded-2xl border border-[#2A2F45] bg-gradient-to-b from-[#0F1225] to-[#1A1E32] shadow-[0_8px_32px_rgba(124,58,237,0.3)]">
-        {/* Header */}
-        <div className="flex items-center justify-between border-[#2A2F45] border-b p-6">
-          <div>
-            <h2 className="font-bold text-white text-xl">{title}</h2>
-            <p className="text-gray-400 text-sm">{description}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-[#2A2F45] hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        className="max-w-[95vw] border-[#2A2F45] bg-gradient-to-b from-[#0F1225] to-[#1A1E32] text-white shadow-[0_8px_32px_rgba(124,58,237,0.3)] sm:max-w-6xl"
+        showCloseButton={false}
+      >
+        <DialogHeader className="border-[#2A2F45] border-b pb-6">
+          <DialogTitle className="text-white text-xl">{title}</DialogTitle>
+          <DialogDescription className="text-gray-400">{description}</DialogDescription>
+        </DialogHeader>
 
         {/* Content */}
-        <div className="p-8">
+        <div className="px-6 py-4">
           {match(isLoading)
             .with(true, () => (
               <div className="flex items-center justify-center py-12">
@@ -218,39 +194,36 @@ export const CoinSelectionModal = ({
                     ))}
                   </div>
                 )}
-
-                {/* Action buttons */}
-                {!error && coinMetadata.length > 0 && (
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="flex-1 rounded-xl border border-[#2A2F45] bg-transparent px-6 py-4 font-medium text-base text-gray-400 transition-colors hover:bg-[#2A2F45] hover:text-white"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleConfirm}
-                      disabled={!selectedCoin}
-                      className={cn(
-                        "flex-1 rounded-xl px-6 py-4 font-bold text-base transition-all duration-200",
-                        selectedCoin
-                          ? "bg-[#3C41FF] text-white shadow-[0_4px_12px_rgba(60,65,255,0.25)] hover:bg-[#3C41FF]/90"
-                          : "cursor-not-allowed bg-gray-600 text-gray-400",
-                      )}
-                    >
-                      {selectedCoin ? `Select ${selectedCoin.symbol}` : "Select a coin"}
-                    </button>
-                  </div>
-                )}
               </>
             ))
             .exhaustive()}
         </div>
-      </div>
-    </div>
-  );
 
-  return createPortal(modalContent, document.body);
+        {/* Action buttons */}
+        {!error && coinMetadata.length > 0 && (
+          <DialogFooter className="gap-4 pt-4">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 border-[#2A2F45] bg-transparent text-gray-400 hover:bg-[#2A2F45] hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              disabled={!selectedCoin}
+              className={cn(
+                "flex-1",
+                selectedCoin
+                  ? "bg-[#3C41FF] text-white shadow-[0_4px_12px_rgba(60,65,255,0.25)] hover:bg-[#3C41FF]/90"
+                  : "cursor-not-allowed bg-gray-600 text-gray-400",
+              )}
+            >
+              {selectedCoin ? `Select ${selectedCoin.symbol}` : "Select a coin"}
+            </Button>
+          </DialogFooter>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 };

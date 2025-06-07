@@ -1,9 +1,17 @@
 "use client";
 
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -24,8 +32,6 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
   const [isDragging, setIsDragging] = useState(false);
   const { createIncrementCounterTransaction } = useTransactionCreators();
   const { executeTransaction, isExecuting } = useExecuteTransaction();
-
-  if (!isOpen) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -131,146 +137,136 @@ export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
   );
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 z-50 w-full max-w-5xl transform overflow-hidden rounded-2xl border border-purple-500/50 bg-gray-900 shadow-[0_0_30px_rgba(168,85,247,0.3)]"
-      >
-        <div className="p-6">
-          <h2 className="mb-6 text-center font-extrabold text-3xl text-white">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-[90vw] border-purple-500/50 bg-gray-900 text-white shadow-[0_0_30px_rgba(168,85,247,0.3)] sm:max-w-5xl">
+        <DialogHeader className="text-center">
+          <DialogTitle className="font-extrabold text-3xl text-white">
             Create Your Meme Coin
-          </h2>
-          <p className="mb-8 text-center text-gray-300">
+          </DialogTitle>
+          <DialogDescription className="text-gray-300">
             Be part of the next battle round by creating your own meme coin!
-          </p>
+          </DialogDescription>
+        </DialogHeader>
 
-          <div className="flex flex-col gap-8 md:flex-row">
-            {/* Left Column - Meme Card Preview */}
-            <div className="flex w-full flex-col items-center md:w-1/2">
-              <h3 className="mb-3 font-bold text-lg text-white">Meme Preview</h3>
-              <div className="w-full max-w-[320px]">
-                <MemeCard />
-              </div>
-              <div className="mt-4 text-center text-gray-400 text-sm">
-                <p className="mt-2">Your coin will appear like this in battles</p>
-              </div>
+        <div className="flex flex-col gap-8 md:flex-row">
+          {/* Left Column - Meme Card Preview */}
+          <div className="flex w-full flex-col items-center md:w-1/2">
+            <h3 className="mb-3 font-bold text-lg text-white">Meme Preview</h3>
+            <div className="w-full max-w-[320px]">
+              <MemeCard />
             </div>
-
-            {/* Right Column - Form */}
-            <div className="w-full md:w-1/2">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-6 space-y-4">
-                  <div>
-                    <label
-                      htmlFor="coinSymbol"
-                      className="mb-2 block font-medium text-gray-300 text-sm"
-                    >
-                      Coin Symbol
-                    </label>
-                    <input
-                      type="text"
-                      id="coinSymbol"
-                      name="symbol"
-                      value={formData.symbol}
-                      onChange={handleChange}
-                      className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="TICKER"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="coinName"
-                      className="mb-2 block font-medium text-gray-300 text-sm"
-                    >
-                      Coin Name
-                    </label>
-                    <input
-                      type="text"
-                      id="coinName"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="NAME"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="coinDescription"
-                      className="mb-2 block font-medium text-gray-300 text-sm"
-                    >
-                      Description
-                    </label>
-                    <textarea
-                      id="coinDescription"
-                      value={formData.description || ""}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description: e.target.value,
-                        }))
-                      }
-                      className="w-full resize-none rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="Describe your coin..."
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="coinIcon" className="mb-2 block font-medium text-sm text-white">
-                      Upload Icon
-                    </label>
-                    <div className="space-y-2">
-                      <ImageUpload
-                        preview={preview}
-                        isDragging={isDragging}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                        onChange={handleImageChange}
-                      />
-                      {preview && (
-                        <button
-                          type="button"
-                          onClick={handleRemoveImage}
-                          className="w-full rounded-lg border border-red-500 px-4 py-2 text-red-500 transition-colors hover:bg-red-500/10"
-                        >
-                          Remove Image
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end gap-4">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="rounded-lg bg-gray-800 px-6 py-3 text-white transition-colors hover:bg-gray-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isExecuting}
-                    className="rounded-lg bg-purple-700 px-6 py-3 font-bold text-white transition-all hover:scale-[1.03] hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isExecuting ? "Creating..." : "Create Coin"}
-                  </button>
-                </div>
-              </form>
+            <div className="mt-4 text-center text-gray-400 text-sm">
+              <p className="mt-2">Your coin will appear like this in battles</p>
             </div>
           </div>
+
+          {/* Right Column - Form */}
+          <div className="w-full md:w-1/2">
+            <form onSubmit={handleSubmit}>
+              <div className="mb-6 space-y-4">
+                <div>
+                  <label
+                    htmlFor="coinSymbol"
+                    className="mb-2 block font-medium text-gray-300 text-sm"
+                  >
+                    Coin Symbol
+                  </label>
+                  <input
+                    type="text"
+                    id="coinSymbol"
+                    name="symbol"
+                    value={formData.symbol}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="TICKER"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="coinName"
+                    className="mb-2 block font-medium text-gray-300 text-sm"
+                  >
+                    Coin Name
+                  </label>
+                  <input
+                    type="text"
+                    id="coinName"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="NAME"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="coinDescription"
+                    className="mb-2 block font-medium text-gray-300 text-sm"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="coinDescription"
+                    value={formData.description || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    className="w-full resize-none rounded-lg border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Describe your coin..."
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="coinIcon" className="mb-2 block font-medium text-sm text-white">
+                    Upload Icon
+                  </label>
+                  <div className="space-y-2">
+                    <ImageUpload
+                      preview={preview}
+                      isDragging={isDragging}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onChange={handleImageChange}
+                    />
+                    {preview && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="w-full rounded-lg border border-red-500 px-4 py-2 text-red-500 transition-colors hover:bg-red-500/10"
+                      >
+                        Remove Image
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-      </motion.div>
-    </>
+
+        <DialogFooter className="gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="bg-gray-800 text-white hover:bg-gray-700"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isExecuting}
+            onClick={handleSubmit}
+            className="bg-purple-700 font-bold hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isExecuting ? "Creating..." : "Create Coin"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
