@@ -16,12 +16,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface CreateCoinModalProps {
+interface CreateCoinDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function CreateCoinModal({ isOpen, onClose }: CreateCoinModalProps) {
+export function CreateCoinDialog({ isOpen, onClose }: CreateCoinDialogProps) {
   const [formData, setFormData] = useState({
     symbol: "",
     name: "",

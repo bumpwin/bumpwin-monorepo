@@ -1,7 +1,7 @@
 "use client";
 
 import type { CoinMetadata } from "@/app/rounds/types";
-import { CoinSelectionModal } from "@/components/trading/CoinSelectionModal";
+import { CoinSelectionDialog } from "@/components/trading/CoinSelectionDialog";
 import { ActionButton } from "@/components/trading/swap/elements/action-button";
 import { AmountInput } from "@/components/trading/swap/elements/amount-input";
 import { CoinHeader } from "@/components/trading/swap/elements/coin-header";
@@ -211,7 +211,7 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
         />
 
         {/* Coin Selection Modal */}
-        <CoinSelectionModal
+        <CoinSelectionDialog
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSelectCoin={handleCoinSelection}

@@ -1,7 +1,7 @@
 "use client";
 
-import { ClaimOutcomeModal } from "@/app/rounds/components/ClaimOutcomeModal";
-import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
+import { ClaimOutcomeDialog } from "@/app/rounds/components/ClaimOutcomeDialog";
+import { CreateCoinDialog } from "@/app/rounds/components/CreateCoinDialog";
 import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints } from "@/app/rounds/utils";
@@ -209,8 +209,8 @@ export default function RoundsPage() {
         </main>
       </div>
 
-      <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />
-      <ClaimOutcomeModal
+      <CreateCoinDialog isOpen={showCreateModal} onClose={handleCloseModal} />
+      <ClaimOutcomeDialog
         isOpen={showClaimModal}
         onClose={handleCloseClaimModal}
         winner={claimData.winner}

@@ -16,7 +16,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { match } from "ts-pattern";
 
-interface CoinSelectionModalProps {
+interface CoinSelectionDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectCoin: (coin: CoinMetadata) => void;
@@ -24,13 +24,13 @@ interface CoinSelectionModalProps {
   description?: string;
 }
 
-export const CoinSelectionModal = ({
+export const CoinSelectionDialog = ({
   isOpen,
   onClose,
   onSelectCoin,
   title = "Select Receive Coin",
   description = "Choose which coin you want to receive in this sealed transaction:",
-}: CoinSelectionModalProps) => {
+}: CoinSelectionDialogProps) => {
   // Use darknight mode to get current round coins only
   const {
     data: coinMetadata = [],

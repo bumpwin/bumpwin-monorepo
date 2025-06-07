@@ -14,7 +14,7 @@ import { MOCKCOINS_OBJECT_IDS } from "bumpwin";
 import { mockcoins } from "bumpwin/suigen";
 import { useState } from "react";
 
-interface ClaimOutcomeModalProps {
+interface ClaimOutcomeDialogProps {
   isOpen: boolean;
   onClose: () => void;
   winner?: {
@@ -24,12 +24,12 @@ interface ClaimOutcomeModalProps {
   roundId?: string;
 }
 
-export function ClaimOutcomeModal({
+export function ClaimOutcomeDialog({
   isOpen,
   onClose,
   winner = { name: "SUP_DOGE", share: 42 },
   roundId = "#42",
-}: ClaimOutcomeModalProps) {
+}: ClaimOutcomeDialogProps) {
   const currentAccount = useCurrentAccount();
   const { executeTransaction, isExecuting } = useExecuteTransaction();
   const [txStatus, setTxStatus] = useState<"idle" | "success" | "error">("idle");
