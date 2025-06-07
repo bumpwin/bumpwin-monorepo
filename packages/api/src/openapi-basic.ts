@@ -1,3 +1,4 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import {
   getChampions,
   mockCoinMetadata,
@@ -5,7 +6,6 @@ import {
   mockDominanceChartData,
 } from "@workspace/mockdata";
 import { Effect } from "effect";
-import { Hono } from "hono";
 import type { ApiResponse } from "./types";
 
 // Helper function to create standardized responses
@@ -75,22 +75,110 @@ const parseChampionsQuery = (
   return Effect.succeed({ limit, round });
 };
 
-export const mockdataApi = new Hono()
+// Data fetching functions using effect-ts
+const fetchCoins = (limit?: number, offset?: number): Effect.Effect<typeof mockCoins, string> => {
+  let coins = mockCoins;
+
+  // Apply pagination if provided
+  if (offset !== undefined) {
+    coins = coins.slice(offset);
+  }
+  if (limit !== undefined) {
+    coins = coins.slice(0, limit);
+  }
+
+  return Effect.succeed(coins);
+};
+
+const fetchCoinById = (id: string): Effect.Effect<(typeof mockCoins)[0], string> => {
+  const coin = mockCoins.find((coin) => coin.id === id || coin.address === id);
+
+  if (!coin) {
+    return Effect.fail(`Coin with id ${id} not found`);
+  }
+
+  return Effect.succeed(coin);
+};
+
+const fetchCoinMetadata = (
+  limit?: number,
+  offset?: number,
+): Effect.Effect<typeof mockCoinMetadata, string> => {
+  let metadata = mockCoinMetadata;
+
+  // Apply pagination if provided
+  if (offset !== undefined) {
+    metadata = metadata.slice(offset);
+  }
+  if (limit !== undefined) {
+    metadata = metadata.slice(0, limit);
+  }
+
+  return Effect.succeed(metadata);
+};
+
+const fetchDominanceData = (
+  limit?: number,
+): Effect.Effect<typeof mockDominanceChartData, string> => {
+  let dominanceData = mockDominanceChartData;
+
+  // Apply limit if provided (get latest N points)
+  if (limit !== undefined) {
+    dominanceData = dominanceData.slice(-limit);
+  }
+
+  return Effect.succeed(dominanceData);
+};
+
+const fetchChampions = (
+  limit?: number,
+  round?: number,
+): Effect.Effect<ReturnType<typeof getChampions>, string> => {
+  let champions = getChampions();
+
+  // Filter by round if provided
+  if (round !== undefined) {
+    champions = champions.filter((champion) => {
+      // Access the round property safely
+      const championRound =
+        typeof champion === "object" && champion !== null && "round" in champion
+          ? (champion as unknown as { round?: { round?: number } }).round?.round
+          : undefined;
+      return championRound === round;
+    });
+  }
+
+  // Apply limit if provided
+  if (limit !== undefined) {
+    champions = champions.slice(0, limit);
+  }
+
+  return Effect.succeed(champions);
+};
+
+// Create OpenAPI Hono app with enhanced mockdata endpoints
+export const openAPIBasicApi = new OpenAPIHono()
   // Get all coins with optional pagination
   .get("/coins", (c) => {
     const program = Effect.gen(function* () {
       const queryResult = yield* parsePaginationQuery(c.req.query());
-      let coins = mockCoins;
+      const coinsResult = yield* fetchCoins(queryResult.limit, queryResult.offset);
+      return createResponse(coinsResult);
+    });
 
-      // Apply pagination if provided
-      if (queryResult.offset !== undefined) {
-        coins = coins.slice(queryResult.offset);
-      }
-      if (queryResult.limit !== undefined) {
-        coins = coins.slice(0, queryResult.limit);
-      }
+    const result = Effect.runSync(
+      Effect.catchAll(program, (error) => Effect.succeed(createErrorResponse(error))),
+    );
 
-      return createResponse(coins);
+    return c.json(result);
+  })
+
+  // Get specific coin by ID
+  .get("/coins/:id", (c) => {
+    const id = c.req.param("id");
+    const program = Effect.gen(function* () {
+      const coinResult = yield* fetchCoinById(id);
+      return createResponse(coinResult);
     });
 
     const result = Effect.runSync(
@@ -99,39 +187,18 @@ export const mockdataApi = new Hono()
 
     const statusCode = result.success
       ? 200
-      : "error" in result && result.error?.includes("Invalid")
-        ? 400
+      : "error" in result && result.error?.includes("not found")
+        ? 404
         : 500;
     return c.json(result, statusCode);
   })
 
-  // Get specific coin by ID
-  .get("/coins/:id", (c) => {
-    const id = c.req.param("id");
-    const coin = mockCoins.find((coin) => coin.id === id || coin.address === id);
-
-    if (!coin) {
-      return c.json(createErrorResponse(`Coin with id ${id} not found`), 404);
-    }
-
-    return c.json(createResponse(coin));
-  })
-
-  // Get coin metadata (for charts and tables) with optional pagination
+  // Get coin metadata with optional pagination
   .get("/coin-metadata", (c) => {
     const program = Effect.gen(function* () {
       const queryResult = yield* parsePaginationQuery(c.req.query());
-      let metadata = mockCoinMetadata;
-
-      // Apply pagination if provided
-      if (queryResult.offset !== undefined) {
-        metadata = metadata.slice(queryResult.offset);
-      }
-      if (queryResult.limit !== undefined) {
-        metadata = metadata.slice(0, queryResult.limit);
-      }
-
-      return createResponse(metadata);
+      const metadataResult = yield* fetchCoinMetadata(queryResult.limit, queryResult.offset);
+      return createResponse(metadataResult);
     });
 
     const result = Effect.runSync(
@@ -150,17 +217,8 @@ export const mockdataApi = new Hono()
   .get("/dominance", (c) => {
     const program = Effect.gen(function* () {
       const queryResult = yield* parseDominanceQuery(c.req.query());
-      let dominanceData = mockDominanceChartData;
-
-      // Apply limit if provided (get latest N points)
-      if (queryResult.limit !== undefined) {
-        dominanceData = dominanceData.slice(-queryResult.limit);
-      }
-
-      // Note: timeframe filtering could be implemented based on requirements
-      // For now, we return the mock data as-is
-
-      return createResponse(dominanceData);
+      const dominanceResult = yield* fetchDominanceData(queryResult.limit);
+      return createResponse(dominanceResult);
     });
 
     const result = Effect.runSync(
@@ -179,26 +237,8 @@ export const mockdataApi = new Hono()
   .get("/champions", (c) => {
     const program = Effect.gen(function* () {
       const queryResult = yield* parseChampionsQuery(c.req.query());
-      let champions = getChampions();
-
-      // Filter by round if provided
-      if (queryResult.round !== undefined) {
-        champions = champions.filter((champion) => {
-          // Access the round property safely
-          const championRound =
-            typeof champion === "object" && champion !== null && "round" in champion
-              ? (champion as unknown as { round?: { round?: number } }).round?.round
-              : undefined;
-          return championRound === queryResult.round;
-        });
-      }
-
-      // Apply limit if provided
-      if (queryResult.limit !== undefined) {
-        champions = champions.slice(0, queryResult.limit);
-      }
-
-      return createResponse(champions);
+      const championsResult = yield* fetchChampions(queryResult.limit, queryResult.round);
+      return createResponse(championsResult);
     });
 
     const result = Effect.runSync(
@@ -213,9 +253,9 @@ export const mockdataApi = new Hono()
     return c.json(result, statusCode);
   })
 
-  // Health check for mockdata endpoints
+  // Health check
   .get("/health", (c) => {
-    return c.json(createResponse({ status: "mockdata API healthy" }));
+    return c.json(createResponse({ status: "OpenAPI basic mockdata API healthy" }));
   });
 
-export type MockdataApiType = typeof mockdataApi;
+export type OpenAPIBasicApiType = typeof openAPIBasicApi;

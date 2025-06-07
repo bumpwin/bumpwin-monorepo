@@ -22,11 +22,13 @@
     "lint:fix": "biome check . --write"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^0.19.8",
     "@workspace/logger": "workspace:*",
     "@workspace/mockdata": "workspace:*",
     "@workspace/supabase": "workspace:*",
     "@workspace/types": "workspace:*",
+    "effect": "^3.16.4",
     "hono": "^4.7.11",
-    "neverthrow": "^8.2.0"
+    "zod": "^3.25.56"
   }
 }
