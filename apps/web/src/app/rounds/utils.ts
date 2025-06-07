@@ -1,5 +1,6 @@
 import { DEFAULT_ICON } from "@/app/rounds/constants";
 import type { ChartCoin, ChartPoint, CoinMetadata } from "@/app/rounds/types";
+import { getColorByIndex } from "@/utils/colors";
 
 export function getSafeIcon(coinMetadata: CoinMetadata[] | undefined, index: number): string {
   if (!coinMetadata || !coinMetadata[index]) {
@@ -51,9 +52,9 @@ export function getChartPoints(
 }
 
 export function getChartCoins(mockCoinMetadata: CoinMetadata[]): ChartCoin[] {
-  return mockCoinMetadata.map((coin) => ({
+  return mockCoinMetadata.map((coin, index) => ({
     symbol: coin.symbol.toLowerCase(),
     name: coin.name,
-    color: coin.color,
+    color: getColorByIndex(index),
   }));
 }

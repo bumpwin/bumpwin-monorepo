@@ -1,7 +1,7 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { getChampions, mockMemeMarketData } from "@workspace/mockdata";
-import { Hono } from "hono";
 
-export const championsApi = new Hono()
+export const championsApi = new OpenAPIHono()
   // Get all champions with market data
   .get("/", (c) => {
     const champions = getChampions();

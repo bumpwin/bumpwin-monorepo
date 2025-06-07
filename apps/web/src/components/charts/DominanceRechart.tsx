@@ -26,7 +26,7 @@ export interface CoinMeta {
   id: number;
   symbol: string;
   name: string;
-  color: string;
+  color?: string;
 }
 
 // Define the structure for prepared coin metadata

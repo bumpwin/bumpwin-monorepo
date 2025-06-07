@@ -59,8 +59,13 @@ export const useTransactionCreators = () => {
     }, [currentAccount]),
 
     createSwapChampTransaction: useCallback(
-      (amount: number, isBuy: boolean) => {
+      (amount: number, isBuy: boolean, receiveCoinId?: string) => {
         if (!currentAccount) return null;
+
+        // For switch transactions, log the receiveCoinId for now
+        if (!isBuy && receiveCoinId) {
+          console.log("Creating switch transaction for receive coin:", receiveCoinId);
+        }
 
         const tx = new Transaction();
         const coinIn = mockcoins.wsui.mint(tx, {

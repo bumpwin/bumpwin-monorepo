@@ -1,17 +1,18 @@
 "use client";
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
+import { getColorByIndex } from "@/utils/colors";
 import { AnimatePresence, motion } from "framer-motion";
-import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { match } from "ts-pattern";
 
 interface ResultViewProps {
-  coin: RoundCoin | undefined;
+  coin: UIRoundCoinData | undefined;
   forceVisible?: boolean;
 }
 
@@ -22,24 +23,36 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Transform mockDominanceChartData to DominanceRechart format
-  const chartPoints: ChartDataPoint[] = mockDominanceChartData.map((point) => ({
-    timestamp: point.timestamp,
-    ...point.shares.reduce(
-      (acc, share, index) => {
-        const symbol = mockCoinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
-        acc[symbol] = share;
-        return acc;
-      },
-      {} as Record<string, number>,
-    ),
-  }));
+  // APIからデータを取得
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
 
-  const chartCoins: PreparedCoinMeta[] = mockCoinMetadata.map((coin) => ({
-    symbol: coin.symbol.toLowerCase(),
-    name: coin.name,
-    color: coin.color,
-  }));
+  // Transform dominanceData to DominanceRechart format
+  const chartPoints: ChartDataPoint[] = useMemo(() => {
+    if (!coinMetadata.length || !dominanceData.length) return [];
+
+    return dominanceData.map((point) => ({
+      timestamp: point.timestamp,
+      ...point.shares.reduce(
+        (acc, share, index) => {
+          const symbol = coinMetadata[index]?.symbol.toLowerCase() || `coin${index}`;
+          acc[symbol] = share;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+    }));
+  }, [coinMetadata, dominanceData]);
+
+  const chartCoins: PreparedCoinMeta[] = useMemo(() => {
+    if (!coinMetadata.length) return [];
+
+    return coinMetadata.map((coin, index) => ({
+      symbol: coin.symbol.toLowerCase(),
+      name: coin.name,
+      color: getColorByIndex(index),
+    }));
+  }, [coinMetadata]);
 
   useEffect(() => {
     if (forceVisible) {
@@ -98,7 +111,10 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4 }}
-          className={`${forceVisible ? "relative" : "fixed inset-0 z-[2000]"} flex items-center justify-center`}
+          className={`${match(forceVisible)
+            .with(true, () => "relative")
+            .with(false, () => "fixed inset-0 z-[2000]")
+            .exhaustive()} flex items-center justify-center`}
         >
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -107,8 +123,14 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
             transition={{ duration: 0.4 }}
             className="relative flex w-full flex-col items-center gap-8 rounded-3xl bg-[#23262F] p-12 shadow-2xl"
             style={{
-              minWidth: forceVisible ? "auto" : 480,
-              maxWidth: forceVisible ? "none" : 600,
+              minWidth: match(forceVisible)
+                .with(true, () => "auto")
+                .with(false, () => 480)
+                .exhaustive(),
+              maxWidth: match(forceVisible)
+                .with(true, () => "none")
+                .with(false, () => 600)
+                .exhaustive(),
             }}
           >
             {!forceVisible && (
@@ -164,41 +186,6 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex gap-2">
-                    {coin.telegramLink && (
-                      <a
-                        href={coin.telegramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Telegram"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Send className="h-5 w-5" />
-                      </a>
-                    )}
-                    {coin.websiteLink && (
-                      <a
-                        href={coin.websiteLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Website"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Globe className="h-5 w-5" />
-                      </a>
-                    )}
-                    {coin.twitterLink && (
-                      <a
-                        href={coin.twitterLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Twitter"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Twitter className="h-5 w-5" />
-                      </a>
-                    )}
-                  </div>
                   <div className="flex gap-4">
                     <button
                       type="button"
@@ -228,14 +215,23 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
               {/* Right: Chart */}
               <div className="w-[500px]">
                 <div className="h-[300px]">
-                  <DominanceRechart
-                    points={chartPoints}
-                    coins={chartCoins}
-                    height={300}
-                    compact={false}
-                    hideLegend={false}
-                    showAllTime={true}
-                  />
+                  {match(isLoadingCoins || isLoadingDominance)
+                    .with(true, () => (
+                      <div className="flex h-full items-center justify-center">
+                        <div className="text-white">Loading chart...</div>
+                      </div>
+                    ))
+                    .with(false, () => (
+                      <DominanceRechart
+                        points={chartPoints}
+                        coins={chartCoins}
+                        height={300}
+                        compact={false}
+                        hideLegend={false}
+                        showAllTime={true}
+                      />
+                    ))
+                    .exhaustive()}
                 </div>
               </div>
             </div>

@@ -5,17 +5,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
+import { getColorByIndex } from "@/utils/colors";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 interface RoundCoinTableProps {
-  onSelectCoin?: (coin: RoundCoin | undefined) => void;
+  onSelectCoin?: (coin: UIRoundCoinData | undefined) => void;
   selectedCoinId?: string;
 }
 
@@ -27,27 +28,31 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
   const [sortType, setSortType] = useState<SortType>("marketcap");
   const [randomOrder, setRandomOrder] = useState<number[]>([]);
 
+  // APIからデータを取得
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
+
   // 3秒ごとにランダム順を更新
   useEffect(() => {
-    if (sortType !== "tradedat") return;
+    if (sortType !== "tradedat" || !coinMetadata.length) return;
     const interval = setInterval(() => {
       setRandomOrder(
-        Array.from({ length: mockCoinMetadata.length }, (_, i) => i).sort(
-          () => Math.random() - 0.5,
-        ),
+        Array.from({ length: coinMetadata.length }, (_, i) => i).sort(() => Math.random() - 0.5),
       );
     }, 3000);
     // 初回も即shuffle
     setRandomOrder(
-      Array.from({ length: mockCoinMetadata.length }, (_, i) => i).sort(() => Math.random() - 0.5),
+      Array.from({ length: coinMetadata.length }, (_, i) => i).sort(() => Math.random() - 0.5),
     );
     return () => clearInterval(interval);
-  }, [sortType]);
+  }, [sortType, coinMetadata.length]);
 
   // 現在時刻のシェアを計算
   const currentShares = useMemo(() => {
+    if (!dominanceData.length || !coinMetadata.length) return [];
+
     // 現在時刻に最も近いデータを取得
-    const currentData = mockDominanceChartData.reduce((prev, curr) => {
+    const currentData = dominanceData.reduce((prev, curr) => {
       return Math.abs(curr.timestamp - currentMinute) < Math.abs(prev.timestamp - currentMinute)
         ? curr
         : prev;
@@ -55,19 +60,16 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
 
     if (!currentData) return [];
 
-    const shares = mockCoinMetadata.map((coin, index) => ({
+    const shares = coinMetadata.map((coin, index) => ({
       id: coin.id.toString(),
       symbol: coin.symbol,
       name: coin.name,
       iconUrl: coin.icon,
       round: 1,
       share: currentData.shares?.[index] ?? 0,
+      price: Math.floor(Math.random() * 100) / 100,
       marketCap: Math.floor(Math.random() * 1000000),
       description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
-      color: coin.color,
     }));
 
     if (sortType === "marketcap") {
@@ -75,9 +77,9 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
     }
     // tradedat: randomOrder順で並べる
     return randomOrder.map((i) => shares[i]).filter(Boolean);
-  }, [currentMinute, sortType, randomOrder]);
+  }, [currentMinute, sortType, randomOrder, dominanceData, coinMetadata]);
 
-  const handleSelect = (coin: RoundCoin) => {
+  const handleSelect = (coin: UIRoundCoinData) => {
     if (onSelectCoin) {
       if (selectedCoinId === coin.id) {
         onSelectCoin(undefined);
@@ -86,6 +88,17 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
       }
     }
   };
+
+  // ローディング状態の処理
+  if (isLoadingCoins || isLoadingDominance) {
+    return (
+      <div className="m-0 w-full overflow-x-auto p-0">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-white">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="m-0 w-full overflow-x-auto p-0">
@@ -189,45 +202,10 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
                               {coin.name} ({coin.symbol})
                             </div>
                             <div className="mb-2 text-gray-300 text-sm">{coin.description}</div>
-                            <div className="mt-2 flex gap-3">
-                              {coin.telegramLink && (
-                                <a
-                                  href={coin.telegramLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Telegram"
-                                  className="text-gray-400"
-                                >
-                                  <Send className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                              {coin.websiteLink && (
-                                <a
-                                  href={coin.websiteLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Website"
-                                  className="text-gray-400"
-                                >
-                                  <Globe className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                              {coin.twitterLink && (
-                                <a
-                                  href={coin.twitterLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Twitter"
-                                  className="text-gray-400"
-                                >
-                                  <Twitter className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                            </div>
                           </div>
                           <div className="flex-1">
                             <DominanceRechart
-                              points={mockDominanceChartData.map((data) => ({
+                              points={dominanceData.map((data) => ({
                                 timestamp: data.timestamp,
                                 [coin.symbol]: data.shares?.[Number(coin.id)] ?? 0,
                               }))}
@@ -235,7 +213,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
                                 {
                                   symbol: coin.symbol,
                                   name: coin.name,
-                                  color: coin.color,
+                                  color: getColorByIndex(Number(coin.id)),
                                 },
                               ]}
                               height={220}

@@ -1,21 +1,21 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
 import { createSupabaseClient } from "@workspace/supabase";
 import type { ApiError } from "@workspace/supabase";
 import { createApiError } from "@workspace/supabase";
-import { Hono } from "hono";
-import { type Result, err, ok } from "neverthrow";
+import { Effect } from "effect";
 
 let supabaseRepo: SupabaseRepository | null = null;
 
-const getRepo = (): Result<SupabaseRepository, ApiError> => {
-  if (supabaseRepo) return ok(supabaseRepo);
+const getRepo = (): Effect.Effect<SupabaseRepository, ApiError> => {
+  if (supabaseRepo) return Effect.succeed(supabaseRepo);
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anon) {
-    return err(
+    return Effect.fail(
       createApiError(
         "database",
         "Supabase environment variables are not configured",
@@ -26,20 +26,20 @@ const getRepo = (): Result<SupabaseRepository, ApiError> => {
 
   const client = createSupabaseClient(url, anon);
   supabaseRepo = new SupabaseRepository(client);
-  return ok(supabaseRepo);
+  return Effect.succeed(supabaseRepo);
 };
 
-const parseLimit = (limitParam: string | undefined): Result<number, ApiError> => {
-  if (!limitParam) return ok(40); // Default to 40 messages
+const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiError> => {
+  if (!limitParam) return Effect.succeed(40); // Default to 40 messages
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
-    return err(
+    return Effect.fail(
       createApiError("validation", "Invalid limit parameter", "Limit must be a positive number"),
     );
   }
 
-  return ok(limit);
+  return Effect.succeed(limit);
 };
 
 /**
@@ -58,54 +58,55 @@ const parseLimit = (limitParam: string | undefined): Result<number, ApiError> =>
  * @error
  *   - 500: Internal Server Error - Database or unexpected errors
  */
-export const chatApi = new Hono().get("/", async (c) => {
-  const repoResult = getRepo();
-  if (repoResult.isErr()) {
-    logger.error("Failed to get repository", { error: repoResult.error });
-    return c.json(
-      {
-        error: repoResult.error.message,
-        details: repoResult.error.details,
-      },
-      (repoResult.error.code || 500) as unknown as 500,
+export const chatApi = new OpenAPIHono().get("/", async (c) => {
+  const program = Effect.gen(function* () {
+    const repo = yield* getRepo();
+    const limit = yield* parseLimit(c.req.query("limit"));
+
+    logger.info("Fetching chat messages", { limit });
+
+    // Convert Result from neverthrow to Effect
+    const chatMessages = yield* Effect.tryPromise({
+      try: () => repo.getLatestChatMessages({ limit }),
+      catch: (error) => createApiError("database", "Failed to fetch chat messages", String(error)),
+    }).pipe(
+      Effect.flatMap((result) =>
+        result.match(
+          (messages) => Effect.succeed(messages),
+          (error: ApiError) => Effect.fail(error),
+        ),
+      ),
     );
-  }
 
-  const limitResult = parseLimit(c.req.query("limit"));
-  if (limitResult.isErr()) {
-    logger.error("Invalid limit parameter", { error: limitResult.error });
-    return c.json(
-      {
-        error: limitResult.error.message,
-        details: limitResult.error.details,
-      },
-      (limitResult.error.code || 400) as unknown as 400,
-    );
-  }
+    logger.info("Chat messages fetched successfully", {
+      count: chatMessages.length,
+    });
 
-  const repo = repoResult.value;
-  const limit = limitResult.value;
+    return chatMessages;
+  });
 
-  logger.info("Fetching chat messages", { limit });
-  const result = await repo.getLatestChatMessages({ limit });
-
-  return result.match(
-    (chatMessages) => {
-      logger.info("Chat messages fetched successfully", {
-        count: chatMessages.length,
+  const result = await Effect.runPromise(
+    Effect.catchAll(program, (error: ApiError) => {
+      logger.error("API error", { error });
+      return Effect.succeed({
+        error: error.message,
+        code: error.code,
+        details: error.details,
+        statusCode: error.code || 500,
       });
-      return c.json(chatMessages);
-    },
-    (error: ApiError) => {
-      logger.error("Chat messages get error", { error });
-      return c.json(
-        {
-          error: error.message,
-          code: error.code,
-          details: error.details,
-        },
-        (error.code || 500) as unknown as 500,
-      );
-    },
+    }),
   );
+
+  if ("error" in result) {
+    return c.json(
+      {
+        error: result.error,
+        code: result.code,
+        details: result.details,
+      },
+      result.statusCode as unknown as 500,
+    );
+  }
+
+  return c.json(result);
 });

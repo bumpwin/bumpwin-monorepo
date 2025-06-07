@@ -1,53 +1,61 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
-import type { RoundCoin } from "@/types/roundcoin";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { getSuiBalance } from "@workspace/sui";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { match } from "ts-pattern";
 
 interface SwapRoundCoinCardProps {
-  coin?: RoundCoin;
+  coin?: UIRoundCoinData;
 }
 
-const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
-  coin = (() => {
-    if (mockCoinMetadata.length > 0 && mockDominanceChartData.length > 0) {
-      const latestData = mockDominanceChartData[mockDominanceChartData.length - 1] as {
-        shares: number[];
+const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({ coin }) => {
+  // APIからデータを取得
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
+
+  // デフォルトコインを計算（APIデータから）
+  const defaultCoin = useMemo(() => {
+    if (isLoadingCoins || isLoadingDominance || !coinMetadata.length || !dominanceData.length) {
+      return undefined;
+    }
+
+    const latestData = dominanceData[dominanceData.length - 1];
+    if (!latestData?.shares) return undefined;
+
+    const latestShares = latestData.shares as number[];
+    const maxShare = Math.max(...latestShares);
+    const maxShareIndex = latestShares.indexOf(maxShare);
+
+    if (maxShareIndex === -1) return undefined;
+
+    const selectedCoin = coinMetadata[maxShareIndex];
+    if (
+      selectedCoin &&
+      Number.isFinite(maxShareIndex) &&
+      typeof latestShares[maxShareIndex] === "number"
+    ) {
+      return {
+        id: selectedCoin.id.toString(),
+        symbol: selectedCoin.symbol,
+        name: selectedCoin.name,
+        iconUrl: selectedCoin.icon,
+        round: 1,
+        share: latestShares[maxShareIndex],
+        price: 0.1, // Add required price property
+        marketCap: 0,
+        description: selectedCoin.description,
       };
-      if (!latestData?.shares) return undefined;
-      const latestShares = latestData.shares as number[];
-      const maxShare = Math.max(...latestShares);
-      const maxShareIndex = latestShares.indexOf(maxShare);
-      if (maxShareIndex === -1) return undefined;
-      const defaultCoin = mockCoinMetadata[maxShareIndex];
-      if (
-        defaultCoin &&
-        Number.isFinite(maxShareIndex) &&
-        typeof latestShares[maxShareIndex] === "number"
-      ) {
-        return {
-          id: defaultCoin.id.toString(),
-          symbol: defaultCoin.symbol,
-          name: defaultCoin.name,
-          iconUrl: defaultCoin.icon,
-          round: 1,
-          share: latestShares[maxShareIndex],
-          marketCap: 0,
-          description: defaultCoin.description,
-          telegramLink: defaultCoin.telegramLink,
-          websiteLink: defaultCoin.websiteLink,
-          twitterLink: defaultCoin.twitterLink,
-          color: defaultCoin.color,
-        };
-      }
     }
     return undefined;
-  })(),
-}) => {
+  }, [coinMetadata, dominanceData, isLoadingCoins, isLoadingDominance]);
+
+  // coinまたはdefaultCoinを使用
+  const displayCoin = coin || defaultCoin;
   const [amount, setAmount] = useState(0);
   const [balance, setBalance] = useState<number>(0);
   const account = useCurrentAccount();
@@ -64,14 +72,31 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
     fetchBalance();
   }, [account, suiClient]);
 
-  if (!coin) return null;
+  // ローディング状態の処理
+  if (isLoadingCoins || isLoadingDominance) {
+    return (
+      <div className="mx-auto w-full max-w-xs rounded-2xl border border-[#23262F] bg-[#181A20] p-4 shadow-lg">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-white">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!displayCoin) return null;
 
   return (
     <div className="mx-auto w-full max-w-xs rounded-2xl border border-[#23262F] bg-[#181A20] p-4 shadow-lg">
       <div className="mb-2 flex items-center gap-3">
-        <Image src={coin.iconUrl} alt={coin.name} width={48} height={48} className="rounded-xl" />
+        <Image
+          src={displayCoin.iconUrl}
+          alt={displayCoin.name}
+          width={48}
+          height={48}
+          className="rounded-xl"
+        />
         <div className="min-w-0 flex-1">
-          <div className="truncate font-bold text-lg text-white">{coin.name}</div>
+          <div className="truncate font-bold text-lg text-white">{displayCoin.name}</div>
         </div>
       </div>
       <div className="mb-2 font-medium text-gray-400">Amount</div>
@@ -115,29 +140,32 @@ const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({
         </button>
       </div>
       <div className="mb-6 flex gap-2">
-        {account ? (
-          <>
-            <button
-              type="button"
-              className="flex-1 rounded-xl bg-green-600 py-3 font-bold text-lg text-white transition hover:bg-green-700"
-            >
-              Buy
-            </button>
-            <button
-              type="button"
-              className="flex-1 rounded-xl bg-red-600 py-3 font-bold text-lg text-white transition hover:bg-red-700"
-            >
-              Sell
-            </button>
-          </>
-        ) : (
-          <>
-            <ConnectButton
-              connectText={<div className="!text-white w-full text-center">Login to Trade</div>}
-              className="!bg-blue-500 !text-white !min-w-0 !h-auto !px-0 !border-none !shadow-none !ring-0 flex-1 rounded-xl !hover:bg-blue-600 py-3 font-bold text-lg transition"
-            />
-          </>
-        )}
+        {match(!!account)
+          .with(true, () => (
+            <>
+              <button
+                type="button"
+                className="flex-1 rounded-xl bg-green-600 py-3 font-bold text-lg text-white transition hover:bg-green-700"
+              >
+                Buy
+              </button>
+              <button
+                type="button"
+                className="flex-1 rounded-xl bg-red-600 py-3 font-bold text-lg text-white transition hover:bg-red-700"
+              >
+                Sell
+              </button>
+            </>
+          ))
+          .with(false, () => (
+            <>
+              <ConnectButton
+                connectText={<div className="!text-white w-full text-center">Login to Trade</div>}
+                className="!bg-blue-500 !text-white !min-w-0 !h-auto !px-0 !border-none !shadow-none !ring-0 flex-1 rounded-xl !hover:bg-blue-600 py-3 font-bold text-lg transition"
+              />
+            </>
+          ))
+          .exhaustive()}
       </div>
       <div className="mt-6 text-center text-gray-500 text-xs">
         By trading, you agree to the{" "}

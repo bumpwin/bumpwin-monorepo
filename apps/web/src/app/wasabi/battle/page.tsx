@@ -7,14 +7,14 @@ import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { CoinMeta } from "@/components/charts/DominanceRechart";
 import RoundCoinTable from "@/components/coins/RoundCoinTable";
 import SwapUI from "@/components/trading/swap/core/SwapUI";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { prepareCoinsMetadata, prepareMultiCoinChartData } from "@/utils/chartDataPreparation";
+import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin | undefined>(undefined);
+  const [selectedCoin, setSelectedCoin] = useState<UIRoundCoinData | undefined>(undefined);
 
   // データ準備ロジックをユーティリティ関数で実装
   const relevantCoins = prepareCoinsMetadata(mockCoinMetadata as CoinMeta[]);

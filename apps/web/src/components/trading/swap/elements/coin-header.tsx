@@ -1,8 +1,8 @@
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import Image from "next/image";
 
 interface CoinHeaderProps {
-  coin: RoundCoin;
+  coin: UIRoundCoinData;
   variant?: "default" | "champion";
 }
 

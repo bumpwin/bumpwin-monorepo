@@ -14,11 +14,11 @@
     "./src/utils": "./src/utils.ts"
   },
   "dependencies": {
-    "@effect/platform": "^0.84.6",
+    "@effect/platform": "^0.84.8",
     "@effect/schema": "^0.75.5",
-    "@mysten/sui": "^1.30.2",
+    "@mysten/sui": "^1.30.5",
     "@workspace/logger": "workspace:*",
-    "effect": "^3.16.3"
+    "effect": "^3.16.4"
   },
   "scripts": {
     "clean": "echo 'No build artifacts to clean'",

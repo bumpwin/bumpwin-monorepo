@@ -2,27 +2,22 @@
 
 import { ResultView } from "@/components/ResultView";
 import { ChampionsList } from "@/components/champions/Champions";
-import {
-  mockChampionCoinMetadata,
-  mockDominanceChartData,
-  mockLastChampionCoinMetadata,
-} from "@/lib/tempMockData";
-import type { ChampionCoin } from "@/types/champion";
 import type { DominanceChartData, DominancePoint } from "@/types/dominance";
+import type { UIRoundCoinData } from "@/types/ui-types";
+import { getChampions, mockDominanceChartData } from "@workspace/mockdata";
 
 export default function ChampionsPage() {
-  // Transform mockChampionCoinMetadata to ChampionCoin type
-  const championCoins: ChampionCoin[] = mockChampionCoinMetadata.map((coin) => ({
-    id: coin.id.toString(),
-    round: coin.round,
-    name: coin.name,
-    symbol: coin.symbol,
-    iconUrl: coin.iconUrl,
-    description: coin.description,
-    telegramLink: coin.telegramLink,
-    websiteLink: coin.websiteLink,
-    twitterLink: coin.twitterLink,
-    share: 0.35, // Mock data
+  const champions = getChampions();
+
+  // Transform champions to ChampionCoin type
+  const championCoins: UIRoundCoinData[] = champions.map((champion, index) => ({
+    id: champion.meme?.id || (`0x${index.toString().padStart(40, "0")}` as const),
+    round: champion.round.round,
+    name: champion.meme?.name || "Unknown",
+    symbol: champion.meme?.symbol || "UNKNOWN",
+    iconUrl: champion.meme?.iconUrl || "/icon.png",
+    description: champion.meme?.description || "Champion coin",
+    price: 1.0, // Mock data
     marketCap: 1000000, // Mock data
   }));
 
@@ -78,8 +73,16 @@ export default function ChampionsPage() {
           <div className="rounded-lg bg-white/5 p-4 shadow-lg backdrop-blur-sm">
             <ResultView
               coin={{
-                ...mockLastChampionCoinMetadata,
-                id: mockLastChampionCoinMetadata.id.toString(),
+                id: champions[champions.length - 1]?.meme?.id || "0x0",
+                round: champions[champions.length - 1]?.round.round || 4,
+                symbol: champions[champions.length - 1]?.meme?.symbol || "JELL",
+                name: champions[champions.length - 1]?.meme?.name || "JELL",
+                iconUrl:
+                  champions[champions.length - 1]?.meme?.iconUrl || "/images/mockmemes/JELL.png",
+                description: champions[champions.length - 1]?.meme?.description || "Champion coin",
+                share: 68,
+                price: 1.0,
+                marketCap: 100000,
               }}
               forceVisible={true}
             />

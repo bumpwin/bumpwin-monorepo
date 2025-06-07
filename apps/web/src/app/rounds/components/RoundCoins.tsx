@@ -1,6 +1,7 @@
 import type { CoinMetadata } from "@/app/rounds/types";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { match } from "ts-pattern";
 
 interface RoundCoinsProps {
   coins: CoinMetadata[];
@@ -32,22 +33,27 @@ export function RoundCoins({ coins }: RoundCoinsProps) {
             <div>
               <div className="font-bold text-white">{coin.symbol}</div>
               <div className="text-gray-400 text-xs">
-                {j === 0 ? "32%" : j === 1 ? "28%" : j === 2 ? "22%" : "18%"} share
+                {match(j)
+                  .with(0, () => "32%")
+                  .with(1, () => "28%")
+                  .with(2, () => "22%")
+                  .otherwise(() => "18%")}{" "}
+                share
               </div>
             </div>
             <div className="ml-auto">
               <span
-                className={
-                  j === 0
-                    ? "text-green-400"
-                    : j === 1
-                      ? "text-green-300"
-                      : j === 2
-                        ? "text-red-300"
-                        : "text-red-400"
-                }
+                className={match(j)
+                  .with(0, () => "text-green-400")
+                  .with(1, () => "text-green-300")
+                  .with(2, () => "text-red-300")
+                  .otherwise(() => "text-red-400")}
               >
-                {j === 0 ? "+2.4%" : j === 1 ? "+1.2%" : j === 2 ? "-0.8%" : "-1.5%"}
+                {match(j)
+                  .with(0, () => "+2.4%")
+                  .with(1, () => "+1.2%")
+                  .with(2, () => "-0.8%")
+                  .otherwise(() => "-1.5%")}
               </span>
             </div>
           </motion.div>

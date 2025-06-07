@@ -3,10 +3,10 @@
 import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI";
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
 
 interface SwapUIProps {
-  coin?: RoundCoin;
+  coin?: UIRoundCoinData;
   variant?: "default" | "champion";
 }
 
@@ -16,7 +16,7 @@ const SwapUI: React.FC<SwapUIProps> = ({ coin, variant = "default" }) => {
   return phase === "daytime" ? (
     <DaytimeSwapUI coin={coin} variant={variant} />
   ) : (
-    <DarknightSwapUI />
+    <DarknightSwapUI coin={coin} variant={variant} />
   );
 };
 

@@ -31,7 +31,7 @@ export interface CoinMetadata {
   symbol: string;
   name: string;
   icon: string;
-  color: string;
+  color?: string;
   description: string;
   telegramLink: string;
   websiteLink: string;
