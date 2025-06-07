@@ -1,13 +1,8 @@
-export interface ChampionCoin {
-  id: string;
+import type { MemeMarketData, MemeMetadata } from "@workspace/types";
+
+// Champion coin type
+export interface ChampionCoin extends Omit<MemeMetadata, "id">, Partial<MemeMarketData> {
+  id: string; // Allow any string ID format for UI flexibility
   round: number;
-  name: string;
-  symbol: string;
-  iconUrl: string;
-  description: string;
-  telegramLink?: string;
-  websiteLink?: string;
-  twitterLink?: string;
-  share: number;
   marketCap: number;
 }

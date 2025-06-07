@@ -1,41 +1,15 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import type { CoinCardProps } from "@/types/coincard";
 import { formatCurrency } from "@/utils/format";
-import { Star } from "lucide-react";
+import type { CoinCardProps } from "@workspace/mockdata";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
-export function CoinCard({
-  address,
-  symbol,
-  name,
-  description,
-  logoUrl,
-  marketCap,
-  isFavorite: initialIsFavorite,
-  onToggleFavorite,
-}: CoinCardProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-
-  const handleToggleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation(); // カード全体のクリックイベントを停止
-    e.preventDefault(); // リンクへの遷移をキャンセル
-    setIsFavorite(!isFavorite);
-    if (onToggleFavorite) {
-      onToggleFavorite(address);
-    }
-  };
-
-  // コインIDを生成（addressがそのまま使える場合はそれを、
-  // なければ名前などから一意のIDを生成）
-  const coinId = address.startsWith("0x")
-    ? // 数値IDを使用（addressの末尾から生成）
-      (Number.parseInt(address.slice(-2), 16) % 3) + 1
-    : address;
+export function CoinCard(props: CoinCardProps) {
+  const { id, symbol, name, description, iconUrl, marketCap } = props;
+  // コインIDを生成
+  const coinId = id.startsWith("0x") ? (Number.parseInt(id.slice(-2), 16) % 3) + 1 : id;
 
   return (
     <Link href={`/rounds/42/daytime/coins/${coinId}`}>
@@ -45,7 +19,7 @@ export function CoinCard({
           <div className="mr-4 flex-shrink-0">
             <div className="relative h-16 w-16">
               <Image
-                src={logoUrl}
+                src={iconUrl}
                 alt={`${symbol} logo`}
                 fill
                 className="rounded-md object-cover"
@@ -63,19 +37,6 @@ export function CoinCard({
                   </span>
                   <CardTitle className="font-bold text-lg text-white">{name}</CardTitle>
                 </div>
-                <button
-                  type="button"
-                  className="text-gray-400 hover:text-yellow-400 focus:outline-none"
-                  onClick={handleToggleFavorite}
-                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-                >
-                  <Star
-                    className={cn(
-                      "h-5 w-5",
-                      isFavorite ? "fill-yellow-400 text-yellow-400" : "fill-transparent",
-                    )}
-                  />
-                </button>
               </div>
             </CardHeader>
 

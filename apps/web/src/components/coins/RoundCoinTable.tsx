@@ -6,17 +6,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import { getColorByIndex } from "@/utils/colors";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Globe, Send, Twitter } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 interface RoundCoinTableProps {
-  onSelectCoin?: (coin: RoundCoin | undefined) => void;
+  onSelectCoin?: (coin: CoinWithRound | undefined) => void;
   selectedCoinId?: string;
 }
 
@@ -63,11 +63,9 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
       iconUrl: coin.icon,
       round: 1,
       share: currentData.shares?.[index] ?? 0,
+      price: Math.floor(Math.random() * 100) / 100,
       marketCap: Math.floor(Math.random() * 1000000),
       description: coin.description,
-      telegramLink: coin.telegramLink,
-      websiteLink: coin.websiteLink,
-      twitterLink: coin.twitterLink,
     }));
 
     if (sortType === "marketcap") {
@@ -77,7 +75,7 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
     return randomOrder.map((i) => shares[i]).filter(Boolean);
   }, [currentMinute, sortType, randomOrder]);
 
-  const handleSelect = (coin: RoundCoin) => {
+  const handleSelect = (coin: CoinWithRound) => {
     if (onSelectCoin) {
       if (selectedCoinId === coin.id) {
         onSelectCoin(undefined);
@@ -189,41 +187,6 @@ export const RoundCoinTable: React.FC<RoundCoinTableProps> = ({ onSelectCoin, se
                               {coin.name} ({coin.symbol})
                             </div>
                             <div className="mb-2 text-gray-300 text-sm">{coin.description}</div>
-                            <div className="mt-2 flex gap-3">
-                              {coin.telegramLink && (
-                                <a
-                                  href={coin.telegramLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Telegram"
-                                  className="text-gray-400"
-                                >
-                                  <Send className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                              {coin.websiteLink && (
-                                <a
-                                  href={coin.websiteLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Website"
-                                  className="text-gray-400"
-                                >
-                                  <Globe className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                              {coin.twitterLink && (
-                                <a
-                                  href={coin.twitterLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="Twitter"
-                                  className="text-gray-400"
-                                >
-                                  <Twitter className="h-[18px] w-[18px]" />
-                                </a>
-                              )}
-                            </div>
                           </div>
                           <div className="flex-1">
                             <DominanceRechart

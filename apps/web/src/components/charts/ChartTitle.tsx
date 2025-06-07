@@ -1,11 +1,11 @@
 "use client";
 
 import { CardTitle } from "@/components/ui/card";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import Image from "next/image";
 
 interface ChartTitleProps {
-  coin: RoundCoin;
+  coin: CoinWithRound;
   percentage?: string;
 }
 

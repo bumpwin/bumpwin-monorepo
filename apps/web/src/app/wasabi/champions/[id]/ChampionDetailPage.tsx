@@ -7,7 +7,7 @@ import SwapUI from "@/components/trading/swap/core/SwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { Coin } from "@/types";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Globe, Send, Twitter } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -54,19 +54,17 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
   const currentPrice =
     priceData && priceData.length > 0 ? (priceData[priceData.length - 1]?.close ?? 0) : 0;
 
-  // champion coin を RoundCoin 型にマッピング
+  // champion coin を CoinWithRound 型にマッピング
   const roundCoin = {
-    id: coin.id.toString(),
+    id: coin.id as string,
     symbol: coin.symbol,
     name: coin.name,
     iconUrl: coin.iconUrl,
     round: coin.round,
     share: coin.share ?? 0,
+    price: 0.1, // Default price for compatibility
     marketCap: coin.marketCap ?? 0,
     description: coin.description,
-    telegramLink: coin.telegramLink,
-    websiteLink: coin.websiteLink,
-    twitterLink: coin.twitterLink,
   };
 
   return (
@@ -141,42 +139,6 @@ export function ChampionDetailPage({ coin, id }: { coin: Coin; id: string }) {
                   AWWMk...kjR4
                 </span>
               </div>
-            </div>
-            {/* 外部リンク */}
-            <div className="flex gap-3">
-              {coin.telegramLink && (
-                <a
-                  href={coin.telegramLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Telegram"
-                  className="text-gray-400 transition-colors hover:text-blue-400"
-                >
-                  <Send size={28} />
-                </a>
-              )}
-              {coin.websiteLink && (
-                <a
-                  href={coin.websiteLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Website"
-                  className="text-gray-400 transition-colors hover:text-blue-400"
-                >
-                  <Globe size={28} />
-                </a>
-              )}
-              {coin.twitterLink && (
-                <a
-                  href={coin.twitterLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Twitter"
-                  className="text-gray-400 transition-colors hover:text-blue-400"
-                >
-                  <Twitter size={28} />
-                </a>
-              )}
             </div>
             {/* トップホルダーリスト（ダミー） */}
             <div>

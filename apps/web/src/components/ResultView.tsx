@@ -2,17 +2,16 @@
 import DominanceRechart from "@/components/charts/DominanceRechart";
 import type { ChartDataPoint, PreparedCoinMeta } from "@/components/charts/DominanceRechart";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import { getColorByIndex } from "@/utils/colors";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { AnimatePresence, motion } from "framer-motion";
-import { Globe, Send, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 interface ResultViewProps {
-  coin: RoundCoin | undefined;
+  coin: CoinWithRound | undefined;
   forceVisible?: boolean;
 }
 
@@ -165,41 +164,6 @@ export function ResultView({ coin, forceVisible = false }: ResultViewProps) {
                   </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="flex gap-2">
-                    {coin.telegramLink && (
-                      <a
-                        href={coin.telegramLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Telegram"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Send className="h-5 w-5" />
-                      </a>
-                    )}
-                    {coin.websiteLink && (
-                      <a
-                        href={coin.websiteLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Website"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Globe className="h-5 w-5" />
-                      </a>
-                    )}
-                    {coin.twitterLink && (
-                      <a
-                        href={coin.twitterLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Twitter"
-                        className="text-gray-400 transition-colors hover:text-white"
-                      >
-                        <Twitter className="h-5 w-5" />
-                      </a>
-                    )}
-                  </div>
                   <div className="flex gap-4">
                     <button
                       type="button"

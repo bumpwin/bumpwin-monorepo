@@ -1,58 +1,30 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import type { CoinCardProps } from "@/types/coincard";
 import { formatCurrency } from "@/utils/format";
-import { Star } from "lucide-react";
+import type { MemeMarketData, MemeMetadata } from "@workspace/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
+
+interface ChampionCoinCardProps extends MemeMetadata, MemeMarketData {
+  round?: number;
+}
 
 export function ChampionCoinCard({
-  address,
+  id,
   symbol,
   name,
   description,
-  logoUrl,
+  iconUrl,
   marketCap,
-  isFavorite: initialIsFavorite,
-  onToggleFavorite,
   round,
-  performanceTag,
-  winRate,
-  priceHistory,
-  role,
-  isHighlighted,
-}: CoinCardProps) {
-  const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
-
-  const handleToggleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation(); // カード全体のクリックイベントを停止
-    setIsFavorite(!isFavorite);
-    if (onToggleFavorite) {
-      onToggleFavorite(address);
-    }
-  };
-
-  const formattedWinRate = winRate ? `${Math.round(winRate * 100)}% Win Rate` : null;
-
-  // コインIDを生成（addressがそのまま使える場合はそれを、
-  // なければ名前などから一意のIDを生成）
-  const coinId = address.startsWith("0x")
-    ? // 数値IDを使用（addressの末尾から生成）
-      (Number.parseInt(address.slice(-2), 16) % 3) + 1
-    : address;
+}: ChampionCoinCardProps) {
+  // コインIDを生成
+  const coinId = id.startsWith("0x") ? (Number.parseInt(id.slice(-2), 16) % 3) + 1 : id;
 
   return (
     <Link href={`/rounds/42/daytime/coins/${coinId}`}>
-      <Card
-        className={cn(
-          "w-full cursor-pointer overflow-hidden border-gray-700 transition-colors hover:border-blue-400 dark:bg-slate-800",
-          isHighlighted && "border-2 border-blue-500",
-        )}
-      >
+      <Card className="w-full cursor-pointer overflow-hidden border-gray-700 transition-colors hover:border-blue-400 dark:bg-slate-800">
         {round && (
           <div className="bg-slate-700 px-4 py-1 font-medium text-gray-300 text-sm">
             &lt; Round {round} &gt;
@@ -63,13 +35,12 @@ export function ChampionCoinCard({
           <div className="mr-4 flex-shrink-0">
             <div className="relative h-16 w-16">
               <Image
-                src={logoUrl}
+                src={iconUrl}
                 alt={`${symbol} logo`}
                 fill
                 className="rounded-md object-cover"
               />
             </div>
-            {role && <div className="mt-2 text-center text-gray-400 text-xs">{role}</div>}
           </div>
 
           {/* Content */}
@@ -81,51 +52,14 @@ export function ChampionCoinCard({
                     {symbol}
                   </span>
                   <h3 className="font-bold text-lg text-white">{name}</h3>
-                  {performanceTag && (
-                    <span className="ml-2 font-bold text-sm text-yellow-400">
-                      **{performanceTag}**
-                    </span>
-                  )}
                 </div>
-                <button
-                  type="button"
-                  className="text-gray-400 hover:text-yellow-400 focus:outline-none"
-                  onClick={handleToggleFavorite}
-                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-                >
-                  <Star
-                    className={cn(
-                      "h-5 w-5",
-                      isFavorite ? "fill-yellow-400 text-yellow-400" : "fill-transparent",
-                    )}
-                  />
-                </button>
               </div>
             </div>
 
             <CardContent className="flex flex-1 flex-col p-0">
-              {formattedWinRate && (
-                <div className="mb-1 font-medium text-green-400 text-sm">{formattedWinRate}</div>
-              )}
               <p className="mb-2 line-clamp-2 flex-grow text-gray-400 text-sm">{description}</p>
               <div className="mt-auto flex items-end justify-between">
                 <div className="font-medium text-gray-300 text-sm">{formatCurrency(marketCap)}</div>
-                {priceHistory && priceHistory.length > 0 && (
-                  <div className="h-12 w-24">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={priceHistory}>
-                        <Line
-                          type="monotone"
-                          dataKey="v"
-                          stroke="#3b82f6"
-                          strokeWidth={1.5}
-                          dot={false}
-                          isAnimationActive={false}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
               </div>
             </CardContent>
           </div>

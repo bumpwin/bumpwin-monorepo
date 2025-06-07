@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import type { CoinCardProps } from "@/types/coincard";
+import type { CoinCardProps } from "@workspace/mockdata";
 import { mockCoins } from "@workspace/mockdata";
 import { ChevronDown, RotateCw } from "lucide-react";
 import { useState } from "react";

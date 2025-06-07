@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import { ConnectButton, useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { mockCoinMetadata, mockDominanceChartData } from "@workspace/mockdata";
 import { getSuiBalance } from "@workspace/sui";
@@ -9,7 +9,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 interface SwapRoundCoinCardProps {
-  coin?: RoundCoin;
+  coin?: CoinWithRound;
 }
 
 const SwapRoundCoinCard: React.FC<SwapRoundCoinCardProps> = ({

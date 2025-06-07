@@ -1,8 +1,8 @@
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import Image from "next/image";
 
 interface CoinIconSymbolProps {
-  coin?: RoundCoin;
+  coin?: CoinWithRound;
   size?: "sm" | "md";
   className?: string;
 }

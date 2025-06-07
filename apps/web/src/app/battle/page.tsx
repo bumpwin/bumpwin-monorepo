@@ -12,7 +12,7 @@ import DarknightSwapUI from "@/components/trading/swap/variants/DarknightSwapUI"
 import DaytimeSwapUI from "@/components/trading/swap/variants/DaytimeSwapUI";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useBattleClock } from "@/providers/BattleClockProvider";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { CoinWithRound } from "@/types/coin-with-round";
 import { useQuery } from "@tanstack/react-query";
 import type { MemeMetadata } from "@workspace/types";
 
@@ -24,13 +24,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 // Constants
-const DEFAULT_COIN: RoundCoin = {
-  id: "default",
+const DEFAULT_COIN: CoinWithRound = {
+  id: "0x0000000000000000000000000000000000000000000000000000000000000001" as const,
   symbol: "LAG",
   name: "Lag Girl",
   iconUrl: "/images/mockmemes/LAG.jpg",
   round: 12,
   share: 0,
+  price: 0.1,
   marketCap: 180000,
   description: "lagging since 2020",
 };
@@ -60,13 +61,14 @@ type LayoutProps = {
 };
 
 // Utility functions
-const memeToRoundCoin = (meme: MemeMetadata): RoundCoin => ({
+const memeToRoundCoin = (meme: MemeMetadata): CoinWithRound => ({
   id: meme.id,
   symbol: meme.symbol,
   name: meme.name,
   iconUrl: meme.iconUrl,
   round: 12,
   share: 0,
+  price: 0.1,
   marketCap: 180000,
   description: meme.description,
 });
@@ -102,7 +104,7 @@ const PriceChart = ({
   priceData,
   isLoading,
 }: {
-  coin: RoundCoin;
+  coin: CoinWithRound;
   priceData: OHLCData[] | undefined;
   isLoading: boolean;
 }) => {
@@ -244,7 +246,7 @@ export default function RoundsAPage() {
     ? memes.find((m: MemeMetadata) => m.symbol === selectedId) || firstMeme
     : firstMeme;
 
-  const [selectedCoin, setSelectedCoin] = useState<RoundCoin>(
+  const [selectedCoin, setSelectedCoin] = useState<CoinWithRound>(
     selectedMeme ? memeToRoundCoin(selectedMeme) : DEFAULT_COIN,
   );
 
