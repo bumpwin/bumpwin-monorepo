@@ -4,7 +4,6 @@ import { championsApi } from "./champions";
 import { chatApi } from "./chat";
 import { mockdataApi } from "./mockdata";
 import { mockpriceApi } from "./mockprice";
-import { openAPIBasicApi } from "./openapi-basic";
 
 // Create the main API app using OpenAPIHono
 const app = new OpenAPIHono()
@@ -12,8 +11,7 @@ const app = new OpenAPIHono()
   .route("/champions", championsApi)
   .route("/chat", chatApi)
   .route("/mockprice", mockpriceApi)
-  .route("/mockdata", mockdataApi) // Legacy endpoints for backward compatibility
-  .route("/v1/mockdata", openAPIBasicApi) // New OpenAPI endpoints
+  .route("/mockdata", mockdataApi) // OpenAPIHono endpoints
   .get("/health", (c) => {
     return c.json({ status: "ok" });
   });

@@ -1,9 +1,9 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "@workspace/logger";
 import { SupabaseRepository } from "@workspace/supabase";
 import { createSupabaseClient } from "@workspace/supabase";
 import type { ApiError } from "@workspace/supabase";
 import { createApiError } from "@workspace/supabase";
-import { Hono } from "hono";
 import { type Result, err, ok } from "neverthrow";
 
 let supabaseRepo: SupabaseRepository | null = null;
@@ -58,7 +58,7 @@ const parseLimit = (limitParam: string | undefined): Result<number, ApiError> =>
  * @error
  *   - 500: Internal Server Error - Database or unexpected errors
  */
-export const chatApi = new Hono().get("/", async (c) => {
+export const chatApi = new OpenAPIHono().get("/", async (c) => {
   const repoResult = getRepo();
   if (repoResult.isErr()) {
     logger.error("Failed to get repository", { error: repoResult.error });

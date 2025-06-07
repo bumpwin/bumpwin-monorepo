@@ -1,11 +1,6 @@
-import {
-  getChampions,
-  mockCoinMetadata,
-  mockCoins,
-  mockDominanceChartData,
-} from "@workspace/mockdata";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { mockCoinMetadata, mockCoins, mockDominanceChartData } from "@workspace/mockdata";
 import { Effect } from "effect";
-import { Hono } from "hono";
 import type { ApiResponse } from "./types";
 
 // Helper function to create standardized responses
@@ -58,24 +53,7 @@ const parseDominanceQuery = (
   return Effect.succeed({ timeframe, limit });
 };
 
-const parseChampionsQuery = (
-  query: Record<string, string>,
-): Effect.Effect<{ limit?: number; round?: number }, string> => {
-  const limit = query.limit ? Number.parseInt(query.limit, 10) : undefined;
-  const round = query.round ? Number.parseInt(query.round, 10) : undefined;
-
-  // Validate parsed numbers
-  if (query.limit && (Number.isNaN(limit) || limit < 0)) {
-    return Effect.fail("Invalid limit parameter");
-  }
-  if (query.round && (Number.isNaN(round) || round < 0)) {
-    return Effect.fail("Invalid round parameter");
-  }
-
-  return Effect.succeed({ limit, round });
-};
-
-export const mockdataApi = new Hono()
+export const mockdataApi = new OpenAPIHono()
   // Get all coins with optional pagination
   .get("/coins", (c) => {
     const program = Effect.gen(function* () {
@@ -161,44 +139,6 @@ export const mockdataApi = new Hono()
       // For now, we return the mock data as-is
 
       return createResponse(dominanceData);
-    });
-
-    const result = Effect.runSync(
-      Effect.catchAll(program, (error) => Effect.succeed(createErrorResponse(error))),
-    );
-
-    const statusCode = result.success
-      ? 200
-      : "error" in result && result.error?.includes("Invalid")
-        ? 400
-        : 500;
-    return c.json(result, statusCode);
-  })
-
-  // Get champions data with optional filtering
-  .get("/champions", (c) => {
-    const program = Effect.gen(function* () {
-      const queryResult = yield* parseChampionsQuery(c.req.query());
-      let champions = getChampions();
-
-      // Filter by round if provided
-      if (queryResult.round !== undefined) {
-        champions = champions.filter((champion) => {
-          // Access the round property safely
-          const championRound =
-            typeof champion === "object" && champion !== null && "round" in champion
-              ? (champion as unknown as { round?: { round?: number } }).round?.round
-              : undefined;
-          return championRound === queryResult.round;
-        });
-      }
-
-      // Apply limit if provided
-      if (queryResult.limit !== undefined) {
-        champions = champions.slice(0, queryResult.limit);
-      }
-
-      return createResponse(champions);
     });
 
     const result = Effect.runSync(
