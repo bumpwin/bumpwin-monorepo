@@ -1,3 +1,4 @@
+
 # Effect-ts Complete Reference Guide
 *最新版 - 後続LLM向けの完全ドキュメント*
 
@@ -443,6 +444,66 @@ const goodProgram = Effect.gen(function* (_) {
 )
 ```
 
+#### ❌ Bad: ts-pattern併用（アンチパターン）
+```typescript
+// Effect-tsの型安全性を破壊する悪例
+import { match } from "ts-pattern"
+
+const badErrorHandler = (error: unknown) => {
+  return match(error)
+    .with({ _tag: "ValidationError" }, (err) => /* 型情報消失 */)
+    .with({ _tag: "NotFoundError" }, (err) => /* 型情報消失 */)
+    .otherwise((err) => /* unknown型 */)
+}
+
+// Effect外でのエラー処理 = Effect-tsのエコシステム破綻
+Effect.runPromise(program).catch(badErrorHandler)
+```
+
+#### ✅ 推奨: Effect-ts型安全エラーハンドリング
+```typescript
+// Effect内での完全な型安全性を保持
+const safeErrorHandler = <R, E, A>(
+  effect: Effect.Effect<R, E, A>
+): Effect.Effect<R, never, { success: boolean; data?: A; error?: string }> =>
+  effect.pipe(
+    Effect.map(data => ({ success: true, data })),
+    Effect.catchTag("ValidationError", (error) =>
+      Effect.succeed({
+        success: false,
+        error: `Validation failed: ${error.field} - ${error.message}`
+      })
+    ),
+    Effect.catchTag("NotFoundError", (error) =>
+      Effect.succeed({
+        success: false,
+        error: `Resource not found: ${error.resource}`
+      })
+    ),
+    Effect.catchTag("DatabaseError", (error) =>
+      Effect.succeed({
+        success: false,
+        error: `Database operation failed: ${error.operation}`
+      })
+    ),
+    Effect.catchAll((error) =>
+      Effect.succeed({
+        success: false,
+        error: `Unexpected error: ${String(error)}`
+      })
+    )
+  )
+
+// 使用例：完全な型安全性を維持
+const handleRequest = safeErrorHandler(
+  Effect.gen(function* (_) {
+    const user = yield* _(userService.getUser("123"))
+    const profile = yield* _(profileService.getProfile(user.id))
+    return { user, profile }
+  })
+)
+```
+
 ### **エラー型定義パターン比較**
 
 ```mermaid
@@ -530,6 +591,17 @@ const createUser = (userData: CreateUserData) =>
 
 #### ✅ 推奨: Context/Layer依存注入
 ```typescript
+interface Logger {
+  readonly info: (message: string) => Effect.Effect<never, never, void>
+}
+
+interface Database {
+  readonly insert: (table: string, data: CreateUserData) => Effect.Effect<never, DatabaseError, User>
+}
+
+const Logger = Context.GenericTag<Logger>("Logger")
+const Database = Context.GenericTag<Database>("Database")
+
 const createUser = (userData: CreateUserData) =>
   Effect.gen(function* (_) {
     // 型安全な依存注入
@@ -541,6 +613,41 @@ const createUser = (userData: CreateUserData) =>
     return result
   })
 // 型: Effect<Logger & Database, DatabaseError, User>
+```
+
+#### ❌ Bad: 外部ライブラリとの設計思想混在
+```typescript
+// ts-pattern等でEffect-tsの型安全性を破壊
+import { match } from "ts-pattern"
+
+const mixedApproach = Effect.gen(function* (_) {
+  const result = yield* _(someEffect)
+
+  // Effect-tsのエラーハンドリングを無視
+  return match(result)
+    .with({ status: "error" }, (err) => /* 型情報なし */)
+    .otherwise((success) => /* 型情報なし */)
+})
+```
+
+#### ✅ 推奨: Effect-ts一貫設計
+```typescript
+// Effect-ts内で完結した型安全設計
+const consistentApproach = Effect.gen(function* (_) {
+  const result = yield* _(someEffect)
+
+  // Effect-tsの型システム内でパターンマッチング
+  if (result.status === "error") {
+    return yield* _(Effect.fail(UserErrors.processError(result.message)))
+  }
+
+  return result.data
+}).pipe(
+  Effect.catchTag("ProcessError", (error) =>
+    Effect.succeed({ success: false, message: error.message })
+  ),
+  Effect.map(data => ({ success: true, data }))
+)
 ```
 
 ### **副作用の扱い**
@@ -586,17 +693,195 @@ const example = Effect.gen(function* (_) {
 })
 ```
 
+## 🏛️ アーキテクチャパターンの選択
+
+### **従来のRepository Pattern vs Effect-ts Service Pattern**
+
+```mermaid
+graph TD
+    subgraph "❌ 従来のRepository Pattern（アンチパターン）"
+        TR1["interface UserRepository"]
+        TR2["class UserRepositoryImpl"]
+        TR3["interface UserService"]
+        TR4["class UserServiceImpl"]
+        TR5["二重抽象化による冗長性"]
+
+        TR1 --> TR2
+        TR2 --> TR3
+        TR3 --> TR4
+        TR4 --> TR5
+    end
+
+    subgraph "✅ Effect-ts Service Pattern（推奨）"
+        TS1["const UserService = Context.GenericTag"]
+        TS2["const UserServiceLayer = Layer.succeed"]
+        TS3["Effect.gen: yield* _(Effect.service(UserService))"]
+        TS4["型安全 + 関数型 + 最小抽象化"]
+
+        TS1 --> TS2
+        TS2 --> TS3
+        TS3 --> TS4
+    end
+
+    style TR5 fill:#ffebee
+    style TS4 fill:#e8f5e8
+```
+
+### **なぜRepository PatternはEffect-ts環境でアンチパターンなのか**
+
+#### ❌ **二重抽象化問題**
+```typescript
+// 不要な複雑性：Repository + Service 両方定義
+interface UserRepository {
+  findById: (id: string) => Promise<User | null>
+  save: (user: User) => Promise<void>
+}
+
+interface UserService {
+  getUser: (id: string) => Effect.Effect<UserRepository, UserError, User>
+  createUser: (data: CreateUserData) => Effect.Effect<UserRepository, UserError, User>
+}
+
+// Effect-tsのContext/Layerと競合する責務
+```
+
+#### ✅ **Effect-ts直接パターン**
+```typescript
+// シンプル：Serviceのみで十分
+interface UserService {
+  findById: (id: string) => Effect.Effect<never, DatabaseError, User | null>
+  save: (user: User) => Effect.Effect<never, DatabaseError, void>
+  getUser: (id: string) => Effect.Effect<never, UserError, User>
+  createUser: (data: CreateUserData) => Effect.Effect<never, UserError, User>
+}
+
+const UserService = Context.GenericTag<UserService>("UserService")
+```
+
+### **Context/Layerの本質的責務**
+
+#### **Contextの役割**
+```typescript
+// Context = 型安全なグローバル変数キー
+const UserService = Context.GenericTag<UserService>("UserService")
+// 内部的には Symbol ベースのマップ
+// 責務：型情報付きの依存関係識別子
+```
+
+#### **Layerの役割**
+```typescript
+// Layer = context.set() の型安全版
+const UserServiceLayer = Layer.succeed(UserService, {
+  findById: (id) => Effect.tryPromise({
+    try: () => db.users.findUnique({ where: { id } }),
+    catch: (error) => new DatabaseError(error)
+  }),
+  save: (user) => Effect.tryPromise({
+    try: () => db.users.upsert({ where: { id: user.id }, update: user, create: user }),
+    catch: (error) => new DatabaseError(error)
+  })
+})
+// 責務：実装をContextキーに関連付けるのみ
+```
+
+### **推奨アーキテクチャパターン**
+
+#### **ビジネスロジック層**
+```typescript
+// Service = ビジネスロジック + データアクセス統合
+const getUserProfile = (userId: string) =>
+  Effect.gen(function* (_) {
+    const userService = yield* _(Effect.service(UserService))
+    const logger = yield* _(Effect.service(Logger))
+
+    yield* _(logger.info(`Fetching profile for user: ${userId}`))
+
+    const user = yield* _(userService.findById(userId))
+    if (!user) {
+      return yield* _(Effect.fail(UserErrors.notFound(userId)))
+    }
+
+    if (user.deactivatedAt) {
+      return yield* _(Effect.fail(UserErrors.deactivated(userId, user.deactivatedAt)))
+    }
+
+    return user
+  })
+```
+
+#### **Layer構成**
+```typescript
+// アプリケーション全体の依存関係
+const AppLayer = Layer.merge(
+  DatabaseLayer,      // インフラ
+  LoggerLayer,        // インフラ
+  UserServiceLayer,   // ビジネスロジック
+  EmailServiceLayer   // 外部サービス
+)
+
+// テスト用Layer
+const TestLayer = Layer.merge(
+  MockDatabaseLayer,
+  MockLoggerLayer,
+  MockUserServiceLayer,
+  MockEmailServiceLayer
+)
+```
+
+### **Effect-ts設計原則**
+
+1. **Service Pattern Only**: Repository抽象化は不要
+2. **最小責務**: Context/Layerは薄い責務のみ
+3. **型安全DI**: コンパイル時依存関係検証
+4. **関数型優先**: クラスより関数とインターフェース
+5. **Effect合成**: 小さなEffectから大きなアプリケーション構築
+6. **一貫したエコシステム**: 外部ライブラリによる型安全性破壊を避ける
+7. **Effect内完結**: エラーハンドリングはEffect.catchTag等で行う
+
+### **絶対に避けるべきアンチパターン**
+
+#### ❌ **ts-pattern等との混在**
+- Effect-tsの型安全性を破壊
+- Effect.catchTagの存在意義を否定
+- `unknown`型への退化を招く
+
+#### ❌ **Effect外でのエラーハンドリング**
+- `Effect.runPromise().catch()`は型情報消失
+- Effectチェーンの途中でのtry-catch
+
+#### ❌ **any型の使用**
+- 型安全性の完全な破綻
+- Effect-tsの核心価値を無効化
+
+**Effect-tsを採用する場合は、そのエコシステム内で一貫したパターンを使用し、外部ライブラリによる型安全性の破壊を避けることが最も効率的**
+
 ## 🎯 まとめ
 
 Effect-tsにおけるclass-freeエラー設計のベストプラクティス：
 
+### **設計原則**
 1. **実装優先**: Factory関数から型を推論、二重記述を排除
 2. **ミニマルな例**: 完全にself-containedで動作する実例
-3. **型安全性**: TypeScriptの型推論を最大活用
+3. **型安全性**: TypeScriptの型推論を最大活用、`never`型の積極活用
 4. **Zod統合**: 実用的な環境変数バリデーション
-5. **依存注入**: Layerによる型安全なDI
+5. **依存注入**: Context/Layerによる型安全なDI
 6. **並行処理**: Effectの並列実行パターン
 7. **エラー集約**: 散乱を避け末尾にまとめる
 8. **副作用分離**: 純粋なビジネスロジックと副作用を明確に分離
 
-**核心原則**: 一度だけ定義し、型推論に委ねる。Bad patternsを避け、常に推奨patternsを適用する。
+### **絶対禁止事項**
+- **any型の使用**: 型安全性の完全破綻
+- **ts-pattern併用**: Effect.catchTagとの二重定義
+- **Effect外エラーハンドリング**: 型情報消失を招く
+- **Repository Pattern**: Effect-ts環境では不要な抽象化
+
+### **型安全性の核心**
+```typescript
+// ✅ 完全な型安全性
+Effect<Logger & Database, UserError | DatabaseError, User>
+
+// ❌ 型安全性の破綻
+Effect<unknown, unknown, unknown> // any と同等
+```
+
+**核心原則**: Effect-tsエコシステム内で一貫性を保ち、外部ライブラリによる型安全性破壊を徹底的に避ける。型推論を信頼し、`never`型を活用してより厳密な型制約を実現する。

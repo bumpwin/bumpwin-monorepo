@@ -54,8 +54,34 @@ export const validateEnv = <T>(
 ): Effect.Effect<T, ApiError> => validateWithSchema(schema, env);
 
 /**
+ * Environment variable validation utility (Effect version)
+ * ✅ Preferred - Uses Effect.try for type-safe error handling
+ */
+export const validateEnvEffect = <T>(
+  schema: z.ZodSchema<T>,
+  env: Record<string, string | undefined>,
+): Effect.Effect<T, ApiError> =>
+  Effect.gen(function* () {
+    const result = yield* Effect.sync(() => schema.safeParse(env));
+
+    if (!result.success) {
+      return yield* Effect.fail(
+        ApiErrors.validation(
+          `Environment validation failed: ${result.error.errors
+            .map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", ")}`,
+          result.error.errors,
+        ),
+      );
+    }
+
+    return result.data;
+  });
+
+/**
  * Environment variable validation utility (Synchronous version)
  * For legacy compatibility and simple use cases
+ * @deprecated Use validateEnvEffect for new code
  */
 export const validateEnvSync = <T>(
   schema: z.ZodSchema<T>,
@@ -64,11 +90,14 @@ export const validateEnvSync = <T>(
   const result = schema.safeParse(env);
 
   if (!result.success) {
-    throw new Error(
-      `Environment validation failed: ${result.error.errors
-        .map((e) => `${e.path.join(".")}: ${e.message}`)
-        .join(", ")}`,
-    );
+    const errorMessage = `Environment validation failed: ${result.error.errors
+      .map((e) => `${e.path.join(".")}: ${e.message}`)
+      .join(", ")}`;
+
+    // NOTE: This is legacy code marked for deprecation
+    // New code should use validateEnvEffect instead
+    // Kept for backwards compatibility only
+    throw new Error(errorMessage);
   }
 
   return result.data;

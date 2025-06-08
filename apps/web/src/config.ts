@@ -12,7 +12,7 @@ const webEnvSchema = z.object({
     .refine(
       (url) => {
         if (process.env.NODE_ENV === "production" && !url.startsWith("https://")) {
-          throw new Error("❌ SECURITY: Production NEXT_PUBLIC_SUPABASE_URL must use HTTPS");
+          return false;
         }
         return true;
       },
@@ -25,7 +25,7 @@ const webEnvSchema = z.object({
       (key) => {
         const isProduction = process.env.NODE_ENV === "production";
         if (isProduction && (!key || key.length < 100)) {
-          throw new Error("❌ SECURITY: NEXT_PUBLIC_SUPABASE_ANON_KEY is required in production");
+          return false;
         }
         return true;
       },

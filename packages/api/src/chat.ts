@@ -1,42 +1,55 @@
+// ✅ Effect-ts推奨: Context/Layer依存注入パターン
+// PRACTICES/effect.md準拠 - ミュータブルグローバル状態を排除
+
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "@workspace/logger";
-import { createSupabaseClient, createSupabaseRepository } from "@workspace/supabase";
-import type { ApiError } from "@workspace/supabase";
+import { createSupabaseClient } from "@workspace/supabase";
+import type { ApiError, GetLatestChatMessagesResponse } from "@workspace/supabase";
 import { ApiErrors, getErrorStatusCode } from "@workspace/supabase";
-import type { DbRepository } from "@workspace/supabase";
-import { Effect } from "effect";
+import { Context, Effect, Layer } from "effect";
 
-let supabaseRepo: DbRepository | null = null;
+// ✅ Effect-ts推奨: Direct Service Pattern (No Repository)
+// PRACTICES/effect.md: Repository Patternは二重抽象化のアンチパターン
 
-// Factory function to create repository with provided config
-export const createChatApiWithConfig = (supabaseUrl: string, supabaseAnonKey: string) => {
-  const client = createSupabaseClient(supabaseUrl, supabaseAnonKey);
-  const repo = createSupabaseRepository(client);
+export interface ChatService {
+  readonly getLatestChatMessages: (params: { limit: number }) => Effect.Effect<
+    GetLatestChatMessagesResponse,
+    ApiError
+  >;
+}
 
-  return repo;
-};
+export const ChatService = Context.GenericTag<ChatService>("ChatService");
 
-// Get repository - requires external configuration
-const getRepo = (
-  supabaseUrl?: string,
-  supabaseAnonKey?: string,
-): Effect.Effect<DbRepository, ApiError> =>
-  Effect.gen(function* () {
-    if (supabaseRepo) return supabaseRepo;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      return yield* Effect.fail(
-        ApiErrors.config(
-          "Supabase configuration not provided",
-          "Chat API requires Supabase URL and anon key to be provided",
-        ),
-      );
-    }
-
-    supabaseRepo = createChatApiWithConfig(supabaseUrl, supabaseAnonKey);
-    return supabaseRepo;
+// ✅ Chat Service Layer - Direct Supabase実装（Repository層除去）
+export const createChatServiceLayer = (supabaseUrl: string, supabaseAnonKey: string) =>
+  Layer.succeed(ChatService, {
+    getLatestChatMessages: (params) => {
+      const client = createSupabaseClient(supabaseUrl, supabaseAnonKey);
+      // ✅ Repository層を除去 - 直接Supabase操作
+      return Effect.tryPromise({
+        try: () =>
+          client
+            .from("chats")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(params.limit)
+            .then((response) => {
+              if (response.error) {
+                return Promise.reject(response.error);
+              }
+              return response.data || [];
+            }),
+        catch: (error) => ApiErrors.database("Failed to fetch chat messages", error),
+      });
+    },
   });
 
+// ✅ Factory function - Direct Supabase（Repository層除去）
+export const createChatApiWithConfig = (supabaseUrl: string, supabaseAnonKey: string) => {
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey);
+};
+
+// ✅ Chat Service取得 - Context経由 (No Repository抽象化)
 const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiError> => {
   if (!limitParam) return Effect.succeed(40); // Default to 40 messages
 
@@ -51,19 +64,21 @@ const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiEr
 };
 
 /**
- * Create chat API router with Supabase configuration
- * This factory function allows the app to provide its own Supabase config
+ * ✅ Create chat API router - Direct Service Pattern
+ * PRACTICES/effect.md準拠: Repository抽象化を除去
  */
 export const createChatApi = (supabaseUrl: string, supabaseAnonKey: string) => {
+  const chatServiceLayer = createChatServiceLayer(supabaseUrl, supabaseAnonKey);
+
   return new OpenAPIHono().get("/", async (c) => {
-    const program = Effect.gen(function* () {
-      const repo = yield* getRepo(supabaseUrl, supabaseAnonKey);
-      const limit = yield* parseLimit(c.req.query("limit"));
+    const program = Effect.gen(function* (_) {
+      const chatService = yield* _(ChatService);
+      const limit = yield* _(parseLimit(c.req.query("limit")));
 
       logger.info("Fetching chat messages", { limit });
 
-      // Repository now returns Effect directly
-      const chatMessages = yield* repo.getLatestChatMessages({ limit });
+      // Direct service call - no Repository抽象化
+      const chatMessages = yield* _(chatService.getLatestChatMessages({ limit }));
 
       logger.info("Chat messages fetched successfully", {
         count: chatMessages.length,
@@ -73,15 +88,18 @@ export const createChatApi = (supabaseUrl: string, supabaseAnonKey: string) => {
     });
 
     const result = await Effect.runPromise(
-      Effect.catchAll(program, (error: ApiError) => {
-        logger.error("API error", { error });
-        const statusCode = getErrorStatusCode(error);
-        return Effect.succeed({
-          error: error.message,
-          details: error.details,
-          statusCode,
-        });
-      }),
+      program.pipe(
+        Effect.provide(chatServiceLayer),
+        Effect.catchAll((error: ApiError) => {
+          logger.error("API error", { error });
+          const statusCode = getErrorStatusCode(error);
+          return Effect.succeed({
+            error: error.message,
+            details: error.details,
+            statusCode,
+          });
+        }),
+      ),
     );
 
     if ("error" in result) {

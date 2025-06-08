@@ -6,7 +6,7 @@ import type { ApiError } from "./error";
 import { ApiErrors } from "./error";
 import { authenticateUser } from "./middleware";
 import type { ChatHistoryModel, PollCursorModel, ProfileModel } from "./models";
-import type { DbRepository } from "./repository";
+import { SupabaseService } from "./repository";
 import { uploadAvatar } from "./storage";
 import type {
   GetLatestChatMessagesRequest,
@@ -25,11 +25,8 @@ import type {
 // Service tag for SupabaseClient
 export const SupabaseClientService = Context.GenericTag<SupabaseClient>("SupabaseClient");
 
-// Service tag for SupabaseRepository
-export const SupabaseRepositoryService = Context.GenericTag<DbRepository>("SupabaseRepository");
-
-// Functional implementation of SupabaseRepository
-const makeSupabaseRepository = (client: SupabaseClient): DbRepository => ({
+// ✅ Direct Service Pattern implementation
+const makeSupabaseService = (client: SupabaseClient): SupabaseService => ({
   findProfileById: (
     request: GetProfileByIdRequest,
   ): Effect.Effect<GetProfileByIdResponse, ApiError> =>
@@ -291,15 +288,11 @@ const makeSupabaseRepository = (client: SupabaseClient): DbRepository => ({
     }),
 });
 
-// Layer to provide SupabaseRepository service
-export const SupabaseRepositoryLayer = Layer.effect(
-  SupabaseRepositoryService,
+// ✅ Direct Service Layer - No Repository abstraction
+export const SupabaseServiceLayer = Layer.effect(
+  SupabaseService,
   Effect.gen(function* () {
     const client = yield* SupabaseClientService;
-    return makeSupabaseRepository(client);
+    return makeSupabaseService(client);
   }),
 );
-
-// Factory function for direct usage (backwards compatibility)
-export const createSupabaseRepository = (client: SupabaseClient): DbRepository =>
-  makeSupabaseRepository(client);

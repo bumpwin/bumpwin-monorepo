@@ -1,54 +1,49 @@
-// Simple union type errors - no classes, no Schema.TaggedError
-export type ApiError =
-  | { readonly _tag: "NotFoundError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "ValidationError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "DatabaseError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "NetworkError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "AuthError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "ConfigError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "UnknownError"; readonly message: string; readonly details?: unknown };
+// ✅ Effect-ts推奨: 実装優先型推論パターン
+// PRACTICES/effect.md準拠 - 一度だけ定義、型推論に委ねる
 
-// Error factory functions
 export const ApiErrors = {
-  notFound: (message: string, details?: unknown): ApiError => ({
-    _tag: "NotFoundError",
+  notFound: (message: string, details?: unknown) => ({
+    _tag: "NotFoundError" as const,
     message,
     details,
   }),
 
-  validation: (message: string, details?: unknown): ApiError => ({
-    _tag: "ValidationError",
+  validation: (message: string, details?: unknown) => ({
+    _tag: "ValidationError" as const,
     message,
     details,
   }),
 
-  database: (message: string, details?: unknown): ApiError => ({
-    _tag: "DatabaseError",
+  database: (message: string, details?: unknown) => ({
+    _tag: "DatabaseError" as const,
     message,
     details,
   }),
 
-  network: (message: string, details?: unknown): ApiError => ({
-    _tag: "NetworkError",
+  network: (message: string, details?: unknown) => ({
+    _tag: "NetworkError" as const,
     message,
     details,
   }),
 
-  auth: (message: string, details?: unknown): ApiError => ({
-    _tag: "AuthError",
+  auth: (message: string, details?: unknown) => ({
+    _tag: "AuthError" as const,
     message,
     details,
   }),
 
-  config: (message: string, details?: unknown): ApiError => ({
-    _tag: "ConfigError",
+  config: (message: string, details?: unknown) => ({
+    _tag: "ConfigError" as const,
     message,
     details,
   }),
 
-  unknown: (message: string, details?: unknown): ApiError => ({
-    _tag: "UnknownError",
+  unknown: (message: string, details?: unknown) => ({
+    _tag: "UnknownError" as const,
     message,
     details,
   }),
 } as const;
+
+// ✅ 型推論から自動生成 - 二重記述なし
+export type ApiError = ReturnType<(typeof ApiErrors)[keyof typeof ApiErrors]>;

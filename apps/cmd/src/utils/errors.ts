@@ -1,200 +1,106 @@
-import { P, match } from "ts-pattern";
+// ✅ Effect-ts推奨: 実装優先型推論パターン
+// PRACTICES/effect.md準拠 - 一度だけ定義、型推論に委ねる
+// ✅ ts-pattern除去: Effect.catchTagとの二重定義を回避
 
-// ベースエラー型
-export type AppError = {
-  readonly _tag: "AppError";
-  readonly message: string;
-  readonly code: string;
-  readonly statusCode: number;
-  readonly context?: Record<string, unknown>;
-};
-
-// バリデーションエラー
-export type ValidationError = {
-  readonly _tag: "ValidationError";
-  readonly message: string;
-  readonly code: "VALIDATION_ERROR";
-  readonly statusCode: 400;
-  readonly context?: Record<string, unknown>;
-};
-
-// 認証エラー
-export type AuthenticationError = {
-  readonly _tag: "AuthenticationError";
-  readonly message: string;
-  readonly code: "AUTHENTICATION_ERROR";
-  readonly statusCode: 401;
-  readonly context?: Record<string, unknown>;
-};
-
-// 認可エラー
-export type AuthorizationError = {
-  readonly _tag: "AuthorizationError";
-  readonly message: string;
-  readonly code: "AUTHORIZATION_ERROR";
-  readonly statusCode: 403;
-  readonly context?: Record<string, unknown>;
-};
-
-// リソース未検出エラー
-export type NotFoundError = {
-  readonly _tag: "NotFoundError";
-  readonly message: string;
-  readonly code: "NOT_FOUND_ERROR";
-  readonly statusCode: 404;
-  readonly context?: Record<string, unknown>;
-};
-
-// リトライ可能なエラー
-export type RetryableError = {
-  readonly _tag: "RetryableError";
-  readonly message: string;
-  readonly code: "RETRYABLE_ERROR";
-  readonly statusCode: 503;
-  readonly context?: Record<string, unknown>;
-};
-
-// Error factory functions
 export const AppErrors = {
   appError: (
     message: string,
     code: string,
     statusCode = 500,
     context?: Record<string, unknown>,
-  ): AppError => ({
-    _tag: "AppError",
+  ) => ({
+    _tag: "AppError" as const,
     message,
     code,
     statusCode,
     context,
   }),
 
-  validationError: (message: string, context?: Record<string, unknown>): ValidationError => ({
-    _tag: "ValidationError",
+  validationError: (message: string, context?: Record<string, unknown>) => ({
+    _tag: "ValidationError" as const,
     message,
-    code: "VALIDATION_ERROR",
-    statusCode: 400,
+    code: "VALIDATION_ERROR" as const,
+    statusCode: 400 as const,
     context,
   }),
 
-  authenticationError: (
-    message: string,
-    context?: Record<string, unknown>,
-  ): AuthenticationError => ({
-    _tag: "AuthenticationError",
+  authenticationError: (message: string, context?: Record<string, unknown>) => ({
+    _tag: "AuthenticationError" as const,
     message,
-    code: "AUTHENTICATION_ERROR",
-    statusCode: 401,
+    code: "AUTHENTICATION_ERROR" as const,
+    statusCode: 401 as const,
     context,
   }),
 
-  authorizationError: (message: string, context?: Record<string, unknown>): AuthorizationError => ({
-    _tag: "AuthorizationError",
+  authorizationError: (message: string, context?: Record<string, unknown>) => ({
+    _tag: "AuthorizationError" as const,
     message,
-    code: "AUTHORIZATION_ERROR",
-    statusCode: 403,
+    code: "AUTHORIZATION_ERROR" as const,
+    statusCode: 403 as const,
     context,
   }),
 
-  notFoundError: (message: string, context?: Record<string, unknown>): NotFoundError => ({
-    _tag: "NotFoundError",
+  notFoundError: (message: string, context?: Record<string, unknown>) => ({
+    _tag: "NotFoundError" as const,
     message,
-    code: "NOT_FOUND_ERROR",
-    statusCode: 404,
+    code: "NOT_FOUND_ERROR" as const,
+    statusCode: 404 as const,
     context,
   }),
 
-  retryableError: (message: string, context?: Record<string, unknown>): RetryableError => ({
-    _tag: "RetryableError",
+  retryableError: (message: string, context?: Record<string, unknown>) => ({
+    _tag: "RetryableError" as const,
     message,
-    code: "RETRYABLE_ERROR",
-    statusCode: 503,
+    code: "RETRYABLE_ERROR" as const,
+    statusCode: 503 as const,
     context,
   }),
 } as const;
 
-// Union type for all error types
-export type AppErrorUnion =
-  | AppError
-  | ValidationError
-  | AuthenticationError
-  | AuthorizationError
-  | NotFoundError
-  | RetryableError;
+// ✅ 型推論から自動生成 - 二重記述なし
+export type AppError = ReturnType<(typeof AppErrors)[keyof typeof AppErrors]>;
 
-// Type guard to check if error is one of our app errors using ts-pattern
-export const isAppError = (error: unknown): error is AppErrorUnion => {
-  return match(error)
-    .with(
-      {
-        _tag: P.union(
-          "AppError",
-          "ValidationError",
-          "AuthenticationError",
-          "AuthorizationError",
-          "NotFoundError",
-          "RetryableError",
-        ),
-      },
-      () => true,
-    )
-    .otherwise(() => false);
+// 個別型が必要な場合の型推論
+export type ValidationError = ReturnType<typeof AppErrors.validationError>;
+export type AuthenticationError = ReturnType<typeof AppErrors.authenticationError>;
+export type AuthorizationError = ReturnType<typeof AppErrors.authorizationError>;
+export type NotFoundError = ReturnType<typeof AppErrors.notFoundError>;
+export type RetryableError = ReturnType<typeof AppErrors.retryableError>;
+
+// Union type for all error types (互換性維持)
+export type AppErrorUnion = AppError;
+
+// ✅ Effect-ts一貫設計: TypeScriptの型チェックを活用
+export const isAppError = (error: unknown): error is AppError => {
+  if (typeof error !== "object" || error === null || !("_tag" in error)) {
+    return false;
+  }
+
+  const tag = (error as { _tag: unknown })._tag;
+  return (
+    tag === "AppError" ||
+    tag === "ValidationError" ||
+    tag === "AuthenticationError" ||
+    tag === "AuthorizationError" ||
+    tag === "NotFoundError" ||
+    tag === "RetryableError"
+  );
 };
 
-// エラーハンドリングユーティリティ using ts-pattern
-export const handleError = (error: unknown): AppError => {
-  return match(error as AppErrorUnion | Error | unknown)
-    .with({ _tag: "AppError" }, (appError: AppError) => appError)
-    .with({ _tag: "ValidationError" }, (validationError: ValidationError) =>
-      AppErrors.appError(
-        validationError.message,
-        validationError.code,
-        validationError.statusCode,
-        validationError.context,
-      ),
-    )
-    .with({ _tag: "AuthenticationError" }, (authError: AuthenticationError) =>
-      AppErrors.appError(
-        authError.message,
-        authError.code,
-        authError.statusCode,
-        authError.context,
-      ),
-    )
-    .with({ _tag: "AuthorizationError" }, (authzError: AuthorizationError) =>
-      AppErrors.appError(
-        authzError.message,
-        authzError.code,
-        authzError.statusCode,
-        authzError.context,
-      ),
-    )
-    .with({ _tag: "NotFoundError" }, (notFoundError: NotFoundError) =>
-      AppErrors.appError(
-        notFoundError.message,
-        notFoundError.code,
-        notFoundError.statusCode,
-        notFoundError.context,
-      ),
-    )
-    .with({ _tag: "RetryableError" }, (retryableError: RetryableError) =>
-      AppErrors.appError(
-        retryableError.message,
-        retryableError.code,
-        retryableError.statusCode,
-        retryableError.context,
-      ),
-    )
-    .when(
-      (err): err is Error => err instanceof Error,
-      (err) =>
-        AppErrors.appError(err.message, "INTERNAL_SERVER_ERROR", 500, {
-          originalError: err,
-        }),
-    )
-    .otherwise((unknownError) =>
-      AppErrors.appError("An unexpected error occurred", "INTERNAL_SERVER_ERROR", 500, {
-        originalError: unknownError,
-      }),
-    );
-};
+// ✅ handleError関数は削除済み
+// Effect外エラーハンドリングはアンチパターンのため除去
+// 代わりにEffect内でのEffect.catchTagを使用してください
+//
+// 推奨パターン例:
+// const safeOperation = <R, E, A>(effect: Effect.Effect<R, E, A>) =>
+//   effect.pipe(
+//     Effect.catchTag("ValidationError", (error) =>
+//       Effect.succeed({ success: false, error: "VALIDATION_ERROR", field: error.field })
+//     ),
+//     Effect.catchTag("AuthenticationError", (error) =>
+//       Effect.succeed({ success: false, error: "AUTHENTICATION_ERROR", details: error.message })
+//     ),
+//     Effect.catchAll((error) =>
+//       Effect.succeed({ success: false, error: "UNKNOWN_ERROR", message: String(error) })
+//     )
+//   )

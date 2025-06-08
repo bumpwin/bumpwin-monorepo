@@ -18,7 +18,6 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
-import { match } from "ts-pattern";
 
 // ✅ Effect-ts compliant chat error definition using implementation-first pattern
 const ChatErrors = {
@@ -56,12 +55,6 @@ const ChatErrors = {
 
 // ✅ Type inference from implementation - no double declaration
 type ChatError = ReturnType<(typeof ChatErrors)[keyof typeof ChatErrors]>;
-
-// Helper types for ts-pattern matching
-type ChatSendError = ReturnType<typeof ChatErrors.send>;
-type InsufficientBalanceError = ReturnType<typeof ChatErrors.insufficientBalance>;
-type WalletNotConnectedError = ReturnType<typeof ChatErrors.walletNotConnected>;
-type ChatErrorUnion = ChatSendError | InsufficientBalanceError | WalletNotConnectedError;
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -179,36 +172,34 @@ export default function ChatPanel() {
   }, []);
 
   // Effect-based message sending
-  const sendMessageEffect = (messageText: string, userAccount: { address: string }) =>
+  const sendMessageEffect = (
+    messageText: string,
+    userAccount: { address: string },
+  ): Effect.Effect<{ digest: string }, ChatError> =>
     Effect.gen(function* () {
-      const signCallback = (tx: Uint8Array) =>
-        Effect.async<string, ChatError>((resume) => {
-          const base64Tx = Buffer.from(tx).toString("base64");
+      const signCallback = (tx: Uint8Array): Promise<string> => {
+        const base64Tx = Buffer.from(tx).toString("base64");
+        return new Promise((resolve, reject) => {
           signAndExecuteTransaction(
             {
               transaction: base64Tx,
             },
             {
               onSuccess: (result: { digest: string }) => {
-                resume(Effect.succeed(JSON.stringify({ digest: result.digest })));
+                resolve(JSON.stringify({ digest: result.digest }));
               },
               onError: (error: Error) => {
-                resume(Effect.fail(ChatErrors.send(error)));
+                reject(ChatErrors.send(error));
               },
             },
           );
         });
+      };
 
       // Send chat message with Effect-wrapped callback
       const txResult = yield* Effect.tryPromise({
         try: () =>
-          sendChatMessage(
-            client,
-            userAccount.address,
-            messageText,
-            (tx: Uint8Array) => Effect.runPromise(signCallback(tx)),
-            "testnet",
-          ),
+          sendChatMessage(client, userAccount.address, messageText, signCallback, "testnet"),
         catch: (error) => ChatErrors.send(error),
       });
 
@@ -244,45 +235,56 @@ export default function ChatPanel() {
             setMessage("");
           }),
         ),
+        Effect.catchTag("ChatSendError", (error) =>
+          Effect.sync(() => {
+            const errorMessage =
+              error.cause instanceof Error ? error.cause.message : String(error.cause);
+
+            if (errorMessage.includes("InsufficientCoinBalance")) {
+              toast.error(
+                <div>
+                  Insufficient SUI balance
+                  <div className="mt-1 text-gray-300 text-sm">
+                    You need more SUI to pay for transaction fees
+                  </div>
+                </div>,
+              );
+            } else {
+              toast.error("Failed to send message");
+            }
+          }),
+        ),
+        Effect.catchTag("ChatInsufficientBalanceError", (error) =>
+          Effect.sync(() => {
+            toast.error(
+              <div>
+                {error.message || "Insufficient balance"}
+                <div className="mt-1 text-gray-300 text-sm">
+                  You need more SUI to pay for transaction fees
+                </div>
+              </div>,
+            );
+          }),
+        ),
+        Effect.catchTag("ChatWalletNotConnectedError", () =>
+          Effect.sync(() => {
+            toast.error("Please connect your wallet to send messages");
+          }),
+        ),
+        Effect.catchTag("ChatValidationError", (error) =>
+          Effect.sync(() => {
+            toast.error(`Validation error: ${error.message}`);
+          }),
+        ),
+        Effect.catchTag("ChatNetworkError", () =>
+          Effect.sync(() => {
+            toast.error("Network error occurred");
+          }),
+        ),
         Effect.catchAll((error) =>
           Effect.sync(() => {
             console.error("Failed to send message:", error);
-
-            // Handle error types using ts-pattern
-            match(error as ChatErrorUnion | unknown)
-              .with({ _tag: "ChatSendError" }, (err: ChatSendError) => {
-                const errorMessage =
-                  err.cause instanceof Error ? err.cause.message : String(err.cause);
-
-                if (errorMessage.includes("InsufficientCoinBalance")) {
-                  toast.error(
-                    <div>
-                      Insufficient SUI balance
-                      <div className="mt-1 text-gray-300 text-sm">
-                        You need more SUI to pay for transaction fees
-                      </div>
-                    </div>,
-                  );
-                } else {
-                  toast.error("Failed to send message");
-                }
-              })
-              .with({ _tag: "ChatInsufficientBalanceError" }, (err: InsufficientBalanceError) => {
-                toast.error(
-                  <div>
-                    {err.message || "Insufficient balance"}
-                    <div className="mt-1 text-gray-300 text-sm">
-                      You need more SUI to pay for transaction fees
-                    </div>
-                  </div>,
-                );
-              })
-              .with({ _tag: "WalletNotConnectedError" }, () => {
-                toast.error("Please connect your wallet to send messages");
-              })
-              .otherwise(() => {
-                toast.error("Failed to send message");
-              });
+            toast.error("Failed to send message");
           }),
         ),
         Effect.tap(() =>

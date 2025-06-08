@@ -14,7 +14,6 @@ import type { CoinCardProps } from "@/types/coin";
 import { Effect } from "effect";
 import { ChevronDown, RotateCw } from "lucide-react";
 import React, { useState } from "react";
-import { match } from "ts-pattern";
 
 type SortType = "marketCap" | "new";
 
@@ -79,7 +78,7 @@ export function CoinList() {
     );
   };
 
-  // Sort and filter coins based on the selected sort type and watchlist toggle
+  // ✅ Effect-ts一貫設計: ts-pattern除去、単純なif-else文
   const filteredAndSortedCoins = () => {
     let filtered = coins;
 
@@ -87,12 +86,16 @@ export function CoinList() {
       filtered = filtered.filter((coin) => coin.isFavorite);
     }
 
-    return match(sortType)
-      .with("marketCap", () => [...filtered].sort((a, b) => b.marketCap - a.marketCap))
-      .with("new", () =>
-        [...filtered].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
-      )
-      .otherwise(() => filtered);
+    // ✅ TypeScriptの型安全性を活用した条件分岐
+    if (sortType === "marketCap") {
+      return [...filtered].sort((a, b) => b.marketCap - a.marketCap);
+    }
+    if (sortType === "new") {
+      return [...filtered].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    }
+    // TypeScriptの網羅性チェックを活用
+    const _exhaustive: never = sortType;
+    return filtered;
   };
 
   return (

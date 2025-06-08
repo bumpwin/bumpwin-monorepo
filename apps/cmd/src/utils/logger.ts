@@ -1,7 +1,9 @@
-import { loadConfig } from "@/config";
-import { logger as baseLogger } from "@workspace/logger";
+// ✅ Effect-ts推奨: Context/Layer依存注入パターン
+// PRACTICES/effect.md準拠 - グローバル依存を排除
 
-const config = loadConfig();
+import type { Config } from "@/config";
+import { logger as baseLogger } from "@workspace/logger";
+import { Context, Effect, Layer } from "effect";
 
 // ログレベルの型定義
 export type LogLevel = "debug" | "info" | "warn" | "error";
@@ -19,42 +21,80 @@ export interface LogMessage {
   timestamp: string;
 }
 
-// ログフォーマッター
-function formatLogMessage(level: LogLevel, message: string, context?: LogContext): LogMessage {
-  return {
-    level,
-    message,
-    context,
-    timestamp: new Date().toISOString(),
-  };
+// ✅ Logger Service定義
+export interface LoggerService {
+  readonly debug: (message: string, context?: LogContext) => Effect.Effect<void>;
+  readonly info: (message: string, context?: LogContext) => Effect.Effect<void>;
+  readonly warn: (message: string, context?: LogContext) => Effect.Effect<void>;
+  readonly error: (message: string, error?: Error, context?: LogContext) => Effect.Effect<void>;
 }
 
-// 構造化ロガー
+export const LoggerService = Context.GenericTag<LoggerService>("LoggerService");
+
+// ログフォーマッター
+const formatLogMessage = (level: LogLevel, message: string, context?: LogContext): LogMessage => ({
+  level,
+  message,
+  context,
+  timestamp: new Date().toISOString(),
+});
+
+// ✅ Logger Service Layer
+export const LoggerServiceLayer = Layer.effect(
+  LoggerService,
+  Effect.gen(function* () {
+    const configService = Context.GenericTag<{ config: Config }>("ConfigService");
+    const config = yield* configService;
+
+    return {
+      debug: (message: string, context?: LogContext) =>
+        Effect.sync(() => {
+          if (config.config.isDevelopment) {
+            baseLogger.debug(JSON.stringify(formatLogMessage("debug", message, context)));
+          }
+        }),
+
+      info: (message: string, context?: LogContext) =>
+        Effect.sync(() => {
+          baseLogger.info(JSON.stringify(formatLogMessage("info", message, context)));
+        }),
+
+      warn: (message: string, context?: LogContext) =>
+        Effect.sync(() => {
+          baseLogger.warn(JSON.stringify(formatLogMessage("warn", message, context)));
+        }),
+
+      error: (message: string, error?: Error, context?: LogContext) =>
+        Effect.sync(() => {
+          const errorContext = {
+            ...context,
+            error: error
+              ? {
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                }
+              : undefined,
+          };
+          baseLogger.error(JSON.stringify(formatLogMessage("error", message, errorContext)));
+        }),
+    };
+  }),
+);
+
+// ✅ 互換性のための旧logger (非推奨)
+// @deprecated Context経由でLoggerServiceを使用してください
 export const logger = {
-  debug: (message: string, context?: LogContext) => {
-    if (config.isDevelopment) {
-      baseLogger.debug(JSON.stringify(formatLogMessage("debug", message, context)));
-    }
-  },
-
-  info: (message: string, context?: LogContext) => {
-    baseLogger.info(JSON.stringify(formatLogMessage("info", message, context)));
-  },
-
-  warn: (message: string, context?: LogContext) => {
-    baseLogger.warn(JSON.stringify(formatLogMessage("warn", message, context)));
-  },
-
+  debug: (message: string, context?: LogContext) =>
+    baseLogger.debug(JSON.stringify(formatLogMessage("debug", message, context))),
+  info: (message: string, context?: LogContext) =>
+    baseLogger.info(JSON.stringify(formatLogMessage("info", message, context))),
+  warn: (message: string, context?: LogContext) =>
+    baseLogger.warn(JSON.stringify(formatLogMessage("warn", message, context))),
   error: (message: string, error?: Error, context?: LogContext) => {
     const errorContext = {
       ...context,
-      error: error
-        ? {
-            name: error.name,
-            message: error.message,
-            stack: error.stack,
-          }
-        : undefined,
+      error: error ? { name: error.name, message: error.message, stack: error.stack } : undefined,
     };
     baseLogger.error(JSON.stringify(formatLogMessage("error", message, errorContext)));
   },

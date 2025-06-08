@@ -1,11 +1,24 @@
+import { ConfigContext, loadConfig } from "@/config";
 import { startChatMessageInsertion } from "@/jobs/insertChat";
 import { startChatEventPollingEffect } from "@/jobs/listenChatEvent";
 import { logger } from "@/utils/logger";
 import { NodeFileSystem } from "@effect/platform-node";
-import { loadConfig } from "@/config";
-import { Effect } from "effect";
+import { Context, Effect, Layer } from "effect";
 
-// Simple server startup - no complex Layer/Context system
+// Create LoggerService layer for server
+interface LoggerService {
+  readonly info: (message: string) => Effect.Effect<void>;
+  readonly logError: (message: string) => Effect.Effect<void>;
+}
+
+const LoggerService = Context.GenericTag<LoggerService>("LoggerService");
+
+const LoggerServiceLayer = Layer.succeed(LoggerService, {
+  info: (message: string) => Effect.sync(() => console.log(`[INFO] ${message}`)),
+  logError: (message: string) => Effect.sync(() => console.error(`[ERROR] ${message}`)),
+});
+
+// Simple server startup with required layers
 const config = loadConfig();
 
 const startServerEffect = Effect.gen(function* () {
@@ -13,7 +26,7 @@ const startServerEffect = Effect.gen(function* () {
   yield* Effect.all(
     [
       startChatEventPollingEffect(config.env.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS),
-      startChatMessageInsertion.pipe(Effect.provide(NodeFileSystem.layer)),
+      startChatMessageInsertion,
     ],
     { concurrency: "unbounded" },
   );
@@ -43,9 +56,13 @@ process.on("unhandledRejection", (reason) => {
   process.exit(1);
 });
 
-// Simple server startup - no complex dependency injection
+// Server startup with proper layer provision
+const configLayer = Layer.succeed(ConfigContext, { config });
+const mainLayer = Layer.mergeAll(configLayer, LoggerServiceLayer, NodeFileSystem.layer);
+
 Effect.runPromise(
   startServerEffect.pipe(
+    Effect.provide(mainLayer),
     Effect.catchAll((error) => {
       return Effect.gen(function* () {
         yield* Effect.logError("Failed to start server");

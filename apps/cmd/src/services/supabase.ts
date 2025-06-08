@@ -107,7 +107,7 @@ export const SupabaseServiceLayer = Layer.effect(
               .insert(chatData)
               .select()
               .then(({ data, error }) => {
-                if (error) throw error;
+                if (error) return Promise.reject(error);
                 return (data || []) as ChatResult[];
               }),
           catch: (error) => SupabaseErrors.query("insert", error),
@@ -165,5 +165,5 @@ export const createLegacySupabaseClient = () => {
   }
 };
 
-// Legacy export - will be removed in Phase 4
-export const supabase = createLegacySupabaseClient();
+// ✅ Legacy export removed - use Context/Layer pattern instead
+// export const supabase = createLegacySupabaseClient(); // ❌ Removed global export

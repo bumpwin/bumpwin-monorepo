@@ -107,7 +107,43 @@ const createJustchat = (network: "mainnet" | "testnet"): JustchatService => ({
 const _Justchat = (network: "mainnet" | "testnet") => createJustchat(network);
 
 /**
- * Helper function to sign and execute a transaction
+ * Helper function to sign and execute a transaction (Effect version)
+ * ✅ Preferred - Uses Effect.async for type-safe async operations
+ */
+export const signTransactionAndExecuteEffect = (
+  transactionBlock: Uint8Array,
+  signAndExecuteTransactionFn: (args: { transaction: string }, options: unknown) => void,
+): Effect.Effect<string, TransactionSignError> =>
+  Effect.async<string, TransactionSignError>((resume) => {
+    try {
+      logger.info("Signing transaction...");
+      // Convert Uint8Array to Base64 string
+      const base64Tx = Buffer.from(transactionBlock).toString("base64");
+
+      signAndExecuteTransactionFn(
+        {
+          transaction: base64Tx,
+        },
+        {
+          onSuccess: (result: { digest: string }) => {
+            logger.info("Transaction successfully executed:", result);
+            resume(Effect.succeed(result.digest));
+          },
+          onError: (error: Error) => {
+            logger.error("Transaction signing error:", error);
+            resume(Effect.fail(SuiErrors.transactionSign("Transaction signing failed", error)));
+          },
+        },
+      );
+    } catch (error) {
+      logger.error("Error in signAndExecuteTransaction:", error);
+      resume(Effect.fail(SuiErrors.transactionSign("Error in transaction setup", error)));
+    }
+  });
+
+/**
+ * Helper function to sign and execute a transaction (Legacy version)
+ * @deprecated Use signTransactionAndExecuteEffect for new code
  * @param transactionBlock Uint8Array containing the transaction block
  * @param signAndExecuteTransactionFn Function from dapp-kit to sign and execute
  * @returns Transaction digest
@@ -329,11 +365,11 @@ export async function publishBumpFamCoinPackage(
       logger.info("Transaction built successfully", { sender: senderAddress });
     } catch (buildError) {
       logger.error("Failed to build transaction", { error: buildError });
-      throw {
+      return Promise.reject({
         type: "transaction_build_error",
         message: "Failed to build transaction",
         details: buildError,
-      };
+      });
     }
 
     let txResult: TransactionResult;
@@ -364,11 +400,11 @@ export async function publishBumpFamCoinPackage(
       logger.error("Failed to sign and execute transaction", {
         error: signError,
       });
-      throw {
+      return Promise.reject({
         type: "transaction_sign_error",
         message: "Failed to sign and execute transaction",
         details: signError,
-      };
+      });
     }
 
     // If package info is missing, fetch it from the blockchain
@@ -454,11 +490,11 @@ export async function createBumpFamCoin(
       logger.info("Transaction built successfully");
     } catch (buildError) {
       logger.error("Failed to build transaction", { error: buildError });
-      throw {
+      return Promise.reject({
         type: "transaction_build_error",
         message: "Failed to build coin creation transaction",
         details: buildError,
-      };
+      });
     }
 
     let txResult: TransactionResult;
@@ -480,11 +516,11 @@ export async function createBumpFamCoin(
       }
     } catch (signError) {
       logger.error("Failed to sign transaction", { error: signError });
-      throw {
+      return Promise.reject({
         type: "transaction_sign_error",
         message: "Failed to sign coin creation transaction",
         details: signError,
-      };
+      });
     }
 
     const returnValue = {
@@ -545,10 +581,10 @@ export async function sendChatMessage(
         available: totalBalance,
         required: gasEstimate,
       });
-      throw {
+      return Promise.reject({
         type: "insufficient_balance",
         message: `Insufficient balance for gas. Available: ${totalBalance} MIST, Required estimate: ${gasEstimate} MIST`,
-      };
+      });
     }
 
     // Create a new transaction
@@ -581,11 +617,11 @@ export async function sendChatMessage(
         error,
         errorMessage: error instanceof Error ? error.message : String(error),
       });
-      throw {
+      return Promise.reject({
         type: "message_add_error",
         message: "Failed to add message to transaction",
         details: error,
-      };
+      });
     }
 
     // Build the transaction
@@ -602,11 +638,11 @@ export async function sendChatMessage(
         error: buildError,
         gasBudget,
       });
-      throw {
+      return Promise.reject({
         type: "transaction_build_error",
         message: "Failed to build chat message transaction",
         details: buildError,
-      };
+      });
     }
 
     // Sign and execute the transaction
@@ -637,24 +673,24 @@ export async function sendChatMessage(
       // Check for specific error types to provide better messages
       const errorMessage = signError instanceof Error ? signError.message : String(signError);
       if (errorMessage.includes("InsufficientCoinBalance")) {
-        throw {
+        return Promise.reject({
           type: "insufficient_balance",
           message: "Insufficient SUI balance to pay for gas",
           details: signError,
-        };
+        });
       }
       if (errorMessage.includes("MoveAbort") && errorMessage.includes("1001")) {
-        throw {
+        return Promise.reject({
           type: "move_abort",
           message: "Smart contract rejected the message (code 1001)",
           details: signError,
-        };
+        });
       }
-      throw {
+      return Promise.reject({
         type: "transaction_execute_error",
         message: "Failed to execute chat message transaction",
         details: signError,
-      };
+      });
     }
 
     const returnValue = {
