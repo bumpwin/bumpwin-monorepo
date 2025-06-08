@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { type Result, err, ok } from "neverthrow";
+import { Effect } from "effect";
 import type { ApiError } from "./error";
 import { createApiError } from "./error";
 
@@ -15,32 +15,31 @@ export interface AuthenticationResult {
 /**
  * Authenticate user with Supabase client
  * @param client - Supabase client instance
- * @returns Result with authenticated user or error
+ * @returns Effect with authenticated user or error
  */
-export async function authenticateUser(
+export function authenticateUser(
   client: SupabaseClient,
-): Promise<Result<AuthenticationResult, ApiError>> {
-  try {
+): Effect.Effect<AuthenticationResult, ApiError> {
+  return Effect.gen(function* () {
     const {
       data: { user },
       error: authError,
-    } = await client.auth.getUser();
+    } = yield* Effect.tryPromise({
+      try: () => client.auth.getUser(),
+      catch: (error) =>
+        createApiError(
+          "unknown",
+          error instanceof Error ? error.message : "Unknown error occurred",
+          error,
+        ),
+    });
 
     if (authError || !user) {
       logger.error("Authentication failed", { error: authError });
-      return err(createApiError("unauthorized", "User not authenticated"));
+      return yield* Effect.fail(createApiError("unauthorized", "User not authenticated"));
     }
 
     logger.info("User authenticated", { userId: user.id });
-    return ok({ user: { id: user.id } });
-  } catch (error) {
-    logger.error("Unexpected error during authentication", { error });
-    return err(
-      createApiError(
-        "unknown",
-        error instanceof Error ? error.message : "Unknown error occurred",
-        error,
-      ),
-    );
-  }
+    return { user: { id: user.id } };
+  });
 }

@@ -65,18 +65,8 @@ export const chatApi = new OpenAPIHono().get("/", async (c) => {
 
     logger.info("Fetching chat messages", { limit });
 
-    // Convert Result from neverthrow to Effect
-    const chatMessages = yield* Effect.tryPromise({
-      try: () => repo.getLatestChatMessages({ limit }),
-      catch: (error) => createApiError("database", "Failed to fetch chat messages", String(error)),
-    }).pipe(
-      Effect.flatMap((result) =>
-        result.match(
-          (messages) => Effect.succeed(messages),
-          (error: ApiError) => Effect.fail(error),
-        ),
-      ),
-    );
+    // Repository now returns Effect directly
+    const chatMessages = yield* repo.getLatestChatMessages({ limit });
 
     logger.info("Chat messages fetched successfully", {
       count: chatMessages.length,

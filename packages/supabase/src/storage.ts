@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { type Result, err, ok } from "neverthrow";
+import { Effect } from "effect";
 import type { ApiError } from "./error";
 import { createApiError } from "./error";
 
@@ -9,17 +9,17 @@ interface UploadAvatarParams {
   userId: string;
 }
 
-export async function uploadAvatar(
+export function uploadAvatar(
   client: SupabaseClient,
   params: UploadAvatarParams,
-): Promise<Result<string, ApiError>> {
-  try {
+): Effect.Effect<string, ApiError> {
+  return Effect.gen(function* () {
     const { file, userId } = params;
 
     // Validate file
     // const validationResult = validateAvatar(file)
     // if (validationResult.isErr()) {
-    //   return err(validationResult.error)
+    //   return yield* Effect.fail(validationResult.error)
     // }
 
     // Create file path
@@ -27,32 +27,40 @@ export async function uploadAvatar(
     const filePath = `${userId}/${userId}_${Date.now()}.${fileExt}`;
 
     // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer();
+    const arrayBuffer = yield* Effect.tryPromise({
+      try: () => file.arrayBuffer(),
+      catch: (error) =>
+        createApiError(
+          "unknown",
+          error instanceof Error ? error.message : "Failed to read file",
+          error,
+        ),
+    });
     const buffer = new Uint8Array(arrayBuffer);
 
     // Upload file
-    const { error: uploadError } = await client.storage.from("avatars").upload(filePath, buffer, {
-      contentType: file.type,
-      upsert: true,
+    const { error: uploadError } = yield* Effect.tryPromise({
+      try: () =>
+        client.storage.from("avatars").upload(filePath, buffer, {
+          contentType: file.type,
+          upsert: true,
+        }),
+      catch: (error) =>
+        createApiError(
+          "unknown",
+          error instanceof Error ? error.message : "Unknown error occurred",
+          error,
+        ),
     });
 
     if (uploadError) {
       logger.error("Failed to upload avatar", { error: uploadError });
-      return err(createApiError("database", "Failed to upload avatar", uploadError));
+      return yield* Effect.fail(createApiError("database", "Failed to upload avatar", uploadError));
     }
 
     // Get public URL
     const { data: urlData } = client.storage.from("avatars").getPublicUrl(filePath);
 
-    return ok(urlData.publicUrl);
-  } catch (error) {
-    logger.error("Unexpected error in avatar upload", { error });
-    return err(
-      createApiError(
-        "unknown",
-        error instanceof Error ? error.message : "Unknown error occurred",
-        error,
-      ),
-    );
-  }
+    return urlData.publicUrl;
+  });
 }

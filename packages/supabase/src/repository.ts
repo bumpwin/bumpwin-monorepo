@@ -1,4 +1,4 @@
-import type { Result } from "neverthrow";
+import type { Effect } from "effect";
 import type { ApiError } from "./error";
 import type {
   GetLatestChatMessagesRequest,
@@ -16,22 +16,20 @@ import type {
 
 // Repository interface
 export interface DbRepository {
-  findProfileById(
-    request: GetProfileByIdRequest,
-  ): Promise<Result<GetProfileByIdResponse, ApiError>>;
-  updateProfile(request: UpdateProfileRequest): Promise<Result<UpdateProfileResponse, ApiError>>;
+  findProfileById(request: GetProfileByIdRequest): Effect.Effect<GetProfileByIdResponse, ApiError>;
+  updateProfile(request: UpdateProfileRequest): Effect.Effect<UpdateProfileResponse, ApiError>;
 
   // Chat operations
   insertChatMessage(
     request: InsertChatMessageRequest,
-  ): Promise<Result<InsertChatMessageResponse, ApiError>>;
+  ): Effect.Effect<InsertChatMessageResponse, ApiError>;
   getLatestChatMessages(
     request: GetLatestChatMessagesRequest,
-  ): Promise<Result<GetLatestChatMessagesResponse, ApiError>>;
+  ): Effect.Effect<GetLatestChatMessagesResponse, ApiError>;
 
   // Cursor operations
-  getPollCursor(): Promise<Result<GetPollCursorResponse, ApiError>>;
+  getPollCursor(): Effect.Effect<GetPollCursorResponse, ApiError>;
   updatePollCursor(
     request: UpdatePollCursorRequest,
-  ): Promise<Result<UpdatePollCursorResponse, ApiError>>;
+  ): Effect.Effect<UpdatePollCursorResponse, ApiError>;
 }

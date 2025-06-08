@@ -3,11 +3,7 @@ import { supabase } from "@/services/supabase";
 import type { EventId } from "@mysten/sui/client";
 import { NETWORK_TYPE } from "@workspace/sui";
 import { SupabaseRepository } from "@workspace/supabase";
-import type {
-  GetPollCursorResponse,
-  InsertChatMessageRequest,
-  UpdatePollCursorRequest,
-} from "@workspace/supabase";
+import type { InsertChatMessageRequest, UpdatePollCursorRequest } from "@workspace/supabase";
 import { Effect } from "effect";
 
 // Event type definition
@@ -67,23 +63,21 @@ const fetcher = new EventFetcher({
  * Get the initial cursor from Supabase (Effect version)
  */
 const getInitialCursor = Effect.gen(function* () {
-  const cursorResult = yield* Effect.tryPromise(() => dbRepository.getPollCursor()).pipe(
-    Effect.mapError((cause) => ListenChatErrors.cursorError(cause)),
+  // Repository now returns Effect directly
+  const pollCursor = yield* dbRepository.getPollCursor().pipe(
+    Effect.catchAll((error) => {
+      if (error.type === "not_found") {
+        return Effect.succeed(null);
+      }
+      return Effect.fail(ListenChatErrors.cursorError(error));
+    }),
   );
 
-  // Handle neverthrow Result in Effect way - check if result is success
-  if ("isOk" in cursorResult && !cursorResult.isOk()) {
-    if ("error" in cursorResult && cursorResult.error.type === "not_found") {
-      yield* Effect.log("No initial cursor found in Supabase, starting from scratch.");
-      return null;
-    }
-    yield* Effect.fail(ListenChatErrors.cursorError(cursorResult));
+  if (!pollCursor) {
+    yield* Effect.log("No initial cursor found in Supabase, starting from scratch.");
+    return null;
   }
 
-  // Extract value safely
-  const pollCursor = (
-    "value" in cursorResult ? cursorResult.value : cursorResult
-  ) as GetPollCursorResponse;
   if (!pollCursor.cursor) {
     yield* Effect.log("Cursor exists but is null, starting from scratch.");
     return null;
@@ -112,26 +106,13 @@ const saveChatMessage = (event: ChatEvent) =>
       messageText: event.text,
     };
 
-    const insertResult = yield* Effect.tryPromise(() =>
-      dbRepository.insertChatMessage(chatMessageRequest),
-    ).pipe(Effect.mapError((cause) => ListenChatErrors.databaseError(cause)));
-
-    // Handle neverthrow Result in Effect way
-    if ("isOk" in insertResult && insertResult.isOk()) {
-      yield* Effect.log(
-        `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
-      );
-    } else if ("error" in insertResult) {
-      yield* Effect.logError(
-        `Failed to save message (Digest: ${event.digest}): ${JSON.stringify(insertResult.error)}`,
-      );
-      yield* Effect.fail(ListenChatErrors.databaseError(insertResult.error));
-    } else {
-      // If it's not a neverthrow Result, assume success
-      yield* Effect.log(
-        `Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`,
-      );
-    }
+    // Repository now returns Effect directly, no more neverthrow conversion needed
+    yield* dbRepository.insertChatMessage(chatMessageRequest).pipe(
+      Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
+      Effect.tap(() =>
+        Effect.log(`Message from ${event.sender} (Digest: ${event.digest}) saved to Supabase.`),
+      ),
+    );
   });
 
 /**
@@ -143,20 +124,13 @@ const updatePollCursor = (cursor: EventId | null) =>
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    const updateResult = yield* Effect.tryPromise(() =>
-      dbRepository.updatePollCursor(updateCursorRequest),
-    ).pipe(Effect.mapError((cause) => ListenChatErrors.databaseError(cause)));
-
-    // Handle neverthrow Result in Effect way
-    if ("isOk" in updateResult && updateResult.isOk()) {
-      yield* Effect.log(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`);
-    } else if ("error" in updateResult) {
-      yield* Effect.logError(`Failed to update poll cursor: ${JSON.stringify(updateResult.error)}`);
-      yield* Effect.fail(ListenChatErrors.databaseError(updateResult.error));
-    } else {
-      // If it's not a neverthrow Result, assume success
-      yield* Effect.log(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`);
-    }
+    // Repository now returns Effect directly, no more neverthrow conversion needed
+    yield* dbRepository.updatePollCursor(updateCursorRequest).pipe(
+      Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
+      Effect.tap(() =>
+        Effect.log(`Poll cursor updated in Supabase: ${updateCursorRequest.cursor}`),
+      ),
+    );
   });
 
 /**

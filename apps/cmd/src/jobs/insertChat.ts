@@ -104,21 +104,11 @@ const dbRepository = new SupabaseRepository(supabase);
 
 const insertChatMessage = (message: ChatMessage) =>
   Effect.gen(function* () {
-    const insertResult = yield* Effect.tryPromise(() =>
-      dbRepository.insertChatMessage(message),
-    ).pipe(Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)));
-
-    // Handle neverthrow Result in Effect way
-    if ("isOk" in insertResult && insertResult.isOk()) {
-      yield* Effect.log(`Message from ${message.senderAddress} saved to Supabase.`);
-      return;
-    }
-    if ("error" in insertResult) {
-      yield* Effect.logError(`Failed to save message: ${insertResult.error.message}`);
-      yield* Effect.fail(InsertChatErrors.dbInsertError(insertResult.error));
-    }
-    // If it's not a neverthrow Result, assume success
-    yield* Effect.log(`Message from ${message.senderAddress} saved to Supabase.`);
+    // Repository now returns Effect directly, no more neverthrow conversion needed
+    yield* dbRepository.insertChatMessage(message).pipe(
+      Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)),
+      Effect.tap(() => Effect.log(`Message from ${message.senderAddress} saved to Supabase.`)),
+    );
   });
 
 // メッセージ生成と保存 (Effect version)
