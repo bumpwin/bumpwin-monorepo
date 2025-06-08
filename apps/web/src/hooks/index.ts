@@ -6,4 +6,3 @@ export * from "./api";
 
 // Other hooks
 export { useChampionSwap } from "./useChampionSwap";
-export { useLenis } from "./useLenis";
