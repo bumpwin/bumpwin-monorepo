@@ -1,224 +1,424 @@
-# コインカードコンポーネント統合タスク - UI一貫性とメンテナンス性向上
+# Effect-ts アンチパターン残存対応 - 最終清掃フェーズ
 
 ## 🎯 目標
-散在するコインカードコンポーネント（5つ）を統合し、UI一貫性とメンテナンス性を向上
+再評価で発見された残存アンチパターン5件の完全除去
 
-## 📊 現状分析
+## 🚨 発見された残存アンチパターン - 再評価結果
 
-### 現在の問題点
-- **重複コンポーネント**: 5つのコインカードが散在
-  - CoinCard (基本リスト表示)
-  - ChampionCoinCard (チャンピオン専用)  
-  - CoinDetailCard (詳細表示・ソーシャルリンク付き)
-  - BattleCoinDetailCard (バトル画面専用)
-  - SwapRoundCoinCard (取引機能付き)
+### 📊 現状分析（再評価完了）
+| 重要度 | 件数 | ファイル数 | 工数見積 | 対応期限 |
+|--------|------|---------|----------|----------|
+| **Critical** | 1件 | 1ファイル | 10分 | 即座 |
+| **High** | 3件 | 2ファイル | 15分 | 24h以内 |
+| **Medium** | 1件 | 1ファイル | 5分 | 週内 |
+| **総計** | **5件** | **4ファイル** | **30分** | **即座対応** |
 
-- **型定義の散在**: 各コンポーネントで個別の型定義
-- **共通ロジック重複**: 画像表示、フォーマット処理、coinId生成の重複
-- **保守性の問題**: 変更時の影響範囲が不明確
+### 🔍 Critical アンチパターン詳細
 
-### 統合戦略
-**統合対象**: CoinCard + ChampionCoinCard → UnifiedDisplayCard
-**独立維持**: BattleCoinDetailCard, SwapRoundCoinCard (機能特化のため)
+#### **グローバル環境変数アクセス (Critical)**
+- `packages/api/src/chat.ts:123-126` - 直接process.env使用
+  - Context/Layer依存注入を回避する重大設計違反
+  - ハードコードデフォルト値 `"http://127.0.0.1:54321"` 使用
+  - テスタビリティ・保守性の完全破綻
 
-## 📋 実装計画
+#### **非Effect化console使用 (High)**
+- `packages/api/src/champions.ts:8,21` - production code内console.log
+- `apps/web/src/utils/supabaseClient.ts:24-25,49-50` - Context経由でない環境変数アクセス
 
-### Sprint 1: 基盤整備 (30分・低リスク)
-**優先度**: Critical | **工数**: 30分
+#### **構造化ログ一貫性欠如 (Medium)**
+- `apps/web/src/lib/errors.ts:146,154` - Logger Service回避
 
-#### 1.1 共通型定義統合 (10分)
-- [ ] **BaseCoinDisplayProps作成** - apps/web/src/types/coin.ts
-  ```typescript
-  interface BaseCoinDisplayProps extends UIMemeMetadata {
-    variant?: "list" | "champion";
-    showRound?: boolean;
-    showFavorite?: boolean;
-    onToggleFavorite?: (address: string) => void;
-    className?: string;
-  }
-  ```
+## 📋 修正計画
 
-#### 1.2 共通ユーティリティ抽出 (10分)
-- [ ] **coinUtils.ts作成** - apps/web/src/utils/coinUtils.ts
-  ```typescript
-  export const generateCoinId = (coin: UIMemeMetadata): string => {...}
-  export const formatCoinDisplayData = (coin: UIMemeMetadata): DisplayData => {...}
-  export const getCoinCardClasses = (variant: string): string => {...}
-  ```
+### Phase 5: 残存アンチパターン完全除去 (30分・Critical)
 
-#### 1.3 共通画像コンポーネント (10分)
-- [ ] **CoinImage.tsx作成** - apps/web/src/components/coins/CoinImage.tsx
-  ```typescript
-  interface CoinImageProps {
-    src: string;
-    alt: string;
-    size?: "sm" | "md" | "lg";
-    className?: string;
-  }
-  ```
+#### 5.1 Critical: グローバル環境変数アクセス修正 (10分)
+**対象**: `packages/api/src/chat.ts:123-126`
 
-### Sprint 2: 統合コンポーネント作成 (45分・中リスク)
-**優先度**: High | **工数**: 45分
-
-#### 2.1 UnifiedDisplayCard設計 (15分)
-- [ ] **統合コンポーネント作成** - apps/web/src/components/coins/UnifiedDisplayCard.tsx
-  ```typescript
-  export const UnifiedDisplayCard = ({ 
-    variant = "list", 
-    data, 
-    showRound = false,
-    ...props 
-  }: BaseCoinDisplayProps) => {
-    return match(variant)
-      .with("list", () => <ListLayout data={data} {...props} />)
-      .with("champion", () => <ChampionLayout data={data} {...props} />)
-      .exhaustive();
-  };
-  ```
-
-#### 2.2 レイアウトコンポーネント実装 (20分)
-- [ ] **ListLayout実装** - CoinCardのレイアウト継承
-- [ ] **ChampionLayout実装** - ChampionCoinCardのレイアウト継承
-- [ ] **ts-pattern使用** - 条件分岐の型安全化
-
-#### 2.3 プロパティマッピング (10分)
-- [ ] **mapCoinCardProps関数** - 既存props変換
-- [ ] **mapChampionCardProps関数** - 既存props変換
-
-### Sprint 3: 段階的移行 (30分・低リスク)
-**優先度**: High | **工数**: 30分
-
-#### 3.1 CoinCard移行 (10分)
-- [ ] **CoinCard.tsx更新** - UnifiedDisplayCardラッパー化
-  ```typescript
-  export const CoinCard = (props: CoinCardProps) => {
-    return <UnifiedDisplayCard {...mapCoinCardProps(props)} />;
-  };
-  ```
-
-#### 3.2 ChampionCoinCard移行 (10分)
-- [ ] **ChampionCoinCard.tsx更新** - UnifiedDisplayCardラッパー化
-- [ ] **型安全性確認** - TypeScriptエラーチェック
-
-#### 3.3 動作確認・最適化 (10分)
-- [ ] **UI表示確認** - 既存機能の完全互換性
-- [ ] **旧実装削除** - 重複コードの除去
-- [ ] **インポート更新** - 依存関係の整理
-
-### Sprint 4: 最適化・独立コンポーネント改善 (15分・任意)
-**優先度**: Medium | **工数**: 15分
-
-#### 4.1 独立コンポーネント最適化
-- [ ] **BattleCoinDetailCard改善** - 共通要素の活用
-- [ ] **SwapRoundCoinCard改善** - 共通要素の活用
-- [ ] **共通コンポーネント活用** - CoinImage, coinUtilsの使用
-
-## 🔧 技術的実装詳細
-
-### 統合アーキテクチャ
 ```typescript
-// 統合前: 5つの個別コンポーネント
-CoinCard, ChampionCoinCard, CoinDetailCard, BattleCoinDetailCard, SwapRoundCoinCard
+// ❌ 削除対象: 直接process.env使用
+export const chatApi = createChatApi(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+);
 
-// 統合後: 3つのコンポーネント + 共通基盤
-UnifiedDisplayCard (CoinCard + ChampionCoinCard統合)
-+ 独立: BattleCoinDetailCard, SwapRoundCoinCard
-+ 共通: CoinImage, coinUtils, BaseCoinDisplayProps
-```
+// ✅ 修正案: Context/Layer経由設定
+interface ChatApiService {
+  readonly api: OpenAPIHono;
+}
 
-### 型安全性の保証
-```typescript
-// ts-pattern使用による条件分岐の型安全化
-const Layout = match(variant)
-  .with("list", () => <ListLayout />)
-  .with("champion", () => <ChampionLayout />)
-  .exhaustive(); // 漏れチェック
-```
+const ChatApiService = Context.GenericTag<ChatApiService>("ChatApiService");
 
-### レスポンシブ対応
-```typescript
-// 既存のレスポンシブ機能を維持
-className={`${baseClasses} ${variantClasses[variant]} ${className}`}
-```
+const ChatApiServiceLayer = Layer.effect(
+  ChatApiService,
+  Effect.gen(function* () {
+    const config = yield* ConfigContext;
+    
+    // ✅ 必須環境変数の事前検証
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_URL) {
+      yield* Effect.fail(AppErrors.validation("NEXT_PUBLIC_SUPABASE_URL is required"));
+    }
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      yield* Effect.fail(AppErrors.validation("NEXT_PUBLIC_SUPABASE_ANON_KEY is required"));
+    }
 
-## 📊 進捗指標
+    const api = createChatApi(
+      config.config.env.NEXT_PUBLIC_SUPABASE_URL,
+      config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    );
 
-### 成功基準
-| 指標 | 目標値 | 現状 |
-|------|--------|------|
-| コンポーネント数 | 3つ | 5つ |
-| 型定義統一率 | 100% | 20% |
-| 重複コード削減 | 70% | 0% |
-| TypeScriptエラー | 0件 | TBD |
+    return { api };
+  })
+);
 
-### パフォーマンス目標
-- **バンドルサイズ**: 変更なし (統合による増加回避)
-- **レンダリング速度**: 変更なし (既存パフォーマンス維持)
-- **開発効率**: 新機能追加時間50%短縮
-
-## 🚨 リスク管理
-
-### 高リスク項目
-1. **UI互換性**: 既存レイアウトの完全再現
-   - **軽減策**: 段階的移行、詳細な視覚テスト
-2. **型安全性**: 複雑なプロパティマッピング
-   - **軽減策**: TypeScript strict mode、包括的テスト
-
-### 中リスク項目
-1. **パフォーマンス影響**: 統合による複雑化
-2. **開発体験**: 新しいAPI学習コスト
-
-## 📝 実装ガイドライン
-
-### コーディング規約
-```typescript
-// Good: 統一されたVariant使用
-<UnifiedDisplayCard variant="list" data={coinData} />
-
-// Bad: 直接的な条件分岐
-{isChampion ? <ChampionCard /> : <CoinCard />}
-```
-
-### テスト戦略
-```typescript
-// 各variantのテスト
-describe('UnifiedDisplayCard', () => {
-  it('renders list variant correctly', () => {...});
-  it('renders champion variant correctly', () => {...});
+// ✅ Effect管理下でのAPI取得
+export const getChatApi = Effect.gen(function* () {
+  const chatApiService = yield* ChatApiService;
+  return chatApiService.api;
 });
 ```
 
-## ✅ 完了基準
+#### 5.2 High: 非Effect化console使用修正 (10分)
+**対象**: `packages/api/src/champions.ts:8,21`
 
-### Sprint 完了条件
-- [ ] **Sprint 1**: 共通基盤が正常動作
-- [ ] **Sprint 2**: UnifiedDisplayCardが全variant対応
-- [ ] **Sprint 3**: 既存コンポーネントの完全置換
-- [ ] **Sprint 4**: パフォーマンス目標達成
+```typescript
+// ❌ 削除対象: 直接console使用
+console.log("Champions from getChampions():", champions);
+console.log("Enriched champions:", enrichedChampions);
 
-### 最終検証項目
-- [ ] **機能完全性**: 既存機能の100%互換性
-- [ ] **型安全性**: TypeScriptエラー0件
-- [ ] **UI一貫性**: デザインシステム準拠
-- [ ] **パフォーマンス**: 既存レベル維持
-- [ ] **保守性**: コード重複70%削減達成
+// ✅ 修正案: Effect組み込みログ使用（推奨）
+export const championsApi = new OpenAPIHono()
+  .get("/", async (c) => {
+    const program = Effect.gen(function* () {
+      const champions = getChampions();
+      yield* Effect.logDebug("Champions from getChampions() - count: " + champions.length);
 
-## 📈 期待効果
+      const enrichedChampions = champions.map(({ round, meme }) => ({
+        round,
+        meme: meme ? { ...meme, ...mockMemeMarketData[meme.id] } : null,
+      }));
 
-### 短期効果
-- **ファイル数削減**: 5つ → 3つ (40%削減)
-- **型定義統一**: 散在した型の一元化
-- **重複コード除去**: 保守性の大幅向上
+      yield* Effect.logDebug("Enriched champions completed - count: " + enrichedChampions.length);
+      return enrichedChampions;
+    });
 
-### 長期効果
-- **開発効率向上**: 新機能追加時間50%短縮
-- **UI一貫性**: ブランド体験の統一
-- **技術負債削減**: 将来の拡張性確保
+    const result = await Effect.runPromise(program);
+    return c.json(result);
+  });
+
+// ✅ 代替案: カスタムLoggerService Context使用（詳細制御が必要な場合）
+interface LoggerService {
+  readonly info: (message: string, data?: unknown) => Effect.Effect<void>;
+  readonly debug: (message: string, data?: unknown) => Effect.Effect<void>;
+}
+
+const LoggerService = Context.GenericTag<LoggerService>("LoggerService");
+
+const LoggerServiceLayer = Layer.succeed(LoggerService, {
+  info: (message: string, data?: unknown) => 
+    Effect.sync(() => console.info(`[INFO] ${message}`, data)),
+  debug: (message: string, data?: unknown) => 
+    Effect.sync(() => console.debug(`[DEBUG] ${message}`, data)),
+});
+```
+
+#### 5.3 High: Context経由でない環境変数アクセス修正 (5分)
+**対象**: `apps/web/src/utils/supabaseClient.ts:24-25,49-50`
+
+```typescript
+// ❌ 削除対象: Effect内での直接process.env参照
+export const createSupabaseClientEffect = Effect.gen(function* () {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // ...
+});
+
+// ✅ 修正案: Config Context経由
+export const createSupabaseClientEffect = Effect.gen(function* () {
+  const config = yield* ConfigContext;
+  
+  const supabaseUrl = config.config.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl) {
+    yield* Effect.fail(SupabaseErrors.missingConfig("NEXT_PUBLIC_SUPABASE_URL"));
+  }
+
+  if (!supabaseAnonKey) {
+    yield* Effect.fail(SupabaseErrors.missingConfig("NEXT_PUBLIC_SUPABASE_ANON_KEY"));
+  }
+
+  // URL検証もEffect.try使用
+  yield* Effect.try({
+    try: () => new URL(supabaseUrl),
+    catch: () => SupabaseErrors.invalidUrl(supabaseUrl)
+  });
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+});
+```
+
+#### 5.4 Medium: Logger Service一貫性確保 (5分)
+**対象**: `apps/web/src/lib/errors.ts:146,154`
+
+```typescript
+// ❌ 部分修正対象: 直接console使用
+export const logError = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+): void => {
+  console.error(fullContext, { ... });
+};
+
+// ✅ 修正案: Effect組み込みログ使用（推奨）
+export const logErrorEffect = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+) => Effect.gen(function* () {
+  const message = getErrorMessage(error);
+  const fullContext = context ? `[${context}] ${message}` : message;
+
+  if (isAppError(error)) {
+    yield* Effect.logError(fullContext, {
+      tag: error._tag,
+      message: error.message,
+      cause: error.cause,
+      metadata,
+      ...error,
+    });
+  } else {
+    yield* Effect.logError(fullContext, { error, metadata });
+  }
+});
+
+// ✅ 代替案: カスタムLoggerService使用（既存実装）
+export const logErrorEffectWithService = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+) => Effect.gen(function* () {
+  const logger = yield* LoggerService;
+  const message = getErrorMessage(error);
+  const fullContext = context ? `[${context}] ${message}` : message;
+
+  if (isAppError(error)) {
+    yield* logger.error(fullContext, {
+      tag: error._tag,
+      message: error.message,
+      cause: error.cause,
+      metadata,
+      ...error,
+    });
+  } else {
+    yield* logger.error(fullContext, { error, metadata });
+  }
+});
+
+// 後方互換性のためのlegacy関数は残すが非推奨マーク
+/** @deprecated Use logErrorEffect for new code */
+export const logError = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+): void => {
+  // Legacy implementation - 変更せず
+  // ...
+};
+```
+
+## 🔧 実装ガイド - 残存パターン対応
+
+### 📚 Critical修正の重要ポイント
+
+#### Context/Layer依存注入の完全実装
+```typescript
+// ✅ 必須パターン: 環境変数はConfig Context経由のみ
+const ServiceLayer = Layer.effect(
+  ServiceTag,
+  Effect.gen(function* () {
+    const config = yield* ConfigContext;  // ✅ Context経由必須
+    
+    // ✅ 事前検証 - fail fast原則
+    if (!config.config.env.REQUIRED_VAR) {
+      yield* Effect.fail(AppErrors.validation("REQUIRED_VAR is required"));
+    }
+
+    return createService(config.config.env.REQUIRED_VAR);
+  })
+);
+```
+
+#### Effect組み込みログ統一パターン
+```typescript
+// ✅ Effect組み込みログ使用（推奨）
+const operation = Effect.gen(function* () {
+  yield* Effect.logInfo("Operation started");
+  const result = yield* performOperation();
+  yield* Effect.logInfo("Operation completed", { resultId: result.id });
+  
+  return result;
+});
+
+// ✅ 代替: カスタムLogger Service使用（詳細制御が必要な場合）
+const operationWithCustomLogger = Effect.gen(function* () {
+  const logger = yield* LoggerService;
+  
+  yield* logger.info("Operation started");
+  const result = yield* performOperation();
+  yield* logger.info("Operation completed", { resultId: result.id });
+  
+  return result;
+});
+```
+
+#### 副作用のEffect管理完全分離
+```typescript
+// ❌ NEVER: 直接副作用
+console.log("Debug info");
+
+// ✅ BEST: Effect組み込みログ
+const debugLog = (message: string) => Effect.logDebug(message);
+
+// ✅ ALTERNATIVE: Effect.sync経由
+const customDebugLog = (message: string) => 
+  Effect.sync(() => console.log(`[DEBUG] ${message}`));
+```
+
+### 🚫 残存回避すべきパターン
+
+```typescript
+// ❌ NEVER: 直接環境変数アクセス
+const url = process.env.API_URL || "default";
+
+// ❌ NEVER: ハードコードデフォルト
+const DEFAULT_URL = "http://localhost:3000";
+
+// ❌ NEVER: Effect外console使用
+console.log("Production log");
+
+// ❌ NEVER: カスタムLoggerService without justification
+const unnecessaryLogger = Context.GenericTag<LoggerService>("LoggerService");
+
+// ❌ NEVER: グローバルエクスポート
+export const globalService = createService();
+```
+
+### ✅ 推奨最終パターン
+
+```typescript
+// ✅ Effect組み込みログ使用完全準拠サービス（推奨）
+interface ServiceInterface {
+  readonly method: (param: string) => Effect.Effect<Result, ServiceError>;
+}
+
+const ServiceTag = Context.GenericTag<ServiceInterface>("ServiceName");
+
+const ServiceLayer = Layer.effect(
+  ServiceTag,
+  Effect.gen(function* () {
+    const config = yield* ConfigContext;
+    
+    yield* Effect.logInfo("Service initializing");
+    
+    // 全ての設定検証
+    const validatedConfig = yield* validateConfig(config);
+    
+    return {
+      method: (param) => Effect.gen(function* () {
+        yield* Effect.logDebug("Method called", { param });
+        const result = yield* performOperation(param, validatedConfig);
+        yield* Effect.logDebug("Method completed", { result });
+        return result;
+      })
+    };
+  })
+);
+
+// 使用パターン
+const program = Effect.gen(function* () {
+  const service = yield* ServiceTag;
+  return yield* service.method("input");
+}).pipe(
+  Effect.provide(Layer.merge(ServiceLayer, ConfigLayer))
+);
+
+// ✅ カスタムLoggerService使用パターン（詳細制御が必要な場合）
+const ServiceLayerWithCustomLogger = Layer.effect(
+  ServiceTag,
+  Effect.gen(function* () {
+    const config = yield* ConfigContext;
+    const logger = yield* LoggerService;
+    
+    yield* logger.info("Service initializing");
+    
+    const validatedConfig = yield* validateConfig(config);
+    
+    return {
+      method: (param) => Effect.gen(function* () {
+        yield* logger.debug("Method called", { param });
+        const result = yield* performOperation(param, validatedConfig);
+        yield* logger.debug("Method completed", { result });
+        return result;
+      })
+    };
+  })
+);
+```
+
+## 📊 修正後の期待結果
+
+### 完了基準
+- [ ] **Critical 1件**: グローバル環境変数アクセス完全除去
+- [ ] **High 3件**: console使用とContext回避の修正
+- [ ] **Medium 1件**: Logger Service一貫性確保
+- [ ] **TypeScriptエラー**: 0件維持
+- [ ] **Effect合成率**: 100%達成
+
+### 品質指標
+| 指標 | 修正前 | 修正後目標 |
+|------|--------|----------|
+| **アンチパターン総数** | 5件 | **0件** |
+| **Context/Layer使用率** | 95% | **100%** |
+| **Effect管理副作用率** | 98% | **100%** |
+| **型安全性** | 完全 | **完全維持** |
+
+## ⚡ 実行優先度
+
+| Phase | 対象 | 重要度 | 影響度 | 工数 | 実行順 |
+|-------|------|--------|--------|------|--------|
+| **Phase 5.1** | 環境変数アクセス1件 | Critical | Critical | 10分 | **1st** |
+| **Phase 5.2** | console使用2件 | High | High | 10分 | **2nd** |
+| **Phase 5.3** | Context回避1件 | High | High | 5分 | **3rd** |
+| **Phase 5.4** | Logger一貫性1件 | Medium | Medium | 5分 | **4th** |
+
+## 🎯 最終完了条件
+
+### 技術的完了基準
+- [ ] **依存注入**: 全てContext/Layer経由
+- [ ] **環境変数**: Config Context経由のみ
+- [ ] **ログ出力**: Logger Service経由のみ
+- [ ] **副作用**: Effect.sync管理下のみ
+- [ ] **エラー処理**: Effect.catchTag統一
+
+### コード品質基準
+- [ ] **関数型純度**: 100%達成
+- [ ] **テスタビリティ**: 依存注入による完全分離
+- [ ] **保守性**: パターン一貫性100%
+- [ ] **型安全性**: strict mode通過
 
 ---
 
-**実行準備完了** ✅  
-**優先度**: High - UI基盤の統一は開発効率に直結  
-**開始**: Sprint 1 基盤整備から推奨
+**最終清掃フェーズ準備完了** ✅  
+**総工数**: 30分  
+**開始**: Phase 5.1 Critical環境変数アクセス修正から即座実行  
 
-**次期展開**: デザインシステム化への基盤構築完了 🚀
+### 🚨 最重要事項
+**Phase 5.1は最優先**: グローバル環境変数アクセスはEffect-ts設計原則の根本違反。この修正により：
+1. 完全な依存注入アーキテクチャ達成
+2. テスタビリティの完全確保
+3. 設定管理の一元化完成
+4. **Effect-ts完全準拠プロジェクト**の達成
+
+**30分で完全クリーン達成可能** 🚀

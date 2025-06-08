@@ -118,24 +118,31 @@ export default function TwitchStyleChatPanel() {
       setLoading(true);
       setError(null);
 
-      await chatApi.fetchLatest(40).match(
-        (messages) => {
-          // Convert to ChatMessage format and sort by timestamp (oldest first)
-          const convertedMessages = messages
-            .map((msg) => convertToMessage(msg))
-            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      try {
+        const messages = await Effect.runPromise(
+          chatApi.fetchLatest(40).pipe(
+            Effect.catchAll((err) => {
+              if (err.message.includes("Supabase environment variables are not configured")) {
+                setError(
+                  "Chat service is not properly configured. Please contact the administrator.",
+                );
+              } else {
+                setError("Failed to load chat messages. Please try again later.");
+              }
+              return Effect.fail(err);
+            }),
+          ),
+        );
 
-          setChatMessages(convertedMessages);
-        },
-        (err) => {
-          console.error("Failed to fetch chat messages:", err);
-          if (err.message.includes("Supabase environment variables are not configured")) {
-            setError("Chat service is not properly configured. Please contact the administrator.");
-          } else {
-            setError("Failed to load chat messages. Please try again later.");
-          }
-        },
-      );
+        // Convert to ChatMessage format and sort by timestamp (oldest first)
+        const convertedMessages = messages
+          .map((msg) => convertToMessage(msg))
+          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+        setChatMessages(convertedMessages);
+      } catch (_err) {
+        // Error already handled in catchAll above
+      }
 
       setLoading(false);
     };
@@ -161,10 +168,7 @@ export default function TwitchStyleChatPanel() {
             );
           });
         });
-
-        console.log("Set up real-time chat subscription:", subscriptionId);
-      } catch (err) {
-        console.error("Failed to subscribe to real-time updates:", err);
+      } catch (_err) {
         // Fallback to polling if real-time fails
         intervalId = setInterval(fetchMessages, 30000);
       }
@@ -176,7 +180,6 @@ export default function TwitchStyleChatPanel() {
     // Cleanup: unsubscribe when component unmounts
     return () => {
       if (subscriptionId) {
-        console.log("Cleaning up chat subscription:", subscriptionId);
         unsubscribeFromChatMessages(subscriptionId);
       }
       if (intervalId) {
@@ -253,8 +256,6 @@ export default function TwitchStyleChatPanel() {
         ),
         Effect.catchAll((error) =>
           Effect.sync(() => {
-            console.error("Failed to send message:", error);
-
             // Handle error types using ts-pattern
             match(error as ChatErrorUnion | unknown)
               .with({ _tag: "ChatSendError" }, (err: ChatSendError) => {

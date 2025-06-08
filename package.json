@@ -41,7 +41,6 @@
     "@workspace/supabase": "workspace:*",
     "bumpwin": "^0.202505.25",
     "hono": "^4.7.11",
-    "neverthrow": "^8.2.0",
     "pg": "^8.16.0",
     "ts-pattern": "^5.7.1",
     "tsup": "^8.5.0",

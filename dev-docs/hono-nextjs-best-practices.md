@@ -139,8 +139,8 @@ export type AppType = typeof app;
 ### 2. エラーハンドリング
 
 ```typescript
-// neverthrow を使用した型安全なエラーハンドリング
-import { err, ok } from "neverthrow";
+// Effect ライブラリを使用した関数型エラーハンドリング
+import { Effect } from "effect";
 
 const handler = async (c) => {
   const result = await someOperation();

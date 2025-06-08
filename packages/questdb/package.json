@@ -24,7 +24,10 @@
     "lint:fix": "biome check . --write"
   },
   "dependencies": {
-    "pg": "^8.16.0"
+    "@workspace/utils": "workspace:*",
+    "effect": "^3.16.4",
+    "pg": "^8.16.0",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@types/pg": "^8.15.4"

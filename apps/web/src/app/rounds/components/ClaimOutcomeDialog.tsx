@@ -12,6 +12,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { MOCKCOINS_OBJECT_IDS } from "bumpwin";
 import { mockcoins } from "bumpwin/suigen";
+import { Effect } from "effect";
 import { useState } from "react";
 
 interface ClaimOutcomeDialogProps {
@@ -35,37 +36,68 @@ export function ClaimOutcomeDialog({
   const [txStatus, setTxStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // Effect-based transaction handler
+  const handleClaimEffect = Effect.gen(function* () {
+    if (!currentAccount) {
+      return yield* Effect.fail({ type: "no_account", message: "No account connected" });
+    }
+
+    const tx = new Transaction();
+
+    // Mint red token
+    const redCoin = mockcoins.red.mint(tx, {
+      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
+      u64: 100n * BigInt(1e9),
+    });
+    tx.transferObjects([redCoin], currentAccount.address);
+
+    // Mint black token
+    const blackCoin = mockcoins.black.mint(tx, {
+      treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
+      u64: 100n * BigInt(1e9),
+    });
+    tx.transferObjects([blackCoin], currentAccount.address);
+
+    // Execute transaction with Effect error handling
+    return yield* Effect.tryPromise({
+      try: () => executeTransaction(tx),
+      catch: (error) => ({
+        type: "transaction_error",
+        message: error instanceof Error ? error.message : "Transaction failed",
+        cause: error,
+      }),
+    });
+  });
+
   const handleClaim = async () => {
     if (!currentAccount) return;
 
-    try {
-      setTxStatus("idle");
-      setErrorMessage("");
+    setTxStatus("idle");
+    setErrorMessage("");
 
-      const tx = new Transaction();
+    // Run Effect and handle result
+    const result = await Effect.runPromise(
+      handleClaimEffect.pipe(
+        Effect.catchAll((error) =>
+          Effect.succeed({
+            success: false,
+            error: error.type,
+            message: error.message,
+          }),
+        ),
+        Effect.map((result) => ({ success: true, result })),
+      ),
+    );
 
-      // Mint red token
-      const redCoin = mockcoins.red.mint(tx, {
-        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.RED,
-        u64: 100n * BigInt(1e9),
-      });
-      tx.transferObjects([redCoin], currentAccount.address);
-
-      // Mint black token
-      const blackCoin = mockcoins.black.mint(tx, {
-        treasuryCap: MOCKCOINS_OBJECT_IDS.TREASURY_CAPS.BLACK,
-        u64: 100n * BigInt(1e9),
-      });
-      tx.transferObjects([blackCoin], currentAccount.address);
-
-      // Execute the combined transaction
-      await executeTransaction(tx);
-      // Note: The success/error state will be handled by the toast notifications
-      // and the isExecuting state from useExecuteTransaction
-    } catch (error) {
+    if (!result.success) {
       setTxStatus("error");
-      setErrorMessage(error instanceof Error ? error.message : "Transaction failed");
+      setErrorMessage(
+        "message" in result && typeof result.message === "string"
+          ? result.message
+          : "Unknown error",
+      );
     }
+    // Success state is handled by useExecuteTransaction hook
   };
 
   return (

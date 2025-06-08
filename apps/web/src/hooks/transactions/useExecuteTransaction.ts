@@ -13,39 +13,42 @@ interface TransactionResult {
 
 const GAS_BUDGET = 50000000; // 0.05 SUI
 
-// Effect Error types using union types (function syntax)
-export type TransactionPreparationError = {
-  readonly _tag: "TransactionPreparationError";
-  readonly cause: unknown;
-};
-
-export type WalletNotConnectedError = {
-  readonly _tag: "WalletNotConnectedError";
-};
-
-export type TransactionExecutionError = {
-  readonly _tag: "TransactionExecutionError";
-  readonly message: string;
-  readonly cause: unknown;
-};
-
-// Error factory functions
+// ✅ Effect-ts compliant error definition using implementation-first pattern
 export const TransactionErrors = {
-  preparationError: (cause: unknown): TransactionPreparationError => ({
-    _tag: "TransactionPreparationError",
+  preparation: (cause: unknown) => ({
+    _tag: "TransactionPreparationError" as const,
+    message: "Failed to prepare transaction",
     cause,
   }),
 
-  walletNotConnected: (): WalletNotConnectedError => ({
-    _tag: "WalletNotConnectedError",
+  walletNotConnected: () => ({
+    _tag: "WalletNotConnectedError" as const,
+    message: "Wallet is not connected",
   }),
 
-  executionError: (message: string, cause: unknown): TransactionExecutionError => ({
-    _tag: "TransactionExecutionError",
+  execution: (message: string, cause: unknown) => ({
+    _tag: "TransactionExecutionError" as const,
     message,
     cause,
   }),
+
+  gasEstimation: (cause: unknown) => ({
+    _tag: "GasEstimationError" as const,
+    message: "Failed to estimate gas for transaction",
+    cause,
+  }),
+
+  simulation: (message: string, cause: unknown) => ({
+    _tag: "TransactionSimulationError" as const,
+    message: `Transaction simulation failed: ${message}`,
+    cause,
+  }),
 } as const;
+
+// ✅ Type inference from implementation - no double declaration
+export type TransactionError = ReturnType<
+  (typeof TransactionErrors)[keyof typeof TransactionErrors]
+>;
 
 // Effect-based transaction execution
 const executeTransactionEffect = (
@@ -70,7 +73,7 @@ const executeTransactionEffect = (
     const tx = yield* Effect.try(() =>
       setupTransaction(transaction, currentAccount?.address || ""),
     ).pipe(
-      Effect.mapError((cause) => TransactionErrors.preparationError(cause)),
+      Effect.mapError((cause) => TransactionErrors.preparation(cause)),
       Effect.tap(() => Effect.log("Transaction prepared successfully")),
     );
 
@@ -80,7 +83,7 @@ const executeTransactionEffect = (
     });
 
     // Execute transaction using Promise-based Effect
-    const result = yield* Effect.async<TransactionResult, TransactionExecutionError>((resume) => {
+    const result = yield* Effect.async<TransactionResult, TransactionError>((resume) => {
       signAndExecute(
         { transaction: tx },
         {
@@ -88,7 +91,7 @@ const executeTransactionEffect = (
             resume(Effect.succeed(result));
           },
           onError: (error) => {
-            resume(Effect.fail(TransactionErrors.executionError(error.message, error)));
+            resume(Effect.fail(TransactionErrors.execution(error.message, error)));
           },
           onSettled: () => {
             // This will be handled by the hook's state management
@@ -118,21 +121,21 @@ export const useExecuteTransaction = () => {
             toast.success("Transaction successful", {
               description: `Digest: ${result.digest.slice(0, 8)}...`,
             });
-            console.log("Transaction result:", result);
           }),
         ),
         Effect.catchTags({
-          WalletNotConnectedError: () =>
+          WalletNotConnectedError: (error) =>
             Effect.sync(() => {
               toast.dismiss(toastId);
-              toast.error("No wallet connected");
+              toast.error("No wallet connected", {
+                description: error.message,
+              });
             }),
           TransactionPreparationError: (error) =>
             Effect.sync(() => {
               toast.dismiss(toastId);
-              console.error("Transaction preparation error:", error.cause);
               toast.error("Transaction preparation failed", {
-                description: error.cause instanceof Error ? error.cause.message : "Unknown error",
+                description: error.cause instanceof Error ? error.cause.message : error.message,
               });
             }),
           TransactionExecutionError: (error) =>
@@ -141,13 +144,25 @@ export const useExecuteTransaction = () => {
               toast.error("Transaction failed", {
                 description: error.message,
               });
-              console.error("Transaction execution error:", error.cause);
+            }),
+          GasEstimationError: (error) =>
+            Effect.sync(() => {
+              toast.dismiss(toastId);
+              toast.error("Gas estimation failed", {
+                description: error.message,
+              });
+            }),
+          TransactionSimulationError: (error) =>
+            Effect.sync(() => {
+              toast.dismiss(toastId);
+              toast.error("Transaction simulation failed", {
+                description: error.message,
+              });
             }),
         }),
-        Effect.catchAll((error) =>
+        Effect.catchAll((_error) =>
           Effect.sync(() => {
             toast.dismiss(toastId);
-            console.error("Unexpected transaction error:", error);
             toast.error("Transaction failed", {
               description: "An unexpected error occurred",
             });

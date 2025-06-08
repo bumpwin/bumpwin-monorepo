@@ -18,42 +18,43 @@ import { Clock, Loader2, MessageSquare, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
-import { match } from "ts-pattern";
 
-// Effect Error types for chat message sending
-type ChatSendError = {
-  readonly _tag: "ChatSendError";
-  readonly cause: unknown;
-};
-
-type InsufficientBalanceError = {
-  readonly _tag: "InsufficientBalanceError";
-  readonly message: string;
-};
-
-type WalletNotConnectedError = {
-  readonly _tag: "WalletNotConnectedError";
-};
-
-// Union type for all chat errors
-type ChatErrorUnion = ChatSendError | InsufficientBalanceError | WalletNotConnectedError;
-
-// Error factory functions
+// ✅ Effect-ts compliant chat error definition using implementation-first pattern
 const ChatErrors = {
-  sendError: (cause: unknown): ChatSendError => ({
-    _tag: "ChatSendError",
+  send: (cause: unknown) => ({
+    _tag: "ChatSendError" as const,
+    message: "Failed to send chat message",
     cause,
   }),
 
-  insufficientBalance: (message: string): InsufficientBalanceError => ({
-    _tag: "InsufficientBalanceError",
-    message,
+  insufficientBalance: (required: string, available: string) => ({
+    _tag: "ChatInsufficientBalanceError" as const,
+    message: `Insufficient balance: required ${required}, available ${available}`,
+    required,
+    available,
   }),
 
-  walletNotConnected: (): WalletNotConnectedError => ({
-    _tag: "WalletNotConnectedError",
+  walletNotConnected: () => ({
+    _tag: "ChatWalletNotConnectedError" as const,
+    message: "Wallet is not connected",
+  }),
+
+  validation: (field: string, value: unknown) => ({
+    _tag: "ChatValidationError" as const,
+    message: `Invalid ${field}: ${String(value)}`,
+    field,
+    value,
+  }),
+
+  network: (cause: unknown) => ({
+    _tag: "ChatNetworkError" as const,
+    message: "Network request failed",
+    cause,
   }),
 } as const;
+
+// ✅ Type inference from implementation - no double declaration
+type ChatError = ReturnType<(typeof ChatErrors)[keyof typeof ChatErrors]>;
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -95,23 +96,30 @@ export default function ChatPanel() {
       setLoading(true);
       setError(null);
 
-      await chatApi.fetchLatest(40).match(
-        (messages) => {
-          // Convert to ChatMessage format and sort by timestamp (oldest first)
-          const convertedMessages = messages
-            .map((msg) => convertToMessage(msg))
-            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      await Effect.runPromise(
+        chatApi.fetchLatest(40).pipe(
+          Effect.tap((messages) =>
+            Effect.sync(() => {
+              // Convert to ChatMessage format and sort by timestamp (oldest first)
+              const convertedMessages = messages
+                .map((msg) => convertToMessage(msg))
+                .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
-          setChatMessages(convertedMessages);
-        },
-        (err) => {
-          console.error("Failed to fetch chat messages:", err);
-          if (err.message.includes("Supabase environment variables are not configured")) {
-            setError("Chat service is not properly configured. Please contact the administrator.");
-          } else {
-            setError("Failed to load chat messages. Please try again later.");
-          }
-        },
+              setChatMessages(convertedMessages);
+            }),
+          ),
+          Effect.catchAll((err) =>
+            Effect.sync(() => {
+              if (err.message.includes("Supabase environment variables are not configured")) {
+                setError(
+                  "Chat service is not properly configured. Please contact the administrator.",
+                );
+              } else {
+                setError("Failed to load chat messages. Please try again later.");
+              }
+            }),
+          ),
+        ),
       );
 
       setLoading(false);
@@ -138,10 +146,7 @@ export default function ChatPanel() {
             );
           });
         });
-
-        console.log("Set up real-time chat subscription:", subscriptionId);
-      } catch (err) {
-        console.error("Failed to subscribe to real-time updates:", err);
+      } catch (_err) {
         // Fallback to polling if real-time fails
         intervalId = setInterval(fetchMessages, 30000);
       }
@@ -153,7 +158,6 @@ export default function ChatPanel() {
     // Cleanup: unsubscribe when component unmounts
     return () => {
       if (subscriptionId) {
-        console.log("Cleaning up chat subscription:", subscriptionId);
         unsubscribeFromChatMessages(subscriptionId);
       }
       if (intervalId) {
@@ -163,37 +167,35 @@ export default function ChatPanel() {
   }, []);
 
   // Effect-based message sending
-  const sendMessageEffect = (messageText: string, userAccount: { address: string }) =>
+  const sendMessageEffect = (
+    messageText: string,
+    userAccount: { address: string },
+  ): Effect.Effect<{ digest: string }, ChatError> =>
     Effect.gen(function* () {
-      const signCallback = (tx: Uint8Array) =>
-        Effect.async<string, ChatSendError>((resume) => {
-          const base64Tx = Buffer.from(tx).toString("base64");
+      const signCallback = (tx: Uint8Array): Promise<string> => {
+        const base64Tx = Buffer.from(tx).toString("base64");
+        return new Promise((resolve, reject) => {
           signAndExecuteTransaction(
             {
               transaction: base64Tx,
             },
             {
               onSuccess: (result: { digest: string }) => {
-                resume(Effect.succeed(JSON.stringify({ digest: result.digest })));
+                resolve(JSON.stringify({ digest: result.digest }));
               },
               onError: (error: Error) => {
-                resume(Effect.fail(ChatErrors.sendError(error)));
+                reject(ChatErrors.send(error));
               },
             },
           );
         });
+      };
 
       // Send chat message with Effect-wrapped callback
       const txResult = yield* Effect.tryPromise({
         try: () =>
-          sendChatMessage(
-            client,
-            userAccount.address,
-            messageText,
-            (tx: Uint8Array) => Effect.runPromise(signCallback(tx)),
-            "testnet",
-          ),
-        catch: (error) => ChatErrors.sendError(error),
+          sendChatMessage(client, userAccount.address, messageText, signCallback, "testnet"),
+        catch: (error) => ChatErrors.send(error),
       });
 
       return txResult;
@@ -228,45 +230,55 @@ export default function ChatPanel() {
             setMessage("");
           }),
         ),
-        Effect.catchAll((error) =>
+        Effect.catchTag("ChatSendError", (error) =>
           Effect.sync(() => {
-            console.error("Failed to send message:", error);
+            const errorMessage =
+              error.cause instanceof Error ? error.cause.message : String(error.cause);
 
-            // Handle error types using ts-pattern
-            match(error as ChatErrorUnion | unknown)
-              .with({ _tag: "ChatSendError" }, (err: ChatSendError) => {
-                const errorMessage =
-                  err.cause instanceof Error ? err.cause.message : String(err.cause);
-
-                if (errorMessage.includes("InsufficientCoinBalance")) {
-                  toast.error(
-                    <div>
-                      Insufficient SUI balance
-                      <div className="mt-1 text-gray-300 text-sm">
-                        You need more SUI to pay for transaction fees
-                      </div>
-                    </div>,
-                  );
-                } else {
-                  toast.error("Failed to send message");
-                }
-              })
-              .with({ _tag: "InsufficientBalanceError" }, (err: InsufficientBalanceError) => {
-                toast.error(
-                  <div>
-                    {err.message || "Insufficient balance"}
-                    <div className="mt-1 text-gray-300 text-sm">
-                      You need more SUI to pay for transaction fees
-                    </div>
-                  </div>,
-                );
-              })
-              .with({ _tag: "WalletNotConnectedError" }, () => {
-                toast.error("Please connect your wallet to send messages");
-              })
-              .otherwise(() => {
-                toast.error("Failed to send message");
-              });
+            if (errorMessage.includes("InsufficientCoinBalance")) {
+              toast.error(
+                <div>
+                  Insufficient SUI balance
+                  <div className="mt-1 text-gray-300 text-sm">
+                    You need more SUI to pay for transaction fees
+                  </div>
+                </div>,
+              );
+            } else {
+              toast.error("Failed to send message");
+            }
+          }),
+        ),
+        Effect.catchTag("ChatInsufficientBalanceError", (error) =>
+          Effect.sync(() => {
+            toast.error(
+              <div>
+                {error.message || "Insufficient balance"}
+                <div className="mt-1 text-gray-300 text-sm">
+                  You need more SUI to pay for transaction fees
+                </div>
+              </div>,
+            );
+          }),
+        ),
+        Effect.catchTag("ChatWalletNotConnectedError", () =>
+          Effect.sync(() => {
+            toast.error("Please connect your wallet to send messages");
+          }),
+        ),
+        Effect.catchTag("ChatValidationError", (error) =>
+          Effect.sync(() => {
+            toast.error(`Validation error: ${error.message}`);
+          }),
+        ),
+        Effect.catchTag("ChatNetworkError", () =>
+          Effect.sync(() => {
+            toast.error("Network error occurred");
+          }),
+        ),
+        Effect.catchAll((_error) =>
+          Effect.sync(() => {
+            toast.error("Failed to send message");
           }),
         ),
         Effect.tap(() =>
@@ -363,16 +375,6 @@ export default function ChatPanel() {
                           <span className="font-semibold text-gray-300 text-xs">
                             {msg.username}
                           </span>
-                          {/*
-                          <a
-                            href={`https://suiscan.xyz/testnet/account/${msg.userId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-gray-500 hover:text-blue-400 transition-colors"
-                          >
-                            <ExternalLink className="inline h-3 w-3 ml-1" />
-                          </a>
-                          */}
                           <span className="ml-2 text-gray-500 text-xs">
                             {formatTime(msg.timestamp)}
                           </span>

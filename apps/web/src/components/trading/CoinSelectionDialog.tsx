@@ -42,15 +42,6 @@ export const CoinSelectionDialog = ({
   });
   const [selectedCoin, setSelectedCoin] = useState<CoinMetadata | null>(null);
 
-  // Debug log to see what data we're getting
-  useEffect(() => {
-    if (isOpen) {
-      console.log("Modal opened - coinMetadata:", coinMetadata);
-      console.log("isLoading:", isLoading);
-      console.log("error:", error);
-    }
-  }, [isOpen, coinMetadata, isLoading, error]);
-
   // Reset selection when modal opens
   useEffect(() => {
     if (isOpen) {

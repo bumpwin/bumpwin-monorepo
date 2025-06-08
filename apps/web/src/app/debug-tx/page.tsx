@@ -3,6 +3,7 @@
 import { useDryRunTransaction, useExecuteTransaction, useTransactionCreators } from "@/hooks";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import type { Transaction } from "@mysten/sui/transactions";
+import { Effect } from "effect";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
@@ -33,20 +34,27 @@ const DebugTxPage = () => {
 
       try {
         if (isDryRun) {
-          const result = await dryRunTransaction(tx);
-          result
-            .map((dryRunResult) => {
-              console.log("Dry run result:", dryRunResult);
-              toast.success("Dry run successful", {
-                description: "Transaction simulation completed",
-              });
-            })
-            .mapErr((error) => {
-              console.error("Dry run error:", error);
-              toast.error("Dry run failed", {
-                description: error.message,
-              });
-            });
+          const resultEffect = await dryRunTransaction(tx);
+          const _dryRunResult = await Effect.runPromise(
+            resultEffect.pipe(
+              Effect.tap((result) =>
+                Effect.sync(() => {
+                  console.log("Dry run result:", result);
+                  toast.success("Dry run successful", {
+                    description: "Transaction simulation completed",
+                  });
+                }),
+              ),
+              Effect.catchAll((error) =>
+                Effect.sync(() => {
+                  console.error("Dry run error:", error);
+                  toast.error("Dry run failed", {
+                    description: error.message,
+                  });
+                }),
+              ),
+            ),
+          );
         } else {
           await executeTransaction(tx);
         }

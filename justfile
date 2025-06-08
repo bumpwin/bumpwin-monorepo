@@ -5,6 +5,7 @@ PROJECT_NAME := "monorepo-template-web"
 
 
 alias i := install
+alias j := install
 alias d := dev
 alias b := build
 alias p := preview
@@ -15,20 +16,7 @@ alias k := check-fix
 
 install:
     echo "Installing dependencies for all packages..."
-    # bun install
     pnpm install
-    echo "Installing dependencies for apps/api..."
-    (cd apps/api && pnpm install)
-    echo "Installing dependencies for apps/web..."
-    (cd apps/web && pnpm install)
-    echo "Installing dependencies for packages/sui..."
-    (cd packages/sui && pnpm install)
-    echo "Installing dependencies for packages/logger..."
-    (cd packages/logger && pnpm install)
-    echo "Installing dependencies for packages/supabase..."
-    (cd packages/supabase && pnpm install)
-    echo "Installing dependencies for packages/shadcn..."
-    (cd packages/shadcn && pnpm install)
     echo "All installations completed."
 
 dev:

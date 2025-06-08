@@ -1,11 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
-import { type Result, err, ok } from "neverthrow";
+import { Context, Effect, Layer } from "effect";
 import { chatHistoryModelToDomain, pollCursorModelToDomain, profileModelToDomain } from "./domain";
 import type { ApiError } from "./error";
-import { createApiError } from "./error";
+import { ApiErrors } from "./error";
 import { authenticateUser } from "./middleware";
-import type { DbRepository } from "./repository";
+import type { ChatHistoryModel, PollCursorModel, ProfileModel } from "./models";
+import { SupabaseService } from "./repository";
 import { uploadAvatar } from "./storage";
 import type {
   GetLatestChatMessagesRequest,
@@ -21,51 +22,47 @@ import type {
   UpdateProfileResponse,
 } from "./types";
 
-export class SupabaseRepository implements DbRepository {
-  constructor(private readonly client: SupabaseClient) {}
+// Service tag for SupabaseClient
+export const SupabaseClientService = Context.GenericTag<SupabaseClient>("SupabaseClient");
 
-  async findProfileById(
+// ✅ Direct Service Pattern implementation
+const makeSupabaseService = (client: SupabaseClient): SupabaseService => ({
+  findProfileById: (
     request: GetProfileByIdRequest,
-  ): Promise<Result<GetProfileByIdResponse, ApiError>> {
-    try {
+  ): Effect.Effect<GetProfileByIdResponse, ApiError> =>
+    Effect.gen(function* () {
       logger.info("Fetching profile", { id: request.userId });
-      const { data, error } = await this.client
-        .from("profiles")
-        .select("*")
-        .eq("id", request.userId)
-        .single();
+
+      const result = yield* Effect.tryPromise({
+        try: () => client.from("profiles").select("*").eq("id", request.userId).single(),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as { data: ProfileModel | null; error: unknown | null };
 
       if (error) {
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
-        return err(createApiError("not_found", `Profile with id ${request.userId} not found`));
+        return yield* Effect.fail(
+          ApiErrors.notFound(`Profile with id ${request.userId} not found`),
+        );
       }
 
-      return ok(profileModelToDomain(data) as GetProfileByIdResponse);
-    } catch (error) {
-      logger.error("Failed to fetch profile", { id: request.userId, error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
+      return profileModelToDomain(data) as GetProfileByIdResponse;
+    }),
 
-  async updateProfile(
-    request: UpdateProfileRequest,
-  ): Promise<Result<UpdateProfileResponse, ApiError>> {
-    try {
+  updateProfile: (request: UpdateProfileRequest): Effect.Effect<UpdateProfileResponse, ApiError> =>
+    Effect.gen(function* () {
       // Authenticate user
-      const authResult = await authenticateUser(this.client);
-      if (authResult.isErr()) {
-        return err(authResult.error);
-      }
-      const { user } = authResult.value;
+      const { user } = yield* authenticateUser(client);
 
       logger.info("Updating profile", { userId: user.id });
 
@@ -85,201 +82,217 @@ export class SupabaseRepository implements DbRepository {
 
       // Handle avatar upload if file exists
       if (request.avatar_file) {
-        const uploadResult = await uploadAvatar(this.client, {
+        const avatarUrl = yield* uploadAvatar(client, {
           file: request.avatar_file,
           userId: user.id,
         });
-
-        if (uploadResult.isErr()) {
-          return err(uploadResult.error);
-        }
-
-        updateData.avatar_url = uploadResult.value;
+        updateData.avatar_url = avatarUrl;
       }
 
       // Update profile with new data
-      const { data, error } = await this.client
-        .from("profiles")
-        .update(updateData)
-        .eq("id", user.id)
-        .select()
-        .single();
+      const result = yield* Effect.tryPromise({
+        try: () => client.from("profiles").update(updateData).eq("id", user.id).select().single(),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as { data: ProfileModel | null; error: unknown | null };
 
       if (error) {
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
-        return err(createApiError("not_found", `Profile with id ${user.id} not found`));
+        return yield* Effect.fail(ApiErrors.notFound(`Profile with id ${user.id} not found`));
       }
 
       const profile = profileModelToDomain(data);
-      return ok({
+      return {
         success: true,
         profile,
-      } as UpdateProfileResponse);
-    } catch (error) {
-      logger.error("Failed to update profile", { error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
+      } as UpdateProfileResponse;
+    }),
 
-  async insertChatMessage(
+  insertChatMessage: (
     request: InsertChatMessageRequest,
-  ): Promise<Result<InsertChatMessageResponse, ApiError>> {
-    try {
+  ): Effect.Effect<InsertChatMessageResponse, ApiError> =>
+    Effect.gen(function* () {
       logger.info("Inserting chat message", { request });
-      const { data, error } = await this.client
-        .from("chat_history")
-        .insert({
-          tx_digest: request.txDigest,
-          event_sequence: request.eventSequence.toString(),
-          created_at: request.createdAt,
-          sender_address: request.senderAddress,
-          message_text: request.messageText,
-        })
-        .select()
-        .single();
+
+      const result = yield* Effect.tryPromise({
+        try: () =>
+          client
+            .from("chat_history")
+            .insert({
+              tx_digest: request.txDigest,
+              event_sequence: request.eventSequence.toString(),
+              created_at: request.createdAt,
+              sender_address: request.senderAddress,
+              message_text: request.messageText,
+            })
+            .select()
+            .single(),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as { data: ChatHistoryModel | null; error: unknown | null };
 
       if (error) {
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
-        return err(createApiError("unknown", "Failed to insert chat message, no data returned"));
+        return yield* Effect.fail(
+          ApiErrors.network("Failed to insert chat message, no data returned"),
+        );
       }
 
       const chatMessage = chatHistoryModelToDomain(data);
-      return ok({
+      return {
         success: true,
         chatMessage,
-      } as InsertChatMessageResponse);
-    } catch (error) {
-      logger.error("Failed to insert chat message", { error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
+      } as InsertChatMessageResponse;
+    }),
 
-  async getLatestChatMessages(
+  getLatestChatMessages: (
     request: GetLatestChatMessagesRequest,
-  ): Promise<Result<GetLatestChatMessagesResponse, ApiError>> {
-    try {
+  ): Effect.Effect<GetLatestChatMessagesResponse, ApiError> =>
+    Effect.gen(function* () {
       logger.info("Fetching latest chat messages", { limit: request.limit });
-      const { data, error } = await this.client
-        .from("chat_history")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(request.limit);
+
+      const result = yield* Effect.tryPromise({
+        try: () =>
+          client
+            .from("chat_history")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(request.limit),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as {
+        data: ChatHistoryModel[] | null;
+        error: unknown | null;
+      };
 
       if (error) {
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
-        return ok([]); // No messages found, return empty array
+        return []; // No messages found, return empty array
       }
 
       const chatMessages = data.map(chatHistoryModelToDomain);
-      return ok(chatMessages as GetLatestChatMessagesResponse);
-    } catch (error) {
-      logger.error("Failed to fetch latest chat messages", { error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
+      return chatMessages as GetLatestChatMessagesResponse;
+    }),
 
-  async getPollCursor(): Promise<Result<GetPollCursorResponse, ApiError>> {
-    try {
+  getPollCursor: (): Effect.Effect<GetPollCursorResponse, ApiError> =>
+    Effect.gen(function* () {
       logger.info("Fetching poll cursor");
-      const { data, error } = await this.client.from("poll_cursor").select("*").single(); // Assuming there's only one row or you want the first
+
+      const result = yield* Effect.tryPromise({
+        try: () => client.from("poll_cursor").select("*").single(),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as { data: PollCursorModel | null; error: unknown | null };
 
       if (error) {
         // If no rows found, it might not be an error, depends on logic
         // For now, treating as an error if a cursor is expected to always exist
-        if (error.code === "PGRST116") {
+        if (error && typeof error === "object" && "code" in error && error.code === "PGRST116") {
           // PGRST116: Row not found
-          return err(createApiError("not_found", "Poll cursor not found"));
+          return yield* Effect.fail(ApiErrors.notFound("Poll cursor not found"));
         }
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
         // This case might be redundant if PGRST116 is caught above
-        return err(createApiError("not_found", "Poll cursor not found"));
+        return yield* Effect.fail(ApiErrors.notFound("Poll cursor not found"));
       }
 
-      return ok(pollCursorModelToDomain(data) as GetPollCursorResponse);
-    } catch (error) {
-      logger.error("Failed to fetch poll cursor", { error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
+      return pollCursorModelToDomain(data) as GetPollCursorResponse;
+    }),
 
-  async updatePollCursor(
+  updatePollCursor: (
     request: UpdatePollCursorRequest,
-  ): Promise<Result<UpdatePollCursorResponse, ApiError>> {
-    try {
+  ): Effect.Effect<UpdatePollCursorResponse, ApiError> =>
+    Effect.gen(function* () {
       logger.info("Updating poll cursor", { cursor: request.cursor });
+
       // Assuming 'id' is the primary key and there is a unique row to update.
       // If the table can be empty, upsert might be better.
       // For this example, we assume a row with a known ID (e.g., a boolean or specific value) exists.
       // Let's assume the poll_cursor table has a single row with id = true (as in domain.ts)
-      const { data, error } = await this.client
-        .from("poll_cursor")
-        .update({
-          cursor: request.cursor,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", true) // Condition to update the specific row
-        .select()
-        .single();
+      const result = yield* Effect.tryPromise({
+        try: () =>
+          client
+            .from("poll_cursor")
+            .update({
+              cursor: request.cursor,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", true) // Condition to update the specific row
+            .select()
+            .single(),
+        catch: (error) =>
+          ApiErrors.network(
+            error instanceof Error ? error.message : "Unknown error occurred",
+            error,
+          ),
+      });
+
+      const { data, error } = result as { data: PollCursorModel | null; error: unknown | null };
 
       if (error) {
-        return err(createApiError("database", error.message, error));
+        return yield* Effect.fail(
+          ApiErrors.database(error instanceof Error ? error.message : "Database error", error),
+        );
       }
 
       if (!data) {
         // This might happen if the row with id = true doesn't exist
-        return err(createApiError("not_found", "Poll cursor entry to update not found"));
+        return yield* Effect.fail(ApiErrors.notFound("Poll cursor entry to update not found"));
       }
 
       const pollCursor = pollCursorModelToDomain(data);
-      return ok({
+      return {
         success: true,
         pollCursor,
-      } as UpdatePollCursorResponse);
-    } catch (error) {
-      logger.error("Failed to update poll cursor", { error });
-      return err(
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
-      );
-    }
-  }
-}
+      } as UpdatePollCursorResponse;
+    }),
+});
+
+// ✅ Direct Service Layer - No Repository abstraction
+export const SupabaseServiceLayer = Layer.effect(
+  SupabaseService,
+  Effect.gen(function* () {
+    const client = yield* SupabaseClientService;
+    return makeSupabaseService(client);
+  }),
+);

@@ -1,41 +1,74 @@
+// ✅ Effect-ts推奨: Context/Layer依存注入パターン
+// PRACTICES/effect.md準拠 - ミュータブルグローバル状態を排除
+
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "@workspace/logger";
-import { SupabaseRepository } from "@workspace/supabase";
 import { createSupabaseClient } from "@workspace/supabase";
-import type { ApiError } from "@workspace/supabase";
-import { createApiError } from "@workspace/supabase";
-import { Effect } from "effect";
+import type { ApiError, GetLatestChatMessagesResponse } from "@workspace/supabase";
+import { ApiErrors, getErrorStatusCode } from "@workspace/supabase";
+import { Context, Effect, Layer } from "effect";
 
-let supabaseRepo: SupabaseRepository | null = null;
+// ConfigContext import for environment variables
+interface ConfigService {
+  readonly config: {
+    readonly env: {
+      readonly NEXT_PUBLIC_SUPABASE_URL: string;
+      readonly NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+    };
+  };
+}
 
-const getRepo = (): Effect.Effect<SupabaseRepository, ApiError> => {
-  if (supabaseRepo) return Effect.succeed(supabaseRepo);
+const ConfigContext = Context.GenericTag<ConfigService>("ConfigService");
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// ✅ Effect-ts推奨: Direct Service Pattern (No Repository)
+// PRACTICES/effect.md: Repository Patternは二重抽象化のアンチパターン
 
-  if (!url || !anon) {
-    return Effect.fail(
-      createApiError(
-        "database",
-        "Supabase environment variables are not configured",
-        "Please check your environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      ),
-    );
-  }
+export interface ChatService {
+  readonly getLatestChatMessages: (params: { limit: number }) => Effect.Effect<
+    GetLatestChatMessagesResponse,
+    ApiError
+  >;
+}
 
-  const client = createSupabaseClient(url, anon);
-  supabaseRepo = new SupabaseRepository(client);
-  return Effect.succeed(supabaseRepo);
+export const ChatService = Context.GenericTag<ChatService>("ChatService");
+
+// ✅ Chat Service Layer - Direct Supabase実装（Repository層除去）
+export const createChatServiceLayer = (supabaseUrl: string, supabaseAnonKey: string) =>
+  Layer.succeed(ChatService, {
+    getLatestChatMessages: (params) => {
+      const client = createSupabaseClient(supabaseUrl, supabaseAnonKey);
+      // ✅ Repository層を除去 - 直接Supabase操作
+      return Effect.tryPromise({
+        try: () =>
+          client
+            .from("chats")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(params.limit)
+            .then((response) => {
+              if (response.error) {
+                return Promise.reject(response.error);
+              }
+              return response.data || [];
+            }),
+        catch: (error) => ApiErrors.database("Failed to fetch chat messages", error),
+      });
+    },
+  });
+
+// ✅ Factory function - Direct Supabase（Repository層除去）
+export const createChatApiWithConfig = (supabaseUrl: string, supabaseAnonKey: string) => {
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey);
 };
 
+// ✅ Chat Service取得 - Context経由 (No Repository抽象化)
 const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiError> => {
   if (!limitParam) return Effect.succeed(40); // Default to 40 messages
 
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
     return Effect.fail(
-      createApiError("validation", "Invalid limit parameter", "Limit must be a positive number"),
+      ApiErrors.validation("Invalid limit parameter", "Limit must be a positive number"),
     );
   }
 
@@ -43,70 +76,113 @@ const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiEr
 };
 
 /**
- * Get latest chat messages
- * @route GET /api/chat
- * @auth Not Required
- * @param {number} limit - Query parameter for the number of messages to retrieve
- *   - Format: /api/chat?limit=20
- *   - Default: 20
- * @returns {Array} Array of chat message objects
- *   - txDigest {string} Transaction digest
- *   - eventSequence {string} Event sequence
- *   - createdAt {string} Creation timestamp
- *   - senderAddress {string} Sender's address
- *   - messageText {string} Message content
- * @error
- *   - 500: Internal Server Error - Database or unexpected errors
+ * ✅ Create chat API router - Direct Service Pattern
+ * PRACTICES/effect.md準拠: Repository抽象化を除去
  */
-export const chatApi = new OpenAPIHono().get("/", async (c) => {
-  const program = Effect.gen(function* () {
-    const repo = yield* getRepo();
-    const limit = yield* parseLimit(c.req.query("limit"));
+export const createChatApi = (supabaseUrl: string, supabaseAnonKey: string) => {
+  const chatServiceLayer = createChatServiceLayer(supabaseUrl, supabaseAnonKey);
 
-    logger.info("Fetching chat messages", { limit });
+  return new OpenAPIHono().get("/", async (c) => {
+    const program = Effect.gen(function* (_) {
+      const chatService = yield* _(ChatService);
+      const limit = yield* _(parseLimit(c.req.query("limit")));
 
-    // Convert Result from neverthrow to Effect
-    const chatMessages = yield* Effect.tryPromise({
-      try: () => repo.getLatestChatMessages({ limit }),
-      catch: (error) => createApiError("database", "Failed to fetch chat messages", String(error)),
-    }).pipe(
-      Effect.flatMap((result) =>
-        result.match(
-          (messages) => Effect.succeed(messages),
-          (error: ApiError) => Effect.fail(error),
-        ),
+      logger.info("Fetching chat messages", { limit });
+
+      // Direct service call - no Repository抽象化
+      const chatMessages = yield* _(chatService.getLatestChatMessages({ limit }));
+
+      logger.info("Chat messages fetched successfully", {
+        count: chatMessages.length,
+      });
+
+      return chatMessages;
+    });
+
+    const result = await Effect.runPromise(
+      program.pipe(
+        Effect.provide(chatServiceLayer),
+        Effect.catchAll((error: ApiError) => {
+          logger.error("API error", { error });
+          const statusCode = getErrorStatusCode(error);
+          return Effect.succeed({
+            error: error.message,
+            details: error.details,
+            statusCode,
+          });
+        }),
       ),
     );
 
-    logger.info("Chat messages fetched successfully", {
-      count: chatMessages.length,
-    });
+    if ("error" in result) {
+      return c.json(
+        {
+          error: result.error,
+          details: result.details,
+        },
+        result.statusCode as unknown as 500,
+      );
+    }
 
-    return chatMessages;
+    return c.json(result);
   });
+};
 
-  const result = await Effect.runPromise(
-    Effect.catchAll(program, (error: ApiError) => {
-      logger.error("API error", { error });
-      return Effect.succeed({
-        error: error.message,
-        code: error.code,
-        details: error.details,
-        statusCode: error.code || 500,
-      });
-    }),
-  );
+// ✅ Effect-ts Context/Layer経由設定管理
+interface ChatApiService {
+  readonly api: ReturnType<typeof createChatApi>;
+}
 
-  if ("error" in result) {
-    return c.json(
-      {
-        error: result.error,
-        code: result.code,
-        details: result.details,
-      },
-      result.statusCode as unknown as 500,
+const ChatApiService = Context.GenericTag<ChatApiService>("ChatApiService");
+
+const ChatApiServiceLayer = Layer.effect(
+  ChatApiService,
+  Effect.gen(function* (_) {
+    const config = yield* _(ConfigContext);
+
+    // ✅ 必須環境変数の事前検証
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_URL) {
+      yield* _(
+        Effect.fail(
+          ApiErrors.validation(
+            "NEXT_PUBLIC_SUPABASE_URL is required",
+            "Missing required environment variable",
+          ),
+        ),
+      );
+    }
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      yield* _(
+        Effect.fail(
+          ApiErrors.validation(
+            "NEXT_PUBLIC_SUPABASE_ANON_KEY is required",
+            "Missing required environment variable",
+          ),
+        ),
+      );
+    }
+
+    const api = createChatApi(
+      config.config.env.NEXT_PUBLIC_SUPABASE_URL,
+      config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     );
-  }
 
-  return c.json(result);
+    return { api };
+  }),
+);
+
+// ✅ Effect管理下でのAPI取得
+export const getChatApi = Effect.gen(function* (_) {
+  const chatApiService = yield* _(ChatApiService);
+  return chatApiService.api;
 });
+
+// ✅ LayerとServiceのexport
+export { ChatApiService, ChatApiServiceLayer };
+
+// ✅ Temporary API for direct usage without Effect Context (development only)
+// TODO: Replace with proper Context/Layer injection at app level
+export const devChatApi = createChatApi(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+);
