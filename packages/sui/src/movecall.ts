@@ -86,21 +86,25 @@ const BumpFamCoin = {
   },
 };
 
-class Justchat {
-  private network: "mainnet" | "testnet";
+// Functional Justchat implementation
+interface JustchatService {
+  readonly sendMessage: (tx: Transaction, params: { message: string; sender: string }) => void;
+  readonly network: "mainnet" | "testnet";
+}
 
-  constructor(network: "mainnet" | "testnet") {
-    this.network = network;
-  }
-
-  sendMessage(_tx: Transaction, params: { message: string; sender: string }) {
+const createJustchat = (network: "mainnet" | "testnet"): JustchatService => ({
+  network,
+  sendMessage: (_tx: Transaction, params: { message: string; sender: string }) => {
     logger.info("Mock Justchat.sendMessage called", {
       ...params,
-      network: this.network,
+      network,
     });
     // This is a placeholder - no actual implementation
-  }
-}
+  },
+});
+
+// Legacy constructor function for backwards compatibility
+const _Justchat = (network: "mainnet" | "testnet") => createJustchat(network);
 
 /**
  * Helper function to sign and execute a transaction
@@ -564,7 +568,7 @@ export async function sendChatMessage(
     });
 
     try {
-      const justchat = new Justchat(network);
+      const justchat = createJustchat(network);
       logger.info("Created Justchat instance", { network });
 
       justchat.sendMessage(tx, {

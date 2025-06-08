@@ -1,46 +1,91 @@
-import { config } from "@/config";
-import { startChatMessageInsertionAsync } from "@/jobs/insertChat";
-import { startChatEventPolling } from "@/jobs/listenChatEvent";
-import { logger } from "@/utils/logger";
+import { Effect } from "effect";
+import { AppLayer, startServer } from "./app";
+import { getConfig } from "./config";
 
-async function startServer() {
-  try {
-    // バックグラウンドジョブの開始
-    await Promise.all([
-      startChatEventPolling(config.env.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS),
-      startChatMessageInsertionAsync(),
-    ]);
+/**
+ * ✅ Effect-ts compliant server startup
+ */
+const serverEffect = Effect.gen(function* () {
+  const config = yield* getConfig;
+  const result = yield* startServer(config.env.PORT);
 
-    logger.info("Background jobs started", {
-      environment: config.env.NODE_ENV,
-    });
-  } catch (error) {
-    logger.error("Failed to start server", error as Error);
+  yield* Effect.log("✅ Server startup completed successfully");
+  yield* Effect.log(`🔧 Services initialized: ${result.services.join(", ")}`);
+  yield* Effect.log(`🌐 Server listening on http://localhost:${result.port}`);
+
+  // Keep the process alive
+  yield* Effect.never; // This will run indefinitely
+}).pipe(Effect.provide(AppLayer));
+
+/**
+ * ✅ Graceful shutdown handlers
+ */
+const setupGracefulShutdown = () => {
+  const shutdown = (signal: string) => {
+    Effect.runSync(Effect.log(`${signal} received, shutting down gracefully`));
+    process.exit(0);
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+
+  process.on("uncaughtException", (error) => {
+    Effect.runSync(Effect.logError(`Uncaught exception: ${error.message}`));
+    console.error(error);
     process.exit(1);
-  }
-}
+  });
 
-// グレースフルシャットダウン
-process.on("SIGTERM", () => {
-  logger.info("SIGTERM received, shutting down gracefully");
-  process.exit(0);
-});
+  process.on("unhandledRejection", (reason) => {
+    Effect.runSync(Effect.logError(`Unhandled rejection: ${String(reason)}`));
+    console.error(reason);
+    process.exit(1);
+  });
+};
 
-process.on("SIGINT", () => {
-  logger.info("SIGINT received, shutting down gracefully");
-  process.exit(0);
-});
+/**
+ * ✅ Start the application
+ */
+const main = () => {
+  setupGracefulShutdown();
 
-// 未処理のエラーハンドリング
-process.on("uncaughtException", (error) => {
-  logger.error("Uncaught exception", error);
-  process.exit(1);
-});
+  Effect.runPromise(
+    serverEffect.pipe(
+      Effect.catchAll((error: unknown) =>
+        Effect.gen(function* () {
+          if (typeof error === "object" && error !== null && "_tag" in error) {
+            const taggedError = error as { _tag: string; message?: string; details?: string };
 
-process.on("unhandledRejection", (reason) => {
-  logger.error("Unhandled rejection", reason as Error);
-  process.exit(1);
-});
+            switch (taggedError._tag) {
+              case "ConfigValidationError":
+                yield* Effect.logError("❌ Configuration validation failed");
+                yield* Effect.logError(`Details: ${taggedError.details || taggedError.message}`);
+                break;
+              case "SupabaseConnectionError":
+                yield* Effect.logError("❌ Supabase connection failed");
+                yield* Effect.logError(`Error: ${taggedError.message}`);
+                break;
+              case "AppStartupError":
+                yield* Effect.logError("❌ Application startup failed");
+                yield* Effect.logError(`Error: ${taggedError.message}`);
+                break;
+              default:
+                yield* Effect.logError("❌ Unexpected server error");
+                yield* Effect.logError(`Error: ${JSON.stringify(error, null, 2)}`);
+                break;
+            }
+          } else {
+            yield* Effect.logError("❌ Unexpected server error");
+            yield* Effect.logError(`Error: ${String(error)}`);
+          }
+          yield* Effect.sync(() => process.exit(1));
+        }),
+      ),
+    ),
+  ).catch((error) => {
+    console.error("💥 Critical server error:", error);
+    process.exit(1);
+  });
+};
 
-// サーバーの起動
-startServer();
+// Start the application
+main();

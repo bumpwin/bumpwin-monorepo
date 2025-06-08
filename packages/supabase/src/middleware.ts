@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
 import { Effect } from "effect";
 import type { ApiError } from "./error";
-import { createApiError } from "./error";
+import { ApiErrors } from "./error";
 
 export interface AuthenticatedUser {
   id: string;
@@ -27,16 +27,12 @@ export function authenticateUser(
     } = yield* Effect.tryPromise({
       try: () => client.auth.getUser(),
       catch: (error) =>
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
+        ApiErrors.network(error instanceof Error ? error.message : "Unknown error occurred", error),
     });
 
     if (authError || !user) {
       logger.error("Authentication failed", { error: authError });
-      return yield* Effect.fail(createApiError("unauthorized", "User not authenticated"));
+      return yield* Effect.fail(ApiErrors.auth("User not authenticated"));
     }
 
     logger.info("User authenticated", { userId: user.id });

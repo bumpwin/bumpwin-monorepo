@@ -1,5 +1,6 @@
 import type { BaseCoinDisplayProps } from "@/types/coin";
 import type { UIMemeMetadata } from "@/types/ui-types";
+import { match } from "ts-pattern";
 
 /**
  * Generate a coin ID for navigation from hex address or existing ID
@@ -37,17 +38,10 @@ export const getCoinCardClasses = (
   const baseClasses =
     "w-full cursor-pointer overflow-hidden border-gray-700 transition-colors hover:border-blue-400 dark:bg-slate-800";
 
-  switch (variant) {
-    case "list":
-    case "champion":
-      return baseClasses;
-    case "battle":
-    case "detail":
-    case "swap":
-      return ""; // These variants handle their own styling
-    default:
-      return baseClasses;
-  }
+  return match(variant)
+    .with("list", "champion", () => baseClasses)
+    .with("battle", "detail", "swap", () => "") // These variants handle their own styling
+    .exhaustive();
 };
 
 /**

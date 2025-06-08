@@ -1,5 +1,7 @@
+import { loadConfig } from "@/config";
 import { logger as baseLogger } from "@workspace/logger";
-import { config } from "../config";
+
+const config = loadConfig();
 
 // ログレベルの型定義
 export type LogLevel = "debug" | "info" | "warn" | "error";

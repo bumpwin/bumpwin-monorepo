@@ -1,0 +1,17 @@
+{
+  "name": "@workspace/utils",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./errors": "./src/errors.ts",
+    "./validation": "./src/validation.ts"
+  },
+  "dependencies": {
+    "effect": "^3.16.4",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.4"
+  }
+}

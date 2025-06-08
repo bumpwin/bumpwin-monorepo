@@ -2,8 +2,9 @@ import process from "node:process";
 import { supabase } from "@/services/supabase";
 import type { EventId } from "@mysten/sui/client";
 import { NETWORK_TYPE } from "@workspace/sui";
-import { SupabaseRepository } from "@workspace/supabase";
+import { createSupabaseRepository } from "@workspace/supabase";
 import type { InsertChatMessageRequest, UpdatePollCursorRequest } from "@workspace/supabase";
+import { EventFetcher } from "bumpwin";
 import { Effect } from "effect";
 
 // Event type definition
@@ -15,43 +16,21 @@ interface ChatEvent {
   readonly text: string;
 }
 
-// Effect Error types using union types (avoiding classes)
-type PollingError = {
-  readonly _tag: "PollingError";
-  readonly cause: unknown;
-};
-
-type DatabaseError = {
-  readonly _tag: "DatabaseError";
-  readonly cause: unknown;
-};
-
-type CursorError = {
-  readonly _tag: "CursorError";
+// Simple error types
+type ListenChatError = {
+  readonly _tag: "PollingError" | "DatabaseError" | "CursorError";
   readonly cause: unknown;
 };
 
 // Error factory functions
 const ListenChatErrors = {
-  pollingError: (cause: unknown): PollingError => ({
-    _tag: "PollingError",
-    cause,
-  }),
-
-  databaseError: (cause: unknown): DatabaseError => ({
-    _tag: "DatabaseError",
-    cause,
-  }),
-
-  cursorError: (cause: unknown): CursorError => ({
-    _tag: "CursorError",
-    cause,
-  }),
+  pollingError: (cause: unknown): ListenChatError => ({ _tag: "PollingError", cause }),
+  databaseError: (cause: unknown): ListenChatError => ({ _tag: "DatabaseError", cause }),
+  cursorError: (cause: unknown): ListenChatError => ({ _tag: "CursorError", cause }),
 } as const;
 
-import { EventFetcher } from "bumpwin";
-
-const dbRepository = new SupabaseRepository(supabase);
+// Simple database operations
+const dbRepository = createSupabaseRepository(supabase);
 
 // Singleton fetcher
 const fetcher = new EventFetcher({
@@ -63,10 +42,9 @@ const fetcher = new EventFetcher({
  * Get the initial cursor from Supabase (Effect version)
  */
 const getInitialCursor = Effect.gen(function* () {
-  // Repository now returns Effect directly
   const pollCursor = yield* dbRepository.getPollCursor().pipe(
     Effect.catchAll((error) => {
-      if (error.type === "not_found") {
+      if (error._tag === "NotFoundError") {
         return Effect.succeed(null);
       }
       return Effect.fail(ListenChatErrors.cursorError(error));
@@ -106,7 +84,6 @@ const saveChatMessage = (event: ChatEvent) =>
       messageText: event.text,
     };
 
-    // Repository uses Effect directly for functional error handling
     yield* dbRepository.insertChatMessage(chatMessageRequest).pipe(
       Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
       Effect.tap(() =>
@@ -124,7 +101,6 @@ const updatePollCursor = (cursor: EventId | null) =>
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    // Repository uses Effect directly for functional error handling
     yield* dbRepository.updatePollCursor(updateCursorRequest).pipe(
       Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
       Effect.tap(() =>
@@ -138,7 +114,6 @@ const updatePollCursor = (cursor: EventId | null) =>
  */
 const isEventAlreadyProcessed = (eventId: string) =>
   Effect.gen(function* () {
-    // Split the eventId into digest and sequence
     const [digest, sequenceStr] = eventId.split("-");
     if (!digest || sequenceStr === undefined) {
       yield* Effect.logError(`Invalid event ID format: ${eventId}`);
@@ -149,7 +124,6 @@ const isEventAlreadyProcessed = (eventId: string) =>
       Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
     );
 
-    // Check if the message exists in the database using a direct query
     const result = yield* Effect.tryPromise(() =>
       supabase
         .from("chat_history")
@@ -182,18 +156,15 @@ const processEvents = (events: readonly ChatEvent[], processedEventIds: Set<stri
 
     yield* Effect.log(`[${new Date().toISOString()}] Processing ${events.length} new event(s)`);
 
-    // First, check all events against the database in a single pass
     const eventsToProcess = [];
     for (const event of events) {
       const eventId = `${event.digest}-${event.sequence}`;
 
-      // Skip if already processed in this session
       if (processedEventIds.has(eventId)) {
         yield* Effect.log(`Skipping already processed event in this session: ${eventId}`);
         continue;
       }
 
-      // Add to list of events to check against DB
       eventsToProcess.push({ event, eventId });
     }
 
@@ -202,34 +173,26 @@ const processEvents = (events: readonly ChatEvent[], processedEventIds: Set<stri
       return;
     }
 
-    // Check all events against the database
     yield* Effect.log(`Checking ${eventsToProcess.length} events against database`);
 
     for (const { event, eventId } of eventsToProcess) {
       yield* Effect.gen(function* () {
-        // Check if already in database
         const alreadyProcessed = yield* isEventAlreadyProcessed(eventId);
         if (alreadyProcessed) {
           yield* Effect.log(`Event ${eventId} already exists in database - skipping`);
-          // Mark as processed in memory to avoid future checks
           processedEventIds.add(eventId);
           return;
         }
 
-        // Log event details
         yield* Effect.log("----------------------------------------");
         yield* Effect.log(`Event: ${eventId}`);
         yield* Effect.log(`Timestamp: ${event.timestamp}`);
         yield* Effect.log(`Sender: ${event.sender}`);
         yield* Effect.log(`Text: "${event.text}"`);
 
-        // Save to database
         yield* saveChatMessage(event);
-
-        // Mark as processed in memory
         processedEventIds.add(eventId);
 
-        // Small delay between processing each event to avoid overwhelming the database
         yield* Effect.sleep("100 millis");
       }).pipe(
         Effect.catchAll((error) =>
@@ -239,41 +202,21 @@ const processEvents = (events: readonly ChatEvent[], processedEventIds: Set<stri
     }
   });
 
-// Legacy Promise wrapper for compatibility
-export const startChatEventPolling = async (pollingIntervalMs: number) => {
-  return Effect.runPromise(
-    startChatEventPollingEffect(pollingIntervalMs).pipe(
-      Effect.catchAll((error) =>
-        Effect.logError(`Chat event polling failed: ${error._tag}`).pipe(
-          Effect.andThen(Effect.fail(error)),
-        ),
-      ),
-    ),
-  );
-};
-
 /**
  * Start polling for chat events (Effect version)
  */
 export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
   Effect.gen(function* () {
-    // Keep track of processed event IDs to avoid duplicates
     const processedEventIds = new Set<string>();
-
-    // Flag to prevent concurrent polling executions
     let isPolling = false;
-    // Flag to determine if we've completed first poll
     let isFirstPoll = true;
 
-    // Get the initial cursor from the database
     let cursor = yield* getInitialCursor;
 
     yield* Effect.log("🚀 Starting polling for chat events...");
     yield* Effect.log(`Network: ${NETWORK_TYPE}, Interval: ${pollingIntervalMs}ms`);
 
-    // Define the polling function separately for better control
     const pollEvents = async () => {
-      // Skip if already polling
       if (isPolling) {
         await Effect.runPromise(
           Effect.log("Skipping poll cycle - previous cycle still in progress"),
@@ -288,17 +231,13 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
           Effect.gen(function* () {
             yield* Effect.log(`Starting poll cycle with cursor: ${JSON.stringify(cursor)}`);
 
-            // Fetch new events
             const result = yield* Effect.tryPromise(() => fetcher.fetch(cursor)).pipe(
               Effect.mapError((cause) => ListenChatErrors.pollingError(cause)),
             );
 
-            // Check if any events were returned
             yield* Effect.log(`Fetched ${result.events.length} events`);
 
             if (result.events.length > 0) {
-              // On first poll, just save the cursor without processing events
-              // This helps when restarting the server to avoid reprocessing old events
               if (isFirstPoll) {
                 yield* Effect.log("First poll - updating cursor without processing events");
                 cursor = result.cursor;
@@ -307,13 +246,11 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
                 return;
               }
 
-              // Filter only new events that haven't been processed in this session
               const newEvents = result.events.filter((event) => {
                 const eventId = `${event.digest}-${event.sequence}`;
                 return !processedEventIds.has(eventId);
               });
 
-              // Process the filtered events
               if (newEvents.length > 0) {
                 yield* Effect.log(
                   `Processing ${newEvents.length} new events of ${result.events.length} total`,
@@ -324,7 +261,6 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
               }
             }
 
-            // Always update cursor if changed, even if no events to process
             if (JSON.stringify(cursor) !== JSON.stringify(result.cursor)) {
               yield* Effect.log(
                 `Updating cursor from ${JSON.stringify(cursor)} to ${JSON.stringify(result.cursor)}`,
@@ -341,16 +277,13 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
       }
     };
 
-    // Run the initial poll immediately
     yield* Effect.promise(() => pollEvents());
 
-    // Then set up the interval
     const intervalId = yield* Effect.sync(() => {
       return setInterval(pollEvents, pollingIntervalMs);
     });
     yield* Effect.log(`Setting up polling interval: ${pollingIntervalMs}ms`);
 
-    // Handle graceful shutdown
     yield* Effect.sync(() => {
       process.on("SIGINT", () => {
         clearInterval(intervalId);
@@ -359,7 +292,6 @@ export const startChatEventPollingEffect = (pollingIntervalMs: number) =>
         );
       });
 
-      // Keep the process running
       process.stdin.resume();
     });
   });

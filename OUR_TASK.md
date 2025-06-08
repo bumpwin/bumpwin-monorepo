@@ -1,224 +1,435 @@
-# コインカードコンポーネント統合タスク - UI一貫性とメンテナンス性向上
+# Effect-ts アンチパターン撲滅プロジェクト - 関数型プログラミング完全準拠
 
 ## 🎯 目標
-散在するコインカードコンポーネント（5つ）を統合し、UI一貫性とメンテナンス性を向上
+プロジェクト全体のEffect-tsアンチパターンを根絶し、関数型プログラミングのベストプラクティスに完全準拠
 
-## 📊 現状分析
+## 🚨 発見されたアンチパターン
 
-### 現在の問題点
-- **重複コンポーネント**: 5つのコインカードが散在
-  - CoinCard (基本リスト表示)
-  - ChampionCoinCard (チャンピオン専用)  
-  - CoinDetailCard (詳細表示・ソーシャルリンク付き)
-  - BattleCoinDetailCard (バトル画面専用)
-  - SwapRoundCoinCard (取引機能付き)
-
-- **型定義の散在**: 各コンポーネントで個別の型定義
-- **共通ロジック重複**: 画像表示、フォーマット処理、coinId生成の重複
-- **保守性の問題**: 変更時の影響範囲が不明確
-
-### 統合戦略
-**統合対象**: CoinCard + ChampionCoinCard → UnifiedDisplayCard
-**独立維持**: BattleCoinDetailCard, SwapRoundCoinCard (機能特化のため)
+### 📊 現状分析
+| カテゴリ | 問題ファイル | アンチパターン | 重要度 |
+|---------|-------------|---------------|--------|
+| エラー定義 | `/apps/web/src/lib/errors.ts` | 二重記述（型+ファクトリー） | Critical |
+| 依存注入 | `/apps/cmd/src/services/supabase.ts` | グローバルシングルトン | Critical |
+| 設定管理 | `/apps/cmd/src/config/index.ts` | ハードコードデフォルト値 | High |
+| エラーハンドリング | 複数ファイル | 散乱パターン | Medium |
 
 ## 📋 実装計画
 
-### Sprint 1: 基盤整備 (30分・低リスク)
-**優先度**: Critical | **工数**: 30分
+### Phase 1: エラー型システム完全刷新 (45分・Critical)
+**優先度**: Critical | **工数**: 45分
 
-#### 1.1 共通型定義統合 (10分)
-- [ ] **BaseCoinDisplayProps作成** - apps/web/src/types/coin.ts
+#### 1.1 新しいエラーファクトリーパターン実装 (20分)
+- [ ] **`/apps/web/src/lib/errors.ts` 完全書き換え**
   ```typescript
-  interface BaseCoinDisplayProps extends UIMemeMetadata {
-    variant?: "list" | "champion";
-    showRound?: boolean;
-    showFavorite?: boolean;
-    onToggleFavorite?: (address: string) => void;
-    className?: string;
+  // ✅ 推奨: 実装優先型推論パターン
+  const AppErrors = {
+    transaction: (message: string, cause?: unknown) => ({
+      _tag: "TransactionError" as const,
+      message,
+      cause
+    }),
+    wallet: (message: string, cause?: unknown) => ({
+      _tag: "WalletError" as const,
+      message,
+      cause
+    }),
+    network: (message: string, cause?: unknown) => ({
+      _tag: "NetworkError" as const,
+      message,
+      cause
+    }),
+    validation: (message: string, field?: string, cause?: unknown) => ({
+      _tag: "ValidationError" as const,
+      message,
+      field,
+      cause
+    })
+  } as const
+
+  type AppError = ReturnType<typeof AppErrors[keyof typeof AppErrors]>
+  ```
+
+#### 1.2 既存エラーハンドリング更新 (15分)
+- [ ] **`/apps/web/src/hooks/transactions/useExecuteTransaction.ts` 更新**
+  ```typescript
+  // ✅ 実装優先型推論適用
+  const TransactionErrors = {
+    preparation: (cause: unknown) => ({
+      _tag: "TransactionPreparationError" as const,
+      cause
+    }),
+    walletNotConnected: () => ({
+      _tag: "WalletNotConnectedError" as const
+    }),
+    execution: (message: string, cause: unknown) => ({
+      _tag: "TransactionExecutionError" as const,
+      message,
+      cause
+    })
+  } as const
+
+  type TransactionError = ReturnType<typeof TransactionErrors[keyof typeof TransactionErrors]>
+  ```
+
+#### 1.3 型安全性検証 (10分)
+- [ ] **TypeScriptコンパイルエラー0件確認**
+- [ ] **catchTag使用箇所の型安全性確認**
+
+### Phase 2: 依存注入システム構築 (60分・Critical)
+**優先度**: Critical | **工数**: 60分
+
+#### 2.1 Supabase Context/Layer実装 (25分)
+- [ ] **`/apps/cmd/src/services/supabase.ts` 完全書き換え**
+  ```typescript
+  import { Context, Effect, Layer } from "effect"
+  import { createClient, type SupabaseClient } from "@supabase/supabase-js"
+
+  // ✅ Context定義
+  interface SupabaseService {
+    readonly client: SupabaseClient
   }
+
+  const SupabaseService = Context.GenericTag<SupabaseService>("SupabaseService")
+
+  // ✅ Layer実装
+  const SupabaseServiceLayer = Layer.effect(
+    SupabaseService,
+    Effect.gen(function* () {
+      const config = yield* Effect.service(Config)
+      const client = createClient(config.env.SUPABASE_URL, config.env.SUPABASE_ANON_KEY)
+      return { client }
+    })
+  )
+
+  // ✅ 使用例
+  const insertChat = (chatData: ChatData) =>
+    Effect.gen(function* () {
+      const supabase = yield* Effect.service(SupabaseService)
+      const result = yield* Effect.tryPromise({
+        try: () => supabase.client.from("chats").insert(chatData),
+        catch: (error) => AppErrors.database("Failed to insert chat", error)
+      })
+      return result
+    })
   ```
 
-#### 1.2 共通ユーティリティ抽出 (10分)
-- [ ] **coinUtils.ts作成** - apps/web/src/utils/coinUtils.ts
+#### 2.2 Config Context/Layer実装 (20分)
+- [ ] **`/apps/cmd/src/config/index.ts` Context/Layer化**
   ```typescript
-  export const generateCoinId = (coin: UIMemeMetadata): string => {...}
-  export const formatCoinDisplayData = (coin: UIMemeMetadata): DisplayData => {...}
-  export const getCoinCardClasses = (variant: string): string => {...}
-  ```
-
-#### 1.3 共通画像コンポーネント (10分)
-- [ ] **CoinImage.tsx作成** - apps/web/src/components/coins/CoinImage.tsx
-  ```typescript
-  interface CoinImageProps {
-    src: string;
-    alt: string;
-    size?: "sm" | "md" | "lg";
-    className?: string;
+  // ✅ Config Context定義
+  interface ConfigService {
+    readonly config: Config
   }
+
+  const ConfigContext = Context.GenericTag<ConfigService>("ConfigService")
+
+  // ✅ Config Layer実装
+  const ConfigLayer = Layer.effect(
+    ConfigContext,
+    Effect.gen(function* () {
+      yield* Effect.sync(() => dotenv.config())
+      
+      const env = yield* Effect.try({
+        try: () => envSchema.parse(process.env),
+        catch: (error) => ConfigErrors.validation(error as z.ZodError)
+      })
+
+      const config: Config = {
+        env,
+        isDevelopment: env.NODE_ENV === "development",
+        isProduction: env.NODE_ENV === "production", 
+        isTest: env.NODE_ENV === "test"
+      }
+
+      return { config }
+    })
+  )
   ```
 
-### Sprint 2: 統合コンポーネント作成 (45分・中リスク)
-**優先度**: High | **工数**: 45分
-
-#### 2.1 UnifiedDisplayCard設計 (15分)
-- [ ] **統合コンポーネント作成** - apps/web/src/components/coins/UnifiedDisplayCard.tsx
+#### 2.3 依存注入統合 (15分)
+- [ ] **全サービスのContext/Layer統合**
   ```typescript
-  export const UnifiedDisplayCard = ({ 
-    variant = "list", 
-    data, 
-    showRound = false,
-    ...props 
-  }: BaseCoinDisplayProps) => {
-    return match(variant)
-      .with("list", () => <ListLayout data={data} {...props} />)
-      .with("champion", () => <ChampionLayout data={data} {...props} />)
-      .exhaustive();
-  };
+  // ✅ 全サービス統合Layer
+  const AppLayer = Layer.merge(ConfigLayer, SupabaseServiceLayer)
+
+  // ✅ アプリケーション実行
+  const program = Effect.gen(function* () {
+    const result = yield* insertChat(chatData)
+    yield* logger.info(`Chat inserted: ${result.id}`)
+    return result
+  })
+
+  Effect.runPromise(program.pipe(Effect.provide(AppLayer)))
   ```
 
-#### 2.2 レイアウトコンポーネント実装 (20分)
-- [ ] **ListLayout実装** - CoinCardのレイアウト継承
-- [ ] **ChampionLayout実装** - ChampionCoinCardのレイアウト継承
-- [ ] **ts-pattern使用** - 条件分岐の型安全化
-
-#### 2.3 プロパティマッピング (10分)
-- [ ] **mapCoinCardProps関数** - 既存props変換
-- [ ] **mapChampionCardProps関数** - 既存props変換
-
-### Sprint 3: 段階的移行 (30分・低リスク)
+### Phase 3: 設定管理のハードコード除去 (30分・High)
 **優先度**: High | **工数**: 30分
 
-#### 3.1 CoinCard移行 (10分)
-- [ ] **CoinCard.tsx更新** - UnifiedDisplayCardラッパー化
+#### 3.1 環境変数必須化 (15分)
+- [ ] **`/apps/cmd/src/config/index.ts` ハードコード除去**
   ```typescript
-  export const CoinCard = (props: CoinCardProps) => {
-    return <UnifiedDisplayCard {...mapCoinCardProps(props)} />;
-  };
+  // ❌ 削除: ハードコードデフォルト値
+  // SUPABASE_URL: z.string().default("http://127.0.0.1:54321")
+
+  // ✅ 必須化
+  const envSchema = z.object({
+    NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    PORT: z.string().transform(Number).default("4000"),
+    LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS: z.string().transform(Number).default("5000"),
+    INSERT_CHAT_INTERVAL_MS: z.string().transform(Number).default("2000"),
+    SUPABASE_URL: z.string().min(1, "SUPABASE_URL is required"),
+    SUPABASE_ANON_KEY: z.string().min(1, "SUPABASE_ANON_KEY is required")
+  })
   ```
 
-#### 3.2 ChampionCoinCard移行 (10分)
-- [ ] **ChampionCoinCard.tsx更新** - UnifiedDisplayCardラッパー化
-- [ ] **型安全性確認** - TypeScriptエラーチェック
+#### 3.2 設定エラーハンドリング改善 (15分)
+- [ ] **設定読み込みエラーの型安全化**
+  ```typescript
+  const ConfigErrors = {
+    validation: (errors: z.ZodError) => ({
+      _tag: "ConfigValidationError" as const,
+      errors: errors.errors,
+      message: errors.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+    }),
+    loading: (cause: unknown) => ({
+      _tag: "ConfigLoadError" as const,
+      cause
+    })
+  } as const
 
-#### 3.3 動作確認・最適化 (10分)
-- [ ] **UI表示確認** - 既存機能の完全互換性
-- [ ] **旧実装削除** - 重複コードの除去
-- [ ] **インポート更新** - 依存関係の整理
+  type ConfigError = ReturnType<typeof ConfigErrors[keyof typeof ConfigErrors]>
+  ```
 
-### Sprint 4: 最適化・独立コンポーネント改善 (15分・任意)
-**優先度**: Medium | **工数**: 15分
+### Phase 4: エラーハンドリング集約パターン適用 (45分・Medium)
+**優先度**: Medium | **工数**: 45分
 
-#### 4.1 独立コンポーネント最適化
-- [ ] **BattleCoinDetailCard改善** - 共通要素の活用
-- [ ] **SwapRoundCoinCard改善** - 共通要素の活用
-- [ ] **共通コンポーネント活用** - CoinImage, coinUtilsの使用
+#### 4.1 エラーハンドリング散乱の修正 (30分)
+- [ ] **React Hooksでのエラーハンドリング集約**
+  ```typescript
+  // ✅ エラーハンドリング集約パターン
+  const useTransaction = () => {
+    const executeTransaction = (tx: Transaction) =>
+      Effect.gen(function* () {
+        const user = yield* fetchUser(id)
+        const profile = yield* fetchProfile(id) 
+        const settings = yield* fetchSettings(id)
+        return { user, profile, settings }
+      }).pipe(
+        // すべてのエラーハンドリングを末尾に集約
+        Effect.catchTag("NotFoundError", (error) => 
+          Effect.succeed({ success: false, error: "RESOURCE_NOT_FOUND", resource: error.resource })
+        ),
+        Effect.catchTag("DatabaseError", (error) =>
+          Effect.succeed({ success: false, error: "DATABASE_UNAVAILABLE", details: error.message })
+        ),
+        Effect.catchAll((error) =>
+          Effect.succeed({ success: false, error: "UNKNOWN_ERROR", message: String(error) })
+        )
+      )
+  }
+  ```
 
-## 🔧 技術的実装詳細
+#### 4.2 Effect.gen統一 (15分)
+- [ ] **Effect.gen使用の統一**
+  ```typescript
+  // ✅ Effect.gen統一パターン
+  const robustProgram = Effect.gen(function* () {
+    const config = yield* Effect.service(Config)
+    const supabase = yield* Effect.service(SupabaseService)
+    const logger = yield* Effect.service(Logger)
+    
+    yield* logger.info("Starting operation")
+    const result = yield* supabase.client.from("table").select()
+    yield* logger.info(`Operation completed: ${result.length} items`)
+    
+    return result
+  })
+  ```
 
-### 統合アーキテクチャ
+## 🧑‍💻 後続LLM向け実装ガイド
+
+### 📚 必須知識ゼロからの学習パス
+
+#### Step 1: Effect-ts基本概念理解 (15分)
 ```typescript
-// 統合前: 5つの個別コンポーネント
-CoinCard, ChampionCoinCard, CoinDetailCard, BattleCoinDetailCard, SwapRoundCoinCard
+// Effect<R, E, A> 基本構造
+Effect<Requirements, Error, Success>
+//     │           │      └─ 成功時の値の型
+//     │           └──────── エラーの型  
+//     └─────────────────── 必要な依存関係の型
 
-// 統合後: 3つのコンポーネント + 共通基盤
-UnifiedDisplayCard (CoinCard + ChampionCoinCard統合)
-+ 独立: BattleCoinDetailCard, SwapRoundCoinCard
-+ 共通: CoinImage, coinUtils, BaseCoinDisplayProps
+// 具体例
+Effect<Database, DatabaseError, User>
+//     │         │               └─ 成功時: User
+//     │         └─────────────── 失敗時: DatabaseError  
+//     └───────────────────────── 必要: Database service
 ```
 
-### 型安全性の保証
+#### Step 2: アンチパターン識別法 (10分)
 ```typescript
-// ts-pattern使用による条件分岐の型安全化
-const Layout = match(variant)
-  .with("list", () => <ListLayout />)
-  .with("champion", () => <ChampionLayout />)
-  .exhaustive(); // 漏れチェック
+// ❌ BAD: 二重記述
+type UserError = { _tag: "ValidationError"; field: string }
+const createUserError = (field: string): UserError => ({ _tag: "ValidationError", field })
+
+// ✅ GOOD: 実装優先型推論
+const UserErrors = {
+  validation: (field: string) => ({ _tag: "ValidationError" as const, field })
+} as const
+type UserError = ReturnType<typeof UserErrors[keyof typeof UserErrors]>
 ```
 
-### レスポンシブ対応
+#### Step 3: Context/Layer実装パターン (20分)
 ```typescript
-// 既存のレスポンシブ機能を維持
-className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+// ✅ 標準パターン
+interface ServiceInterface {
+  readonly method: (param: string) => Effect.Effect<never, ServiceError, Result>
+}
+
+const ServiceTag = Context.GenericTag<ServiceInterface>("ServiceName")
+
+const ServiceLayer = Layer.succeed(ServiceTag, {
+  method: (param) => Effect.succeed(processParam(param))
+})
+
+// 使用
+const program = Effect.gen(function* () {
+  const service = yield* Effect.service(ServiceTag)
+  return yield* service.method("input")
+})
+```
+
+### 🔧 実装チェックリスト
+
+#### 新規ファイル作成時
+- [ ] エラー定義は実装優先型推論パターンを使用
+- [ ] 依存関係はContext/Layerで注入
+- [ ] Effect.genを使用して合成
+- [ ] ハードコードデフォルト値を避ける
+
+#### 既存ファイル修正時
+- [ ] 二重記述パターンの除去
+- [ ] グローバルシングルトンの依存注入化
+- [ ] エラーハンドリング散乱の集約
+- [ ] try/catch → Effect.try変換
+
+### 🚫 絶対に避けるべきパターン
+
+```typescript
+// ❌ NEVER: 直接インポート依存
+import { database } from "./database"
+const result = database.query()
+
+// ❌ NEVER: 二重記述
+interface Error { _tag: string; message: string }
+const createError = (message: string): Error => ({ _tag: "Error", message })
+
+// ❌ NEVER: ハードコードデフォルト
+const DEFAULT_URL = "http://localhost:3000"
+
+// ❌ NEVER: エラーハンドリング散乱
+fetchUser().pipe(Effect.catchTag("Error", handler))
+fetchProfile().pipe(Effect.catchTag("Error", handler))  // 重複!
+```
+
+### ✅ 推奨パターンテンプレート
+
+```typescript
+// ✅ エラー定義テンプレート
+const [ServiceName]Errors = {
+  [errorType]: (param: Type) => ({
+    _tag: "[ErrorName]" as const,
+    param
+  })
+} as const
+
+type [ServiceName]Error = ReturnType<typeof [ServiceName]Errors[keyof typeof [ServiceName]Errors]>
+
+// ✅ サービス定義テンプレート
+interface [ServiceName]Service {
+  readonly [method]: (param: Type) => Effect.Effect<never, [ServiceName]Error, Result>
+}
+
+const [ServiceName]Service = Context.GenericTag<[ServiceName]Service>("[ServiceName]Service")
+
+const [ServiceName]ServiceLayer = Layer.effect(
+  [ServiceName]Service,
+  Effect.gen(function* () {
+    const config = yield* Effect.service(Config)
+    return {
+      [method]: (param) => Effect.succeed(processParam(param))
+    }
+  })
+)
+
+// ✅ 使用テンプレート
+const program = Effect.gen(function* () {
+  const service = yield* Effect.service([ServiceName]Service)
+  const result = yield* service.[method](param)
+  return result
+}).pipe(
+  Effect.catchTag("[ErrorName]", (error) => 
+    Effect.succeed({ success: false, error: error._tag })
+  ),
+  Effect.provide([ServiceName]ServiceLayer)
+)
 ```
 
 ## 📊 進捗指標
 
 ### 成功基準
-| 指標 | 目標値 | 現状 |
-|------|--------|------|
-| コンポーネント数 | 3つ | 5つ |
-| 型定義統一率 | 100% | 20% |
-| 重複コード削減 | 70% | 0% |
-| TypeScriptエラー | 0件 | TBD |
+| 指標 | 現状 | 目標 |
+|------|------|------|
+| アンチパターン数 | 4件 | 0件 |
+| 二重記述箇所 | 3箇所 | 0箇所 |
+| グローバル依存 | 2箇所 | 0箇所 |
+| ハードコード | 1箇所 | 0箇所 |
 
-### パフォーマンス目標
-- **バンドルサイズ**: 変更なし (統合による増加回避)
-- **レンダリング速度**: 変更なし (既存パフォーマンス維持)
-- **開発効率**: 新機能追加時間50%短縮
+### 品質指標
+- [ ] **TypeScriptエラー**: 0件
+- [ ] **Effect合成率**: 100%
+- [ ] **依存注入率**: 100%
+- [ ] **型安全性**: 完全
 
-## 🚨 リスク管理
+## ⚡ 緊急度・影響度マトリックス
 
-### 高リスク項目
-1. **UI互換性**: 既存レイアウトの完全再現
-   - **軽減策**: 段階的移行、詳細な視覚テスト
-2. **型安全性**: 複雑なプロパティマッピング
-   - **軽減策**: TypeScript strict mode、包括的テスト
+| Phase | 緊急度 | 影響度 | 対応 |
+|-------|--------|--------|------|
+| Phase 1 | Critical | Critical | 即座実行 |
+| Phase 2 | Critical | High | 即座実行 |
+| Phase 3 | High | Medium | 24h以内 |
+| Phase 4 | Medium | Medium | 週内 |
 
-### 中リスク項目
-1. **パフォーマンス影響**: 統合による複雑化
-2. **開発体験**: 新しいAPI学習コスト
+## 🎯 完了条件
 
-## 📝 実装ガイドライン
-
-### コーディング規約
-```typescript
-// Good: 統一されたVariant使用
-<UnifiedDisplayCard variant="list" data={coinData} />
-
-// Bad: 直接的な条件分岐
-{isChampion ? <ChampionCard /> : <CoinCard />}
-```
-
-### テスト戦略
-```typescript
-// 各variantのテスト
-describe('UnifiedDisplayCard', () => {
-  it('renders list variant correctly', () => {...});
-  it('renders champion variant correctly', () => {...});
-});
-```
-
-## ✅ 完了基準
-
-### Sprint 完了条件
-- [ ] **Sprint 1**: 共通基盤が正常動作
-- [ ] **Sprint 2**: UnifiedDisplayCardが全variant対応
-- [ ] **Sprint 3**: 既存コンポーネントの完全置換
-- [ ] **Sprint 4**: パフォーマンス目標達成
+### Phase完了基準
+- [ ] **Phase 1**: 全エラー定義が実装優先型推論パターン
+- [ ] **Phase 2**: 全依存関係がContext/Layer経由
+- [ ] **Phase 3**: ハードコード完全除去
+- [ ] **Phase 4**: エラーハンドリング集約完了
 
 ### 最終検証項目
-- [ ] **機能完全性**: 既存機能の100%互換性
-- [ ] **型安全性**: TypeScriptエラー0件
-- [ ] **UI一貫性**: デザインシステム準拠
-- [ ] **パフォーマンス**: 既存レベル維持
-- [ ] **保守性**: コード重複70%削減達成
+- [ ] **関数型純度**: 副作用の完全分離
+- [ ] **型安全性**: TypeScript strict mode通過
+- [ ] **合成可能性**: Effect.genによる合成
+- [ ] **テスタビリティ**: 依存注入による分離
 
 ## 📈 期待効果
 
-### 短期効果
-- **ファイル数削減**: 5つ → 3つ (40%削減)
-- **型定義統一**: 散在した型の一元化
-- **重複コード除去**: 保守性の大幅向上
+### 即効性のある効果
+- **開発者体験**: 型安全性による自信ある開発
+- **バグ削減**: ランタイムエラーの静的排除
+- **保守性**: 関数型による予測可能性
 
-### 長期効果
-- **開発効率向上**: 新機能追加時間50%短縮
-- **UI一貫性**: ブランド体験の統一
-- **技術負債削減**: 将来の拡張性確保
+### 長期的効果  
+- **拡張性**: 合成による複雑性管理
+- **品質**: 関数型による信頼性
+- **チーム**: ベストプラクティスの共有
 
 ---
 
 **実行準備完了** ✅  
-**優先度**: High - UI基盤の統一は開発効率に直結  
-**開始**: Sprint 1 基盤整備から推奨
+**優先度**: Critical - 技術的負債の根本解決  
+**開始**: Phase 1 エラー型システム刷新から即座実行
 
-**次期展開**: デザインシステム化への基盤構築完了 🚀
+**後続LLM指導完了** 🎓  
+**知識ゼロからの実装**: 完全ガイド提供済み 🚀

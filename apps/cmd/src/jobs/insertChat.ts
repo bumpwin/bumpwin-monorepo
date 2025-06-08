@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
 import { join } from "node:path";
 import process from "node:process";
-import { config } from "@/config";
+import { loadConfig } from "@/config";
 import { supabase } from "@/services/supabase";
 import { logger } from "@/utils/logger";
 import { FileSystem } from "@effect/platform";
 import { NodeFileSystem } from "@effect/platform-node";
-import { SupabaseRepository } from "@workspace/supabase";
+import { createSupabaseRepository } from "@workspace/supabase";
 import { Effect } from "effect";
 
 // 型定義
@@ -27,44 +27,22 @@ interface MessageGenerator {
   readonly generateAddress: () => string;
 }
 
-// Effect Error types using union types (avoiding classes)
-type FileReadError = {
-  readonly _tag: "FileReadError";
-  readonly cause: unknown;
-};
-
-type JsonParseError = {
-  readonly _tag: "JsonParseError";
-  readonly cause: unknown;
-};
-
-type DbInsertError = {
-  readonly _tag: "DbInsertError";
+// Simple error type
+type InsertChatError = {
+  readonly _tag: "FileReadError" | "JsonParseError" | "DbInsertError";
   readonly cause: unknown;
 };
 
 // Error factory functions
 const InsertChatErrors = {
-  fileReadError: (cause: unknown): FileReadError => ({
-    _tag: "FileReadError",
-    cause,
-  }),
-
-  jsonParseError: (cause: unknown): JsonParseError => ({
-    _tag: "JsonParseError",
-    cause,
-  }),
-
-  dbInsertError: (cause: unknown): DbInsertError => ({
-    _tag: "DbInsertError",
-    cause,
-  }),
+  fileReadError: (cause: unknown): InsertChatError => ({ _tag: "FileReadError", cause }),
+  jsonParseError: (cause: unknown): InsertChatError => ({ _tag: "JsonParseError", cause }),
+  dbInsertError: (cause: unknown): InsertChatError => ({ _tag: "DbInsertError", cause }),
 } as const;
 
 // メッセージの読み込み (Effect version)
 const loadMessages = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
-
   const filePath = join(__dirname, "messages.json");
 
   const fileContent = yield* fs
@@ -94,35 +72,21 @@ const createMessageGenerator = (messages: Messages): MessageGenerator => ({
 });
 
 // ポアソン分布に従って次のイベントまでの待機時間を計算
-const getNextEventTime = (): number => {
-  const meanWaitingTime = config.env.INSERT_CHAT_INTERVAL_MS; // 設定された間隔を使用
+const getNextEventTime = (interval: number): number => {
+  const meanWaitingTime = interval;
   return -meanWaitingTime * Math.log(Math.random());
 };
 
-// データベース操作 (Effect version)
-const dbRepository = new SupabaseRepository(supabase);
+// Simple database operations
+const dbRepository = createSupabaseRepository(supabase);
+const config = loadConfig();
 
 const insertChatMessage = (message: ChatMessage) =>
   Effect.gen(function* () {
-    // Repository uses Effect directly for functional error handling
     yield* dbRepository.insertChatMessage(message).pipe(
       Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)),
       Effect.tap(() => Effect.log(`Message from ${message.senderAddress} saved to Supabase.`)),
     );
-  });
-
-// メッセージ生成と保存 (Effect version)
-const generateAndSaveMessage = (messageGenerator: MessageGenerator) =>
-  Effect.gen(function* () {
-    const message: ChatMessage = {
-      txDigest: randomUUID(),
-      eventSequence: BigInt(0),
-      createdAt: new Date().toISOString(),
-      senderAddress: messageGenerator.generateAddress(),
-      messageText: messageGenerator.generateMessage(),
-    };
-
-    yield* insertChatMessage(message);
   });
 
 // メイン処理 (Effect version)
@@ -140,25 +104,30 @@ export const startChatMessageInsertion = Effect.gen(function* () {
   );
   yield* Effect.log(`Total available messages: ${messages.comments.length}`);
 
-  let nextEventTime = getNextEventTime();
+  let nextEventTime = getNextEventTime(config.env.INSERT_CHAT_INTERVAL_MS);
   let lastCheckTime = Date.now();
 
-  const intervalId = setInterval(() => {
+  const intervalId = setInterval(async () => {
     const currentTime = Date.now();
     const elapsedTime = currentTime - lastCheckTime;
 
     if (elapsedTime >= nextEventTime) {
-      Effect.runPromise(
-        generateAndSaveMessage(messageGenerator).pipe(
+      const message: ChatMessage = {
+        txDigest: randomUUID(),
+        eventSequence: BigInt(0),
+        createdAt: new Date().toISOString(),
+        senderAddress: messageGenerator.generateAddress(),
+        messageText: messageGenerator.generateMessage(),
+      };
+
+      await Effect.runPromise(
+        insertChatMessage(message).pipe(
           Effect.catchAll((error) => Effect.logError(`Failed to generate message: ${error._tag}`)),
-          Effect.tap(() =>
-            Effect.sync(() => {
-              nextEventTime = getNextEventTime();
-              lastCheckTime = currentTime;
-            }),
-          ),
         ),
       );
+
+      nextEventTime = getNextEventTime(config.env.INSERT_CHAT_INTERVAL_MS);
+      lastCheckTime = currentTime;
     }
   }, config.env.INSERT_CHAT_INTERVAL_MS);
 
@@ -171,17 +140,3 @@ export const startChatMessageInsertion = Effect.gen(function* () {
 
   process.stdin.resume();
 });
-
-// Legacy Promise wrapper for compatibility
-export const startChatMessageInsertionAsync = async () => {
-  return Effect.runPromise(
-    startChatMessageInsertion.pipe(
-      Effect.provide(NodeFileSystem.layer),
-      Effect.catchAll((error) =>
-        Effect.logError(`Chat insertion failed: ${error._tag}`).pipe(
-          Effect.andThen(Effect.fail(error)),
-        ),
-      ),
-    ),
-  );
-};

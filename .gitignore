@@ -52,6 +52,16 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 
+# Environment files in subdirectories (security enhancement)
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+apps/**/.env*
+packages/**/.env*
+!**/.env.example
+
 # IDE - VSCode
 .vscode/*
 !.vscode/extensions.json

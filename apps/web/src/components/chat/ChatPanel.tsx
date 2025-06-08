@@ -20,40 +20,48 @@ import React from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 
-// Effect Error types for chat message sending
-type ChatSendError = {
-  readonly _tag: "ChatSendError";
-  readonly cause: unknown;
-};
-
-type InsufficientBalanceError = {
-  readonly _tag: "InsufficientBalanceError";
-  readonly message: string;
-};
-
-type WalletNotConnectedError = {
-  readonly _tag: "WalletNotConnectedError";
-};
-
-// Union type for all chat errors
-type ChatErrorUnion = ChatSendError | InsufficientBalanceError | WalletNotConnectedError;
-
-// Error factory functions
+// ✅ Effect-ts compliant chat error definition using implementation-first pattern
 const ChatErrors = {
-  sendError: (cause: unknown): ChatSendError => ({
-    _tag: "ChatSendError",
+  send: (cause: unknown) => ({
+    _tag: "ChatSendError" as const,
+    message: "Failed to send chat message",
     cause,
   }),
 
-  insufficientBalance: (message: string): InsufficientBalanceError => ({
-    _tag: "InsufficientBalanceError",
-    message,
+  insufficientBalance: (required: string, available: string) => ({
+    _tag: "ChatInsufficientBalanceError" as const,
+    message: `Insufficient balance: required ${required}, available ${available}`,
+    required,
+    available,
   }),
 
-  walletNotConnected: (): WalletNotConnectedError => ({
-    _tag: "WalletNotConnectedError",
+  walletNotConnected: () => ({
+    _tag: "ChatWalletNotConnectedError" as const,
+    message: "Wallet is not connected",
+  }),
+
+  validation: (field: string, value: unknown) => ({
+    _tag: "ChatValidationError" as const,
+    message: `Invalid ${field}: ${String(value)}`,
+    field,
+    value,
+  }),
+
+  network: (cause: unknown) => ({
+    _tag: "ChatNetworkError" as const,
+    message: "Network request failed",
+    cause,
   }),
 } as const;
+
+// ✅ Type inference from implementation - no double declaration
+type ChatError = ReturnType<(typeof ChatErrors)[keyof typeof ChatErrors]>;
+
+// Helper types for ts-pattern matching
+type ChatSendError = ReturnType<typeof ChatErrors.send>;
+type InsufficientBalanceError = ReturnType<typeof ChatErrors.insufficientBalance>;
+type WalletNotConnectedError = ReturnType<typeof ChatErrors.walletNotConnected>;
+type ChatErrorUnion = ChatSendError | InsufficientBalanceError | WalletNotConnectedError;
 
 export default function ChatPanel() {
   const [message, setMessage] = useState("");
@@ -174,7 +182,7 @@ export default function ChatPanel() {
   const sendMessageEffect = (messageText: string, userAccount: { address: string }) =>
     Effect.gen(function* () {
       const signCallback = (tx: Uint8Array) =>
-        Effect.async<string, ChatSendError>((resume) => {
+        Effect.async<string, ChatError>((resume) => {
           const base64Tx = Buffer.from(tx).toString("base64");
           signAndExecuteTransaction(
             {
@@ -185,7 +193,7 @@ export default function ChatPanel() {
                 resume(Effect.succeed(JSON.stringify({ digest: result.digest })));
               },
               onError: (error: Error) => {
-                resume(Effect.fail(ChatErrors.sendError(error)));
+                resume(Effect.fail(ChatErrors.send(error)));
               },
             },
           );
@@ -201,7 +209,7 @@ export default function ChatPanel() {
             (tx: Uint8Array) => Effect.runPromise(signCallback(tx)),
             "testnet",
           ),
-        catch: (error) => ChatErrors.sendError(error),
+        catch: (error) => ChatErrors.send(error),
       });
 
       return txResult;
@@ -259,7 +267,7 @@ export default function ChatPanel() {
                   toast.error("Failed to send message");
                 }
               })
-              .with({ _tag: "InsufficientBalanceError" }, (err: InsufficientBalanceError) => {
+              .with({ _tag: "ChatInsufficientBalanceError" }, (err: InsufficientBalanceError) => {
                 toast.error(
                   <div>
                     {err.message || "Insufficient balance"}

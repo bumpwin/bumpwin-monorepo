@@ -26,6 +26,9 @@
   },
   "dependencies": {
     "@supabase/postgrest-js": "^1.19.4",
-    "@workspace/logger": "workspace:*"
+    "@workspace/logger": "workspace:*",
+    "@workspace/utils": "workspace:*",
+    "effect": "^3.16.4",
+    "zod": "^3.25.0"
   }
 }

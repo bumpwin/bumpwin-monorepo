@@ -1,7 +1,6 @@
+import { type AppError, AppErrors } from "@/lib/errors";
 import { logger } from "@workspace/logger";
 import type { ChatHistory } from "@workspace/supabase/src/domain";
-import type { ApiError } from "@workspace/supabase/src/error";
-import { createApiError } from "@workspace/supabase/src/error";
 import { Effect } from "effect";
 
 export interface SendChatMessageParams {
@@ -13,15 +12,15 @@ export interface SendChatMessageParams {
 }
 
 export const chatApi = {
-  fetchLatest(limit = 10): Effect.Effect<ChatHistory[], ApiError> {
+  fetchLatest(limit = 10): Effect.Effect<ChatHistory[], AppError> {
     return Effect.gen(function* () {
       const response = yield* Effect.tryPromise({
         try: () => fetch(`/api/chat?limit=${limit}`),
         catch: (error) => {
           logger.error("Failed to fetch chat messages", { error });
-          return createApiError(
-            "unknown",
+          return AppErrors.network(
             error instanceof Error ? error.message : "Failed to fetch chat messages",
+            error,
           );
         },
       });
@@ -30,18 +29,28 @@ export const chatApi = {
         try: () => response.json(),
         catch: (error) => {
           logger.error("Failed to parse chat messages", { error });
-          return createApiError(
-            "unknown",
+          return AppErrors.network(
             error instanceof Error ? error.message : "Failed to parse chat messages",
+            error,
           );
         },
       });
 
       if (!response.ok) {
-        logger.error("Failed to fetch chat messages", {
-          error: (data as { error: string }).error,
-        });
-        return yield* Effect.fail(createApiError("unknown", (data as { error: string }).error));
+        const errorMessage = (data as { error?: string }).error || `HTTP ${response.status}`;
+        logger.error("Failed to fetch chat messages", { error: errorMessage });
+
+        if (response.status === 404) {
+          return yield* Effect.fail(AppErrors.notFound("chat messages"));
+        }
+        if (response.status === 429) {
+          return yield* Effect.fail(AppErrors.rateLimit(10));
+        }
+        if (response.status >= 500) {
+          return yield* Effect.fail(AppErrors.database(errorMessage));
+        }
+
+        return yield* Effect.fail(AppErrors.network(errorMessage));
       }
 
       return data as ChatHistory[];

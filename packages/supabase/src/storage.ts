@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
 import { Effect } from "effect";
 import type { ApiError } from "./error";
-import { createApiError } from "./error";
+import { ApiErrors } from "./error";
 
 interface UploadAvatarParams {
   file: File;
@@ -30,11 +30,7 @@ export function uploadAvatar(
     const arrayBuffer = yield* Effect.tryPromise({
       try: () => file.arrayBuffer(),
       catch: (error) =>
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Failed to read file",
-          error,
-        ),
+        ApiErrors.network(error instanceof Error ? error.message : "Failed to read file", error),
     });
     const buffer = new Uint8Array(arrayBuffer);
 
@@ -46,16 +42,12 @@ export function uploadAvatar(
           upsert: true,
         }),
       catch: (error) =>
-        createApiError(
-          "unknown",
-          error instanceof Error ? error.message : "Unknown error occurred",
-          error,
-        ),
+        ApiErrors.network(error instanceof Error ? error.message : "Unknown error occurred", error),
     });
 
     if (uploadError) {
       logger.error("Failed to upload avatar", { error: uploadError });
-      return yield* Effect.fail(createApiError("database", "Failed to upload avatar", uploadError));
+      return yield* Effect.fail(ApiErrors.database("Failed to upload avatar", uploadError));
     }
 
     // Get public URL

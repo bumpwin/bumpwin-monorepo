@@ -36,7 +36,8 @@ const DarknightSwapUI = ({ coin, variant = "default" }: SwapUIProps) => {
   const amount = watch("amount");
   const [balance, setBalance] = useState<number>(0);
   const [potentialWin, setPotentialWin] = useState<number>(0);
-  const [avgPrice] = useState<number>(17.6);
+  // Price should be fetched from API or props, not hardcoded
+  const [avgPrice] = useState<number>(coin?.price || 0);
   const [activeSide, setActiveSide] = useState<"buy" | "switch">("buy");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReceiveCoin, setSelectedReceiveCoin] = useState<CoinMetadata | null>(null);

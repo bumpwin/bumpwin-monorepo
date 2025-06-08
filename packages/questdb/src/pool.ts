@@ -1,12 +1,14 @@
 import { Pool } from "pg";
 import type { PoolClient } from "pg";
-import { QUESTDB_CONFIG } from "./config";
+import { loadQuestDbConfig } from "./config";
+
+const config = loadQuestDbConfig();
 
 export const pool = new Pool({
-  host: QUESTDB_CONFIG.PROJECT.HOST,
-  port: Number(QUESTDB_CONFIG.PROJECT.PORT),
-  user: QUESTDB_CONFIG.PROJECT.USER,
-  password: QUESTDB_CONFIG.PROJECT.PASSWORD,
+  host: config.connection.host,
+  port: config.connection.port,
+  user: config.connection.user,
+  password: config.connection.password,
 });
 
 export async function withConn<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {

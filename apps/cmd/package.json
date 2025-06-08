@@ -12,14 +12,15 @@
   "dependencies": {
     "@effect/platform": "^0.84.8",
     "@effect/platform-node": "^0.85.9",
-    "@effect/schema": "^0.75.5",
+    "@supabase/supabase-js": "^2.50.0",
     "@workspace/mockdata": "workspace:*",
     "@workspace/sui": "workspace:*",
     "@workspace/supabase": "workspace:*",
     "@workspace/types": "workspace:*",
-    "dotenv": "16.5.0",
+    "@workspace/utils": "workspace:*",
+    "dotenv": "^16.0.0",
     "effect": "^3.16.4",
-    "ts-pattern": "^5.7.1"
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "bun-types": "1.2.15"

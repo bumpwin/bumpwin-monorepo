@@ -2,7 +2,7 @@ import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@workspace/logger";
 import { Effect } from "effect";
 import type { ApiError } from "./error";
-import { createApiError } from "./error";
+import { ApiErrors } from "./error";
 
 /**
  * Extract bearer token from authorization header
@@ -10,7 +10,7 @@ import { createApiError } from "./error";
 export function extractBearerToken(authHeader: string | null): Effect.Effect<string, ApiError> {
   if (!authHeader?.startsWith("Bearer ")) {
     logger.warn("Missing or invalid authorization header");
-    return Effect.fail(createApiError("unauthorized", "Missing or invalid authorization header"));
+    return Effect.fail(ApiErrors.auth("Missing or invalid authorization header"));
   }
 
   return Effect.succeed(authHeader.substring("Bearer ".length));

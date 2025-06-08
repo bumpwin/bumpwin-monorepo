@@ -1,33 +1,41 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "@workspace/logger";
-import { SupabaseRepository } from "@workspace/supabase";
-import { createSupabaseClient } from "@workspace/supabase";
+import { createSupabaseClient, createSupabaseRepository } from "@workspace/supabase";
 import type { ApiError } from "@workspace/supabase";
-import { createApiError } from "@workspace/supabase";
+import { ApiErrors, getErrorStatusCode } from "@workspace/supabase";
+import type { DbRepository } from "@workspace/supabase";
 import { Effect } from "effect";
 
-let supabaseRepo: SupabaseRepository | null = null;
+let supabaseRepo: DbRepository | null = null;
 
-const getRepo = (): Effect.Effect<SupabaseRepository, ApiError> => {
-  if (supabaseRepo) return Effect.succeed(supabaseRepo);
+// Factory function to create repository with provided config
+export const createChatApiWithConfig = (supabaseUrl: string, supabaseAnonKey: string) => {
+  const client = createSupabaseClient(supabaseUrl, supabaseAnonKey);
+  const repo = createSupabaseRepository(client);
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anon) {
-    return Effect.fail(
-      createApiError(
-        "database",
-        "Supabase environment variables are not configured",
-        "Please check your environment variables: NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      ),
-    );
-  }
-
-  const client = createSupabaseClient(url, anon);
-  supabaseRepo = new SupabaseRepository(client);
-  return Effect.succeed(supabaseRepo);
+  return repo;
 };
+
+// Get repository - requires external configuration
+const getRepo = (
+  supabaseUrl?: string,
+  supabaseAnonKey?: string,
+): Effect.Effect<DbRepository, ApiError> =>
+  Effect.gen(function* () {
+    if (supabaseRepo) return supabaseRepo;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return yield* Effect.fail(
+        ApiErrors.config(
+          "Supabase configuration not provided",
+          "Chat API requires Supabase URL and anon key to be provided",
+        ),
+      );
+    }
+
+    supabaseRepo = createChatApiWithConfig(supabaseUrl, supabaseAnonKey);
+    return supabaseRepo;
+  });
 
 const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiError> => {
   if (!limitParam) return Effect.succeed(40); // Default to 40 messages
@@ -35,7 +43,7 @@ const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiEr
   const limit = Number.parseInt(limitParam, 10);
   if (Number.isNaN(limit) || limit < 1) {
     return Effect.fail(
-      createApiError("validation", "Invalid limit parameter", "Limit must be a positive number"),
+      ApiErrors.validation("Invalid limit parameter", "Limit must be a positive number"),
     );
   }
 
@@ -43,60 +51,58 @@ const parseLimit = (limitParam: string | undefined): Effect.Effect<number, ApiEr
 };
 
 /**
- * Get latest chat messages
- * @route GET /api/chat
- * @auth Not Required
- * @param {number} limit - Query parameter for the number of messages to retrieve
- *   - Format: /api/chat?limit=20
- *   - Default: 20
- * @returns {Array} Array of chat message objects
- *   - txDigest {string} Transaction digest
- *   - eventSequence {string} Event sequence
- *   - createdAt {string} Creation timestamp
- *   - senderAddress {string} Sender's address
- *   - messageText {string} Message content
- * @error
- *   - 500: Internal Server Error - Database or unexpected errors
+ * Create chat API router with Supabase configuration
+ * This factory function allows the app to provide its own Supabase config
  */
-export const chatApi = new OpenAPIHono().get("/", async (c) => {
-  const program = Effect.gen(function* () {
-    const repo = yield* getRepo();
-    const limit = yield* parseLimit(c.req.query("limit"));
+export const createChatApi = (supabaseUrl: string, supabaseAnonKey: string) => {
+  return new OpenAPIHono().get("/", async (c) => {
+    const program = Effect.gen(function* () {
+      const repo = yield* getRepo(supabaseUrl, supabaseAnonKey);
+      const limit = yield* parseLimit(c.req.query("limit"));
 
-    logger.info("Fetching chat messages", { limit });
+      logger.info("Fetching chat messages", { limit });
 
-    // Repository now returns Effect directly
-    const chatMessages = yield* repo.getLatestChatMessages({ limit });
+      // Repository now returns Effect directly
+      const chatMessages = yield* repo.getLatestChatMessages({ limit });
 
-    logger.info("Chat messages fetched successfully", {
-      count: chatMessages.length,
+      logger.info("Chat messages fetched successfully", {
+        count: chatMessages.length,
+      });
+
+      return chatMessages;
     });
 
-    return chatMessages;
-  });
-
-  const result = await Effect.runPromise(
-    Effect.catchAll(program, (error: ApiError) => {
-      logger.error("API error", { error });
-      return Effect.succeed({
-        error: error.message,
-        code: error.code,
-        details: error.details,
-        statusCode: error.code || 500,
-      });
-    }),
-  );
-
-  if ("error" in result) {
-    return c.json(
-      {
-        error: result.error,
-        code: result.code,
-        details: result.details,
-      },
-      result.statusCode as unknown as 500,
+    const result = await Effect.runPromise(
+      Effect.catchAll(program, (error: ApiError) => {
+        logger.error("API error", { error });
+        const statusCode = getErrorStatusCode(error);
+        return Effect.succeed({
+          error: error.message,
+          details: error.details,
+          statusCode,
+        });
+      }),
     );
-  }
 
-  return c.json(result);
-});
+    if ("error" in result) {
+      return c.json(
+        {
+          error: result.error,
+          details: result.details,
+        },
+        result.statusCode as unknown as 500,
+      );
+    }
+
+    return c.json(result);
+  });
+};
+
+/**
+ * Legacy default export - requires env vars to be set externally
+ * @deprecated Use createChatApi factory function instead
+ */
+export const chatApi = createChatApi(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+);

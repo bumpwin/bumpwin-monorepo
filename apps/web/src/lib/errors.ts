@@ -1,75 +1,123 @@
 /**
- * Common error handling utilities for the application
+ * Effect-ts compliant error handling system
+ * Using implementation-first type inference pattern
  */
 
 /**
- * Base error types for consistent error handling
+ * ✅ Application Error Factory - Implementation First Pattern
+ * All errors are defined once using factory functions, types are inferred
  */
-export interface AppError {
-  readonly _tag: string;
-  readonly message: string;
-  readonly cause?: unknown;
-}
+export const AppErrors = {
+  transaction: (message: string, cause?: unknown) => ({
+    _tag: "TransactionError" as const,
+    message,
+    cause,
+  }),
+
+  wallet: (message: string, cause?: unknown) => ({
+    _tag: "WalletError" as const,
+    message,
+    cause,
+  }),
+
+  network: (message: string, cause?: unknown) => ({
+    _tag: "NetworkError" as const,
+    message,
+    cause,
+  }),
+
+  validation: (message: string, field?: string, cause?: unknown) => ({
+    _tag: "ValidationError" as const,
+    message,
+    field,
+    cause,
+  }),
+
+  database: (message: string, cause?: unknown) => ({
+    _tag: "DatabaseError" as const,
+    message,
+    cause,
+  }),
+
+  authentication: (message: string, cause?: unknown) => ({
+    _tag: "AuthenticationError" as const,
+    message,
+    cause,
+  }),
+
+  authorization: (message: string, resource?: string, cause?: unknown) => ({
+    _tag: "AuthorizationError" as const,
+    message,
+    resource,
+    cause,
+  }),
+
+  notFound: (resource: string, id?: string, cause?: unknown) => ({
+    _tag: "NotFoundError" as const,
+    message: `${resource} not found${id ? `: ${id}` : ""}`,
+    resource,
+    id,
+    cause,
+  }),
+
+  conflict: (message: string, conflictingValue?: string, cause?: unknown) => ({
+    _tag: "ConflictError" as const,
+    message,
+    conflictingValue,
+    cause,
+  }),
+
+  rateLimit: (limit: number, resetTime?: Date, cause?: unknown) => ({
+    _tag: "RateLimitError" as const,
+    message: `Rate limit exceeded: ${limit} requests`,
+    limit,
+    resetTime,
+    cause,
+  }),
+} as const;
 
 /**
- * Transaction-related errors
+ * ✅ Type inference from implementation - no double declaration
  */
-export interface TransactionError extends AppError {
-  readonly _tag: "TransactionError";
-}
-
-export interface WalletError extends AppError {
-  readonly _tag: "WalletError";
-}
-
-export interface NetworkError extends AppError {
-  readonly _tag: "NetworkError";
-}
-
-export interface ValidationError extends AppError {
-  readonly _tag: "ValidationError";
-  readonly field?: string;
-}
+export type AppError = ReturnType<(typeof AppErrors)[keyof typeof AppErrors]>;
 
 /**
- * Error factory functions for consistent error creation
- */
-export const createTransactionError = (message: string, cause?: unknown): TransactionError => ({
-  _tag: "TransactionError",
-  message,
-  cause,
-});
-
-export const createWalletError = (message: string, cause?: unknown): WalletError => ({
-  _tag: "WalletError",
-  message,
-  cause,
-});
-
-export const createNetworkError = (message: string, cause?: unknown): NetworkError => ({
-  _tag: "NetworkError",
-  message,
-  cause,
-});
-
-export const createValidationError = (
-  message: string,
-  field?: string,
-  cause?: unknown,
-): ValidationError => ({
-  _tag: "ValidationError",
-  message,
-  field,
-  cause,
-});
-
-/**
- * Error handling utilities
+ * ✅ Error type guards using discriminated unions
  */
 export const isAppError = (error: unknown): error is AppError => {
-  return typeof error === "object" && error !== null && "_tag" in error && "message" in error;
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "_tag" in error &&
+    "message" in error &&
+    typeof (error as { _tag: unknown })._tag === "string" &&
+    typeof (error as { message: unknown }).message === "string"
+  );
 };
 
+export const isTransactionError = (
+  error: AppError,
+): error is ReturnType<typeof AppErrors.transaction> => error._tag === "TransactionError";
+
+export const isWalletError = (error: AppError): error is ReturnType<typeof AppErrors.wallet> =>
+  error._tag === "WalletError";
+
+export const isNetworkError = (error: AppError): error is ReturnType<typeof AppErrors.network> =>
+  error._tag === "NetworkError";
+
+export const isValidationError = (
+  error: AppError,
+): error is ReturnType<typeof AppErrors.validation> => error._tag === "ValidationError";
+
+export const isDatabaseError = (error: AppError): error is ReturnType<typeof AppErrors.database> =>
+  error._tag === "DatabaseError";
+
+export const isNotFoundError = (error: AppError): error is ReturnType<typeof AppErrors.notFound> =>
+  error._tag === "NotFoundError";
+
+/**
+ * ✅ Error message extraction utility
+ */
 export const getErrorMessage = (error: unknown): string => {
   if (isAppError(error)) {
     return error.message;
@@ -77,15 +125,78 @@ export const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     return error.message;
   }
+  if (typeof error === "string") {
+    return error;
+  }
   return "An unknown error occurred";
 };
 
 /**
- * Error logging utility
+ * ✅ Enhanced error logging with structured context
  */
-export const logError = (error: unknown, context?: string): void => {
+export const logError = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+): void => {
   const message = getErrorMessage(error);
   const fullContext = context ? `[${context}] ${message}` : message;
 
-  console.error(fullContext, error);
+  if (isAppError(error)) {
+    console.error(fullContext, {
+      tag: error._tag,
+      message: error.message,
+      cause: error.cause,
+      metadata,
+      ...error,
+    });
+  } else {
+    console.error(fullContext, { error, metadata });
+  }
+};
+
+/**
+ * ✅ Error serialization for API responses
+ */
+export const serializeError = (error: AppError): Record<string, unknown> => ({
+  type: error._tag,
+  message: error.message,
+  ...(error.cause && { cause: String(error.cause) }),
+  ...("field" in error && error.field && { field: error.field }),
+  ...("resource" in error && error.resource && { resource: error.resource }),
+  ...("id" in error && error.id && { id: error.id }),
+  ...("limit" in error && error.limit && { limit: error.limit }),
+  ...("resetTime" in error && error.resetTime && { resetTime: error.resetTime?.toISOString() }),
+});
+
+/**
+ * ✅ Common error handling patterns for Effect-ts
+ */
+export const formatErrorForUser = (error: AppError): string => {
+  switch (error._tag) {
+    case "ValidationError":
+      return error.field
+        ? `Invalid ${error.field}: ${error.message}`
+        : `Validation error: ${error.message}`;
+    case "NotFoundError":
+      return `${error.resource} not found`;
+    case "AuthenticationError":
+      return "Please sign in to continue";
+    case "AuthorizationError":
+      return "You don't have permission to perform this action";
+    case "RateLimitError":
+      return "Too many requests. Please try again later";
+    case "NetworkError":
+      return "Network connection failed. Please check your internet connection";
+    case "TransactionError":
+      return "Transaction failed. Please try again";
+    case "WalletError":
+      return "Wallet connection error. Please reconnect your wallet";
+    case "DatabaseError":
+      return "A server error occurred. Please try again";
+    case "ConflictError":
+      return error.message;
+    default:
+      return "An unexpected error occurred";
+  }
 };
