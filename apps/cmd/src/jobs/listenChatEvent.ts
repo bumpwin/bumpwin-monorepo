@@ -106,7 +106,7 @@ const saveChatMessage = (event: ChatEvent) =>
       messageText: event.text,
     };
 
-    // Repository now returns Effect directly, no more neverthrow conversion needed
+    // Repository uses Effect directly for functional error handling
     yield* dbRepository.insertChatMessage(chatMessageRequest).pipe(
       Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
       Effect.tap(() =>
@@ -124,7 +124,7 @@ const updatePollCursor = (cursor: EventId | null) =>
       cursor: cursor ? JSON.stringify(cursor) : null,
     };
 
-    // Repository now returns Effect directly, no more neverthrow conversion needed
+    // Repository uses Effect directly for functional error handling
     yield* dbRepository.updatePollCursor(updateCursorRequest).pipe(
       Effect.mapError((cause) => ListenChatErrors.databaseError(cause)),
       Effect.tap(() =>

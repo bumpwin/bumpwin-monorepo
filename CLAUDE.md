@@ -24,7 +24,7 @@ These rules take precedence and must be followed for all code changes.
 - Use `framer-motion` for animations
 
 #### Error Handling
-- Use `neverthrow` for error handling instead of bare try/catch blocks
+- Use `Effect` library for functional error handling instead of bare try/catch blocks
 - Handle errors explicitly at appropriate boundaries
 
 #### TypeScript

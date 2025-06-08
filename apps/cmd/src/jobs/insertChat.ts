@@ -104,7 +104,7 @@ const dbRepository = new SupabaseRepository(supabase);
 
 const insertChatMessage = (message: ChatMessage) =>
   Effect.gen(function* () {
-    // Repository now returns Effect directly, no more neverthrow conversion needed
+    // Repository uses Effect directly for functional error handling
     yield* dbRepository.insertChatMessage(message).pipe(
       Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)),
       Effect.tap(() => Effect.log(`Message from ${message.senderAddress} saved to Supabase.`)),

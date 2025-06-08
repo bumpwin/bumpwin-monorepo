@@ -118,24 +118,32 @@ export default function TwitchStyleChatPanel() {
       setLoading(true);
       setError(null);
 
-      await chatApi.fetchLatest(40).match(
-        (messages) => {
-          // Convert to ChatMessage format and sort by timestamp (oldest first)
-          const convertedMessages = messages
-            .map((msg) => convertToMessage(msg))
-            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      try {
+        const messages = await Effect.runPromise(
+          chatApi.fetchLatest(40).pipe(
+            Effect.catchAll((err) => {
+              console.error("Failed to fetch chat messages:", err);
+              if (err.message.includes("Supabase environment variables are not configured")) {
+                setError(
+                  "Chat service is not properly configured. Please contact the administrator.",
+                );
+              } else {
+                setError("Failed to load chat messages. Please try again later.");
+              }
+              return Effect.fail(err);
+            }),
+          ),
+        );
 
-          setChatMessages(convertedMessages);
-        },
-        (err) => {
-          console.error("Failed to fetch chat messages:", err);
-          if (err.message.includes("Supabase environment variables are not configured")) {
-            setError("Chat service is not properly configured. Please contact the administrator.");
-          } else {
-            setError("Failed to load chat messages. Please try again later.");
-          }
-        },
-      );
+        // Convert to ChatMessage format and sort by timestamp (oldest first)
+        const convertedMessages = messages
+          .map((msg) => convertToMessage(msg))
+          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+        setChatMessages(convertedMessages);
+      } catch (_err) {
+        // Error already handled in catchAll above
+      }
 
       setLoading(false);
     };
