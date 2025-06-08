@@ -8,20 +8,37 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockCoins } from "@/lib/tempMockData";
+import { useCoins } from "@/hooks";
 import { cn } from "@/lib/utils";
-import type { CoinCardProps } from "@/types/coincard";
+import type { CoinCardProps } from "@/types/coin";
 import { ChevronDown, RotateCw } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { match } from "ts-pattern";
 
 type SortType = "marketCap" | "new";
 
 export function CoinList() {
-  const [coins, setCoins] = useState<CoinCardProps[]>(mockCoins);
+  const { data: apiCoins = [], isLoading, refetch } = useCoins();
+  const [coins, setCoins] = useState<CoinCardProps[]>([]);
   const [sortType, setSortType] = useState<SortType>("marketCap");
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Convert API data to CoinCardProps format
+  React.useEffect(() => {
+    const convertedCoins: CoinCardProps[] = apiCoins.map((coin) => ({
+      ...coin,
+      price: 0.00001, // Default price
+      priceChange24h: 0,
+      priceChangePercentage24h: 0,
+      volume24h: 50000,
+      high24h: 0.00002,
+      low24h: 0.000005,
+      createdAt: new Date(),
+      isFavorite: false,
+    }));
+    setCoins(convertedCoins);
+  }, [apiCoins]);
 
   const handleToggleFavorite = (address: string) => {
     setCoins((prevCoins) =>
@@ -39,12 +56,13 @@ export function CoinList() {
     setShowOnlyFavorites(!showOnlyFavorites);
   };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate refresh
-    setTimeout(() => {
+    try {
+      await refetch();
+    } finally {
       setIsRefreshing(false);
-    }, 1000);
+    }
   };
 
   // Sort and filter coins based on the selected sort type and watchlist toggle
@@ -115,11 +133,17 @@ export function CoinList() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredAndSortedCoins().map((coin) => (
-          <CoinCard key={coin.address} {...coin} onToggleFavorite={handleToggleFavorite} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-white text-xl">Loading coins...</div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredAndSortedCoins().map((coin) => (
+            <CoinCard key={coin.address} {...coin} onToggleFavorite={handleToggleFavorite} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

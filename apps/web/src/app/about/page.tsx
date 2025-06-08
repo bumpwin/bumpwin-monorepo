@@ -11,10 +11,7 @@ export default function AboutPage() {
   return (
     <div className="container mx-auto max-w-7xl px-4 pb-12">
       {/* Hero Section */}
-      <section
-        className="mt-20 mb-20 flex min-h-[80vh] flex-col items-center justify-center gap-12 md:flex-row"
-        data-lenis-scroll-snap-align="start"
-      >
+      <section className="mt-20 mb-20 flex min-h-[80vh] flex-col items-center justify-center gap-12 md:flex-row">
         <div className="md:w-1/2" data-parallax-depth="-0.3">
           <Image
             src="/images/last-one-standing.png"
@@ -46,10 +43,7 @@ export default function AboutPage() {
       </section>
 
       {/* Slogan Section */}
-      <section
-        className="relative my-24 h-[40vh] rounded-2xl"
-        data-lenis-scroll-snap-align="center"
-      >
+      <section className="relative my-24 h-[40vh] rounded-2xl">
         <div className="absolute inset-0 overflow-hidden">
           <div
             className="h-full w-full bg-center bg-cover opacity-15"
@@ -77,10 +71,7 @@ export default function AboutPage() {
       </section>
 
       {/* Previous Champion Section */}
-      <section
-        className="relative mb-24 overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-800/40 p-8 shadow-xl"
-        data-lenis-scroll-snap-align="center"
-      >
+      <section className="relative mb-24 overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900/80 to-gray-800/40 p-8 shadow-xl">
         {/* Champion badge with glow effect */}
         <div className="absolute top-0 right-0 z-0 h-32 w-32 overflow-hidden rounded-bl-full bg-yellow-500/5" />
         <div className="absolute top-6 right-6 flex items-center">
@@ -238,10 +229,7 @@ export default function AboutPage() {
       </div>
 
       {/* Call to Action */}
-      <section
-        className="relative my-24 h-[30vh] overflow-hidden rounded-2xl"
-        data-lenis-scroll-snap-align="center"
-      >
+      <section className="relative my-24 h-[30vh] overflow-hidden rounded-2xl">
         <div className="pin-background absolute inset-0 overflow-hidden">
           <div
             className="h-full w-full bg-center bg-cover opacity-10"
@@ -332,10 +320,7 @@ export default function AboutPage() {
       </div>
 
       {/* Battle Rounds Explanation */}
-      <section
-        className="battle-phases-section mb-28 min-h-screen"
-        data-lenis-scroll-snap-align="center"
-      >
+      <section className="battle-phases-section mb-28 min-h-screen">
         <div className="sticky top-[60px] z-30 bg-gradient-to-b from-black via-black/95 to-transparent pt-8 pb-4">
           <div className="text-center" data-parallax-depth="0.2">
             <h2 className="mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text font-bold text-4xl text-transparent">
@@ -495,10 +480,7 @@ export default function AboutPage() {
       </div>
 
       {/* Community Chat Section */}
-      <section
-        className="mb-28 min-h-[45vh] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800/60 shadow-xl"
-        data-lenis-scroll-snap-align="center"
-      >
+      <section className="mb-28 min-h-[45vh] overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800/60 shadow-xl">
         <div className="grid items-center md:grid-cols-2">
           <div className="p-8" data-parallax-depth="0.05">
             <h2 className="mb-5 bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text font-bold text-3xl text-transparent">
@@ -572,10 +554,7 @@ export default function AboutPage() {
       </div>
 
       {/* Epic Final Call to Action */}
-      <section
-        className="relative mt-24 flex h-[90vh] items-center justify-center overflow-hidden"
-        data-lenis-scroll-snap-align="end"
-      >
+      <section className="relative mt-24 flex h-[90vh] items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image

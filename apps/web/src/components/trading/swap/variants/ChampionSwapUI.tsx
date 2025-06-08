@@ -10,7 +10,7 @@ import { CardContent, CardHeader } from "@/components/ui/card";
 import { DarkCard } from "@/components/ui/dark-card";
 import { useExecuteTransaction } from "@/hooks/transactions/useExecuteTransaction";
 import { useTransactionCreators } from "@/hooks/transactions/useTransactionCreators";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { getSuiBalance } from "@workspace/sui";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface SwapUIProps {
-  coin?: RoundCoin;
+  coin?: UIRoundCoinData;
 }
 
 const ChampionSwapUI = ({ coin }: SwapUIProps) => {

@@ -1,12 +1,13 @@
 "use client";
 
-import { ClaimOutcomeModal } from "@/app/rounds/components/ClaimOutcomeModal";
-import { CreateCoinModal } from "@/app/rounds/components/CreateCoinModal";
+import { ClaimOutcomeDialog } from "@/app/rounds/components/ClaimOutcomeDialog";
+import { CreateCoinDialog } from "@/app/rounds/components/CreateCoinDialog";
 import { ROUNDS } from "@/app/rounds/constants";
 import type { RoundIntent, RoundState } from "@/app/rounds/types";
 import { getChartPoints } from "@/app/rounds/utils";
 import { ChampionCard } from "@/components/champions/ChampionCard";
-import { mockCoinMetadata, mockDominanceChartData } from "@/lib/tempMockData";
+import { useCoinMetadata, useDominanceData } from "@/hooks";
+import { getColorByIndex } from "@/utils/colors";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -74,6 +75,10 @@ export default function RoundsPage() {
     roundId: "",
   });
 
+  // API hooks for data fetching
+  const { data: coinMetadata = [], isLoading: isLoadingCoins } = useCoinMetadata();
+  const { data: dominanceData = [], isLoading: isLoadingDominance } = useDominanceData();
+
   // Add ref for the claim button
   const claimButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -116,6 +121,15 @@ export default function RoundsPage() {
     setShowClaimModal(false);
   };
 
+  // Show loading state while data is being fetched
+  if (isLoadingCoins || isLoadingDominance) {
+    return (
+      <div className="flex min-h-[calc(100vh-var(--header-height))] items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+        <div className="text-white text-xl">Loading rounds...</div>
+      </div>
+    );
+  }
+
   const dashboardData = ROUNDS.map((round, i) => {
     return {
       id: `#${round.round}`,
@@ -127,7 +141,7 @@ export default function RoundsPage() {
       volume: round.metrics.volume,
       memeCount: round.metrics.memes.toString(),
       traderCount: round.metrics.traders.toString(),
-      chartData: getChartPoints(mockDominanceChartData, mockCoinMetadata, i).map((point) => {
+      chartData: getChartPoints(dominanceData, coinMetadata, i).map((point) => {
         const time =
           typeof point.timestamp === "number"
             ? `${Math.floor(point.timestamp / 60)
@@ -165,8 +179,8 @@ export default function RoundsPage() {
   });
 
   // Token colors - matching to the colors used in the application
-  const tokenColors: TokenColors = mockCoinMetadata.reduce((acc: TokenColors, coin) => {
-    acc[coin.symbol.toUpperCase()] = coin.color;
+  const tokenColors: TokenColors = coinMetadata.reduce((acc: TokenColors, coin, index) => {
+    acc[coin.symbol.toUpperCase()] = getColorByIndex(index);
     return acc;
   }, {});
 
@@ -195,8 +209,8 @@ export default function RoundsPage() {
         </main>
       </div>
 
-      <CreateCoinModal isOpen={showCreateModal} onClose={handleCloseModal} />
-      <ClaimOutcomeModal
+      <CreateCoinDialog isOpen={showCreateModal} onClose={handleCloseModal} />
+      <ClaimOutcomeDialog
         isOpen={showClaimModal}
         onClose={handleCloseClaimModal}
         winner={claimData.winner}

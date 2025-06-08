@@ -1,3 +1,4 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import {
   getCompletedRounds,
   getCurrentRound,
@@ -6,9 +7,8 @@ import {
   mockMemeMetadata,
   mockRoundData,
 } from "@workspace/mockdata";
-import { Hono } from "hono";
 
-export const battleroundsApi = new Hono()
+export const battleroundsApi = new OpenAPIHono()
   // Get all rounds
   .get("/", (c) => {
     return c.json(Object.values(mockRoundData));

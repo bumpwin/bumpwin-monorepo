@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { match } from "ts-pattern";
 
 interface FlowChartNodeProps {
   label: string;
@@ -53,19 +54,37 @@ const FlowChartArrow = ({
     down: "rotate-90",
   };
 
-  const arrowWidth = direction === "down" ? "2px" : "100%";
-  const arrowHeight = direction === "down" ? "40px" : "2px";
-  const arrowColor = highlight ? "#ec4899" : "#6b7280";
+  const arrowWidth = match(direction)
+    .with("down", () => "2px")
+    .otherwise(() => "100%");
+  const arrowHeight = match(direction)
+    .with("down", () => "40px")
+    .otherwise(() => "2px");
+  const arrowColor = match(highlight)
+    .with(true, () => "#ec4899")
+    .with(false, () => "#6b7280")
+    .exhaustive();
 
   // Determine arrow head positioning
-  const arrowHeadRight = direction === "right" ? "-4px" : direction === "down" ? "-6px" : "auto";
-  const arrowHeadLeft = direction === "left" ? "-4px" : "auto";
-  const arrowHeadBottom = direction === "down" ? "-4px" : "auto";
-  const arrowHeadTop = direction !== "down" ? "-3px" : "auto";
+  const arrowHeadRight = match(direction)
+    .with("right", () => "-4px")
+    .with("down", () => "-6px")
+    .otherwise(() => "auto");
+  const arrowHeadLeft = match(direction)
+    .with("left", () => "-4px")
+    .otherwise(() => "auto");
+  const arrowHeadBottom = match(direction)
+    .with("down", () => "-4px")
+    .otherwise(() => "auto");
+  const arrowHeadTop = match(direction)
+    .with("down", () => "auto")
+    .otherwise(() => "-3px");
 
   // Determine arrow head transform
-  const arrowHeadTransform =
-    direction === "right" ? "rotate(90deg)" : direction === "left" ? "rotate(-90deg)" : "";
+  const arrowHeadTransform = match(direction)
+    .with("right", () => "rotate(90deg)")
+    .with("left", () => "rotate(-90deg)")
+    .otherwise(() => "");
 
   return (
     <div
@@ -96,7 +115,10 @@ const FlowChartArrow = ({
       </div>
       {label && (
         <div
-          className={`mt-1 font-medium text-xs ${highlight ? "text-pink-400" : "text-gray-400"}`}
+          className={`mt-1 font-medium text-xs ${match(highlight)
+            .with(true, () => "text-pink-400")
+            .with(false, () => "text-gray-400")
+            .exhaustive()}`}
         >
           {label}
         </div>

@@ -1,6 +1,6 @@
 import { CoinIconSymbol } from "@/components/coins/coin-icon-symbol";
 import type { ComponentType, ToggleSide } from "@/components/trading/swap/elements/types";
-import type { RoundCoin } from "@/types/roundcoin";
+import type { UIRoundCoinData } from "@/types/ui-types";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info } from "lucide-react";
 
@@ -8,9 +8,10 @@ interface PotentialWinDisplayProps {
   amount: number | null;
   potentialWin: number;
   activeSide: ToggleSide;
-  coin?: RoundCoin;
+  coin?: UIRoundCoinData;
   avgPrice: number;
   componentType: ComponentType;
+  onReceiveClick?: () => void;
 }
 
 export const PotentialWinDisplay = ({
@@ -20,24 +21,34 @@ export const PotentialWinDisplay = ({
   coin,
   avgPrice,
   componentType,
+  onReceiveClick,
 }: PotentialWinDisplayProps) => {
   // Only render if there's an amount greater than 0
   if (!amount || amount <= 0) return null;
 
   // Default SUI coin if needed
-  const suiCoin = { iconUrl: "/images/SUI.png", symbol: "SUI" } as RoundCoin;
+  const suiCoin: UIRoundCoinData = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000001",
+    iconUrl: "/images/SUI.png",
+    symbol: "SUI",
+    name: "SUI",
+    description: "SUI Network Token",
+    round: 0,
+    price: 1,
+    marketCap: 1000000,
+  };
 
   // RACC coin for darknight mode
-  const raccCoin = {
+  const raccCoin: UIRoundCoinData = {
+    id: "0x0000000000000000000000000000000000000000000000000000000000000009",
     iconUrl: "/images/mockmemes/RACC.webp",
     symbol: "RACC",
     name: "Raccoon Moon",
-    id: "0x0000000000000000000000000000000000000000000000000000000000000009",
+    description: "Raccoon Moon Token",
     round: 0,
-    share: 0,
-    marketCap: 0,
-    description: "",
-  } as RoundCoin;
+    price: 0.1,
+    marketCap: 100000,
+  };
 
   // Determine which coin to show based on componentType and activeSide
   const displayCoin = (() => {
@@ -96,10 +107,72 @@ export const PotentialWinDisplay = ({
           ) : (
             // Darknight/Champion向けの元のレイアウト
             <>
-              <div className="mb-2 cursor-not-allowed font-medium text-gray-400 text-sm">
+              <div
+                className={`mb-2 font-medium text-gray-400 text-sm ${
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "cursor-pointer transition-colors hover:text-white"
+                    : "cursor-not-allowed"
+                }`}
+                onClick={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? onReceiveClick
+                    : undefined
+                }
+                onKeyDown={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onReceiveClick();
+                        }
+                      }
+                    : undefined
+                }
+                role={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? 0
+                    : undefined
+                }
+              >
                 {labelText}
               </div>
-              <div className="flex cursor-not-allowed items-baseline px-3">
+              <div
+                className={`flex items-baseline px-3 ${
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "cursor-pointer rounded transition-colors hover:bg-[#3C41FF]/10"
+                    : "cursor-not-allowed"
+                }`}
+                onClick={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? onReceiveClick
+                    : undefined
+                }
+                onKeyDown={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onReceiveClick();
+                        }
+                      }
+                    : undefined
+                }
+                role={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={
+                  componentType === "darknight" && activeSide === "switch" && onReceiveClick
+                    ? 0
+                    : undefined
+                }
+              >
                 <CoinIconSymbol
                   coin={displayCoin}
                   size="sm"

@@ -10,7 +10,7 @@ export interface Coin {
   telegramLink?: string;
   websiteLink?: string;
   twitterLink?: string;
-  color: string;
+  color?: string;
   createdBy?: string;
 }
 
@@ -19,7 +19,7 @@ export interface CoinDisplayInfo {
   id: string;
   symbol: string;
   name: string;
-  color: string;
+  color?: string;
   iconUrl?: string;
 }
 

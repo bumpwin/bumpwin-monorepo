@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/components/ui/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
-// import { ChallengeOverlay } from "@/components/ChallengeOverlay";
-import { ResultView } from "@/components/ResultView";
 import AppBar from "@/components/layout/AppBar";
 import { ConfettiEffect } from "@/components/ui/ConfettiEffect";
 import { Providers } from "@/providers/Providers";
-import { getMemeMetadataById, getRoundByNumber } from "@workspace/mockdata";
 import { Toaster } from "sonner";
 
 export const runtime = "edge";
@@ -47,32 +44,8 @@ export default function RootLayout({
         <Providers>
           <AppBar />
           <main className="flex-1">{children}</main>
-          {/* <Footer /> */}
           <Toaster position="bottom-right" duration={1500} />
           <ConfettiEffect />
-          {/* <ChallengeOverlay /> */}
-          {(() => {
-            const round3 = getRoundByNumber(3);
-            const jellMeme =
-              round3 && round3.status === "completed" && round3.championMemeId
-                ? getMemeMetadataById(round3.championMemeId)
-                : undefined;
-
-            return jellMeme ? (
-              <ResultView
-                coin={{
-                  id: jellMeme.id,
-                  symbol: jellMeme.symbol,
-                  name: jellMeme.name,
-                  iconUrl: jellMeme.iconUrl,
-                  description: jellMeme.description,
-                  round: 3,
-                  share: 25,
-                  marketCap: 1000000,
-                }}
-              />
-            ) : null;
-          })()}
         </Providers>
       </body>
     </html>

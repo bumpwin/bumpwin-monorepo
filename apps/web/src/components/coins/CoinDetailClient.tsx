@@ -2,7 +2,7 @@
 
 import LWCChart from "@/components/charts/LWCChart";
 import SwapPanel from "@/components/trading/SwapPanel";
-import type { CoinDetailData } from "@/lib/tempMockData";
+import type { CoinDetailData } from "@/types/coin";
 import { formatCurrency } from "@/utils/format";
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink } from "lucide-react";
