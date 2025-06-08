@@ -10,7 +10,7 @@ export const DarkCard = ({ className, variant = "default", ...props }: DarkCardP
   return (
     <Card
       className={cn(
-        "border border-[#23262F] bg-black/20 backdrop-blur-sm",
+        "overflow-hidden border border-[#23262F] bg-black/20 backdrop-blur-sm",
         variant === "champion" && "hover:border-yellow-400/20",
         className,
       )}
