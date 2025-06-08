@@ -110,7 +110,6 @@ export default function ChatPanel() {
           ),
           Effect.catchAll((err) =>
             Effect.sync(() => {
-              console.error("Failed to fetch chat messages:", err);
               if (err.message.includes("Supabase environment variables are not configured")) {
                 setError(
                   "Chat service is not properly configured. Please contact the administrator.",
@@ -147,10 +146,7 @@ export default function ChatPanel() {
             );
           });
         });
-
-        console.log("Set up real-time chat subscription:", subscriptionId);
-      } catch (err) {
-        console.error("Failed to subscribe to real-time updates:", err);
+      } catch (_err) {
         // Fallback to polling if real-time fails
         intervalId = setInterval(fetchMessages, 30000);
       }
@@ -162,7 +158,6 @@ export default function ChatPanel() {
     // Cleanup: unsubscribe when component unmounts
     return () => {
       if (subscriptionId) {
-        console.log("Cleaning up chat subscription:", subscriptionId);
         unsubscribeFromChatMessages(subscriptionId);
       }
       if (intervalId) {
@@ -281,9 +276,8 @@ export default function ChatPanel() {
             toast.error("Network error occurred");
           }),
         ),
-        Effect.catchAll((error) =>
+        Effect.catchAll((_error) =>
           Effect.sync(() => {
-            console.error("Failed to send message:", error);
             toast.error("Failed to send message");
           }),
         ),
@@ -381,16 +375,6 @@ export default function ChatPanel() {
                           <span className="font-semibold text-gray-300 text-xs">
                             {msg.username}
                           </span>
-                          {/*
-                          <a
-                            href={`https://suiscan.xyz/testnet/account/${msg.userId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-gray-500 hover:text-blue-400 transition-colors"
-                          >
-                            <ExternalLink className="inline h-3 w-3 ml-1" />
-                          </a>
-                          */}
                           <span className="ml-2 text-gray-500 text-xs">
                             {formatTime(msg.timestamp)}
                           </span>

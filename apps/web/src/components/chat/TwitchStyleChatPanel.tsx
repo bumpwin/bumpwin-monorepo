@@ -122,7 +122,6 @@ export default function TwitchStyleChatPanel() {
         const messages = await Effect.runPromise(
           chatApi.fetchLatest(40).pipe(
             Effect.catchAll((err) => {
-              console.error("Failed to fetch chat messages:", err);
               if (err.message.includes("Supabase environment variables are not configured")) {
                 setError(
                   "Chat service is not properly configured. Please contact the administrator.",
@@ -169,10 +168,7 @@ export default function TwitchStyleChatPanel() {
             );
           });
         });
-
-        console.log("Set up real-time chat subscription:", subscriptionId);
-      } catch (err) {
-        console.error("Failed to subscribe to real-time updates:", err);
+      } catch (_err) {
         // Fallback to polling if real-time fails
         intervalId = setInterval(fetchMessages, 30000);
       }
@@ -184,7 +180,6 @@ export default function TwitchStyleChatPanel() {
     // Cleanup: unsubscribe when component unmounts
     return () => {
       if (subscriptionId) {
-        console.log("Cleaning up chat subscription:", subscriptionId);
         unsubscribeFromChatMessages(subscriptionId);
       }
       if (intervalId) {
@@ -261,8 +256,6 @@ export default function TwitchStyleChatPanel() {
         ),
         Effect.catchAll((error) =>
           Effect.sync(() => {
-            console.error("Failed to send message:", error);
-
             // Handle error types using ts-pattern
             match(error as ChatErrorUnion | unknown)
               .with({ _tag: "ChatSendError" }, (err: ChatSendError) => {

@@ -1,7 +1,6 @@
-import { ConfigContext, loadConfig } from "@/config";
+import { ConfigLayer, getConfig } from "@/config";
 import { startChatMessageInsertion } from "@/jobs/insertChat";
 import { startChatEventPollingEffect } from "@/jobs/listenChatEvent";
-import { logger } from "@/utils/logger";
 import { NodeFileSystem } from "@effect/platform-node";
 import { Context, Effect, Layer } from "effect";
 
@@ -18,10 +17,9 @@ const LoggerServiceLayer = Layer.succeed(LoggerService, {
   logError: (message: string) => Effect.sync(() => console.error(`[ERROR] ${message}`)),
 });
 
-// Simple server startup with required layers
-const config = loadConfig();
-
 const startServerEffect = Effect.gen(function* () {
+  const config = yield* getConfig;
+
   // Start background jobs in parallel
   yield* Effect.all(
     [
@@ -37,28 +35,27 @@ const startServerEffect = Effect.gen(function* () {
 
 // Process signal handlers
 process.on("SIGTERM", () => {
-  logger.info("SIGTERM received, shutting down gracefully");
+  console.log("[INFO] SIGTERM received, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  logger.info("SIGINT received, shutting down gracefully");
+  console.log("[INFO] SIGINT received, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("uncaughtException", (error) => {
-  logger.error("Uncaught exception", error);
+  console.error("[ERROR] Uncaught exception", error);
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason) => {
-  logger.error("Unhandled rejection", reason as Error);
+  console.error("[ERROR] Unhandled rejection", reason);
   process.exit(1);
 });
 
 // Server startup with proper layer provision
-const configLayer = Layer.succeed(ConfigContext, { config });
-const mainLayer = Layer.mergeAll(configLayer, LoggerServiceLayer, NodeFileSystem.layer);
+const mainLayer = Layer.mergeAll(ConfigLayer, LoggerServiceLayer, NodeFileSystem.layer);
 
 Effect.runPromise(
   startServerEffect.pipe(
@@ -76,6 +73,6 @@ Effect.runPromise(
     }),
   ),
 ).catch((error) => {
-  logger.error("Critical server error", error);
+  console.error("[ERROR] Critical server error", error);
   process.exit(1);
 });

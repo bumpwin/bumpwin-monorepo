@@ -119,55 +119,6 @@ export const loadWebConfigEffect = Effect.gen(function* () {
 export const WebConfigLayer = Layer.effect(WebConfigContext, loadWebConfigEffect);
 
 /**
- * ✅ Legacy synchronous config loading for backwards compatibility
- * Safe for client-side usage (only accesses NEXT_PUBLIC_* variables)
- */
-export const loadWebConfig = (): WebConfig => {
-  const { validateEnvSync } = require("@workspace/utils/validation");
-  const env = validateEnvSync(webEnvSchema, process.env);
-
-  return {
-    env,
-    client: {
-      supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-      supabaseAnonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    },
-    server: {
-      supabaseServiceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
-    },
-    isDevelopment: env.NODE_ENV === "development",
-    isProduction: env.NODE_ENV === "production",
-    isTest: env.NODE_ENV === "test",
-  };
-};
-
-/**
- * ✅ Client-safe config loading (only NEXT_PUBLIC_* variables)
- * This can be safely used in the browser
- */
-export const loadClientConfig = () => {
-  const clientEnv = {
-    NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  };
-
-  const { validateEnvSync } = require("@workspace/utils/validation");
-  const env = validateEnvSync(webEnvSchema.omit({ SUPABASE_SERVICE_ROLE_KEY: true }), clientEnv);
-
-  return {
-    env,
-    client: {
-      supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-      supabaseAnonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    },
-    isDevelopment: env.NODE_ENV === "development",
-    isProduction: env.NODE_ENV === "production",
-    isTest: env.NODE_ENV === "test",
-  };
-};
-
-/**
  * ✅ Helper Effects for accessing Web config
  */
 export const getWebConfig = Effect.gen(function* () {

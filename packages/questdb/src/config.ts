@@ -88,24 +88,6 @@ export const loadQuestDbConfigEffect = Effect.gen(function* () {
 export const QuestDbConfigLayer = Layer.effect(QuestDbConfigContext, loadQuestDbConfigEffect);
 
 /**
- * ✅ Legacy synchronous config loading for backwards compatibility
- */
-export const loadQuestDbConfig = (): QuestDbConfig => {
-  const { validateEnvSync } = require("@workspace/utils/validation");
-  const env = validateEnvSync(questdbEnvSchema, process.env);
-
-  return {
-    env,
-    connection: {
-      host: env.QDB_HOST,
-      port: env.QDB_PG_PORT,
-      user: env.QDB_USER,
-      password: env.QDB_PASSWORD,
-    },
-  };
-};
-
-/**
  * ✅ Helper Effects for accessing QuestDB config
  */
 export const getQuestDbConfig = Effect.gen(function* () {

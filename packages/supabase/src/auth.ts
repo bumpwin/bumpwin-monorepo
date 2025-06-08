@@ -40,29 +40,3 @@ export function getAuthSessionEffect(supabase: SupabaseClient): Effect.Effect<Se
     return result.data.session;
   });
 }
-
-/**
- * Get current auth session (Legacy version)
- * @deprecated Use getAuthSessionEffect for new code
- * @throws Error if no session is found
- *
- * NOTE: This function uses throw statements for legacy compatibility.
- * New code should use getAuthSessionEffect which follows Effect-ts patterns.
- */
-export async function getAuthSession(supabase: SupabaseClient): Promise<Session> {
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
-  if (error) {
-    logger.error("Failed to get auth session", { error });
-    // Legacy throw - new code should use getAuthSessionEffect
-    throw error;
-  }
-  if (!session) {
-    logger.error("No session found");
-    // Legacy throw - new code should use getAuthSessionEffect
-    throw new Error("No session found");
-  }
-  return session;
-}

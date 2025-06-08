@@ -121,7 +121,6 @@ export const useExecuteTransaction = () => {
             toast.success("Transaction successful", {
               description: `Digest: ${result.digest.slice(0, 8)}...`,
             });
-            console.log("Transaction result:", result);
           }),
         ),
         Effect.catchTags({
@@ -135,7 +134,6 @@ export const useExecuteTransaction = () => {
           TransactionPreparationError: (error) =>
             Effect.sync(() => {
               toast.dismiss(toastId);
-              console.error("Transaction preparation error:", error.cause);
               toast.error("Transaction preparation failed", {
                 description: error.cause instanceof Error ? error.cause.message : error.message,
               });
@@ -146,7 +144,6 @@ export const useExecuteTransaction = () => {
               toast.error("Transaction failed", {
                 description: error.message,
               });
-              console.error("Transaction execution error:", error.cause);
             }),
           GasEstimationError: (error) =>
             Effect.sync(() => {
@@ -154,7 +151,6 @@ export const useExecuteTransaction = () => {
               toast.error("Gas estimation failed", {
                 description: error.message,
               });
-              console.error("Gas estimation error:", error.cause);
             }),
           TransactionSimulationError: (error) =>
             Effect.sync(() => {
@@ -162,13 +158,11 @@ export const useExecuteTransaction = () => {
               toast.error("Transaction simulation failed", {
                 description: error.message,
               });
-              console.error("Transaction simulation error:", error.cause);
             }),
         }),
-        Effect.catchAll((error) =>
+        Effect.catchAll((_error) =>
           Effect.sync(() => {
             toast.dismiss(toastId);
-            console.error("Unexpected transaction error:", error);
             toast.error("Transaction failed", {
               description: "An unexpected error occurred",
             });

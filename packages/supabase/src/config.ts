@@ -132,26 +132,6 @@ export const loadSupabaseConfigEffect = Effect.gen(function* () {
 export const SupabaseConfigLayer = Layer.effect(SupabaseConfigContext, loadSupabaseConfigEffect);
 
 /**
- * ✅ Legacy synchronous config loading for backwards compatibility
- */
-export const loadSupabaseConfig = (): SupabaseConfig => {
-  const { validateEnvSync } = require("@workspace/utils/validation");
-  const env = validateEnvSync(supabaseEnvSchema, process.env);
-
-  return {
-    env,
-    project: {
-      url: env.SUPABASE_URL,
-      anonKey: env.SUPABASE_ANON_KEY,
-    },
-    publicProject: {
-      url: env.NEXT_PUBLIC_SUPABASE_URL,
-      anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    },
-  };
-};
-
-/**
  * ✅ Helper Effects for accessing Supabase config
  */
 export const getSupabaseConfig = Effect.gen(function* () {

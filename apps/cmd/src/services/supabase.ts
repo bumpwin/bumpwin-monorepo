@@ -149,21 +149,3 @@ export const fetchRecentChats = (limit = 10) =>
     yield* Effect.log(`Fetched ${chats.length} recent chat messages`);
     return chats;
   });
-
-/**
- * ✅ Legacy export for backwards compatibility
- * @deprecated Use Effect-based service instead
- */
-export const createLegacySupabaseClient = () => {
-  try {
-    const { loadConfig } = require("../config");
-    const config = loadConfig();
-    return createClient(config.env.SUPABASE_URL, config.env.SUPABASE_ANON_KEY);
-  } catch (error) {
-    console.error("Failed to create legacy Supabase client:", error);
-    return null;
-  }
-};
-
-// ✅ Legacy export removed - use Context/Layer pattern instead
-// export const supabase = createLegacySupabaseClient(); // ❌ Removed global export

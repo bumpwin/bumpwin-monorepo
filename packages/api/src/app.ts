@@ -1,7 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { battleroundsApi } from "./battlerounds";
 import { championsApi } from "./champions";
-import { chatApi } from "./chat";
+import { devChatApi } from "./chat";
 import { mockdataApi } from "./mockdata";
 import { mockpriceApi } from "./mockprice";
 
@@ -9,7 +9,7 @@ import { mockpriceApi } from "./mockprice";
 const app = new OpenAPIHono()
   .route("/battlerounds", battleroundsApi)
   .route("/champions", championsApi)
-  .route("/chat", chatApi)
+  .route("/chat", devChatApi)
   .route("/mockprice", mockpriceApi)
   .route("/mockdata", mockdataApi) // OpenAPIHono endpoints
   .get("/health", (c) => {

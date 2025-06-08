@@ -47,14 +47,6 @@ export const safeParseWithSchema = <T>(
 
 /**
  * Environment variable validation utility (Effect version)
- */
-export const validateEnv = <T>(
-  schema: z.ZodSchema<T>,
-  env: Record<string, string | undefined>,
-): Effect.Effect<T, ApiError> => validateWithSchema(schema, env);
-
-/**
- * Environment variable validation utility (Effect version)
  * ✅ Preferred - Uses Effect.try for type-safe error handling
  */
 export const validateEnvEffect = <T>(
@@ -77,31 +69,6 @@ export const validateEnvEffect = <T>(
 
     return result.data;
   });
-
-/**
- * Environment variable validation utility (Synchronous version)
- * For legacy compatibility and simple use cases
- * @deprecated Use validateEnvEffect for new code
- */
-export const validateEnvSync = <T>(
-  schema: z.ZodSchema<T>,
-  env: Record<string, string | undefined>,
-): T => {
-  const result = schema.safeParse(env);
-
-  if (!result.success) {
-    const errorMessage = `Environment validation failed: ${result.error.errors
-      .map((e) => `${e.path.join(".")}: ${e.message}`)
-      .join(", ")}`;
-
-    // NOTE: This is legacy code marked for deprecation
-    // New code should use validateEnvEffect instead
-    // Kept for backwards compatibility only
-    throw new Error(errorMessage);
-  }
-
-  return result.data;
-};
 
 /**
  * JSON validation utility

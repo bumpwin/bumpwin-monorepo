@@ -68,11 +68,7 @@ export function CoinList() {
           cause: error,
         }),
       }).pipe(
-        Effect.catchAll((error) =>
-          Effect.sync(() => {
-            console.error("Failed to refresh coins:", error);
-          }),
-        ),
+        Effect.catchAll((_error) => Effect.sync(() => {})),
         Effect.ensuring(Effect.sync(() => setIsRefreshing(false))),
       ),
     );

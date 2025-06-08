@@ -8,6 +8,18 @@ import type { ApiError, GetLatestChatMessagesResponse } from "@workspace/supabas
 import { ApiErrors, getErrorStatusCode } from "@workspace/supabase";
 import { Context, Effect, Layer } from "effect";
 
+// ConfigContext import for environment variables
+interface ConfigService {
+  readonly config: {
+    readonly env: {
+      readonly NEXT_PUBLIC_SUPABASE_URL: string;
+      readonly NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+    };
+  };
+}
+
+const ConfigContext = Context.GenericTag<ConfigService>("ConfigService");
+
 // ✅ Effect-ts推奨: Direct Service Pattern (No Repository)
 // PRACTICES/effect.md: Repository Patternは二重抽象化のアンチパターン
 
@@ -116,11 +128,61 @@ export const createChatApi = (supabaseUrl: string, supabaseAnonKey: string) => {
   });
 };
 
-/**
- * Legacy default export - requires env vars to be set externally
- * @deprecated Use createChatApi factory function instead
- */
-export const chatApi = createChatApi(
+// ✅ Effect-ts Context/Layer経由設定管理
+interface ChatApiService {
+  readonly api: ReturnType<typeof createChatApi>;
+}
+
+const ChatApiService = Context.GenericTag<ChatApiService>("ChatApiService");
+
+const ChatApiServiceLayer = Layer.effect(
+  ChatApiService,
+  Effect.gen(function* (_) {
+    const config = yield* _(ConfigContext);
+
+    // ✅ 必須環境変数の事前検証
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_URL) {
+      yield* _(
+        Effect.fail(
+          ApiErrors.validation(
+            "NEXT_PUBLIC_SUPABASE_URL is required",
+            "Missing required environment variable",
+          ),
+        ),
+      );
+    }
+    if (!config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      yield* _(
+        Effect.fail(
+          ApiErrors.validation(
+            "NEXT_PUBLIC_SUPABASE_ANON_KEY is required",
+            "Missing required environment variable",
+          ),
+        ),
+      );
+    }
+
+    const api = createChatApi(
+      config.config.env.NEXT_PUBLIC_SUPABASE_URL,
+      config.config.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    );
+
+    return { api };
+  }),
+);
+
+// ✅ Effect管理下でのAPI取得
+export const getChatApi = Effect.gen(function* (_) {
+  const chatApiService = yield* _(ChatApiService);
+  return chatApiService.api;
+});
+
+// ✅ LayerとServiceのexport
+export { ChatApiService, ChatApiServiceLayer };
+
+// ✅ Temporary API for direct usage without Effect Context (development only)
+// TODO: Replace with proper Context/Layer injection at app level
+export const devChatApi = createChatApi(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321",
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
 );

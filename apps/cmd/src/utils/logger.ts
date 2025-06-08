@@ -81,21 +81,3 @@ export const LoggerServiceLayer = Layer.effect(
     };
   }),
 );
-
-// ✅ 互換性のための旧logger (非推奨)
-// @deprecated Context経由でLoggerServiceを使用してください
-export const logger = {
-  debug: (message: string, context?: LogContext) =>
-    baseLogger.debug(JSON.stringify(formatLogMessage("debug", message, context))),
-  info: (message: string, context?: LogContext) =>
-    baseLogger.info(JSON.stringify(formatLogMessage("info", message, context))),
-  warn: (message: string, context?: LogContext) =>
-    baseLogger.warn(JSON.stringify(formatLogMessage("warn", message, context))),
-  error: (message: string, error?: Error, context?: LogContext) => {
-    const errorContext = {
-      ...context,
-      error: error ? { name: error.name, message: error.message, stack: error.stack } : undefined,
-    };
-    baseLogger.error(JSON.stringify(formatLogMessage("error", message, errorContext)));
-  },
-};

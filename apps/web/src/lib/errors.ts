@@ -3,6 +3,17 @@
  * Using implementation-first type inference pattern
  */
 
+import { Context, Effect } from "effect";
+
+// ✅ LoggerService Context定義
+interface LoggerService {
+  readonly error: (message: string, data?: unknown) => Effect.Effect<void>;
+  readonly warn: (message: string, data?: unknown) => Effect.Effect<void>;
+  readonly info: (message: string, data?: unknown) => Effect.Effect<void>;
+}
+
+const LoggerService = Context.GenericTag<LoggerService>("LoggerService");
+
 /**
  * ✅ Application Error Factory - Implementation First Pattern
  * All errors are defined once using factory functions, types are inferred
@@ -132,28 +143,35 @@ export const getErrorMessage = (error: unknown): string => {
 };
 
 /**
- * ✅ Enhanced error logging with structured context
+ * ✅ Effect-based error logging with LoggerService
  */
-export const logError = (
+export const logErrorEffect = (
   error: unknown,
   context?: string,
   metadata?: Record<string, unknown>,
-): void => {
-  const message = getErrorMessage(error);
-  const fullContext = context ? `[${context}] ${message}` : message;
+) =>
+  Effect.gen(function* (_) {
+    const logger = yield* _(LoggerService);
+    const message = getErrorMessage(error);
+    const fullContext = context ? `[${context}] ${message}` : message;
 
-  if (isAppError(error)) {
-    console.error(fullContext, {
-      tag: error._tag,
-      message: error.message,
-      cause: error.cause,
-      metadata,
-      ...error,
-    });
-  } else {
-    console.error(fullContext, { error, metadata });
-  }
-};
+    if (isAppError(error)) {
+      yield* _(
+        logger.error(fullContext, {
+          tag: error._tag,
+          message: error.message,
+          cause: error.cause,
+          metadata,
+          ...error,
+        }),
+      );
+    } else {
+      yield* _(logger.error(fullContext, { error, metadata }));
+    }
+  });
+
+// Export LoggerService for use in other modules
+export { LoggerService };
 
 /**
  * ✅ Error serialization for API responses

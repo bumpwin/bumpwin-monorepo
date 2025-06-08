@@ -106,14 +106,6 @@ const LoggerServiceLayer = Layer.succeed(LoggerService, {
   logError: (message: string) => Effect.sync(() => console.error(`[ERROR] ${message}`)),
 });
 
-// const insertChatMessage = (message: ChatMessage) =>
-//   Effect.gen(function* () {
-//     yield* dbRepository.insertChatMessage(message).pipe(
-//       Effect.mapError((cause) => InsertChatErrors.dbInsertError(cause)),
-//       Effect.tap(() => Effect.log(`Message from ${message.senderAddress} saved to Supabase.`)),
-//     );
-//   });
-
 // メイン処理 (Effect version) - 完全なContext/Layer依存注入
 export const startChatMessageInsertion = Effect.gen(function* (_) {
   const configService = yield* _(ConfigContext);

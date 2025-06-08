@@ -136,20 +136,3 @@ export const isProduction = Effect.gen(function* () {
   const config = yield* getConfig;
   return config.isProduction;
 });
-
-/**
- * ✅ Legacy synchronous config loading for backwards compatibility
- * @deprecated Use Effect-based config instead
- */
-export const loadConfig = (): Config => {
-  dotenv.config();
-
-  const env = envSchema.parse(process.env);
-
-  return {
-    env,
-    isDevelopment: env.NODE_ENV === "development",
-    isProduction: env.NODE_ENV === "production",
-    isTest: env.NODE_ENV === "test",
-  };
-};

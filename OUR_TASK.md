@@ -86,7 +86,27 @@ export const getChatApi = Effect.gen(function* () {
 console.log("Champions from getChampions():", champions);
 console.log("Enriched champions:", enrichedChampions);
 
-// ✅ 修正案: LoggerService Context使用
+// ✅ 修正案: Effect組み込みログ使用（推奨）
+export const championsApi = new OpenAPIHono()
+  .get("/", async (c) => {
+    const program = Effect.gen(function* () {
+      const champions = getChampions();
+      yield* Effect.logDebug("Champions from getChampions() - count: " + champions.length);
+
+      const enrichedChampions = champions.map(({ round, meme }) => ({
+        round,
+        meme: meme ? { ...meme, ...mockMemeMarketData[meme.id] } : null,
+      }));
+
+      yield* Effect.logDebug("Enriched champions completed - count: " + enrichedChampions.length);
+      return enrichedChampions;
+    });
+
+    const result = await Effect.runPromise(program);
+    return c.json(result);
+  });
+
+// ✅ 代替案: カスタムLoggerService Context使用（詳細制御が必要な場合）
 interface LoggerService {
   readonly info: (message: string, data?: unknown) => Effect.Effect<void>;
   readonly debug: (message: string, data?: unknown) => Effect.Effect<void>;
@@ -100,30 +120,6 @@ const LoggerServiceLayer = Layer.succeed(LoggerService, {
   debug: (message: string, data?: unknown) => 
     Effect.sync(() => console.debug(`[DEBUG] ${message}`, data)),
 });
-
-export const championsApi = new OpenAPIHono()
-  .get("/", async (c) => {
-    const program = Effect.gen(function* () {
-      const logger = yield* LoggerService;
-      
-      const champions = getChampions();
-      yield* logger.debug("Champions from getChampions()", champions);
-
-      const enrichedChampions = champions.map(({ round, meme }) => ({
-        round,
-        meme: meme ? { ...meme, ...mockMemeMarketData[meme.id] } : null,
-      }));
-
-      yield* logger.debug("Enriched champions", enrichedChampions);
-      return enrichedChampions;
-    });
-
-    const result = await Effect.runPromise(
-      program.pipe(Effect.provide(LoggerServiceLayer))
-    );
-
-    return c.json(result);
-  });
 ```
 
 #### 5.3 High: Context経由でない環境変数アクセス修正 (5分)
@@ -166,18 +162,39 @@ export const createSupabaseClientEffect = Effect.gen(function* () {
 **対象**: `apps/web/src/lib/errors.ts:146,154`
 
 ```typescript
-// ❌ 部分修正対象: Logger Service回避
+// ❌ 部分修正対象: 直接console使用
 export const logError = (
   error: unknown,
   context?: string,
   metadata?: Record<string, unknown>,
 ): void => {
-  // 直接console使用を避ける
   console.error(fullContext, { ... });
 };
 
-// ✅ 修正案: Effect化とLogger Service使用
+// ✅ 修正案: Effect組み込みログ使用（推奨）
 export const logErrorEffect = (
+  error: unknown,
+  context?: string,
+  metadata?: Record<string, unknown>,
+) => Effect.gen(function* () {
+  const message = getErrorMessage(error);
+  const fullContext = context ? `[${context}] ${message}` : message;
+
+  if (isAppError(error)) {
+    yield* Effect.logError(fullContext, {
+      tag: error._tag,
+      message: error.message,
+      cause: error.cause,
+      metadata,
+      ...error,
+    });
+  } else {
+    yield* Effect.logError(fullContext, { error, metadata });
+  }
+});
+
+// ✅ 代替案: カスタムLoggerService使用（既存実装）
+export const logErrorEffectWithService = (
   error: unknown,
   context?: string,
   metadata?: Record<string, unknown>,
@@ -233,10 +250,19 @@ const ServiceLayer = Layer.effect(
 );
 ```
 
-#### Logger Service統一パターン
+#### Effect組み込みログ統一パターン
 ```typescript
-// ✅ 全てのログはLogger Service経由
+// ✅ Effect組み込みログ使用（推奨）
 const operation = Effect.gen(function* () {
+  yield* Effect.logInfo("Operation started");
+  const result = yield* performOperation();
+  yield* Effect.logInfo("Operation completed", { resultId: result.id });
+  
+  return result;
+});
+
+// ✅ 代替: カスタムLogger Service使用（詳細制御が必要な場合）
+const operationWithCustomLogger = Effect.gen(function* () {
   const logger = yield* LoggerService;
   
   yield* logger.info("Operation started");
@@ -247,13 +273,16 @@ const operation = Effect.gen(function* () {
 });
 ```
 
-#### 副作用のEffect.sync完全分離
+#### 副作用のEffect管理完全分離
 ```typescript
 // ❌ NEVER: 直接副作用
 console.log("Debug info");
 
-// ✅ ALWAYS: Effect.sync経由
-const debugLog = (message: string) => 
+// ✅ BEST: Effect組み込みログ
+const debugLog = (message: string) => Effect.logDebug(message);
+
+// ✅ ALTERNATIVE: Effect.sync経由
+const customDebugLog = (message: string) => 
   Effect.sync(() => console.log(`[DEBUG] ${message}`));
 ```
 
@@ -269,6 +298,9 @@ const DEFAULT_URL = "http://localhost:3000";
 // ❌ NEVER: Effect外console使用
 console.log("Production log");
 
+// ❌ NEVER: カスタムLoggerService without justification
+const unnecessaryLogger = Context.GenericTag<LoggerService>("LoggerService");
+
 // ❌ NEVER: グローバルエクスポート
 export const globalService = createService();
 ```
@@ -276,7 +308,7 @@ export const globalService = createService();
 ### ✅ 推奨最終パターン
 
 ```typescript
-// ✅ 完全Effect-ts準拠サービス
+// ✅ Effect組み込みログ使用完全準拠サービス（推奨）
 interface ServiceInterface {
   readonly method: (param: string) => Effect.Effect<Result, ServiceError>;
 }
@@ -287,18 +319,17 @@ const ServiceLayer = Layer.effect(
   ServiceTag,
   Effect.gen(function* () {
     const config = yield* ConfigContext;
-    const logger = yield* LoggerService;
     
-    yield* logger.info("Service initializing");
+    yield* Effect.logInfo("Service initializing");
     
     // 全ての設定検証
     const validatedConfig = yield* validateConfig(config);
     
     return {
       method: (param) => Effect.gen(function* () {
-        yield* logger.debug("Method called", { param });
+        yield* Effect.logDebug("Method called", { param });
         const result = yield* performOperation(param, validatedConfig);
-        yield* logger.debug("Method completed", { result });
+        yield* Effect.logDebug("Method completed", { result });
         return result;
       })
     };
@@ -310,7 +341,29 @@ const program = Effect.gen(function* () {
   const service = yield* ServiceTag;
   return yield* service.method("input");
 }).pipe(
-  Effect.provide(Layer.merge(ServiceLayer, ConfigLayer, LoggerServiceLayer))
+  Effect.provide(Layer.merge(ServiceLayer, ConfigLayer))
+);
+
+// ✅ カスタムLoggerService使用パターン（詳細制御が必要な場合）
+const ServiceLayerWithCustomLogger = Layer.effect(
+  ServiceTag,
+  Effect.gen(function* () {
+    const config = yield* ConfigContext;
+    const logger = yield* LoggerService;
+    
+    yield* logger.info("Service initializing");
+    
+    const validatedConfig = yield* validateConfig(config);
+    
+    return {
+      method: (param) => Effect.gen(function* () {
+        yield* logger.debug("Method called", { param });
+        const result = yield* performOperation(param, validatedConfig);
+        yield* logger.debug("Method completed", { result });
+        return result;
+      })
+    };
+  })
 );
 ```
 

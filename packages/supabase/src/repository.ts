@@ -40,7 +40,3 @@ export interface SupabaseService {
 
 // ✅ Context/Layer による依存注入
 export const SupabaseService = Context.GenericTag<SupabaseService>("SupabaseService");
-
-// ✅ 後方互換性のため型エイリアスを保持
-/** @deprecated Use SupabaseService instead - Repository Pattern is anti-pattern in Effect-ts */
-export type DbRepository = SupabaseService;
