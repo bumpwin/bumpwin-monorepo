@@ -1,91 +1,64 @@
+import { startChatMessageInsertion } from "@/jobs/insertChat";
+import { startChatEventPollingEffect } from "@/jobs/listenChatEvent";
+import { logger } from "@/utils/logger";
+import { NodeFileSystem } from "@effect/platform-node";
+import { loadConfig } from "@/config";
 import { Effect } from "effect";
-import { AppLayer, startServer } from "./app";
-import { getConfig } from "./config";
 
-/**
- * ✅ Effect-ts compliant server startup
- */
-const serverEffect = Effect.gen(function* () {
-  const config = yield* getConfig;
-  const result = yield* startServer(config.env.PORT);
+// Simple server startup - no complex Layer/Context system
+const config = loadConfig();
 
-  yield* Effect.log("✅ Server startup completed successfully");
-  yield* Effect.log(`🔧 Services initialized: ${result.services.join(", ")}`);
-  yield* Effect.log(`🌐 Server listening on http://localhost:${result.port}`);
+const startServerEffect = Effect.gen(function* () {
+  // Start background jobs in parallel
+  yield* Effect.all(
+    [
+      startChatEventPollingEffect(config.env.LISTEN_CHAT_EVENT_POLLING_INTERVAL_MS),
+      startChatMessageInsertion.pipe(Effect.provide(NodeFileSystem.layer)),
+    ],
+    { concurrency: "unbounded" },
+  );
 
-  // Keep the process alive
-  yield* Effect.never; // This will run indefinitely
-}).pipe(Effect.provide(AppLayer));
+  yield* Effect.log("Background jobs started");
+  yield* Effect.log(`Environment: ${config.env.NODE_ENV}`);
+});
 
-/**
- * ✅ Graceful shutdown handlers
- */
-const setupGracefulShutdown = () => {
-  const shutdown = (signal: string) => {
-    Effect.runSync(Effect.log(`${signal} received, shutting down gracefully`));
-    process.exit(0);
-  };
+// Process signal handlers
+process.on("SIGTERM", () => {
+  logger.info("SIGTERM received, shutting down gracefully");
+  process.exit(0);
+});
 
-  process.on("SIGTERM", () => shutdown("SIGTERM"));
-  process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGINT", () => {
+  logger.info("SIGINT received, shutting down gracefully");
+  process.exit(0);
+});
 
-  process.on("uncaughtException", (error) => {
-    Effect.runSync(Effect.logError(`Uncaught exception: ${error.message}`));
-    console.error(error);
-    process.exit(1);
-  });
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught exception", error);
+  process.exit(1);
+});
 
-  process.on("unhandledRejection", (reason) => {
-    Effect.runSync(Effect.logError(`Unhandled rejection: ${String(reason)}`));
-    console.error(reason);
-    process.exit(1);
-  });
-};
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled rejection", reason as Error);
+  process.exit(1);
+});
 
-/**
- * ✅ Start the application
- */
-const main = () => {
-  setupGracefulShutdown();
-
-  Effect.runPromise(
-    serverEffect.pipe(
-      Effect.catchAll((error: unknown) =>
-        Effect.gen(function* () {
-          if (typeof error === "object" && error !== null && "_tag" in error) {
-            const taggedError = error as { _tag: string; message?: string; details?: string };
-
-            switch (taggedError._tag) {
-              case "ConfigValidationError":
-                yield* Effect.logError("❌ Configuration validation failed");
-                yield* Effect.logError(`Details: ${taggedError.details || taggedError.message}`);
-                break;
-              case "SupabaseConnectionError":
-                yield* Effect.logError("❌ Supabase connection failed");
-                yield* Effect.logError(`Error: ${taggedError.message}`);
-                break;
-              case "AppStartupError":
-                yield* Effect.logError("❌ Application startup failed");
-                yield* Effect.logError(`Error: ${taggedError.message}`);
-                break;
-              default:
-                yield* Effect.logError("❌ Unexpected server error");
-                yield* Effect.logError(`Error: ${JSON.stringify(error, null, 2)}`);
-                break;
-            }
-          } else {
-            yield* Effect.logError("❌ Unexpected server error");
-            yield* Effect.logError(`Error: ${String(error)}`);
-          }
-          yield* Effect.sync(() => process.exit(1));
-        }),
-      ),
-    ),
-  ).catch((error) => {
-    console.error("💥 Critical server error:", error);
-    process.exit(1);
-  });
-};
-
-// Start the application
-main();
+// Simple server startup - no complex dependency injection
+Effect.runPromise(
+  startServerEffect.pipe(
+    Effect.catchAll((error) => {
+      return Effect.gen(function* () {
+        yield* Effect.logError("Failed to start server");
+        yield* Effect.logError(`Error: ${JSON.stringify(error, null, 2)}`);
+        if (error instanceof Error) {
+          yield* Effect.logError(`Error message: ${error.message}`);
+          yield* Effect.logError(`Error stack: ${error.stack}`);
+        }
+        yield* Effect.sync(() => process.exit(1));
+      });
+    }),
+  ),
+).catch((error) => {
+  logger.error("Critical server error", error);
+  process.exit(1);
+});

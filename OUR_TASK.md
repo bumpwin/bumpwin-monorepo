@@ -3,23 +3,50 @@
 ## 🎯 目標
 プロジェクト全体のEffect-tsアンチパターンを根絶し、関数型プログラミングのベストプラクティスに完全準拠
 
-## 🚨 発見されたアンチパターン
+## 🚨 発見されたアンチパターン - 巡回調査結果
 
-### 📊 現状分析
-| カテゴリ | 問題ファイル | アンチパターン | 重要度 |
-|---------|-------------|---------------|--------|
-| エラー定義 | `/apps/web/src/lib/errors.ts` | 二重記述（型+ファクトリー） | Critical |
-| 依存注入 | `/apps/cmd/src/services/supabase.ts` | グローバルシングルトン | Critical |
-| 設定管理 | `/apps/cmd/src/config/index.ts` | ハードコードデフォルト値 | High |
-| エラーハンドリング | 複数ファイル | 散乱パターン | Medium |
+### 📊 現状分析（詳細巡回完了）
+| カテゴリ | 問題ファイル数 | アンチパターン件数 | 重要度 |
+|---------|-------------|------------------|--------|
+| **エラー定義** | 2ファイル | 2件 | **Critical** |
+| **依存注入** | 5ファイル | 8件 | **Critical** |
+| **Effect使用** | 6ファイル | 7件 | **High** |
+| **副作用処理** | 8ファイル | 12件 | **Medium** |
+| **総計** | **21ファイル** | **29件** | **即座対応要** |
+
+### 🔍 Critical アンチパターン詳細
+
+#### **エラー定義二重記述 (Critical)**
+- `packages/utils/src/errors.ts:2-54` - 型とファクトリー別々定義
+- `apps/cmd/src/utils/errors.ts:4-123` - 同様の二重記述パターン
+
+#### **依存注入違反 (Critical)**  
+- `apps/cmd/src/jobs/insertChat.ts:5-6` - グローバルsupabase/logger直接インポート
+- `apps/cmd/src/jobs/listenChatEvent.ts:2` - グローバル依存
+- `packages/api/src/chat.ts:9` - ミュータブルグローバル状態
+- `apps/cmd/src/utils/logger.ts:4` - グローバルconfig使用
+- `apps/cmd/src/services/supabase.ts:169` - グローバルエクスポート
+
+#### **直接throw使用 (High)**
+- `apps/web/src/config.ts:15,28` - Effect.fail()代わりに直接throw
+- `packages/utils/src/validation.ts:67-71` - 同期バリデーションでthrow
+- `packages/supabase/src/auth.ts:30,34` - 非同期関数内でthrow
 
 ## 📋 実装計画
 
-### Phase 1: エラー型システム完全刷新 (45分・Critical)
-**優先度**: Critical | **工数**: 45分
+### Phase 1: エラー型システム完全刷新 (60分・Critical)
+**優先度**: Critical | **工数**: 60分 | **対象**: 2ファイル 2件のアンチパターン
 
-#### 1.1 新しいエラーファクトリーパターン実装 (20分)
-- [ ] **`/apps/web/src/lib/errors.ts` 完全書き換え**
+#### 1.1 重大なエラー定義アンチパターン修正 (35分)
+- [ ] **`packages/utils/src/errors.ts` 完全書き換え (20分)**
+  - 型とファクトリーの二重記述を実装優先型推論に変更
+  - 54行の重複コードを削減、型安全性向上
+- [ ] **`apps/cmd/src/utils/errors.ts` 完全書き換え (15分)**
+  - 123行の重複パターンを統一
+  - ValidationError, AppError等の二重記述除去
+
+#### 1.2 既存参照箇所の更新 (15分)
+- [ ] **全ファイルでのエラー参照を新パターンに更新**
   ```typescript
   // ✅ 推奨: 実装優先型推論パターン
   const AppErrors = {
@@ -75,11 +102,23 @@
 - [ ] **TypeScriptコンパイルエラー0件確認**
 - [ ] **catchTag使用箇所の型安全性確認**
 
-### Phase 2: 依存注入システム構築 (60分・Critical)
-**優先度**: Critical | **工数**: 60分
+### Phase 2: 依存注入システム構築 (90分・Critical)
+**優先度**: Critical | **工数**: 90分 | **対象**: 5ファイル 8件のアンチパターン
 
-#### 2.1 Supabase Context/Layer実装 (25分)
-- [ ] **`/apps/cmd/src/services/supabase.ts` 完全書き換え**
+#### 2.1 グローバル依存の依存注入化 (50分)
+- [ ] **`apps/cmd/src/jobs/insertChat.ts` 依存注入化 (15分)**
+  - グローバルsupabase/logger直接インポートをContext/Layer化
+- [ ] **`apps/cmd/src/jobs/listenChatEvent.ts` 依存注入化 (10分)**
+  - グローバル依存をContext経由に変更
+- [ ] **`packages/api/src/chat.ts` 状態管理修正 (10分)**
+  - ミュータブルグローバル状態をEffect管理に変更
+- [ ] **`apps/cmd/src/utils/logger.ts` サービス化 (10分)**
+  - グローバルconfig使用をContext/Layer化
+- [ ] **`apps/cmd/src/services/supabase.ts` 修正 (5分)**
+  - グローバルエクスポート除去、Layer専用化
+
+#### 2.2 Context/Layer実装統合 (25分)
+- [ ] **統合Layerの作成**
   ```typescript
   import { Context, Effect, Layer } from "effect"
   import { createClient, type SupabaseClient } from "@supabase/supabase-js"
@@ -162,11 +201,24 @@
   Effect.runPromise(program.pipe(Effect.provide(AppLayer)))
   ```
 
-### Phase 3: 設定管理のハードコード除去 (30分・High)
-**優先度**: High | **工数**: 30分
+### Phase 3: 直接throw除去とEffect使用パターン修正 (45分・High)
+**優先度**: High | **工数**: 45分 | **対象**: 9ファイル 10件のアンチパターン
 
-#### 3.1 環境変数必須化 (15分)
-- [ ] **`/apps/cmd/src/config/index.ts` ハードコード除去**
+#### 3.1 直接throw使用の修正 (20分)
+- [ ] **`apps/web/src/config.ts:15,28` Effect.fail()化 (5分)**
+  - 直接throwをEffect.fail()に変更
+- [ ] **`packages/utils/src/validation.ts:67-71` Effect化 (10分)**
+  - 同期バリデーションをEffect.try使用に変更
+- [ ] **`packages/supabase/src/auth.ts:30,34` Effect化 (5分)**
+  - 非同期関数内throwをEffect.fail()に変更
+
+#### 3.2 Effect使用パターン修正 (25分)
+- [ ] **`apps/web/src/app/rounds/components/ClaimOutcomeDialog.tsx` Effect化 (10分)**
+  - try/catchをEffect.try使用に変更
+- [ ] **`packages/sui/src/movecall.ts` Promise→Effect変換 (10分)**
+  - Promiseコンストラクタ→Effect.async変換
+- [ ] **`packages/questdb/src/pool.ts` リソース管理Effect化 (5分)**
+  - withConn関数をEffect.acquireUseReleaseに変更
   ```typescript
   // ❌ 削除: ハードコードデフォルト値
   // SUPABASE_URL: z.string().default("http://127.0.0.1:54321")
@@ -200,11 +252,26 @@
   type ConfigError = ReturnType<typeof ConfigErrors[keyof typeof ConfigErrors]>
   ```
 
-### Phase 4: エラーハンドリング集約パターン適用 (45分・Medium)
-**優先度**: Medium | **工数**: 45分
+### Phase 4: 副作用処理のEffect化 (60分・Medium)
+**優先度**: Medium | **工数**: 60分 | **対象**: 8ファイル 12件のアンチパターン
 
-#### 4.1 エラーハンドリング散乱の修正 (30分)
-- [ ] **React Hooksでのエラーハンドリング集約**
+#### 4.1 副作用のEffect.sync化 (35分)
+- [ ] **`apps/web/src/components/chat/ChatPanel.tsx` console.log修正 (10分)**
+  - 5箇所のconsole操作をEffect.sync化
+- [ ] **`apps/web/src/app/debug-tx/page.tsx` DOM操作修正 (10分)**
+  - document.getElementByIdをEffect.sync化
+- [ ] **`apps/web/src/utils/supabaseClient.ts` console修正 (5分)**
+  - process.env直接アクセスとconsole.errorをEffect化
+- [ ] **その他ファイルの副作用修正 (10分)**
+  - 残り5ファイルの副作用をEffect.sync化
+
+#### 4.2 タイマー・イベント管理のEffect化 (25分)
+- [ ] **`apps/web/src/components/battle/BattleClock.tsx` タイマー修正 (10分)**
+  - setInterval/clearIntervalをEffect.acquireUseRelease化
+- [ ] **`apps/web/src/components/charts/chart/lwc-chart.tsx` イベント修正 (10分)**
+  - window.addEventListener管理をEffect化
+- [ ] **`apps/cmd/src/jobs/insertChat.ts` プロセス管理修正 (5分)**
+  - process.on()操作をEffect化
   ```typescript
   // ✅ エラーハンドリング集約パターン
   const useTransaction = () => {
@@ -374,15 +441,16 @@ const program = Effect.gen(function* () {
 )
 ```
 
-## 📊 進捗指標
+## 📊 進捗指標 - 巡回調査結果ベース
 
 ### 成功基準
 | 指標 | 現状 | 目標 |
 |------|------|------|
-| アンチパターン数 | 4件 | 0件 |
-| 二重記述箇所 | 3箇所 | 0箇所 |
-| グローバル依存 | 2箇所 | 0箇所 |
-| ハードコード | 1箇所 | 0箇所 |
+| **総アンチパターン数** | **29件** | **0件** |
+| **エラー定義二重記述** | 2箇所 | 0箇所 |
+| **グローバル依存** | 8箇所 | 0箇所 |
+| **直接throw使用** | 7箇所 | 0箇所 |
+| **副作用未Effect化** | 12箇所 | 0箇所 |
 
 ### 品質指標
 - [ ] **TypeScriptエラー**: 0件
@@ -390,22 +458,23 @@ const program = Effect.gen(function* () {
 - [ ] **依存注入率**: 100%
 - [ ] **型安全性**: 完全
 
-## ⚡ 緊急度・影響度マトリックス
+## ⚡ 緊急度・影響度マトリックス - 巡回結果ベース
 
-| Phase | 緊急度 | 影響度 | 対応 |
-|-------|--------|--------|------|
-| Phase 1 | Critical | Critical | 即座実行 |
-| Phase 2 | Critical | High | 即座実行 |
-| Phase 3 | High | Medium | 24h以内 |
-| Phase 4 | Medium | Medium | 週内 |
+| Phase | 対象 | 緊急度 | 影響度 | 工数 | 対応 |
+|-------|------|--------|--------|------|------|
+| **Phase 1** | エラー定義2件 | Critical | Critical | 60分 | 即座実行 |
+| **Phase 2** | 依存注入8件 | Critical | Critical | 90分 | 即座実行 |
+| **Phase 3** | Effect使用10件 | High | High | 45分 | 24h以内 |
+| **Phase 4** | 副作用12件 | Medium | Medium | 60分 | 週内 |
+| **合計** | **32件** | - | - | **255分** | **4.25時間** |
 
 ## 🎯 完了条件
 
-### Phase完了基準
-- [ ] **Phase 1**: 全エラー定義が実装優先型推論パターン
-- [ ] **Phase 2**: 全依存関係がContext/Layer経由
-- [ ] **Phase 3**: ハードコード完全除去
-- [ ] **Phase 4**: エラーハンドリング集約完了
+### Phase完了基準 - 巡回結果対応
+- [ ] **Phase 1**: 2ファイルのエラー定義が実装優先型推論パターン完了
+- [ ] **Phase 2**: 5ファイル8箇所の依存注入がContext/Layer経由完了  
+- [ ] **Phase 3**: 9ファイル10箇所の直接throw除去、Effect使用統一完了
+- [ ] **Phase 4**: 8ファイル12箇所の副作用Effect化完了
 
 ### 最終検証項目
 - [ ] **関数型純度**: 副作用の完全分離

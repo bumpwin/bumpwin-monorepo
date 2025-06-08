@@ -11,6 +11,7 @@ import {
 import { useCoins } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { CoinCardProps } from "@/types/coin";
+import { Effect } from "effect";
 import { ChevronDown, RotateCw } from "lucide-react";
 import React, { useState } from "react";
 import { match } from "ts-pattern";
@@ -58,11 +59,24 @@ export function CoinList() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    try {
-      await refetch();
-    } finally {
-      setIsRefreshing(false);
-    }
+
+    await Effect.runPromise(
+      Effect.tryPromise({
+        try: () => refetch(),
+        catch: (error) => ({
+          _tag: "RefreshError" as const,
+          message: "Failed to refresh coins",
+          cause: error,
+        }),
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.sync(() => {
+            console.error("Failed to refresh coins:", error);
+          }),
+        ),
+        Effect.ensuring(Effect.sync(() => setIsRefreshing(false))),
+      ),
+    );
   };
 
   // Sort and filter coins based on the selected sort type and watchlist toggle

@@ -5,7 +5,8 @@ export type ApiError =
   | { readonly _tag: "DatabaseError"; readonly message: string; readonly details?: unknown }
   | { readonly _tag: "NetworkError"; readonly message: string; readonly details?: unknown }
   | { readonly _tag: "AuthError"; readonly message: string; readonly details?: unknown }
-  | { readonly _tag: "ConfigError"; readonly message: string; readonly details?: unknown };
+  | { readonly _tag: "ConfigError"; readonly message: string; readonly details?: unknown }
+  | { readonly _tag: "UnknownError"; readonly message: string; readonly details?: unknown };
 
 // Error factory functions
 export const ApiErrors = {
@@ -41,6 +42,12 @@ export const ApiErrors = {
 
   config: (message: string, details?: unknown): ApiError => ({
     _tag: "ConfigError",
+    message,
+    details,
+  }),
+
+  unknown: (message: string, details?: unknown): ApiError => ({
+    _tag: "UnknownError",
     message,
     details,
   }),

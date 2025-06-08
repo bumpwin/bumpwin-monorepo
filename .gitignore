@@ -95,6 +95,11 @@ Thumbs.db
 # Cloudflare
 .wrangler/
 .dev.vars
+# Cloudflare wrangler config with secrets (for public repos)
+**/wrangler.json
+**/wrangler.jsonc
+!**/wrangler.json.example
+!**/wrangler.jsonc.example
 
 # Misc
 *.pem

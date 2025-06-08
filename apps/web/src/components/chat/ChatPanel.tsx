@@ -103,10 +103,20 @@ export default function ChatPanel() {
       setLoading(true);
       setError(null);
 
-      try {
-        const messages = await Effect.runPromise(
-          chatApi.fetchLatest(40).pipe(
-            Effect.catchAll((err) => {
+      await Effect.runPromise(
+        chatApi.fetchLatest(40).pipe(
+          Effect.tap((messages) =>
+            Effect.sync(() => {
+              // Convert to ChatMessage format and sort by timestamp (oldest first)
+              const convertedMessages = messages
+                .map((msg) => convertToMessage(msg))
+                .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+              setChatMessages(convertedMessages);
+            }),
+          ),
+          Effect.catchAll((err) =>
+            Effect.sync(() => {
               console.error("Failed to fetch chat messages:", err);
               if (err.message.includes("Supabase environment variables are not configured")) {
                 setError(
@@ -115,20 +125,10 @@ export default function ChatPanel() {
               } else {
                 setError("Failed to load chat messages. Please try again later.");
               }
-              return Effect.fail(err);
             }),
           ),
-        );
-
-        // Convert to ChatMessage format and sort by timestamp (oldest first)
-        const convertedMessages = messages
-          .map((msg) => convertToMessage(msg))
-          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-
-        setChatMessages(convertedMessages);
-      } catch (_err) {
-        // Error already handled in catchAll above
-      }
+        ),
+      );
 
       setLoading(false);
     };
